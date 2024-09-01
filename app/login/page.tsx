@@ -7,7 +7,7 @@ import {PasswordInput} from '@/components/password-input';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 
-const page = () => {
+const LoginPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
@@ -21,7 +21,6 @@ const page = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
-
     router.push('/order-timeline');
   };
 
@@ -55,10 +54,7 @@ const page = () => {
           <Link href='/reset-password' className='mt-4'>
             Forgot Password? <span className='text-red-500'> Reset</span>
           </Link>
-          <Button
-            type='button'
-            className='w-full h-[70px]'
-            onClick={handleSubmit}>
+          <Button type='submit' className='w-full h-[70px]'>
             Continue
           </Button>
         </form>
@@ -67,4 +63,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default LoginPage;
