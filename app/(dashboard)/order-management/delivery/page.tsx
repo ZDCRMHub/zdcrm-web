@@ -1,11 +1,8 @@
+import Layout from '@/components/Layout';
 import React from 'react';
 
 const page = () => {
-  return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
-  );
+  return <div>Text</div>;
 };
 
 export default page;
