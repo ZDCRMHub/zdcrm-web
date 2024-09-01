@@ -6,8 +6,10 @@ import {Input} from '@/components/ui/input';
 import {PasswordInput} from '@/components/password-input';
 import {DialogBox} from '@/components/dialog-box';
 import {SuccessMessage} from '@/components/success-message';
+import {useRouter} from 'next/navigation';
 
 const SignUpPage: React.FC = () => {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,7 +33,8 @@ const SignUpPage: React.FC = () => {
 
   const handleProceed = () => {
     setShowSuccessDialog(false);
-    // Add logic here to navigate to the next page or perform any other action
+    // Navigate to the login page
+    router.push('/login');
   };
 
   const inputClassName = 'h-[70px] p-6';

@@ -59,7 +59,7 @@ export function ResetPassword({
           className='h-[70px] mb-10 mt-1'
         />
       </div>
-      <Button type='submit' className='w-full'>
+      <Button type='submit' className='w-full h-[70px]'>
         Continue
       </Button>
     </form>

@@ -4,9 +4,9 @@ import EnquirySummary from '@/components/order-management/enquiry/EnquirySummary
 
 const page = () => {
   return (
-    <Layout>
+    <>
       <EnquirySummary />
-    </Layout>
+    </>
   );
 };
 
