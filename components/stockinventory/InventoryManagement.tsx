@@ -235,6 +235,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import Image from 'next/image';
 
 type Variant =
   | {size: string; stock: number; status?: string}
@@ -374,7 +375,7 @@ const InventoryManagement = () => {
           {productData.map(product => (
             <Card key={product.id} className='mb-4'>
               <CardContent className='flex p-4'>
-                <img
+                <Image
                   src={product.image}
                   alt={product.name}
                   className='w-24 h-24 object-cover rounded mr-4'

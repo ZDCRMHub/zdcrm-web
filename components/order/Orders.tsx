@@ -326,7 +326,7 @@ const OrderDashboard: React.FC = () => {
         <TableHeader>
           <TableRow>
             <TableHead>Order ID</TableHead>
-            <TableHead>Customer's Details</TableHead>
+            <TableHead>Customers Details</TableHead>
             <TableHead>Enquiry Item</TableHead>
             <TableHead>Recipient Details</TableHead>
             <TableHead>Category</TableHead>

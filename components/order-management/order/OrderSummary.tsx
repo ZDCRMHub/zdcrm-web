@@ -3,6 +3,7 @@ import {ArrowLeft, Pencil, Plus} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent} from '@/components/ui/card';
+import Image from 'next/image';
 
 export default function OrderSummary() {
   return (
@@ -40,7 +41,7 @@ export default function OrderSummary() {
         <CardContent className='p-6'>
           <h2 className='font-semibold mb-4'>Item 1</h2>
           <div className='flex'>
-            <img
+            <Image
               src='/placeholder.svg'
               alt='Adeline Faultline Cake'
               className='w-24 h-24 rounded-md mr-4'

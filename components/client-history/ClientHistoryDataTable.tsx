@@ -68,7 +68,7 @@ export function ClientHistoryDataTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className='font-semibold'>Customer's Name</TableHead>
+              <TableHead className='font-semibold'>Customers Name</TableHead>
               <TableHead className='font-semibold'>Phone Number</TableHead>
               <TableHead className='font-semibold'>Email Address</TableHead>
               <TableHead className='font-semibold'>

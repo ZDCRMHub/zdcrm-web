@@ -37,33 +37,33 @@ export default function OrderForm() {
             <path d='M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'></path>
             <circle cx='12' cy='7' r='4'></circle>
           </svg>
-          Customer's Information
+          Customers Information
         </h2>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              Customer's Name
+              Customers Name
             </label>
-            <Input placeholder="Enter customer's Name" className='w-full' />
+            <Input placeholder='Enter customers Name' className='w-full' />
           </div>
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              Customer's Phone Number
+              Customers Phone Number
             </label>
             <Input
-              placeholder="Enter customer's phone number"
+              placeholder='Enter customers phone number'
               className='w-full'
             />
           </div>
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              Recipient's Name
+              Recipients Name
             </label>
             <Input placeholder="Enter recipient's name" className='w-full' />
           </div>
           <div>
             <label className='block text-sm font-medium text-gray-700 mb-1'>
-              Recipient's Phone Number
+              Recipients Phone Number
             </label>
             <Input
               placeholder="Enter recipient's phone number"

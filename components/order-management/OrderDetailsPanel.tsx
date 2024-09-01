@@ -15,6 +15,7 @@ import {
 import {Card, CardContent} from '../ui/card';
 import {Phone} from '@phosphor-icons/react';
 import {PhoneCall} from '@phosphor-icons/react/dist/ssr';
+import Image from 'next/image';
 
 interface OrderDetailsPanelProps {
   orderId: string;
@@ -92,7 +93,7 @@ export default function OrderDetailsPanel({
                 <span>
                   <UserOctagon size={25} variant='Linear' color='#FFC600' />
                 </span>
-                <span>Customer's Info</span>
+                <span>Customers Info</span>
               </h3>
 
               <Separator />
@@ -150,39 +151,50 @@ export default function OrderDetailsPanel({
               <Card className='flex items-start space-x-4'>
                 <CardContent className='flex justify-between w-full pt-5'>
                   <div>
-                    <img
+                    <Image
                       src='/img/cake.png'
                       alt='Adeline Faultline Cake'
                       className='w-20 h-20 object-cover rounded-md'
                     />
                     <div className='flex-grow'>
                       <h4 className='font-semibold'>Adeline Faultline Cake</h4>
-                      <div className='grid grid-cols-3 gap-2 text-sm mt-2'>
-                        <div>
-                          <span className='text-gray-500'>Quantity:</span> 1pcs
+                      <div className='flex justify-between'>
+                        <div className='grid grid-cols-3 gap-2 text-sm mt-2'>
+                          <div>
+                            <div>
+                              <span className='text-gray-500'>Quantity:</span>{' '}
+                              1pcs
+                            </div>
+                            <div>
+                              <span className='text-gray-500'>Category:</span>{' '}
+                              Cake
+                            </div>
+                            <div>
+                              <span className='text-gray-500'>Size:</span> 8
+                              inches
+                            </div>
+                            <div>
+                              <span className='text-gray-500'>Layers:</span> 3
+                              layers
+                            </div>
+                            <div className='col-span-2'>
+                              <span className='text-gray-500'>Flavor:</span>{' '}
+                              Chocolate, Vanilla, Strawberry
+                            </div>
+                          </div>
+                          <div className='mt-2'>
+                            <span className='text-gray-500'>
+                              Cake toppings:
+                            </span>{' '}
+                            Fruits, chocolate & cookies
+                          </div>
                         </div>
-                        <div>
-                          <span className='text-gray-500'>Category:</span> Cake
+                        <div className='mt-2'>
+                          <span className='text-gray-500'>
+                            Message on cake:
+                          </span>{' '}
+                          Love Me Like You Always Do
                         </div>
-                        <div>
-                          <span className='text-gray-500'>Size:</span> 8 inches
-                        </div>
-                        <div>
-                          <span className='text-gray-500'>Layers:</span> 3
-                          layers
-                        </div>
-                        <div className='col-span-2'>
-                          <span className='text-gray-500'>Flavor:</span>{' '}
-                          Chocolate, Vanilla, Strawberry
-                        </div>
-                      </div>
-                      <div className='mt-2'>
-                        <span className='text-gray-500'>Cake toppings:</span>{' '}
-                        Fruits, chocolate & cookies
-                      </div>
-                      <div className='mt-2'>
-                        <span className='text-gray-500'>Message on cake:</span>{' '}
-                        Love Me Like You Always Do
                       </div>
 
                       <Separator />
@@ -198,7 +210,7 @@ export default function OrderDetailsPanel({
 
               <div className='flex items-start space-x-4'>
                 <Checkbox id='item2' className='mt-1' />
-                <img
+                <Image
                   src='/img/cake1.png'
                   alt='Adelya - Red Roses Bouquet'
                   className='w-20 h-20 object-cover rounded-md'

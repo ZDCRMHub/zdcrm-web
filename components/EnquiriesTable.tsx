@@ -203,7 +203,7 @@ export default function Component() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className='text-gray-500'>Customer's Details</TableHead>
+            <TableHead className='text-gray-500'>Customer Details</TableHead>
             <TableHead className='text-gray-500'>Enquiry Item</TableHead>
             <TableHead className='text-gray-500'>Delivery Notes</TableHead>
             <TableHead className='text-gray-500'>Category</TableHead>
