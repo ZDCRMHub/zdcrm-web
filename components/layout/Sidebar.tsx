@@ -15,6 +15,7 @@ import {
 } from './SidebarLink';
 import { Logo } from '@/icons/core';
 import { SidebarCollapsible } from './SidebarCollapsible';
+import { Gear } from '@phosphor-icons/react';
 
 export const linkGroups = [
   {
@@ -43,7 +44,7 @@ export const linkGroups = [
           {
             link: '/order-management/delivery',
             text: 'Delivery',
-            icon: <DeliveryIcon />,
+            icon: <OrderTimeLine />,
           },
           {
             link: '/order-management/order-history',
@@ -122,33 +123,12 @@ export const linkGroups = [
             text: 'Orders',
             icon: <OrdersIcon />,
           },
-          {
-            link: '/admin/delivery',
-            text: 'Delivery',
-            icon: <DeliveryIcon />,
-          },
         ],
       },
       {
-        text: 'Report & Analytics',
-        icon: <ReportAndAnalytics />,
-        nestedLinks: [
-          {
-            link: '/report-analytics/order-statistics',
-            text: 'Order Statistics',
-            icon: <OrderManagement />,
-          },
-          {
-            link: '/report-analytics/financial-report',
-            text: 'Financial Report',
-            icon: <OrderManagement />,
-          },
-          {
-            link: '/report-analytics/conversion-statistics',
-            text: 'Conversion Statistics',
-            icon: <OrderManagement />,
-          },
-        ],
+        link: '/admin/admin-roles',
+        text: 'Admin Roles',
+        icon: <Gear />,
       },
 
     ],
