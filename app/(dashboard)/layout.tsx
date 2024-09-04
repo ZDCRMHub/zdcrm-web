@@ -1,8 +1,9 @@
+'use client'
 import React from 'react';
-import {Navbar} from '@/components/Navbar';
-import {Sidebar} from '@/components/layout/Sidebar';
+import { Navbar } from '@/components/layout/Navbar';
+import { Sidebar } from '@/components/layout/Sidebar';
 
-const Layout = ({children}: {children: React.ReactNode}) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className='flex h-screen overflow-hidden'>
       <Sidebar />

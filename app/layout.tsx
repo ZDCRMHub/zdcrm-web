@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Poppins } from 'next/font/google';
+import { DM_Sans, Manrope, Poppins } from 'next/font/google';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -15,6 +15,11 @@ const poppins = Poppins({
   display: 'swap',
   variable: '--font-poppins',
 });
+const manrope = Manrope({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-manrope',
+});
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -29,10 +34,8 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${dmSans.variable} ${poppins.variable}`}
-        style={{
-          fontFamily: 'var(--font-dm-sans), var(--font-poppins), sans-serif',
-        }}>
+        className={`${dmSans.className} ${poppins.variable} ${manrope.variable}`}
+       >
         {children}
       </body>
     </html>

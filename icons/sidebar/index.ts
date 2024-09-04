@@ -9,3 +9,4 @@ export { default as OrderManagement } from './OrderManagement';
 export { default as OrdersIcon } from './Orders';
 export { default as DeliveryIcon } from './DeliveryIcon';
 export { default as EnquiriesIcon } from './EnquiriesIcon';
+export { default as ClientHistoryIcon } from './ClientHistoryIcon';

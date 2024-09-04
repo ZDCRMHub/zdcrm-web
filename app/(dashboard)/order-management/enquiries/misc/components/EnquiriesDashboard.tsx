@@ -116,10 +116,7 @@ export default function EnquiriesDashboard() {
 
   const closeModal = () => setIsModalOpen(false);
 
-  const handleConfirm = () => {
-    console.log(`Confirmed ${modalType} action`);
-    closeModal();
-  };
+
 
   const modalProps = {
     payment: {
@@ -163,6 +160,10 @@ export default function EnquiriesDashboard() {
     },
   };
 
+  const [searchText, setSearchText] = useState("")
+
+
+
   return (
     <div className='max-w-7xl mx-auto p-6'>
       <div className='flex justify-between items-center mb-6 gap-4'>
@@ -170,18 +171,24 @@ export default function EnquiriesDashboard() {
           <Input
             type='text'
             placeholder='Search (client name, customer rep, phone number)'
-            className='w-full focus:border min-w-[300px]'
-            rightIcon={<Search className='h-5 w-5' />}
+            className='w-full focus:border min-w-[350px] text-xs'
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
           />
           <Select >
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Status" />
+            <SelectTrigger className="max-w-[150px] w-full text-[0.75rem]">
+              <SelectValue placeholder="Filter enquiries by" className="text-[0.75rem] text-[#A7A7A7] w-full grow" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Started Discussion">Started Discussion</SelectItem>
+              <SelectItem value="Still Discussing">Still Discussing</SelectItem>
+              <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
+              <SelectItem value="Payment Made">Payment Made</SelectItem>
+              {/* <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Processing">Processing</SelectItem>
               <SelectItem value="Shipped">Shipped</SelectItem>
-              <SelectItem value="Delivered">Delivered</SelectItem>
+              <SelectItem value="Delivered">Delivered</SelectItem> */}
             </SelectContent>
           </Select>
         </div>
@@ -197,35 +204,45 @@ export default function EnquiriesDashboard() {
         </div>
       </div>
 
-      <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+      {
+        searchText.trim() !== "" &&
+        <h3 className="mb-4">Search Results</h3>
+      }
+      {
+        searchText.trim() === "" ?
+          <>
+            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+            <Accordion type="single" collapsible className="w-full max-w-[1200px] mt-8" defaultValue='today'>
+              <AccordionItem value="today">
+                <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <EnquiriesTable />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="tomorrow">
+                <AccordionTrigger>TOMORROW</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <EnquiriesTable />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="within72Hours">
+                <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <EnquiriesTable />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="within7Days">
+                <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <EnquiriesTable />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </>
 
-      <Accordion type="single" collapsible className="w-full max-w-[1200px] mt-8" defaultValue='today'>
-        <AccordionItem value="today">
-          <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
-          <AccordionContent className='px-4'>
-            <EnquiriesTable />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="tomorrow">
-          <AccordionTrigger>TOMORROW</AccordionTrigger>
-          <AccordionContent className='px-4'>
-            <EnquiriesTable />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="within72Hours">
-          <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
-          <AccordionContent className='px-4'>
-            <EnquiriesTable />
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="within7Days">
-          <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
-          <AccordionContent className='px-4'>
-            <EnquiriesTable />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-
+          :
+          <EnquiriesTable />
+      }
 
 
     </div>

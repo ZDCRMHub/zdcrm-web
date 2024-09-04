@@ -99,7 +99,8 @@ const config = {
       },
       fontFamily: {
         'dm-sans': ['var(--font-dm-sans)', ...fontFamily.sans],
-        poppins: ['var(--font-poppins)', ...fontFamily.sans],
+        poppins: ['var(--font-poppins)'],
+        manrope: ['var(--font-manrope)'],
       },
     },
   },

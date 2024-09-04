@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import {
+  ClientHistoryIcon,
   DeliveryIcon,
   EnquiriesIcon,
   Inventory,
@@ -54,7 +55,7 @@ export const linkGroups = [
           {
             link: '/order-management/client-history',
             text: 'Client History',
-            icon: <OrderManagement />,
+            icon: <ClientHistoryIcon />,
           },
         ],
       },
@@ -105,7 +106,7 @@ export const linkGroups = [
     ],
   },
   {
-    key: 'top',
+    key: 'bottom',
     heading: 'ADMIN',
     links: [
  
@@ -140,17 +141,17 @@ export const linkGroups = [
 export function Sidebar() {
   return (
     <div className="no-scrollbar h-full pb-8 lg:min-w-[17rem]">
-      <nav className="relative pl-4 pr-5">
-        <Logo />
+      <nav className="relative flex flex-col gap-6 h-full">
+        <Logo className=" pl-4 pr-5" />
 
-        <ul className='flex flex-col justify-between'>
+        <ul className='grow flex flex-col  overflow-y-scroll pl-4 pr-5 pt-8'>
           {
             linkGroups.map(({ heading, key, links }) => {
               return (
-                <li className="py-6 first-of-type:pt-2" key={key}>
+                <li className="py-6 first-of-type:mb-8" key={key}>
                   <h2 className="mb-5 px-3 uppercase text-xs text-[#8B909A]">{heading}</h2>
 
-                  <ul className="space-y-4">
+                  <ul className="space-y-6">
                     {
                       links.map(({ icon, link, text, nestedLinks }) => {
                         return (

@@ -30,6 +30,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PiWarningDiamondDuotone } from 'react-icons/pi';
 import { ReusableModal } from '@/components/reusables/ReusableModal';
+import { cn } from '@/lib/utils';
+import { ElipsisHorizontal } from '@/icons/core';
+import Link from 'next/link';
 
 const enquiries = [
   {
@@ -190,71 +193,77 @@ export default function EnquiriesTable() {
             <TableCell>
               <div className='flex space-x-1'>
                 {enquiry.category.map((cat, idx) => (
-                  <Badge key={idx} variant='outline' className='bg-gray-100'>
+                  <Badge key={idx} variant='outline' className='flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5'>
                     {cat}
                   </Badge>
                 ))}
               </div>
             </TableCell>
             <TableCell>
-              <Badge
-                variant='secondary'
-                className={`${enquiry.status === 'FINALIZED DISCUSSION'
-                    ? 'bg-green-100 text-green-800'
-                    : enquiry.status === 'PAYMENT MADE'
-                      ? 'bg-orange-100 text-orange-800'
-                      : 'bg-purple-100 text-purple-800'
-                  }`}>
-                {enquiry.status}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant='ghost' className='h-8 w-8 p-0'>
-                    <span className='sr-only'>Open menu</span>
-                    <MoreHorizontal className='h-4 w-4' />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align='end'
-                  className='py-7 px-0 w-[235px]'>
-                  <DropdownMenuItem
-                    onClick={() => router.push('enquiries/enquiry-details')}>
-                    <span className='flex items-center gap-2 pl-6 py-3'>
-                      <Image
-                        src='/img/3d-rotate.svg'
-                        alt=''
-                        width={24}
-                        height={24}
-                      />
-                      Enquiry Details
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => openModal('payment')}>
-                    <span className='flex items-center gap-2 pl-6 py-3'>
-                      <Image
-                        src='/img/cash.svg'
-                        alt=''
-                        width={24}
-                        height={24}
-                      />
-                      Payment Confirmed
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => openModal('delete')}>
-                    <span className='flex items-center gap-2 pl-6  py-3'>
-                      <Image
-                        src='/img/trash.svg'
-                        alt=''
-                        width={24}
-                        height={24}
-                      />
-                      Delete Enquiry
-                    </span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className='min-w-full max-w-max grid grid-cols-[1fr,0.5fr] items-center '>
+                <Badge
+                  variant='secondary'
+                  className={cn(
+                    "rounded-md w-max",
+                    `${enquiry.status === 'FINALIZED DISCUSSION'
+                      ? 'bg-[#E7F7EF] text-[#0CAF60]'
+                      : enquiry.status === 'PAYMENT MADE'
+                        ? 'bg-[#BF6A021C] text-[#BF6A02]'
+                        : 'bg-[#F4F0FF] text-[#8C62FF]'
+
+                    }`)}>
+                  {enquiry.status}
+                </Badge>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant='ghost' className='h-8 w-8 p-0'>
+                      <ElipsisHorizontal className='h-6 w-6' />
+                      <span className='sr-only'>Open menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align='end'
+                    className='py-4 px-0 w-[235px]'>
+                    <DropdownMenuItem
+                      onClick={() => router.push('enquiries/enquiry-details')}>
+                        <Link href='/enquiries/enquiry-details' className="w-full">
+                          <span className='flex items-center gap-2 pl-6 py-3'>
+                            <Image
+                              src='/img/3d-rotate.svg'
+                              alt=''
+                              width={24}
+                              height={24}
+                            />
+                            Enquiry Details
+                          </span>
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => openModal('payment')}>
+                      <span className='flex items-center gap-2 pl-6 py-3'>
+                        <Image
+                          src='/img/cash.svg'
+                          alt=''
+                          width={24}
+                          height={24}
+                        />
+                        Payment Confirmed
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => openModal('delete')}>
+                      <span className='flex items-center gap-2 pl-6  py-3'>
+                        <Image
+                          src='/img/trash.svg'
+                          alt=''
+                          width={24}
+                          height={24}
+                        />
+                        Delete Enquiry
+                      </span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
             </TableCell>
           </TableRow>
         ))}

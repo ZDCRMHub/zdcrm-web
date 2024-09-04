@@ -93,7 +93,7 @@ interface SidebarCollapsibleProps {
                   (
                     <Link
                       className={cn(
-                        'flex items-center gap-2 py-2.5 pl-3.5 pr-3 text-[0.9375rem] text-[#8B909A] transition duration-500 ease-in-out hover:bg-sidebar-link-active hover:bg-opacity-60 md:py-1.5',
+                        'flex items-center gap-2 py-2.5 pl-6 pr-3 text-[0.9375rem] text-[#8B909A] transition duration-500 ease-in-out hover:bg-sidebar-link-active hover:bg-opacity-60 md:py-1.5',
                         isSelected && 'bg-[#194A7A] text-white',
                       )}
                       href={link}

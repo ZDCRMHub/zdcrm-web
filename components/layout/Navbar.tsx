@@ -1,16 +1,20 @@
-// File: components/Navbar.tsx
-import {Search, RefreshCw, User, CircleUserRound} from 'lucide-react';
+import { convertPathToTitle } from '@/utils/strings';
+import {Search, RefreshCw, User, Dot} from 'lucide-react';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 
 export function Navbar() {
+const pathName = usePathname()
+
+
   return (
     <nav className='bg-[#F1F5F9] shadow-sm'>
       <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className='flex justify-between items-center h-[121px]'>
+        <div className='flex justify-between items-center h-[100px]'>
           <div className='flex items-center'>
-            <h1 className='text-xl font-semibold text-gray-800'>
-              <span className='text-[#F3C948] mr-2.5'>•</span>
-              Order Timeline
+            <h1 className='flex items-center gap-2 text-lg font-semibold text-gray-800'>
+              <span className=' mr-2.5'><Dot className='text-[#F3C948] scale-150' /></span>
+              {convertPathToTitle(pathName)}
             </h1>
           </div>
           <div className='flex items-center'>
