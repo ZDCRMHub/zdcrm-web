@@ -379,6 +379,8 @@ const InventoryManagement = () => {
                   src={product.image}
                   alt={product.name}
                   className='w-24 h-24 object-cover rounded mr-4'
+                  width={96}
+                  height={96}
                 />
                 <div className='flex-grow'>
                   <h3 className='text-lg font-semibold'>{product.name}</h3>

@@ -155,6 +155,8 @@ export default function OrderDetailsPanel({
                       src='/img/cake.png'
                       alt='Adeline Faultline Cake'
                       className='w-20 h-20 object-cover rounded-md'
+                      width={100}
+                      height={100}
                     />
                     <div className='flex-grow'>
                       <h4 className='font-semibold'>Adeline Faultline Cake</h4>
@@ -214,6 +216,8 @@ export default function OrderDetailsPanel({
                   src='/img/cake1.png'
                   alt='Adelya - Red Roses Bouquet'
                   className='w-20 h-20 object-cover rounded-md'
+                  width={100}
+                  height={100}
                 />
                 <div className='flex-grow'>
                   <h4 className='font-semibold'>Adelya - Red Roses Bouquet</h4>

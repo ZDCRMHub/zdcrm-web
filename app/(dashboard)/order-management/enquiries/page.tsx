@@ -1,11 +1,11 @@
-import EnquiriesTable from '@/components/EnquiriesTable';
 import Layout from '@/components/Layout';
 import React from 'react';
+import EnquiriesDashboard from './misc/components/EnquiriesDashboard';
 
 const page = () => {
   return (
     <>
-      <EnquiriesTable />
+      <EnquiriesDashboard />
     </>
   );
 };

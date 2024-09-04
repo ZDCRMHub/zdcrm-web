@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import {Search, RefreshCcw, ChevronDown, MoreHorizontal} from 'lucide-react';
-import {Input} from '@/components/ui/input';
-import {Button} from '@/components/ui/button';
-import {Select} from '@/components/ui/select';
+import React, { useState } from 'react';
+import { Search, RefreshCcw, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -11,9 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {Badge} from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import TabBar from '../TabBar';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import OrderDetailsPanel from '../order-management/OrderDetailsPanel';
 
 type StatusColor =
@@ -46,14 +46,13 @@ interface CategoryBadgeProps {
   isActive: boolean;
 }
 
-const CategoryBadge: React.FC<CategoryBadgeProps> = ({category, isActive}) => {
+const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, isActive }) => {
   return (
     <span
-      className={`inline-block w-6 h-6 rounded-full ${
-        isActive
+      className={`inline-block w-6 h-6 rounded-full ${isActive
           ? categoryColors[category]
           : 'bg-transparent border border-gray-400'
-      } mr-1`}>
+        } mr-1`}>
       <span className='sr-only'>{category}</span>
     </span>
   );
@@ -77,7 +76,7 @@ interface OrderRowProps {
   onOpenOrderDetails: (orderId: string) => void;
 }
 
-const OrderRow: React.FC<OrderRowProps> = ({order, onOpenOrderDetails}) => {
+const OrderRow: React.FC<OrderRowProps> = ({ order, onOpenOrderDetails }) => {
   return (
     <TableRow>
       <TableCell>{order.orderId}</TableCell>
@@ -152,9 +151,8 @@ const TabButton: React.FC<TabButtonProps> = ({
   onClick,
 }) => (
   <button
-    className={`px-4 py-2 text-sm font-medium ${
-      isActive ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
-    }`}
+    className={`px-4 py-2 text-sm font-medium ${isActive ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'
+      }`}
     onClick={() => onClick(name)}>
     {name}{' '}
     <span className='ml-2 bg-gray-100 text-gray-600 px-2 py-1 rounded-full'>
@@ -168,14 +166,14 @@ const OrderDashboard: React.FC = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const tabs = [
-    {name: 'All Orders', count: 450},
-    {name: 'SOA', count: 40},
-    {name: 'Sorted', count: 36},
-    {name: 'Sent to dispatch', count: 18},
-    {name: 'DIS CL', count: 40},
-    {name: 'Delivered', count: 23},
-    {name: 'DEL CL', count: 23},
-    {name: 'Canceled Orders', count: 5},
+    { name: 'All Orders', count: 450 },
+    { name: 'SOA', count: 40 },
+    { name: 'Sorted', count: 36 },
+    { name: 'Sent to dispatch', count: 18 },
+    { name: 'DIS CL', count: 40 },
+    { name: 'Delivered', count: 23 },
+    { name: 'DEL CL', count: 23 },
+    { name: 'Canceled Orders', count: 5 },
   ];
 
   // const [activeTab, setActiveTab] = useState(tabs[0].name);
