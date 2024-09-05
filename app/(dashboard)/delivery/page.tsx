@@ -1,3 +1,4 @@
+'use client'
 import Layout from '@/components/Layout';
 import {OrderTimeline} from '@/components/order/OrderTimeline';
 import React from 'react';
