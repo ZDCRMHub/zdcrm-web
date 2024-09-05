@@ -4,13 +4,16 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
-import { Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button } from '@/components/ui'
+import { Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown } from '@/components/ui'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 import { TruckTime } from 'iconsax-react'
 import { generateMockOrders, OrderCard } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
 import { EditPenIcon } from '@/icons/core';
 import Image from 'next/image'
+import { getSchemaForCategory } from '../misc/schemas'
+import { AllProducts, productOptions } from '@/constants'
 
+// Define your schema here
 const schema = z.object({
   customerName: z.string().min(1, { message: "Customer's name is required" }),
   customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
@@ -20,29 +23,40 @@ const schema = z.object({
   enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
   deliveryNote: z.string().optional(),
   deliveryDate: z.date(),
+
   items: z.array(z.object({
-    category: z.string().min(1, { message: "Category is required" }),
+    category: z.enum(["C", "F", "W", "TB"], { message: "Category is required" }),
     productType: z.string().min(1, { message: "Product type is required" }),
-    productSize: z.string().min(1, { message: "Product size is required" }),
+    productSize: z.string().optional(),
     quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
     message: z.string().optional(),
     isEditing: z.boolean().optional(),
-    // Add more fields as needed for different categories
-  }))
-})
-const categoryOptions = [
-  { value: 'cake', label: 'Cake' },
-  { value: 'flower', label: 'Flower' },
-  { value: 'wine', label: 'Wine' },
-]
+    layers: z.enum(["2", "3", "4", "5"]).optional(),
+    flavour: z.enum(["vanilla", "chocolate", "red velvet"]).optional(),
+    whippedCreamUpgrade: z.enum(["true", "false", "red velvet"]).optional(),
+    toppings: z.enum(["none", "chocolate", "fruits", "mixed"]).optional(),
+    vase: z.enum(["none", "25cm", "50cm"]).optional(),
+    size: z.enum(["8 inches", "10 inches", "12 inches"]).optional(),
+    bouquet: z.enum(["entry", "xsmall", "small", "medium", "standard", "human"]).optional(),
+  }).refine((item) => {
+    const dynamicValidation = getSchemaForCategory(item.category);
+    return dynamicValidation.safeParse(item).success;
+  }, { message: "Invalid product details for the selected category" }))
+});
 
+const categoryOptions = [
+  { value: 'C', label: 'Cake' },
+  { value: 'F', label: 'Flower' },
+  { value: 'W', label: 'Wine' },
+  { value: 'TB', label: 'Teddy Bear' },
+]
 
 const NewEnquiryPage = () => {
   const mockDiscussion = generateMockOrders(1)[0];
   const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      items: [{ category: '', productType: '', productSize: '', quantity: 1, message: '', isEditing: true }]
+      items: [{ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true }]
     }
   });
 
@@ -65,7 +79,7 @@ const NewEnquiryPage = () => {
   };
 
   const addNewItem = () => {
-    append({ category: '', productType: '', productSize: '', quantity: 1, message: '', isEditing: true });
+    append({ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true });
   }
 
   return (
@@ -178,6 +192,20 @@ const NewEnquiryPage = () => {
                                 />
                               )}
                             />
+                            <Controller
+                              name={`items.${index}.productType`}
+                              control={control}
+                              render={({ field }) => (
+                                <ProductsDropdown
+                                  options={AllProducts}
+                                  label="Product Type"
+                                  valueKey="category"
+                                  labelKey="name"
+                                  placeholder="Select product type"
+                                  {...field}
+                                />
+                              )}
+                            />
                             <Input
                               label="Product Type"
                               {...register(`items.${index}.productType`)}
@@ -185,26 +213,147 @@ const NewEnquiryPage = () => {
                               errorMessage={errors.items?.[index]?.productType?.message}
                               placeholder='Enter product type'
                             />
-                            <Input
-                              label="Product Size"
-                              {...register(`items.${index}.productSize`)}
-                              hasError={!!errors.items?.[index]?.productSize}
-                              errorMessage={errors.items?.[index]?.productSize?.message as string}
-                              placeholder='Enter product type'
-                            />
-                            <Input
-                              label="Quantity"
-                              type="number"
-                              {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-                              hasError={!!errors.items?.[index]?.quantity}
-                              errorMessage={errors.items?.[index]?.quantity?.message as string}
-                              placeholder='Enter quantity'
-                            />
+
+
+
+                            {
+                              field.category === 'C' && (
+                                <>
+                                                              <Controller
+                                    name={`items.${index}.layers`}
+                                    control={control}
+                                    render={({ field }) => (
+                                      <SelectSingleCombo
+                                        options={productOptions.Cakes.layers}
+                                        label="Layers"
+                                        valueKey="value"
+                                        labelKey="label"
+                                        placeholder="Select layers"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                  <Controller
+                                    name={`items.${index}.flavour`}
+                                    control={control}
+                                    render={({ field }) => (
+                                      <SelectSingleCombo
+                                        options={productOptions.Cakes.flavours}
+                                        label="Flavour"
+                                        valueKey="value"
+                                        labelKey="label"
+                                        placeholder="Select Flavour"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                  <Controller
+                                    name={`items.${index}.toppings`}
+                                    control={control}
+                                    render={({ field }) => (
+                                      <SelectSingleCombo
+                                        options={productOptions.Cakes.toppings}
+                                        label="Toppings"
+                                        valueKey="value"
+                                        labelKey="label"
+                                        placeholder="Select Toppings"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                  <Controller
+                                    name={`items.${index}.whippedCreamUpgrade`}
+                                    control={control}
+                                    render={({ field }) => (
+                                      <SelectSingleCombo
+                                        options={[
+                                          { label: "True", value: "true" },
+                                          { label: "False", value: "false" },
+                                        ]}
+                                        label="Whipped Cream Upgrade"
+                                        valueKey="value"
+                                        labelKey="label"
+                                        placeholder="Add Whipped Cream"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                </>
+                              )
+                            }
+
+                            {
+                              field.category === 'F' && (
+                                <Controller
+                                  name={`items.${index}.vase`}
+                                  control={control}
+                                  render={({ field }) => (
+                                    <SelectSingleCombo
+                                      options={productOptions.Flowers.vaseOptions}
+                                      label="Vase"
+                                      valueKey="value"
+                                      labelKey="label"
+                                      placeholder="Select Vase"
+                                      {...field}
+                                    />
+                                  )}
+                                />
+                              )
+                            }
+
+                            {
+                              field.category === 'W' && (
+                                <>
+                                  <Controller
+                                    name={`items.${index}.size`}
+                                    control={control}
+                                    render={({ field }) => (
+                                      <SelectSingleCombo
+                                        options={[
+                                          { value: 'entry', label: 'Entry' },
+                                          { value: 'xsmall', label: 'XSmall' },
+                                          { value: 'small', label: 'Small' },
+                                          { value: 'medium', label: 'Medium' },
+                                        ]}
+                                        label="Size"
+                                        valueKey="value"
+                                        labelKey="label"
+                                        placeholder="Select Size"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                  <Controller
+                                    name={`items.${index}.bouquet`}
+                                    control={control}
+                                    render={({ field }) => (
+                                      <SelectSingleCombo
+                                        options={[
+                                          { value: 'entry', label: 'Entry' },
+                                          { value: 'xsmall', label: 'XSmall' },
+                                          { value: 'small', label: 'Small' },
+                                          { value: 'medium', label: 'Medium' },
+                                          { value: 'standard', label: 'Standard' },
+                                          { value: 'human', label: 'Human' },
+                                        ]}
+                                        label="Bouquet"
+                                        valueKey="value"
+                                        labelKey="label"
+                                        placeholder="Select Bouquet"
+                                        {...field}
+                                      />
+                                    )}
+                                  />
+                                </>
+                              )
+                            }
+
                             <Input
                               label="Message"
                               {...register(`items.${index}.message`)}
                               placeholder='Enter message'
                             />
+
 
                             <div>
                               <label htmlFor="">Quantity</label>
@@ -296,7 +445,7 @@ const NewEnquiryPage = () => {
                                 <EditPenIcon />
                               </button>
                               <button type="button" onClick={() => remove(index)} className="">
-                                <Trash2 size={17} className="text-red-400"/>
+                                <Trash2 size={17} className="text-red-400" />
                               </button>
                             </div>
                           </article>

@@ -114,18 +114,9 @@ const SelectSingleCombo = <T extends object>({
               onClick={() => setOpen(!open)}
               ref={triggerRef}
             >
-              {/* <PopoverTrigger asChild className="w-full">
-          <Button
-            aria-expanded={open}
-            className={cn(
-              "w-full ring-offset-white transition duration-300 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
-              className, fullWidth ? "max-w-full" : "max-w-[520px]"
-            )}
-            variant="inputButton"
-          > */}
               <span className={cn(
-                '!overflow-hidden text-[0.785rem] w-full',
-                (value && options && options?.length) ? '!text-[#032382] font-medium' : '!text-[#032382a1]'
+                '!overflow-hidden text-sm w-full font-normal',
+                (value && options && options?.length) ? '' : '!text-[#A4A4A4]'
               )}>
                 {(value && options && options?.length)
                   ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
@@ -158,7 +149,7 @@ const SelectSingleCombo = <T extends object>({
             <div className="relative px-6">
               <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
               <input
-                className="focus:!ring-0 !ring-0 bg-transparent pl-5 p-4 !outline-none text-sm placeholder:text-[#86898ec7] border-b border-[#E6E6E6] w-full rounded-none"
+                className="focus:!ring-0 !ring-0 bg-transparent pl-5 p-3 !outline-none text-sm placeholder:text-[#86898ec7] border-b border-[#E6E6E6] w-full rounded-none"
                 placeholder={`Search` || placeholder}
                 type="text"
                 onChange={(e) => setSearchText(e.target.value)}

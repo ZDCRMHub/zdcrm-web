@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import ComparisonModal from '@/components/report-analytics/ComparisonModal';
-import Header from '@/components/report-analytics/Header';
-import OrderStatisticsCard from '@/components/report-analytics/OrderStatisticsCard';
+import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
+import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
+import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
 import {Button} from '@/components/ui/button';
 import {
   Select,
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import FinancialOverview from '@/components/report-analytics/FinancialOverview';
+import FinancialOverview from '@/app/(dashboard)/report-analytics/misc/components/FinancialOverview';
 
 const page = () => {
   const branchOptions = ['All Branches', 'Branch A', 'Branch B', 'Branch C'];
