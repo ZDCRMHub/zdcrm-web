@@ -30,7 +30,7 @@ import {
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { PiWarningDiamondDuotone } from 'react-icons/pi';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton } from '@/components/ui';
 import EnquiriesTable from './EnquiriesTable';
 import TabBar from '@/components/TabBar';
 
@@ -105,61 +105,6 @@ const tabs = [
 
 export default function EnquiriesDashboard() {
   const [activeTab, setActiveTab] = useState(tabs[0].name);
-  const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'payment' | 'delete'>('payment');
-
-  const openModal = (type: 'payment' | 'delete') => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => setIsModalOpen(false);
-
-
-
-  const modalProps = {
-    payment: {
-      title: 'Confirm Request',
-      description: 'This action converts Enquiries to Order',
-      icon: (
-        <div className='flex flex-col justify-center items-center mb-3'>
-          {/* <DollarSign className='h-20 w-20 text-red-600 mb-8' /> */}
-          <Image
-            src='/img/box-tick.svg'
-            alt=''
-            height={54}
-            width={54}
-            className='mb-6'
-          />
-
-          <p className='text-center font-semibold text-custom-blue text-2xl'>
-            Client made payment
-          </p>
-        </div>
-      ),
-      confirmText: 'Yes, Approve',
-      cancelText: 'No, Cancel',
-      variant: 'default' as const,
-    },
-    delete: {
-      title: 'Delete Enquiry',
-      description: 'This action means order enquiry will be removed.',
-      icon: (
-        <div className='flex flex-col justify-center items-center mb-3'>
-          <PiWarningDiamondDuotone className='h-20 w-20 text-red-600 mb-8' />
-
-          <p className='text-center font-semibold text-custom-red text-2xl'>
-            Delete Enquiry
-          </p>
-        </div>
-      ),
-      confirmText: 'Yes, Delete',
-      cancelText: 'No, Cancel',
-      variant: 'destructive' as const,
-    },
-  };
-
   const [searchText, setSearchText] = useState("")
 
 
@@ -171,7 +116,7 @@ export default function EnquiriesDashboard() {
           <Input
             type='text'
             placeholder='Search (client name, customer rep, phone number)'
-            className='w-full focus:border min-w-[350px] text-xs'
+            className='w-full focus:border min-w-[350px] text-xs !h-10'
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
@@ -193,9 +138,9 @@ export default function EnquiriesDashboard() {
           </Select>
         </div>
         <div className='flex items-center gap-2'>
-          <Button variant='default' className='bg-black text-white'>
+          <LinkButton href="./enquiries/new-enquiry" variant='default' className='bg-black text-white'>
             <Plus className='mr-2 h-4 w-4' /> Add Enquiry
-          </Button>
+          </LinkButton>
           <Button
             variant='outline'
             className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>

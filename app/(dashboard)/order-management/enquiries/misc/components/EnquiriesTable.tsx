@@ -1,24 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Search,
-  ChevronDown,
-  Plus,
-  MoreHorizontal,
-  RefreshCcw,
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
@@ -28,11 +14,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { PiWarningDiamondDuotone } from 'react-icons/pi';
-import { ReusableModal } from '@/components/reusables/ReusableModal';
 import { cn } from '@/lib/utils';
 import { ElipsisHorizontal } from '@/icons/core';
-import Link from 'next/link';
+import { useBooleanStateControl } from '@/hooks';
+import { ConfirmActionModal, ConfirmDeleteModal } from '@/components/ui';
 
 const enquiries = [
   {
@@ -97,71 +82,30 @@ const enquiries = [
   },
 ];
 
-const tabs = [
-  { name: 'All Enquiries', count: 840 },
-  { name: 'In Cart', count: 400 },
-  { name: 'Manual Enquiries', count: 450 },
-];
 
 export default function EnquiriesTable() {
-  const [activeTab, setActiveTab] = useState(tabs[0].name);
   const router = useRouter();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<'payment' | 'delete'>('payment');
-
-  const openModal = (type: 'payment' | 'delete') => {
-    setModalType(type);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => setIsModalOpen(false);
 
   const handleConfirm = () => {
-    console.log(`Confirmed ${modalType} action`);
-    closeModal();
+    console.log(`Confirmed action`);
   };
 
-  const modalProps = {
-    payment: {
-      title: 'Confirm Request',
-      description: 'This action converts Enquiries to Order',
-      icon: (
-        <div className='flex flex-col justify-center items-center mb-3'>
-          {/* <DollarSign className='h-20 w-20 text-red-600 mb-8' /> */}
-          <Image
-            src='/img/box-tick.svg'
-            alt=''
-            height={54}
-            width={54}
-            className='mb-6'
-          />
+  const {
+    state: isConfirmDeleteModalOpen,
+    setTrue: openConfirmDeleteModal,
+    setFalse: closeConfirmDeleteModal,
+  } = useBooleanStateControl()
 
-          <p className='text-center font-semibold text-custom-blue text-2xl'>
-            Client made payment
-          </p>
-        </div>
-      ),
-      confirmText: 'Yes, Approve',
-      cancelText: 'No, Cancel',
-      variant: 'default' as const,
-    },
-    delete: {
-      title: 'Delete Enquiry',
-      description: 'This action means order enquiry will be removed.',
-      icon: (
-        <div className='flex flex-col justify-center items-center mb-3'>
-          <PiWarningDiamondDuotone className='h-20 w-20 text-red-600 mb-8' />
+  const {
+    state: isConfirmApproveModalOpen,
+    setTrue: openConfirmApproveModal,
+    setFalse: closeConfirmApproveModal,
+  } = useBooleanStateControl()
 
-          <p className='text-center font-semibold text-custom-red text-2xl'>
-            Delete Enquiry
-          </p>
-        </div>
-      ),
-      confirmText: 'Yes, Delete',
-      cancelText: 'No, Cancel',
-      variant: 'destructive' as const,
-    },
-  };
+
+
+
+
 
   return (
     <Table>
@@ -238,7 +182,7 @@ export default function EnquiriesTable() {
                           </span>
                         </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => openModal('payment')}>
+                    <DropdownMenuItem onSelect={openConfirmApproveModal}>
                       <span className='flex items-center gap-2 pl-6 py-3'>
                         <Image
                           src='/img/cash.svg'
@@ -249,7 +193,7 @@ export default function EnquiriesTable() {
                         Payment Confirmed
                       </span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => openModal('delete')}>
+                    <DropdownMenuItem onSelect={openConfirmDeleteModal}>
                       <span className='flex items-center gap-2 pl-6  py-3'>
                         <Image
                           src='/img/trash.svg'
@@ -269,11 +213,24 @@ export default function EnquiriesTable() {
         ))}
       </TableBody>
 
-      <ReusableModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onConfirm={handleConfirm}
-        {...modalProps[modalType]}
+
+      
+      <ConfirmDeleteModal
+        isModalOpen={isConfirmDeleteModalOpen}
+        closeModal={closeConfirmDeleteModal}
+        deleteFn={() => { }}
+        heading='Delete Enquiry'
+        subheading="This action means order enquiry be removed."
+
+      />
+      
+      <ConfirmActionModal
+        isModalOpen={isConfirmApproveModalOpen}
+        closeModal={closeConfirmApproveModal}
+        confirmFn={handleConfirm}
+        heading='Client made payment'
+        subheading="This action converts Enquiries to Order"
+
       />
     </Table>
 

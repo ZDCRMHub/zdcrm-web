@@ -2,10 +2,10 @@
 
 import * as React from "react"
 
-import { cn } from '@/lib/utils'
-import { HideIcon } from "@/icons/core"
-import { ViewIcon } from "lucide-react"
+import { cn } from "../../lib/utils"
 import FormError from "./formError"
+import { Label } from "./label"
+import { HideIcon, ViewIcon } from "@/icons/core"
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -15,16 +15,24 @@ export interface InputProps
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
   containerClassName?: string
+  label?: string
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, containerClassName, type, hasError, leftIcon, rightIcon, errorMessageClass, ...props }, ref) => {
+  ({ className, containerClassName, type, hasError, leftIcon, rightIcon, errorMessageClass, label, ...props }, ref) => {
     const [show, setShow] = React.useState(false)
     const inputType = show ? "text" : "password"
 
 
     return (
-      <div className={containerClassName}>
+      <div className={cn("flex flex-col gap-2", containerClassName)}>
+        {
+          label && (
+            <Label className="text-sm text-[#0F172B] font-poppins font-medium pb" htmlFor={label}>
+              {label}
+            </Label>
+          )
+        }
         <div className="relative">
           {
             leftIcon && (
@@ -35,10 +43,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           }
           <input
             type={type == "password" ? inputType : type}
+            data-testid={type == "password" ? "password-input" : type}
+            id={label}
             className={cn(
-              "flex h-[2.75rem] w-full rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background file:border-0 !appearance-none",
-              "file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-[1.5px]",
-              "focus-visible:border-primary focus-visible:border-[1.5px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
+              "flex h-14 w-full rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background file:border-0",
+              "file:bg-transparent file:text-sm file:font-medium placeholder:text-[#A4A4A4]  focus-visible:outline-none ",
+              "focus:border-[#31A5F9] focus:bg-[#E3F2FD] focus:border-[1.75px]",
+              "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
               type == "password" && "pr-12", leftIcon && "pl-12", rightIcon && "pr-12",
               className
             )}
@@ -54,12 +65,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           }
           {
             type === "password" && (
-              <button className="absolute right-[3%] top-[25%] cursor-pointer" onClick={(e) => { e.preventDefault(); setShow((prev) => !prev) }}>
+              <button className="absolute right-[3%] top-[25%] cursor-pointer" onClick={() => setShow((prev) => !prev)}>
                 {
                   show ?
-                    <HideIcon className="text-foreground" />
+                    <HideIcon fill='#395CF5' />
                     :
-                    <ViewIcon className="text-foreground" width={22} height={22} />
+                    <ViewIcon fill='#395CF5' width={22} height={22} />
                 }
               </button>
             )

@@ -36,6 +36,7 @@ interface SidebarCollapsibleProps {
   }: SidebarCollapsibleProps) {
     const pathname = usePathname();
     const [open, setOpen] = React.useState(false);
+    const isActive = !!nestedLinks.find(({ link }) => pathname === link) || open;
   
     return (
       <Collapsible open={open} onOpenChange={setOpen}>
@@ -45,7 +46,7 @@ interface SidebarCollapsibleProps {
               'flex grow items-center justify-between gap-4 px-3 py-2 pr-1 text-[0.9375rem] transition duration-500 ease-in-out hover:bg-sidebar-link-active data-[state=open]:bg-white/5 md:py-1.5'
             )}
           >
-            <span className={cn("flex items-center gap-2 text-[#8B909A]", open &&  "text-[#113770] font-semibold")}>
+            <span className={cn("flex items-center gap-2 text-[#8B909A]", isActive &&  "text-[#113770] font-semibold")}>
               {
                 icon ? (
                   <>
