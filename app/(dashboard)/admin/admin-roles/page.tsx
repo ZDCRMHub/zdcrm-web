@@ -11,26 +11,28 @@ const page = () => {
         <Tabs
           defaultValue="account"
           orientation="vertical"
-          className=""
+          className="flex"
         >
-          <TabsList className="flex">
+          <TabsList className="flex flex-col max-w-[250px]">
             <TabsTrigger value="one">One</TabsTrigger>
             <TabsTrigger value="two">Two</TabsTrigger>
             <TabsTrigger value="three">Three</TabsTrigger>
             <TabsTrigger value="four">Four</TabsTrigger>
           </TabsList >
-          <TabsContent value="one" className="grid">
-            One changes to your account here.
-          </TabsContent>
-          <TabsContent value="two" className="grid">
-            Two changes to your account here.
-          </TabsContent>
-          <TabsContent value="three" className="grid">
-            Three changes to your account here.
-          </TabsContent>
-          <TabsContent value="four" className="grid">
-            Four changes to your account here.
-          </TabsContent>
+          <div className="grow">
+            <TabsContent value="one" className="grid">
+              One changes to your account here.
+            </TabsContent>
+            <TabsContent value="two" className="grid">
+              Two changes to your account here.
+            </TabsContent>
+            <TabsContent value="three" className="grid">
+              Three changes to your account here.
+            </TabsContent>
+            <TabsContent value="four" className="grid">
+              Four changes to your account here.
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </section>
