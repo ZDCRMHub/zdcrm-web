@@ -2,10 +2,9 @@
 
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
 import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
-import ReusablePieChart from '@/app/(dashboard)/report-analytics/misc/components/OrderStatusChart';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
 import TopProductsTable from '@/app/(dashboard)/report-analytics/misc/components/TopProductsTable';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -13,18 +12,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { OrderTimeLine } from '@/icons/sidebar';
+import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
+import { OrderStatusChart } from '../misc/components/OrderStatusChart';
+import { OrderDeliveryZoneChart } from '../misc/components/OrderDeliveryZoneChart';
 
 const orderData = [
-  {name: 'Orders Delivered', value: 8},
-  {name: 'Orders Sorted', value: 8},
-  {name: 'Sent to Dispatch', value: 8},
+  { name: 'Orders Delivered', value: 15 },
+  { name: 'Orders Sorted', value: 8 },
+  { name: 'Sent to Dispatch', value: 8 },
 ];
 
 const deliveryData = [
-  {name: 'Lagos Island', value: 12},
-  {name: 'Lagos Central', value: 15},
-  {name: 'Lagos Mainland', value: 4},
-  {name: 'Other places', value: 14},
+  { name: 'Lagos Island', value: 12 },
+  { name: 'Lagos Central', value: 15 },
+  { name: 'Lagos Mainland', value: 4 },
+  { name: 'Other places', value: 14 },
 ];
 
 const page = () => {
@@ -48,7 +51,7 @@ const page = () => {
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12'>
+    <div className='w-full max-w-7xl mx-auto pt-12 px-8 xl:px-12'>
       <Header
         title='Order Statistics'
         branchOptions={branchOptions}
@@ -57,53 +60,53 @@ const page = () => {
         onDateChange={handleDateChange}
       />
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
         <OrderStatisticsCard
           header='Total Orders'
-          icon='/img/box-time.svg'
+          icon={<OrderTimeLine className="text-white" />}
           value='430'
           percentage={34}
           isPositive={true}
           additionalText='From last month'
-          iconBg='#E6E6E6'
+          iconBg='#22292F'
         />
         <OrderStatisticsCard
           header='Total Revenue'
-          icon='/img/cash.svg'
+          icon={<Money className="text-white" />}
           value='₦2,000,000.00'
           percentage={27}
           isPositive={true}
-          iconBg='#E6E6E6'
+          iconBg='#131253'
         />
         <OrderStatisticsCard
           header='Net Profit'
-          icon='/img/box-time.svg'
+          icon={<Money className="text-white" />}
           value='₦1,600,600.00'
           percentage={15}
           isPositive={false}
-          iconBg='#4A0E4E'
+          iconBg='#5B1850'
         />
         <OrderStatisticsCard
           header='Processed Orders'
-          icon='/path-to-icon/processed.svg'
+          icon={<Box />}
           value='430'
           percentage={34}
           isPositive={true}
           additionalText='From last month'
-          iconBg='#FFF3D0'
+          iconBg='#FFC600'
         />
         <OrderStatisticsCard
           header='Completed Orders'
-          icon='/path-to-icon/completed.svg'
+          icon={<I3DCubeScan className="text-white" />}
           value='430'
           percentage={45}
           isPositive={true}
           additionalText='From last month'
-          iconBg='#E6F5EA'
+          iconBg='#33860C'
         />
         <OrderStatisticsCard
           header='Canceled Orders'
-          icon='/path-to-icon/canceled.svg'
+          icon={<BoxRemove />}
           value='430'
           percentage={15}
           isPositive={false}
@@ -117,21 +120,16 @@ const page = () => {
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 mb-10'>
-        <ReusablePieChart
-          title='Order Status'
-          subtitle='Total Earnings of the Month'
-          data={orderData}
-          centerLabel={{value: '₦250,000', label: 'Total'}}
-          trendup
-        />
+        <OrderStatusChart />
+        <OrderDeliveryZoneChart />
 
-        <ReusablePieChart
+        {/* <ReusablePieChart
           title='Order Delivery Zone'
           subtitle=''
           data={deliveryData}
           centerLabel={{value: '₦250,000', label: ''}}
           trendup={false}
-        />
+        /> */}
 
         <TopProductsTable />
       </div>

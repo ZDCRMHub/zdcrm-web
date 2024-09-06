@@ -1,28 +1,35 @@
 import * as React from "react";
 import { SVGProps } from "react";
 const SVGComponent = (props: SVGProps<SVGSVGElement>) => (
-    <svg
-        width={22}
-        height={23}
-        viewBox="0 0 22 23"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        {...props}
-    >
-        <path
-            d="M17.4168 8.07901L12.5283 4.27667C11.6457 3.59007 10.4097 3.59007 9.52709 4.27667L4.63759 8.07901C4.04212 8.54208 3.69398 9.25426 3.69434 10.0086V16.6086C3.69434 17.6211 4.51515 18.4419 5.52767 18.4419H16.5277C17.5402 18.4419 18.361 17.6211 18.361 16.6086V10.0086C18.361 9.25417 18.0127 8.54192 17.4168 8.07901"
-            stroke={"currentColor" || "#8B909A"}
-            strokeWidth={1.75}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-        <path
-            d="M14.6668 13.8439C12.641 15.0658 9.3575 15.0658 7.3335 13.8439"
-            stroke={"currentColor" || "#8B909A"}
-            strokeWidth={1.75}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        />
-    </svg>
+  <svg
+    width={25}
+    height={24}
+    viewBox="0 0 25 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      d="M9.5 22H15.5C20.5 22 22.5 20 22.5 15V9C22.5 4 20.5 2 15.5 2H9.5C4.5 2 2.5 4 2.5 9V15C2.5 20 4.5 22 9.5 22Z"
+      stroke="#113770"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M16 18.5C17.1 18.5 18 17.6 18 16.5V7.5C18 6.4 17.1 5.5 16 5.5C14.9 5.5 14 6.4 14 7.5V16.5C14 17.6 14.89 18.5 16 18.5Z"
+      stroke="#113770"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9 18.5C10.1 18.5 11 17.6 11 16.5V13C11 11.9 10.1 11 9 11C7.9 11 7 11.9 7 13V16.5C7 17.6 7.89 18.5 9 18.5Z"
+      stroke="#113770"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
 );
 export default SVGComponent;

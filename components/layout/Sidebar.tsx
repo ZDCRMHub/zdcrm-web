@@ -2,11 +2,14 @@ import Link from 'next/link';
 
 import {
   ClientHistoryIcon,
+  ConversionStatisticsIcon,
   DeliveryIcon,
   EnquiriesIcon,
+  FinancialReport,
   Inventory,
   OrderManagement,
   OrdersIcon,
+  OrderStatistics,
   OrderTimeLine,
   ReportAndAnalytics,
 } from '@/icons/sidebar';
@@ -66,17 +69,17 @@ export const linkGroups = [
           {
             link: '/report-analytics/order-statistics',
             text: 'Order Statistics',
-            icon: <OrderManagement />,
+            icon: <OrderStatistics />,
           },
           {
             link: '/report-analytics/financial-report',
             text: 'Financial Report',
-            icon: <OrderManagement />,
+            icon: <FinancialReport />,
           },
           {
             link: '/report-analytics/conversion-statistics',
             text: 'Conversion Statistics',
-            icon: <OrderManagement />,
+            icon: <ConversionStatisticsIcon />,
           },
         ],
       },
@@ -115,7 +118,7 @@ export const linkGroups = [
         icon: <OrderManagement />,
         nestedLinks: [
           {
-            link: '/admin/enquiries',
+            link: '/admin/branches',
             text: 'Enquiries',
             icon: <EnquiriesIcon />,
           },

@@ -23,10 +23,10 @@ import { TrendingUp } from "lucide-react"
 export const description = "A donut chart"
 
 const chartData = [
-  { location: "Lagos Island", no_of_orders: 28, fill: "#1C1C1C99" },
+  { location: "Other places", no_of_orders: 6, fill: "#FFC600" },
   { location: "Lagos Central", no_of_orders: 15, fill: "#E51B3F" },
-  { location: "Lagos Mainland", no_of_orders: 8, fill: "#34CF5699" },
-  { location: "Other places", no_of_orders: 3, fill: "#FFC600" },
+  { location: "Lagos Island", no_of_orders: 28, fill: "#1C1C1C99" },
+  { location: "Lagos Mainland", no_of_orders: 10, fill: "#34CF5699" },
 ]
 
 const chartConfig = {
@@ -51,17 +51,13 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function OrderStatusChart() {
+export function OrderDeliveryZoneChart() {
   return (
     <Card className="flex flex-col">
       <CardHeader className="flex !flex-row items-center justify-between pb-0">
-        <div>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className='h-6 w-6 text-green-500' />
-            Order Status
-          </CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
-        </div>
+        <CardTitle >
+          Order Delivery Zone
+        </CardTitle>
 
 
         <Select defaultValue='today'>
@@ -76,10 +72,10 @@ export function OrderStatusChart() {
         </Select>
 
       </CardHeader>
-      <CardContent className="flex-1 flex pb-0">
+      <CardContent className="flex-1 flex pb-0 min-h-[300px]">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[350px]"
+          className="mx-auto aspect-square min-h-[280px] max-h-[350px] "
         >
           <PieChart>
             <ChartTooltip
@@ -92,10 +88,11 @@ export function OrderStatusChart() {
               nameKey="location"
               innerRadius={60}
               outerRadius={120}
-              paddingAngle={2} // Add space between segments
+              paddingAngle={2}
               cornerRadius={10}
-              stroke="white" // Optional: Add a stroke to the segments
-              strokeWidth={2} // Optional: Set the stroke width
+              stroke="white"
+
+              strokeWidth={2}
             />
           </PieChart>
         </ChartContainer>

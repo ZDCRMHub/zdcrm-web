@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <div className='flex justify-between items-center mb-6'>
-      <h1 className='text-3xl font-semibold'>{title}</h1>
+      <h1 className='text-3xl font-medium text-[#17181C]'>{title}</h1>
       <div className='flex space-x-4'>
         <Select onValueChange={onBranchChange} defaultValue={branchOptions[0]}>
           <SelectTrigger className='w-[180px] bg-white'>
