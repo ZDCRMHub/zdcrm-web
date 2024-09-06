@@ -1,4 +1,4 @@
-import Layout from '@/components/Layout';
+import Layout from '@/components/layout/Layout';
 import OrderForm from '@/components/order-management/customer-information/OrderForm';
 import React from 'react';
 

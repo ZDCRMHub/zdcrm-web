@@ -1,5 +1,5 @@
 'use client'
-import OrderSummary from '@/components/order-management/order/OrderSummary';
+import OrderSummary from '@/app/(dashboard)/order-management/OrderSummary';
 import React from 'react';
 
 const OrderSummaryPage = () => {
