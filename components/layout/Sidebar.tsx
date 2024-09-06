@@ -123,6 +123,11 @@ export const linkGroups = [
             icon: <EnquiriesIcon />,
           },
           {
+            link: '/admin/invite-employee',
+            text: 'Invite Employee',
+            icon: <EnquiriesIcon />,
+          },
+          {
             link: '/admin/orders',
             text: 'Orders',
             icon: <OrdersIcon />,
