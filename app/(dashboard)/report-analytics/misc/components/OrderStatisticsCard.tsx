@@ -1,6 +1,6 @@
 import React from 'react';
-import {Card, CardDescription, CardHeader} from '../ui/card';
-import {Separator} from '../ui/separator';
+import {Card, CardDescription, CardHeader} from '../../../../../components/ui/card';
+import {Separator} from '../../../../../components/ui/separator';
 import Image from 'next/image';
 
 interface OrderStatisticsCardProps {

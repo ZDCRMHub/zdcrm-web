@@ -1,10 +1,10 @@
 'use client';
 
-import Header from '@/components/report-analytics/Header';
-import OrderStatisticsCard from '@/components/report-analytics/OrderStatisticsCard';
-import ReusablePieChart from '@/components/report-analytics/OrderStatusChart';
-import ComparisonModal from '@/components/report-analytics/ComparisonModal';
-import TopProductsTable from '@/components/report-analytics/TopProductsTable';
+import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
+import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
+import ReusablePieChart from '@/app/(dashboard)/report-analytics/misc/components/OrderStatusChart';
+import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
+import TopProductsTable from '@/app/(dashboard)/report-analytics/misc/components/TopProductsTable';
 import {Button} from '@/components/ui/button';
 import {
   Select,

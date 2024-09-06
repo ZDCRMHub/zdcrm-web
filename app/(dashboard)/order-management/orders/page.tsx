@@ -1,7 +1,6 @@
 'use client';
 
-import Layout from '@/components/Layout';
-import OrderDashboard from '@/components/order/Orders';
+import OrderDashboard from '@/app/(dashboard)/order-management/orders/misc/components/OrdersDashboard';
 import React from 'react';
 
 const page = () => {

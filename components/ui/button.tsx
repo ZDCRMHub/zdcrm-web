@@ -10,20 +10,32 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        light: "",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-[#828282] bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        black: "bg-black text-white hover:bg-black/90",
+        unstyled: "",
+        inputButton: cn(
+          "!h-14 rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background ",
+          "placeholder:!text-[#A4A4A4]  focus-visible:outline-none focus:border-[#31A5F9] focus:bg-[#E3F2FD] focus:border-[1.75px]",
+          "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
+        ),
       },
       size: {
         default: "h-10 px-4 py-2",
+        thin: "h-8 px-4 py-2",
         sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        md: "h-12 rounded-md px-5",
+        lg: "h-[3.25rem] rounded-md px-12",
         icon: "h-10 w-10",
+        inputButton: " h-14",
+
       },
     },
     defaultVariants: {
@@ -35,7 +47,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

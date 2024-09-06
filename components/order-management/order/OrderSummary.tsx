@@ -1,8 +1,9 @@
+'use client'
 import React from 'react';
-import {ArrowLeft, Pencil, Plus} from 'lucide-react';
-import {Input} from '@/components/ui/input';
-import {Button} from '@/components/ui/button';
-import {Card, CardContent} from '@/components/ui/card';
+import { ArrowLeft, Pencil, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 
 export default function OrderSummary() {

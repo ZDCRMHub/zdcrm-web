@@ -1,6 +1,6 @@
 import Layout from '@/components/Layout';
-import {OrderTimeline} from '@/components/order/OrderTimeline';
 import React from 'react';
+import { OrderTimeline } from './misc/components';
 
 const page = () => {
   return (

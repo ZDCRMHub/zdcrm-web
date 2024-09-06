@@ -1,5 +1,5 @@
-import type {Metadata} from 'next';
-import {DM_Sans, Poppins} from 'next/font/google';
+import type { Metadata } from 'next';
+import { DM_Sans, Manrope, Poppins } from 'next/font/google';
 import './globals.css';
 
 const dmSans = DM_Sans({
@@ -10,10 +10,15 @@ const dmSans = DM_Sans({
 });
 
 const poppins = Poppins({
-  weight: ['400'],
+  weight: ['400', '500', '600', '700', '800', '900'],
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-poppins',
+});
+const manrope = Manrope({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-manrope',
 });
 
 export const metadata: Metadata = {
@@ -29,10 +34,8 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${dmSans.variable} ${poppins.variable}`}
-        style={{
-          fontFamily: 'var(--font-dm-sans), var(--font-poppins), sans-serif',
-        }}>
+        className={`${dmSans.className} ${poppins.variable} ${manrope.variable}`}
+       >
         {children}
       </body>
     </html>

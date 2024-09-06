@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Header from '@/components/report-analytics/Header';
+import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
 import {Button} from '@/components/ui/button';
 import {
   Select,
@@ -10,10 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {EnquiryChannelsChart} from '@/components/report-analytics/EnquiryChannelsChart';
-import ComparisonModal from '@/components/report-analytics/ComparisonModal';
-import {ClientTrackingChart} from '@/components/report-analytics/ClientTrackingChart';
-import {TrendsSeasonalitySalesChart} from '@/components/report-analytics/TrendsSeasonalitySalesChart';
+import {EnquiryChannelsChart} from '@/app/(dashboard)/report-analytics/misc/components/EnquiryChannelsChart';
+import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
+import {ClientTrackingChart} from '@/app/(dashboard)/report-analytics/misc/components/ClientTrackingChart';
+import {TrendsSeasonalitySalesChart} from '@/app/(dashboard)/report-analytics/misc/components/TrendsSeasonalitySalesChart';
 
 const page = () => {
   const branchOptions = ['All Branches', 'Branch A', 'Branch B', 'Branch C'];
