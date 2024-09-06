@@ -1,7 +1,7 @@
 'use client'
 import Layout from '@/components/layout/Layout';
-import {OrderTimeline} from '@/components/order/OrderTimeline';
 import React from 'react';
+import { OrderTimeline } from './misc/DeliveryOrderTimeline';
 
 const page = () => {
   return (
