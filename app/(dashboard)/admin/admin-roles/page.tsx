@@ -1,3 +1,4 @@
+'use client'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MdErrorOutline } from "react-icons/md";
 import { TbWorld } from "react-icons/tb";
@@ -193,7 +194,7 @@ const TabContent = () => {
   );
 };
 
-const page = ({ name, value, icon }: MenuTab) => {
+const AdminRolesPage = () => {
   return (
     <section className="mx-9 mt-10 h-[869px] bg-white rounded-xl">
       <div className="pl-20 h-20 flex items-center border-b-[1px] border-[#E0E0E0] relative">
@@ -247,4 +248,4 @@ const page = ({ name, value, icon }: MenuTab) => {
   );
 };
 
-export default page;
+export default AdminRolesPage;
