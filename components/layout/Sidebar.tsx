@@ -119,7 +119,12 @@ export const linkGroups = [
         nestedLinks: [
           {
             link: '/admin/branches',
-            text: 'Enquiries',
+            text: 'Branches',
+            icon: <EnquiriesIcon />,
+          },
+          {
+            link: '/admin/invite-employee',
+            text: 'Invite Employee',
             icon: <EnquiriesIcon />,
           },
           {
