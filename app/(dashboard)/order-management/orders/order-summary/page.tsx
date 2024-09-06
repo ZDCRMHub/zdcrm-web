@@ -1,8 +1,8 @@
-import Layout from '@/components/Layout';
+'use client'
 import OrderSummary from '@/components/order-management/order/OrderSummary';
 import React from 'react';
 
-const page = () => {
+const OrderSummaryPage = () => {
   return (
     <>
       <OrderSummary />
@@ -10,4 +10,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default OrderSummaryPage;
