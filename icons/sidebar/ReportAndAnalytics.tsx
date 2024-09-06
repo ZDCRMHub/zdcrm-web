@@ -11,21 +11,21 @@ const SVGComponent = (props: SVGProps<SVGSVGElement>) => (
   >
     <path
       d="M9.5 22H15.5C20.5 22 22.5 20 22.5 15V9C22.5 4 20.5 2 15.5 2H9.5C4.5 2 2.5 4 2.5 9V15C2.5 20 4.5 22 9.5 22Z"
-      stroke="#113770"
+      stroke={"currentColor" || "#8B909A"}
       strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M16 18.5C17.1 18.5 18 17.6 18 16.5V7.5C18 6.4 17.1 5.5 16 5.5C14.9 5.5 14 6.4 14 7.5V16.5C14 17.6 14.89 18.5 16 18.5Z"
-      stroke="#113770"
+      stroke={"currentColor" || "#8B909A"}
       strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <path
       d="M9 18.5C10.1 18.5 11 17.6 11 16.5V13C11 11.9 10.1 11 9 11C7.9 11 7 11.9 7 13V16.5C7 17.6 7.89 18.5 9 18.5Z"
-      stroke="#113770"
+      stroke={"currentColor" || "#8B909A"}
       strokeWidth={1.5}
       strokeLinecap="round"
       strokeLinejoin="round"

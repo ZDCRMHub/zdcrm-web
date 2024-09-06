@@ -151,7 +151,7 @@ const ProductsDropdown = <T extends object>({
                 </div>
 
 
-                <PopoverContent className={cn("p-0")} style={{ minWidth: width, maxWidth: "1000px" }}>
+                <PopoverContent className={cn("p-0")} style={{ minWidth: width, maxWidth: "600px", width: "max-content" }}>
                     <Command className="min-w-full w-max">
                         <div className="relative px-6">
                             <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
@@ -174,7 +174,7 @@ const ProductsDropdown = <T extends object>({
                                         optionsToDisplay?.map((option, index) => (
                                             <div
                                                 className={cn("text-xs relative flex !flex-col select-none items-center rounded-md p-4 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                                                    "text-sm min-w-[150px] aspect-square"
+                                                    "text-sm min-w-[150px] aspect-square w-max"
                                                 )}
                                                 key={index}
                                                 onClick={() => handleSelect(option[valueKey] as string)}
@@ -192,7 +192,7 @@ const ProductsDropdown = <T extends object>({
                                                             null
                                                     }
                                                 </div>
-                                                <p className="text-[0.75rem] text-[#194A7A] pt-3">
+                                                <p className="text-[0.75rem] text-[#194A7A] pt-3 max-w-[130px]">
                                                     {option[labelKey] as string}
                                                 </p>
                                             </div>

@@ -16,7 +16,7 @@ import {ClientTrackingChart} from '@/app/(dashboard)/report-analytics/misc/compo
 import {TrendsSeasonalitySalesChart} from '@/app/(dashboard)/report-analytics/misc/components/TrendsSeasonalitySalesChart';
 
 const page = () => {
-  const branchOptions = ['All Branches', 'Branch A', 'Branch B', 'Branch C'];
+  const branchOptions = ['Zuzu Delights', 'Prestige Flowers'];
   const dateOptions = [
     'Today',
     'Yesterday',
@@ -27,16 +27,14 @@ const page = () => {
 
   const handleBranchChange = (value: string) => {
     console.log('Selected branch:', value);
-    // Add your logic here
   };
 
   const handleDateChange = (value: string) => {
     console.log('Selected date range:', value);
-    // Add your logic here
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12'>
+    <div className='w-full max-w-7xl mx-auto pt-12 px-8'>
       <Header
         title='Conversion Statistics'
         branchOptions={branchOptions}

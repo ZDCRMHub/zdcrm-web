@@ -1,7 +1,7 @@
 'use client';
 
-import {TrendingUp} from 'lucide-react';
-import {Pie, PieChart} from 'recharts';
+import { TrendingUp } from 'lucide-react';
+import { Pie, PieChart } from 'recharts';
 
 import {
   Card,
@@ -17,49 +17,60 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui"
+
 
 export const description = 'A donut chart';
 
 const chartData = [
-  {browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)'},
-  {browser: 'safari', visitors: 200, fill: 'var(--color-safari)'},
-  {browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)'},
-  {browser: 'edge', visitors: 173, fill: 'var(--color-edge)'},
-  {browser: 'other', visitors: 90, fill: 'var(--color-other)'},
+  { occassion: 'new_year', visitors: 275, fill: '#12B246' },
+  { occassion: 'easter', visitors: 200, fill: '#72DEF6' },
+  { occassion: 'valentine', visitors: 187, fill: '#E3273E' },
+  { occassion: 'christmas', visitors: 173, fill: '#F0933B' },
 ];
 
 const chartConfig = {
   visitors: {
     label: 'Visitors',
   },
-  chrome: {
-    label: 'Chrome',
-    color: 'hsl(var(--chart-1))',
+  new_year: {
+    label: 'new_year',
+    color: '#12B246',
   },
-  safari: {
-    label: 'Safari',
-    color: 'hsl(var(--chart-2))',
+  easter: {
+    label: 'easter',
+    color: '#72DEF6',
   },
-  firefox: {
-    label: 'Firefox',
-    color: 'hsl(var(--chart-3))',
+  valentine: {
+    label: 'valentine',
+    color: '#E3273E',
   },
-  edge: {
-    label: 'Edge',
-    color: 'hsl(var(--chart-4))',
+  christmas: {
+    label: 'christmas',
+    color: '#F0933B',
   },
-  other: {
-    label: 'Other',
-    color: 'hsl(var(--chart-5))',
-  },
+
 } satisfies ChartConfig;
 
 export function TrendsSeasonalitySalesChart() {
   return (
     <Card className='flex flex-col'>
-      <CardHeader className='items-center pb-0'>
-        <CardTitle>Pie Chart - Donut</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+      <CardHeader className="flex !flex-row items-center justify-between pb-0">
+        <CardTitle className="text-[#6B7280] font-medium text-lg">
+          Trends & Seasonality Sales
+        </CardTitle>
+
+
+        <Select defaultValue='today'>
+          <SelectTrigger className='w-max min-w-[120px] h-12 text-xs'>
+            <SelectValue placeholder='Today' />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='today'>Today</SelectItem>
+            <SelectItem value='week'>This Week</SelectItem>
+            <SelectItem value='month'>This Month</SelectItem>
+          </SelectContent>
+        </Select>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
         <ChartContainer
@@ -67,7 +78,7 @@ export function TrendsSeasonalitySalesChart() {
           className='mx-auto aspect-square max-h-[250px]'>
           <PieChart>
             <ChartTooltip
-              content={({payload}) => {
+              content={({ payload }) => {
                 if (payload && payload.length) {
                   const data = payload[0].payload;
                   return (
@@ -87,8 +98,10 @@ export function TrendsSeasonalitySalesChart() {
             <Pie
               data={chartData}
               dataKey='visitors'
-              nameKey='browser'
+              nameKey='occassion'
               innerRadius={60}
+              outerRadius={120}
+
             />
           </PieChart>
         </ChartContainer>

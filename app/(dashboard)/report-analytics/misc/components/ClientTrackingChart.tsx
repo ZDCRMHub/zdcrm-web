@@ -1,7 +1,7 @@
 'use client';
 
-import {TrendingUp} from 'lucide-react';
-import {CartesianGrid, Line, LineChart, XAxis} from 'recharts';
+import { TrendingUp } from 'lucide-react';
+import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
 
 import {
   Card,
@@ -18,25 +18,31 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-export const description = 'A multiple line chart';
+
 
 const chartData = [
-  {month: 'January', desktop: 186, mobile: 80},
-  {month: 'February', desktop: 305, mobile: 200},
-  {month: 'March', desktop: 237, mobile: 120},
-  {month: 'April', desktop: 73, mobile: 190},
-  {month: 'May', desktop: 209, mobile: 130},
-  {month: 'June', desktop: 214, mobile: 140},
+  { month: 'January', returning: 186, new: 80 },
+  { month: 'February', returning: 305, new: 200 },
+  { month: 'March', returning: 237, new: 120 },
+  { month: 'April', returning: 73, new: 190 },
+  { month: 'May', returning: 209, new: 130 },
+  { month: 'June', returning: 214, new: 140 },
+  { month: 'July', returning: 214, new: 140 },
+  { month: 'August', returning: 214, new: 140 },
+  { month: 'September', returning: 314, new: 40 },
+  { month: 'October', returning: 200, new: 240 },
+  { month: 'November', returning: 400, new: 180 },
+  { month: 'December', returning: 250, new: 240 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: 'hsl(var(--chart-1))',
+  returning: {
+    label: 'returning',
+    color: '#A700FF',
   },
-  mobile: {
-    label: 'Mobile',
-    color: 'hsl(var(--chart-2))',
+  new: {
+    label: 'new',
+    color: '#EF4444',
   },
 } satisfies ChartConfig;
 
@@ -44,11 +50,10 @@ export function ClientTrackingChart() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart - Multiple</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle className="text-[#6B7280] font-medium text-lg">Clients Tracking</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="max-h-[320px]">
           <LineChart
             accessibilityLayer
             data={chartData}
@@ -66,16 +71,16 @@ export function ClientTrackingChart() {
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <Line
-              dataKey='desktop'
-              type='monotone'
-              stroke='var(--color-desktop)'
+              dataKey='returning'
+              // type='monotone'
+              stroke='#EF4444'
               strokeWidth={2}
               dot={false}
             />
             <Line
-              dataKey='mobile'
-              type='monotone'
-              stroke='var(--color-mobile)'
+              dataKey='new'
+              // type='monotone'
+              stroke='#A700FF'
               strokeWidth={2}
               dot={false}
             />
@@ -83,16 +88,7 @@ export function ClientTrackingChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter>
-        <div className='flex w-full items-start gap-2 text-sm'>
-          <div className='grid gap-2'>
-            <div className='flex items-center gap-2 font-medium leading-none'>
-              Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
-            </div>
-            <div className='flex items-center gap-2 leading-none text-muted-foreground'>
-              Showing total visitors for the last 6 months
-            </div>
-          </div>
-        </div>
+
       </CardFooter>
     </Card>
   );

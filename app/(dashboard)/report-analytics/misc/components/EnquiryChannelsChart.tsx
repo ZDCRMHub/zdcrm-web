@@ -1,7 +1,7 @@
 'use client';
 
 import {TrendingUp} from 'lucide-react';
-import {Bar, BarChart, CartesianGrid, Rectangle, XAxis} from 'recharts';
+import {Bar, BarChart, CartesianGrid, Rectangle, XAxis, YAxis} from 'recharts';
 
 import {
   Card,
@@ -21,36 +21,36 @@ import {
 export const description = 'A bar chart with an active bar';
 
 const chartData = [
-  {browser: 'chrome', visitors: 187, fill: 'var(--color-chrome)'},
-  {browser: 'safari', visitors: 200, fill: 'var(--color-safari)'},
-  {browser: 'firefox', visitors: 275, fill: 'var(--color-firefox)'},
-  {browser: 'edge', visitors: 173, fill: 'var(--color-edge)'},
-  {browser: 'other', visitors: 90, fill: 'var(--color-other)'},
+  {channel: 'website', visitors: 187, fill: 'var(--color-website)'},
+  {channel: 'instagram', visitors: 200, fill: 'var(--color-instagram)'},
+  {channel: 'favebook', visitors: 275, fill: 'var(--color-favebook)'},
+  {channel: 'google', visitors: 173, fill: 'var(--color-google)'},
+  {channel: 'others', visitors: 90, fill: 'var(--color-others)'},
 ];
 
 const chartConfig = {
   visitors: {
     label: 'Visitors',
   },
-  chrome: {
-    label: 'Chrome',
-    color: 'hsl(var(--chart-1))',
+  website: {
+    label: 'Website',
+    color: '#1C1C1C',
   },
-  safari: {
-    label: 'Safari',
-    color: 'hsl(var(--chart-2))',
+  instagram: {
+    label: 'Instagram',
+    color: '#0095FF',
   },
-  firefox: {
-    label: 'Firefox',
-    color: 'hsl(var(--chart-3))',
+  favebook: {
+    label: 'Facebook',
+    color: '#6E81F4',
   },
-  edge: {
-    label: 'Edge',
-    color: 'hsl(var(--chart-4))',
+  google: {
+    label: 'Google',
+    color: '#6FC5F5',
   },
-  other: {
-    label: 'Other',
-    color: 'hsl(var(--chart-5))',
+  others: {
+    label: 'Others',
+    color: '#6CB79C',
   },
 } satisfies ChartConfig;
 
@@ -58,15 +58,15 @@ export function EnquiryChannelsChart() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Active</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle className="text-[#6B7280] font-medium text-lg">Enquiry Channels</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
+        <ChartContainer config={chartConfig} className="max-h-[320px]">
+          <BarChart accessibilityLayer data={chartData} barSize={42}>
+          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.95} stroke="#ccc" />
+
             <XAxis
-              dataKey='browser'
+              dataKey='channel'
               tickLine={false}
               tickMargin={10}
               axisLine={false}
@@ -74,26 +74,26 @@ export function EnquiryChannelsChart() {
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
             />
-            <ChartTooltip
+             <YAxis
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
+            />
+             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent indicator="dashed" />}
             />
             <Bar
               dataKey='visitors'
               strokeWidth={2}
-              radius={8}
+              radius={6}
               activeIndex={2}
             />
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex-col items-start gap-2 text-sm'>
-        <div className='flex gap-2 font-medium leading-none'>
-          Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
-        </div>
-        <div className='leading-none text-muted-foreground'>
-          Showing total visitors for the last 6 months
-        </div>
+  
       </CardFooter>
     </Card>
   );

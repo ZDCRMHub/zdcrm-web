@@ -23,32 +23,28 @@ import { TrendingUp } from "lucide-react"
 export const description = "A donut chart"
 
 const chartData = [
-  { location: "Lagos Island", no_of_orders: 28, fill: "#1C1C1C99" },
+  { location: "Orders Delivered", no_of_orders: 28, fill: "#1C1C1C99" },
   { location: "Lagos Central", no_of_orders: 15, fill: "#E51B3F" },
   { location: "Lagos Mainland", no_of_orders: 8, fill: "#34CF5699" },
-  { location: "Other places", no_of_orders: 3, fill: "#FFC600" },
 ]
 
 const chartConfig = {
   no_of_orders: {
     label: "no_of_orders",
   },
-  "Lagos Island": {
-    label: "Lagos Island",
+  "Orders Delivered": {
+    label: "Orders Delivered",
     color: "#1C1C1C99",
   },
   "Lagos Central": {
-    label: "Lagos Central",
+    label: "Orders Sorted",
     color: "#E51B3F",
   },
-  "Lagos Mainland": {
+  "Sent to Dispatch": {
     label: "Lagos Mainland",
     color: "#34CF5699",
   },
-  "Other places": {
-    label: "Other places",
-    color: "#FFC600",
-  },
+
 } satisfies ChartConfig
 
 export function OrderStatusChart() {
@@ -104,14 +100,14 @@ export function OrderStatusChart() {
 
         </section>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
+      {/* <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
           Showing total no_of_orders for the last 6 months
         </div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   )
 }

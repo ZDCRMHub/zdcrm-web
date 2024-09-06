@@ -51,7 +51,7 @@ const page = () => {
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12 px-8 xl:px-12'>
+    <div className='w-full max-w-7xl mx-auto pt-12 px-8 xl:px-10'>
       <Header
         title='Order Statistics'
         branchOptions={branchOptions}
@@ -119,18 +119,9 @@ const page = () => {
         <ComparisonModal />
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-20 mb-10'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-y-16 mt-20 mb-10'>
         <OrderStatusChart />
         <OrderDeliveryZoneChart />
-
-        {/* <ReusablePieChart
-          title='Order Delivery Zone'
-          subtitle=''
-          data={deliveryData}
-          centerLabel={{value: '₦250,000', label: ''}}
-          trendup={false}
-        /> */}
-
         <TopProductsTable />
       </div>
 

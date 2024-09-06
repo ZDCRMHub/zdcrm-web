@@ -1,103 +1,91 @@
-'use client';
+"use client"
 
-import {TrendingUp} from 'lucide-react';
-import {Bar, BarChart, CartesianGrid, XAxis} from 'recharts';
+import { TrendingUp } from "lucide-react"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from '@/components/ui/chart';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-export const description = 'A multiple bar chart';
+export const description = "A multiple bar chart"
 
 const chartData = [
-  {month: 'January', desktop: 186, mobile: 80},
-  {month: 'February', desktop: 305, mobile: 200},
-  {month: 'March', desktop: 237, mobile: 120},
-  {month: 'April', desktop: 73, mobile: 190},
-  {month: 'May', desktop: 209, mobile: 130},
-  {month: 'June', desktop: 214, mobile: 140},
-];
+  { day: "Monday", total_revenue: 18600, profit: 8000 },
+  { day: "Tuesday", total_revenue: 30500, profit: 20000 },
+  { day: "Wednesday", total_revenue: 23700, profit: 12000 },
+  { day: "Thursday", total_revenue: 7300, profit: 19000 },
+  { day: "Friday", total_revenue: 20900, profit: 13000 },
+  { day: "Saturday", total_revenue: 21400, profit: 14000 },
+  { day: "Sunday", total_revenue: 21400, profit: 14000 },
+]
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: '#0095FF',
+  "Total Revenue": {
+    label: "Total Revenue",
+    color: "#0095FF",
   },
-  mobile: {
-    label: 'Mobile',
-    color: '#00E096',
+  "Profit": {
+    label: "Profit",
+    color: "#00E096",
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
-export default function FinancialOverview() {
+export function FinancialOverview() {
   return (
-    <Card className='mb-[100px]'>
-      <CardHeader className='flex justify-between flex-row'>
+    <Card>
+      <CardHeader>
         <CardTitle>Financial Overview</CardTitle>
-        <Select defaultValue='today'>
-          <SelectTrigger className='w-[155px] h-8 text-xs'>
-            <SelectValue placeholder='Today' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='today'>Today</SelectItem>
-            <SelectItem value='week'>This Week</SelectItem>
-            <SelectItem value='month'>This Month</SelectItem>
-          </SelectContent>
-        </Select>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey='month'
+        <ChartContainer config={chartConfig} className="max-h-[400px] w-full h-[90%]">
+          <BarChart data={chartData} barSize={20} className="mb-8">
+            {/* Grid with a stronger stroke */}
+            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />
+
+            {/* Y-Axis to display tick levels */}
+            <YAxis
               tickLine={false}
-              tickMargin={10}
               axisLine={false}
-              tickFormatter={value => value.slice(0, 3)}
+              tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
             />
+
+            <XAxis
+              dataKey="day"
+              tickLine={false}
+              tickMargin={20}
+              axisLine={false}
+              tickFormatter={(value) => value.slice(0, 15)}
+              tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
+            />
+
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator='dashed' />}
+              content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar
-              dataKey='desktop'
-              fill='var(--color-desktop)'
-              radius={4}
-              width={24}
-              height={300}
+
+            <Bar dataKey="total_revenue" fill="#0095FF" radius={4} label="Total Revenue" />
+            <Bar dataKey="profit" fill="#00E096" radius={4} />
+
+            <Legend
+              verticalAlign="top"
+              align="center"
+              layout="horizontal"
+              wrapperStyle={{
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'row',
+
+                // right: '0',
+                // top: '',
+                // transform: 'translateY(50%)',
+                paddingLeft: '20px',
+              }}
+              payload={[
+                { value: "Total Revenue", type: "circle", id: "total_revenue", color: "#0095FF" },
+                { value: "Profit", type: "circle", id: "profit", color: "#00E096" },
+              ]}
             />
-            <Bar
-              dataKey='mobile'
-              fill='var(--color-mobile)'
-              radius={4}
-              width={200}
-              height={300}
-            />
-            <ChartLegend content={<ChartLegendContent />} />
           </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

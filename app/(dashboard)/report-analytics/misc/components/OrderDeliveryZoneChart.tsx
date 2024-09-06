@@ -1,6 +1,6 @@
 "use client"
 
-import { Pie, PieChart } from "recharts"
+import { Legend, Pie, PieChart } from "recharts"
 
 import {
   Card,
@@ -13,6 +13,8 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
@@ -94,20 +96,32 @@ export function OrderDeliveryZoneChart() {
 
               strokeWidth={2}
             />
+            <ChartLegend>
+              <ChartLegendContent className="flex-col"  />
+            </ChartLegend>
+
+            <Legend
+              verticalAlign="top"
+              align="center"
+              layout="vertical"
+              wrapperStyle={{
+                position: 'absolute',
+                right: '0',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                paddingLeft: '20px',
+              }}
+              payload={[
+                { value: "Total Revenue", type: "circle", id: "total_revenue", color: "#0095FF" },
+                { value: "Profit", type: "circle", id: "profit", color: "#00E096" },
+              ]}
+            />
           </PieChart>
+
         </ChartContainer>
-
-        <section>
-
-        </section>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total no_of_orders for the last 6 months
-        </div>
+        
       </CardFooter>
     </Card>
   )

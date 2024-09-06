@@ -12,9 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import FinancialOverview from '@/app/(dashboard)/report-analytics/misc/components/FinancialOverview';
+import { OrderTimeLine } from '@/icons/sidebar';
+import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
+import { OrderDeliveryZoneChart } from '../misc/components/OrderDeliveryZoneChart';
+import { FinancialOverview } from '../misc/components/FinancialOverview';
 
-const page = () => {
+
+
+
+const FinancialReportPage = () => {
   const branchOptions = ['All Branches', 'Branch A', 'Branch B', 'Branch C'];
   const dateOptions = [
     'Today',
@@ -35,7 +41,7 @@ const page = () => {
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12'>
+    <div className='w-full max-w-7xl mx-auto pt-12 px-8'>
       <Header
         title='Financial Report'
         branchOptions={branchOptions}
@@ -44,53 +50,53 @@ const page = () => {
         onDateChange={handleDateChange}
       />
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+<div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
         <OrderStatisticsCard
           header='Total Orders'
-          icon='/img/box-time.svg'
+          icon={<OrderTimeLine className="text-white" />}
           value='430'
           percentage={34}
           isPositive={true}
           additionalText='From last month'
-          iconBg='#E6E6E6'
+          iconBg='#22292F'
         />
         <OrderStatisticsCard
           header='Total Revenue'
-          icon='/img/cash.svg'
+          icon={<Money className="text-white" />}
           value='₦2,000,000.00'
           percentage={27}
           isPositive={true}
-          iconBg='#E6E6E6'
+          iconBg='#131253'
         />
         <OrderStatisticsCard
           header='Net Profit'
-          icon='/img/box-time.svg'
+          icon={<Money className="text-white" />}
           value='₦1,600,600.00'
           percentage={15}
           isPositive={false}
-          iconBg='#4A0E4E'
+          iconBg='#5B1850'
         />
         <OrderStatisticsCard
           header='Processed Orders'
-          icon='/path-to-icon/processed.svg'
+          icon={<Box />}
           value='430'
           percentage={34}
           isPositive={true}
           additionalText='From last month'
-          iconBg='#FFF3D0'
+          iconBg='#FFC600'
         />
         <OrderStatisticsCard
           header='Completed Orders'
-          icon='/path-to-icon/completed.svg'
+          icon={<I3DCubeScan className="text-white" />}
           value='430'
           percentage={45}
           isPositive={true}
           additionalText='From last month'
-          iconBg='#E6F5EA'
+          iconBg='#33860C'
         />
         <OrderStatisticsCard
           header='Canceled Orders'
-          icon='/path-to-icon/canceled.svg'
+          icon={<BoxRemove />}
           value='430'
           percentage={15}
           isPositive={false}
@@ -105,7 +111,7 @@ const page = () => {
 
       <FinancialOverview />
 
-      <div className='flex justify-end mb-24 gap-6'>
+      <div className='flex justify-end my-24 gap-6'>
         <Select>
           <SelectTrigger className='w-[153px]'>
             <SelectValue placeholder='Extract File' />
@@ -125,4 +131,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default FinancialReportPage;

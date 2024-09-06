@@ -57,59 +57,172 @@ export const productOptions = {
 };
 
 export const AllProducts = [
+    { id: "cake-1", name: "Vanilla Cake", image: "/img/cake.png", category: "C" },
+    { id: "cake-2", name: "Strawberry Cake", image: "/img/cake2.png", category: "C" },
+    { id: "flower-1", name: "Rose Bouquet", image: "/img/flower1.webp", category: "F" },
+    { id: "teddy-1", name: "Small Teddy", image: "/img/cake2.png", category: "TB" },
+    { id: "teddy-2", name: "Small Teddy", image: "/img/flower2.webp", category: "TB" },
+    { id: "chocolate-1", name: "Chocolate Cake", image: "/img/cake1.png", category: "C" },
+    { id: "flower-2", name: "Rose Bouquet", image: null, category: "F" },
+    { id: "teddy-3", name: "Small Teddy", image: null, category: "TB" },
+    { id: "teddy-4", name: "Small Teddy", image: null, category: "TB" },
+    // New products added from the provided data
     {
-        id: "cake-1",
-        name: "Vanilla Cake",
-        image: "/img/cake.png",
-        category: "C"
+      id: "4669",
+      name: "Cake",
+      image: null,
+      category: "C",
+      price: 17500,
+      subcategory: "Occasions",
+      published: false,
+      inStock: false,
+      description: ""
     },
     {
-        id: "cake-1",
-        name: "Strawberry Cake",
-        image: "/img/cake2.png",
-        category: "C"
+      id: "4742",
+      name: "Ombre by ZD",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2022/11/1000033825.jpg",
+      category: "C",
+      subcategory: "Cupcakes",
+      published: true,
+      inStock: true,
+      description: "Delightful mix of 2 or 3 hues of American buttercream frosting color to form a perfect blend (Available in various sizes).",
+      variants: [
+        { size: "Pack of 6", price: 9500 },
+        { size: "Pack of 12", price: 19000 },
+        { size: "Pack of 24", price: 28800 },
+        { size: "Pack of 36", price: 36000 },
+        { size: "Pack of 48", price: 48000 }
+      ]
     },
     {
-        id: "flower-1",
-        name: "Rose Bouquet",
-        image: "/img/flower1.webp",
-        category: "F"
+      id: "4752",
+      name: "Classic Cupcakes",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2023/03/1000187954.jpg",
+      category: "C",
+      subcategory: "Cupcakes",
+      published: true,
+      inStock: true,
+      description: "Moist and fluffy cupcakes. Perfect for all-purpose gifting - birthdays, anniversary, just because etc (Available in various sizes).",
+      variants: [
+        { size: "Pack of 6", price: 5500 },
+        { size: "Pack of 12", price: 10900 },
+        { size: "Pack of 24", price: 21900 },
+        { size: "Pack of 36", price: 32900 },
+        { size: "Pack of 48", price: 43900 }
+      ]
     },
     {
-        id: "teddy-1",
-        name: "Small Teddy",
-        image: "/img/cake2.png",
-        category: "TB"
+      id: "4761",
+      name: "Cream and cookies Cupcakes",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2022/06/43330.jpg",
+      category: "C",
+      subcategory: "Cupcakes",
+      published: true,
+      inStock: true,
+      description: "All round luxurious cookie infused frosting and topping (Available in various sizes).",
+      variants: [
+        { size: "Pack of 6", price: 9500 },
+        { size: "Pack of 12", price: 19000 },
+        { size: "Pack of 24", price: 28800 },
+        { size: "Pack of 36", price: 36000 },
+        { size: "Pack of 48", price: 48000 }
+      ]
     },
     {
-        id: "teddy-1",
-        name: "Small Teddy",
-        image: "/img/flower2.webp",
-        category: "TB"
+      id: "4781",
+      name: "Cascading Oreos Cake",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2021/09/Cascading-Oreos-Cake.png",
+      category: "C",
+      subcategory: "All Cakes",
+      published: true,
+      inStock: true,
+      description: "A rich moist cake with rich spongy surface filled with Oreos filled cream and a cascading oreos cookie topping (Available in different sizes).",
+      variants: [
+        { size: "6 inches", layers: [
+          { layers: 3, price: 34000 },
+          { layers: 4, price: 46000 },
+          { layers: 5, price: 56500 }
+        ]},
+        { size: "8 inches", layers: [
+          { layers: 3, price: 56000 },
+          { layers: 4, price: 73500 },
+          { layers: 5, price: 87500 }
+        ]},
+        { size: "10 inches", layers: [
+          { layers: 3, price: 59000 },
+          { layers: 4, price: 78000 },
+          { layers: 5, price: 94000 }
+        ]},
+        { size: "12 inches", layers: [
+          { layers: 3, price: 67500 },
+          { layers: 4, price: 97000 },
+          { layers: 5, price: 139500 }
+        ]}
+      ]
     },
     {
-        id: "chocolate-1",
-        name: "Chocolate Cake",
-        image: "/img/cake1.png",
-        category: "C"
+      id: "4854",
+      name: "Luc Belaire Luxe",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2021/10/belaire.jpeg",
+      category: "W",
+      subcategory: "Mother's Day > Gifts > Champagnes & Wines",
+      published: false,
+      inStock: true,
+      price: 59000,
+      description: "Luc Belaire Luxe is based on 100% Chardonnay. The white wine from Burgundy is married with a dosage of Chablis, which matured before in oak barrels."
     },
     {
-        id: "flower-1",
-        name: "Rose Bouquet",
-        image: null,
-        category: "F"
+      id: "4858",
+      name: "Eisberg Cabernet Sauvignon Non Alcoholic",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2021/10/eisberg-non-alcoholic.jpg",
+      category: "W",
+      subcategory: "Mother's Day > Gifts > Champagnes & Wines",
+      published: false,
+      inStock: false,
+      price: 10500,
+      description: "The Eisberg grapes are selected by winemakers for their ability to maintain the true taste of the grape variety after the alcohol has been removed."
     },
     {
-        id: "teddy-1",
-        name: "Small Teddy",
-        image: null,
-        category: "TB"
+      id: "4896",
+      name: "Euphoria : Round Pull Apart Cupcake",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2022/04/983689.jpg",
+      category: "C",
+      subcategory: "Cupcakes > Pull Apart Cupcakes",
+      published: true,
+      inStock: true,
+      description: "Introducing our Classic Cupcake Gift Board. Cupcakes with optional customized message, fresh flowers, chocolate and berries toppings.",
+      variants: [
+        { size: "Entry 10cm", price: 18900 },
+        { size: "Medium 12cm", price: 28900 },
+        { size: "Standard 14cm", price: 36900 }
+      ]
     },
     {
-        id: "teddy-1",
-        name: "Small Teddy",
-        image: null,
-        category: "TB"
-    },
-];
-
+      id: "4902",
+      name: "Choc Drip Drop 102",
+      image: "https://www.zuzudelights.com/wp-content/uploads/2023/07/1000326340.jpg",
+      category: "C",
+      subcategory: "All Cakes",
+      published: true,
+      inStock: true,
+      description: "Celebrate with a Delicious Zuzu Delights Chocolate Birthday Cake Lagos!",
+      variants: [
+        { size: "6 inches", layers: [
+          { layers: 3, price: 31000 },
+          { layers: 4, price: 42500 },
+          { layers: 5, price: 47000 }
+        ]},
+        { size: "8 inches", layers: [
+          { layers: 3, price: 49500 },
+          { layers: 4, price: 65500 },
+          { layers: 5, price: 78500 }
+        ]},
+        { size: "10 inches", layers: [
+          { layers: 3, price: 54500 },
+          { layers: 4, price: 71000 },
+          { layers: 5, price: 87500 }
+        ]}
+      ]
+    }
+  ];
