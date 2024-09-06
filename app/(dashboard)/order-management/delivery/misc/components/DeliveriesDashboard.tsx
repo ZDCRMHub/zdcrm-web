@@ -12,12 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { format } from 'date-fns';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton } from '@/components/ui';
-import OrdersTable from './OrdersTable';
 import TabBar from '@/components/TabBar';
+import DeliveriesTable from './DeliveriesTable';
 
 
 
-export default function EnquiriesDashboard() {
+export default function DeliveriesDashboard() {
   const tabs = [
     { name: 'All Orders', count: 450 },
     { name: 'SOA', count: 40 },
@@ -48,20 +48,17 @@ export default function EnquiriesDashboard() {
           />
           <Select >
             <SelectTrigger className="max-w-[150px] w-full text-[0.75rem]">
-              <SelectValue placeholder="Filter enquiries by" className="text-[0.75rem] text-[#A7A7A7] w-full grow" />
+              <SelectValue placeholder="Filter location" className="text-[0.75rem] text-[#A7A7A7] w-full grow" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Processing">Processing</SelectItem>
-              <SelectItem value="Shipped">Shipped</SelectItem>
-              <SelectItem value="Delivered">Delivered</SelectItem>
+              <SelectItem value="Pending">Lagos Island</SelectItem>
+              <SelectItem value="Processing">Lagos Mainland</SelectItem>
+              <SelectItem value="Shipped">Lagos Central</SelectItem>
+              <SelectItem value="Delivered">Others</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className='flex items-center gap-2'>
-          <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-            <Plus className='mr-2 h-4 w-4' /> Add Order
-          </LinkButton>
           <Button
             variant='outline'
             className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
@@ -72,42 +69,41 @@ export default function EnquiriesDashboard() {
 
       {
         searchText.trim() !== "" &&
-        <h3 className="mb-4">Search Results</h3>
+        <h3 className="mb-4">Search Results(9)</h3>
       }
       {
         searchText.trim() === "" ?
           <>
-            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
             <Accordion type="single" collapsible className="w-full max-w-[1360px] mt-8" defaultValue='today'>
               <AccordionItem value="today">
                 <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="tomorrow">
                 <AccordionTrigger>TOMORROW</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within72Hours">
                 <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within7Days">
                 <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           </>
 
           :
-          <OrdersTable />
+          <DeliveriesTable />
       }
     </div>
   );

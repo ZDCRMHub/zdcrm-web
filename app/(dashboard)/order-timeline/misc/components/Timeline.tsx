@@ -117,7 +117,7 @@ const OrderTimeline = () => {
 
     return (
         <>
-            <Accordion type="single" collapsible className="w-full max-w-[1360px] px-8" defaultValue='today'>
+            <Accordion type="single" collapsible className="w-full max-w-[1440px] px-8" defaultValue='today'>
                 <AccordionItem value="today">
                     <AccordionTrigger>Today, 22nd of 2024</AccordionTrigger>
                     <AccordionContent className='px-4'>

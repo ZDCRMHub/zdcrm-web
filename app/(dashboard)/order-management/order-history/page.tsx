@@ -1,10 +1,10 @@
-import Layout from '@/components/Layout';
 import React from 'react';
+import OrderHistoryDashboard from './misc/components/OrderHistoryDashboard';
 
 const page = () => {
   return (
     <>
-      <div className='container mx-auto'>Order history</div>
+      <OrderHistoryDashboard />
     </>
   );
 };

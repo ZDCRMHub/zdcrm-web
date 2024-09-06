@@ -1,8 +1,12 @@
-import Layout from '@/components/Layout';
-import React from 'react';
+import React from 'react'
+import DeliveriesDashboard from './misc/components/DeliveriesDashboard'
 
-const page = () => {
-  return <div>In progress</div>;
-};
+const DeliveriesPage = () => {
+    return (
+        <>
+            <DeliveriesDashboard />
+        </>
+    )
+}
 
-export default page;
+export default DeliveriesPage

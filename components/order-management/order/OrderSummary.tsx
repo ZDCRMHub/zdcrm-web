@@ -8,7 +8,7 @@ import Image from 'next/image';
 
 export default function OrderSummary() {
   return (
-    <div className='max-w-7xl mx-auto p-6'>
+    <div className='max-w-[1440px] mx-auto p-6'>
       <div className='flex items-center mb-8'>
         <ArrowLeft className='w-6 h-6 mr-2' />
         <h1 className='text-2xl font-semibold'>Order Summary</h1>

@@ -18,7 +18,7 @@ export const SuccessMessage: React.FC<SuccessMessageProps> = ({
     <div className='flex flex-col items-center justify-center p-6'>
       <div className='relative w-full h-48 mb-4'>
         <Image
-          src='/img/illustration.png'
+          src='/img/Illustration.png'
           alt='illustration'
           layout='fill'
           objectFit='contain'

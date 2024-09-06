@@ -157,7 +157,7 @@ export default function EnquiriesDashboard() {
         searchText.trim() === "" ?
           <>
             <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
-            <Accordion type="single" collapsible className="w-full max-w-[1200px] mt-8" defaultValue='today'>
+            <Accordion type="single" collapsible className="w-full max-w-[1360px] mt-8" defaultValue='today'>
               <AccordionItem value="today">
                 <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
