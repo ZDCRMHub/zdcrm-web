@@ -201,6 +201,7 @@ const NewEnquiryPage = () => {
                                   label="Product Type"
                                   valueKey="category"
                                   labelKey="name"
+                                  imageKey="image"
                                   placeholder="Select product type"
                                   {...field}
                                 />

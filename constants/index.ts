@@ -60,19 +60,55 @@ export const AllProducts = [
     {
         id: "cake-1",
         name: "Vanilla Cake",
-        image: "vanilla-cake.jpg",
+        image: "/img/cake.png",
+        category: "C"
+    },
+    {
+        id: "cake-1",
+        name: "Strawberry Cake",
+        image: "/img/cake2.png",
         category: "C"
     },
     {
         id: "flower-1",
         name: "Rose Bouquet",
-        image: "rose-bouquet.jpg",
+        image: "/img/flower1.webp",
         category: "F"
     },
     {
         id: "teddy-1",
         name: "Small Teddy",
-        image: "small-teddy.jpg",
+        image: "/img/cake2.png",
+        category: "TB"
+    },
+    {
+        id: "teddy-1",
+        name: "Small Teddy",
+        image: "/img/flower2.webp",
+        category: "TB"
+    },
+    {
+        id: "chocolate-1",
+        name: "Chocolate Cake",
+        image: "/img/cake1.png",
+        category: "C"
+    },
+    {
+        id: "flower-1",
+        name: "Rose Bouquet",
+        image: null,
+        category: "F"
+    },
+    {
+        id: "teddy-1",
+        name: "Small Teddy",
+        image: null,
+        category: "TB"
+    },
+    {
+        id: "teddy-1",
+        name: "Small Teddy",
+        image: null,
         category: "TB"
     },
 ];

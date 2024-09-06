@@ -11,6 +11,7 @@ import { SmallSpinner } from "@/icons/core"
 import { Button, Command, CommandGroup, CommandItem } from "."
 import { Popover, PopoverContent, PopoverTrigger } from "."
 import { Label } from "./label"
+import Image from "next/image"
 // import { SearchIcon } from "@/app/(dashboard)/instant-web/misc/icons"
 
 interface SelectProps<T> {
@@ -32,6 +33,7 @@ interface SelectProps<T> {
     triggerColor?: string;
     valueKey: keyof T;
     labelKey: keyof T;
+    imageKey: keyof T;
 }
 
 const ProductsDropdown = <T extends object>({
@@ -52,6 +54,7 @@ const ProductsDropdown = <T extends object>({
     isLoadingOptions,
     valueKey,
     labelKey,
+    imageKey,
     triggerColor
 }: SelectProps<T>) => {
     const [open, setOpen] = React.useState(false)
@@ -165,18 +168,30 @@ const ProductsDropdown = <T extends object>({
                                     <SmallSpinner color='#000000' /> Loading options...
                                 </CommandItem>
                             )}
-                            <section className="grid grid-cols-2 xl:grid-cols-3 min-w-max">
+                            <section className="grid grid-cols-2 xl:grid-cols-3 min-w-max max-h-96 overflow-scroll">
                                 {
                                     !isLoadingOptions && options && options?.length > 0 ?
                                         optionsToDisplay?.map((option, index) => (
                                             <div
                                                 className={cn("text-xs relative flex !flex-col select-none items-center rounded-md p-4 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                                                     "text-sm min-w-[250px] aspect-[5/4]"
+                                                    "text-sm min-w-[150px] aspect-square"
                                                 )}
                                                 key={index}
                                                 onClick={() => handleSelect(option[valueKey] as string)}
                                             >
-                                                <div className="bg-white-grey w-[250px] aspect-square"></div>
+                                                <div className="relative bg-white-grey w-[150px] aspect-square rounded-xl">
+                                                    {
+                                                        typeof option[imageKey] === 'string' ?
+                                                            <Image
+                                                                src={option[imageKey] as string}
+                                                                alt={option[labelKey] as string}
+                                                                className="w-full h-full object-cover"
+                                                                fill
+                                                            />
+                                                            :
+                                                            null
+                                                    }
+                                                </div>
                                                 <p className="text-[0.75rem] text-[#194A7A] pt-3">
                                                     {option[labelKey] as string}
                                                 </p>
