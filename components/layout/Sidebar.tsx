@@ -20,7 +20,8 @@ import {
 import { Logo } from '@/icons/core';
 import { SidebarCollapsible } from './SidebarCollapsible';
 import { Gear } from '@phosphor-icons/react';
-import { Graph } from 'iconsax-react';
+import { Bag2, BagTick2, Graph, I3Dcube, Settings, ShopRemove } from 'iconsax-react';
+import { UserCircle } from 'lucide-react';
 
 export const linkGroups = [
   {
@@ -92,12 +93,12 @@ export const linkGroups = [
           {
             link: '/inventory/product-inventory',
             text: 'Product Inventory',
-            icon: <OrderManagement />,
+            icon: <I3Dcube />,
           },
           {
             link: '/inventory/stock-inventory',
             text: 'Stock Inventory',
-            icon: <OrderManagement />,
+            icon: <BagTick2 />,
           },
 
           // {
@@ -116,12 +117,12 @@ export const linkGroups = [
  
       {
         text: 'Manage Admin',
-        icon: <OrderManagement />,
+        icon: <UserCircle size={20} />,
         nestedLinks: [
           {
             link: '/admin/branches',
             text: 'Branches',
-            icon: <EnquiriesIcon />,
+            icon: <Bag2 />,
           },
           {
             link: '/admin/employees-role',
@@ -131,14 +132,14 @@ export const linkGroups = [
           {
             link: '/admin/invite-employee',
             text: 'Invite Employee',
-            icon: <EnquiriesIcon />,
+            icon: <ShopRemove size={20} />,
           },
         ],
       },
       {
         link: '/admin/admin-roles',
         text: 'Admin Roles',
-        icon: <Gear />,
+        icon: <Settings />,
       },
 
     ],
