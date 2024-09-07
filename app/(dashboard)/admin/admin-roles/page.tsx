@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MdErrorOutline } from "react-icons/md";
 import { TbWorld } from "react-icons/tb";
