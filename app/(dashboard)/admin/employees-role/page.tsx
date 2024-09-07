@@ -7,9 +7,7 @@ import { CiSearch } from "react-icons/ci";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -19,7 +17,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -28,7 +25,6 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -49,7 +45,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM002",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -58,7 +54,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM003",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -67,7 +63,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM004",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -76,7 +72,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM005",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -85,7 +81,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM006",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -94,7 +90,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM007",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -103,7 +99,7 @@ const memberDetails = [
     action: "Active",
   },
   {
-    memberID: "MEM001",
+    memberID: "MEM008",
     name: "Akin Gold",
     email: "akingold@gmail.com",
     phoneNumber: "08012345678",
@@ -151,7 +147,7 @@ const Page = () => {
             Add Employee
           </Button>
         </div>
-      </div>{" "}
+      </div>
       <Table>
         {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader>
@@ -257,8 +253,9 @@ const Page = () => {
         isModalOpen={isConfirmDeleteModalOpen}
         closeModal={closeConfirmDeleteModal}
         deleteFn={() => { }}
-        heading="Delete Employee"
-        subheading="Are you sure you want to delete this employee?"
+        heading="Delete Employee Record"
+        subheading="This action means employee record will automatically be removed."
+        icon= {<RiDeleteBin6Line className="bg-[#FFD4D6] p-2 rounded-2xl" color="#E03137" size={50} />}
       />
     </section>
   );
