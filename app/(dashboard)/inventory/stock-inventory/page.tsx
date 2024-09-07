@@ -1,10 +1,10 @@
-import InventoryManagement from '@/components/stockinventory/InventoryManagement';
 import React from 'react';
+import StockInventoryDashboard from './misc/components/StockInventoryDashboard';
 
 const page = () => {
   return (
     <div className='container'>
-      <InventoryManagement />
+      <StockInventoryDashboard />
     </div>
   );
 };

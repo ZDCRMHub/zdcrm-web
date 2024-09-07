@@ -3,7 +3,7 @@
 import React from 'react';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
+import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/charts/OrderStatisticsCard';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { OrderTimeLine } from '@/icons/sidebar';
 import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
-import { FinancialOverview } from '../misc/components/FinancialOverview';
+import { FinancialOverview } from '../misc/components/charts/FinancialOverviewChart';
 
 
 

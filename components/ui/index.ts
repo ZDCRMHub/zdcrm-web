@@ -1,4 +1,7 @@
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion'
+
+export { Badge, badgeVariants } from './badge'
+
 export { Button, buttonVariants } from './button'
 export { default as ConfirmDeleteModal } from './confirmDeleteModal'
 export { default as ConfirmActionModal } from './confirmActionModal'

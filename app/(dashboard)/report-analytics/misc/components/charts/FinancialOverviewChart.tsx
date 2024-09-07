@@ -74,7 +74,7 @@ export function FinancialOverview() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-bottom: '-10px',
+                bottom: '-10px',
                 // right: '0',
                 // top: '',
                 // transform: 'translateY(50%)',

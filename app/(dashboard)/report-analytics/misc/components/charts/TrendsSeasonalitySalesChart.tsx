@@ -75,7 +75,7 @@ export function TrendsSeasonalitySalesChart() {
       <CardContent className='flex-1 pb-0'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[250px] w-full'>
+          className='mx-auto aspect-square max-h-[280px] w-full'>
           <PieChart>
             {/* <ChartTooltip
               content={({ payload }) => {
@@ -107,19 +107,18 @@ export function TrendsSeasonalitySalesChart() {
               outerRadius={120}
 
             />
- <Legend
-              verticalAlign="top"
-              align="right"
-              layout="vertical"
+            <Legend
+              verticalAlign="bottom"
+              align="center"
+              layout="horizontal"
               wrapperStyle={{
-                position: 'absolute',
-                right: '0',
-                top: '50%',
-                transform: 'translateY(-50%)',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                bottom: '-10px',
                 paddingLeft: '20px',
-                lineHeight: '2',
-                fontSize: '14px',
-                color: '#6B7280',
               }}
               payload={[
                 { value: "New Year", type: "circle", id: "lagos_island", color: "#12B246" },

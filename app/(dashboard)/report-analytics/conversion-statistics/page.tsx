@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -10,10 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {EnquiryChannelsChart} from '@/app/(dashboard)/report-analytics/misc/components/EnquiryChannelsChart';
+import { EnquiryChannelsChart } from '@/app/(dashboard)/report-analytics/misc/components/charts/EnquiryChannelsChart';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
-import {ClientTrackingChart} from '@/app/(dashboard)/report-analytics/misc/components/ClientTrackingChart';
-import {TrendsSeasonalitySalesChart} from '@/app/(dashboard)/report-analytics/misc/components/TrendsSeasonalitySalesChart';
+import { ClientTrackingChart } from '@/app/(dashboard)/report-analytics/misc/components/charts/ClientTrackingChart';
+import { TrendsSeasonalitySalesChart } from '@/app/(dashboard)/report-analytics/misc/components/charts/TrendsSeasonalitySalesChart';
+import { EmployeePerformanceChart } from '../misc/components/charts/EmployeePerformanceChart';
 
 const page = () => {
   const branchOptions = ['Zuzu Delights', 'Prestige Flowers'];
@@ -47,12 +48,14 @@ const page = () => {
         <ComparisonModal />
       </div>
 
-      <div className='grid grid-cols-2 gap-10 mb-10'>
+      <div className='grid  xl:grid-cols-2 gap-10 mb-10'>
         <EnquiryChannelsChart />
 
         <ClientTrackingChart />
 
         <TrendsSeasonalitySalesChart />
+
+        <EmployeePerformanceChart />
       </div>
 
       <div className='flex justify-end mb-24 gap-6'>

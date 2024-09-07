@@ -1,7 +1,6 @@
 import React from 'react';
-import { Card, CardDescription, CardHeader } from '../../../../../components/ui/card';
-import { Separator } from '../../../../../components/ui/separator';
-import Image from 'next/image';
+import { Card, CardDescription, CardHeader } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 interface OrderStatisticsCardProps {
   header: string;

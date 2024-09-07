@@ -1,7 +1,7 @@
 'use client';
 
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
+import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/charts/OrderStatisticsCard';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
 import TopProductsTable from '@/app/(dashboard)/report-analytics/misc/components/TopProductsTable';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/select';
 import { OrderTimeLine } from '@/icons/sidebar';
 import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
-import { OrderStatusChart } from '../misc/components/OrderStatusChart';
-import { OrderDeliveryZoneChart } from '../misc/components/OrderDeliveryZoneChart';
+import { OrderStatusChart } from '../misc/components/charts/OrderStatusChart';
+import { OrderDeliveryZoneChart } from '../misc/components/charts/OrderDeliveryZoneChart';
 
 const orderData = [
   { name: 'Orders Delivered', value: 15 },
