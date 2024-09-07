@@ -10,6 +10,7 @@ import { Calendar, UserCheck } from 'lucide-react';
 import { Phone, } from '@phosphor-icons/react';
 import { useBooleanStateControl } from '@/hooks';
 import AddNewNoteModal from './AddNewNoteModal';
+import axios from 'axios';
 
 type TOrder = {
     id: string;
@@ -30,8 +31,8 @@ export const generateMockOrders = (count: number) => {
         id: faker.string.uuid(),
         customerName: faker.person.fullName(),
         orderId: faker.string.alphanumeric(6).toUpperCase(),
-        action: faker.helpers.arrayElement(['placed an order', 'carted an item', 'requested a quote']),
-        status: faker.helpers.arrayElement(['Pending', 'Processing', 'Shipped', 'Delivered']),
+        action: faker.helpers.arrayElement(['placed an order', 'carted an item', 'made an enquiry', 'created an order']),
+        status: faker.helpers.arrayElement(['Still Discussing', 'Finalized Discussion']),
         agent: faker.person.fullName(),
         timeline: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }, () => ({
             action: faker.helpers.arrayElement(['started a discussion', 'updated the order', 'sent a message']),
@@ -112,7 +113,18 @@ export const OrderCard = ({ order }: { order: TOrder }) => {
 
 
 const OrderTimeline = () => {
-
+    // const getttt = async () => {
+    //     const res = await axios.get('https://prestigeflowershop.com/wp-json/wc/v3/products', {
+    //       auth: {
+    //         username: "ck_5666dad75b1290a6474cb80a9f96e47a8f506715",
+    //         password: "cs_4c00c6c0c012f56f0ed9ce492d81e25694770aae",
+    //       },
+    //     });
+    //   }
+    //   React.useEffect(() => {
+    //     getttt()
+    //   }, [])
+    
 
 
     return (

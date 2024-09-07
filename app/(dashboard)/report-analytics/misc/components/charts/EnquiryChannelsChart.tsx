@@ -21,16 +21,16 @@ import {
 export const description = 'A bar chart with an active bar';
 
 const chartData = [
-  {channel: 'website', visitors: 187, fill: 'var(--color-website)'},
-  {channel: 'instagram', visitors: 200, fill: 'var(--color-instagram)'},
-  {channel: 'favebook', visitors: 275, fill: 'var(--color-favebook)'},
-  {channel: 'google', visitors: 173, fill: 'var(--color-google)'},
-  {channel: 'others', visitors: 90, fill: 'var(--color-others)'},
+  {channel: 'website', enquiries: 187, fill: 'var(--color-website)'},
+  {channel: 'instagram', enquiries: 200, fill: 'var(--color-instagram)'},
+  {channel: 'favebook', enquiries: 275, fill: 'var(--color-favebook)'},
+  {channel: 'google', enquiries: 173, fill: 'var(--color-google)'},
+  {channel: 'others', enquiries: 90, fill: 'var(--color-others)'},
 ];
 
 const chartConfig = {
-  visitors: {
-    label: 'Visitors',
+  enquiries: {
+    label: 'Enquiries',
   },
   website: {
     label: 'Website',
@@ -84,7 +84,7 @@ export function EnquiryChannelsChart() {
               content={<ChartTooltipContent indicator="dashed" />}
             />
             <Bar
-              dataKey='visitors'
+              dataKey='enquiries'
               strokeWidth={2}
               radius={6}
               activeIndex={2}

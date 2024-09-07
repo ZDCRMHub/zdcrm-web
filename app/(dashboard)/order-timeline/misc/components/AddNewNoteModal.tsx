@@ -18,8 +18,8 @@ const AddNewNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, setMod
                     className="w-full rounded-md"
                     rows={7}
                 />
-                <DialogFooter className='flex'>
-                    <Button className="ml-auto" size="thin">
+                <DialogFooter className='flex'> 
+                    <Button className="ml-auto" size="thin" onClick={closeModal}>
                         Submit
                     </Button>
                 </DialogFooter>

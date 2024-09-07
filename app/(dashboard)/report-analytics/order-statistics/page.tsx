@@ -31,7 +31,7 @@ const deliveryData = [
 ];
 
 const page = () => {
-  const branchOptions = ['All Branches', 'Branch A', 'Branch B', 'Branch C'];
+  const branchOptions = ['All Branches', 'Zuzu Delights', 'Prestige Flowers'];
   const dateOptions = [
     'Today',
     'Yesterday',

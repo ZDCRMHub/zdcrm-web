@@ -66,9 +66,8 @@ export function TrendsSeasonalitySalesChart() {
             <SelectValue placeholder='Today' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='today'>Today</SelectItem>
-            <SelectItem value='week'>This Week</SelectItem>
-            <SelectItem value='month'>This Month</SelectItem>
+            <SelectItem value='today'>This Year</SelectItem>
+            <SelectItem value='week'>Last Year</SelectItem>
           </SelectContent>
         </Select>
       </CardHeader>

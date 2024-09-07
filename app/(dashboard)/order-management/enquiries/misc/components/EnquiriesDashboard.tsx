@@ -52,7 +52,7 @@ const enquiries = [
     enquiryItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
     deliveryNotes: 'Call Adeola',
     category: ['C', 'F', 'TB'],
-    status: 'PAYMENT MADE',
+    status: 'STILL DISCUSSING',
   },
   {
     customerName: 'Ife Adebayo',
@@ -112,7 +112,6 @@ export default function EnquiriesDashboard() {
               <SelectItem value="Started Discussion">Started Discussion</SelectItem>
               <SelectItem value="Still Discussing">Still Discussing</SelectItem>
               <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
-              <SelectItem value="Payment Made">Payment Made</SelectItem>
               {/* <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Processing">Processing</SelectItem>
               <SelectItem value="Shipped">Shipped</SelectItem>

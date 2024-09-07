@@ -44,7 +44,7 @@ const SignUpPage: React.FC = () => {
       <div className='w-full max-w-md'>
         <h1 className='text-2xl font-bold text-center mb-2'>Get Started</h1>
         <p className='text-gray-500 text-center mb-6'>
-          Complete signup on ZDCRM Hub to enjoy amazing services
+          Complete signup on ZDCRM Hub
         </p>
         <form onSubmit={handleSubmit} className='space-y-6'>
           {step === 1 ? (
@@ -90,14 +90,16 @@ const SignUpPage: React.FC = () => {
           ) : (
             <>
               <p className='font-medium mb-2'>CREATE PASSWORD</p>
-              <PasswordInput
+              <Input
+              type="password"
                 name='password'
                 placeholder='Enter Password'
                 value={formData.password}
                 onChange={handleInputChange}
                 className={inputClassName}
               />
-              <PasswordInput
+              <Input
+              type="password"
                 name='confirmPassword'
                 placeholder='Confirm Password'
                 value={formData.confirmPassword}

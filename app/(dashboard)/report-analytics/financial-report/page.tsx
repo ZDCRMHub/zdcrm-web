@@ -116,7 +116,7 @@ const FinancialReportPage = () => {
             <SelectValue placeholder='Extract File' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='All'>All</SelectItem>
+            <SelectItem value='All'>Financial Overview</SelectItem>
             <SelectItem value='Net Profit'>Net Profit</SelectItem>
             <SelectItem value='Total Revenue'>Total Revenue</SelectItem>
             <SelectItem value='Total Orders'>Total Orders</SelectItem>

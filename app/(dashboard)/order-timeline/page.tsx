@@ -1,8 +1,8 @@
-import Layout from '@/components/layout/Layout';
-import React from 'react';
+import React, { use } from 'react';
 import { OrderTimeline } from './misc/components';
+const OrderTimelinePage = () => {
 
-const page = () => {
+
   return (
     <>
       <OrderTimeline />
@@ -10,4 +10,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default OrderTimelinePage;

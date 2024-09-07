@@ -190,7 +190,7 @@ export default function EnquiriesTable() {
                           width={24}
                           height={24}
                         />
-                        Payment Confirmed
+                        Payment Sent
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={openConfirmDeleteModal}>

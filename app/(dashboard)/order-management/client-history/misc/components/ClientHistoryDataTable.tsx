@@ -67,21 +67,6 @@ export function ClientHistoryDataTable() {
             onChange={(e) => setSearchText(e.target.value)}
             rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
           />
-          <Select >
-            <SelectTrigger className="max-w-[150px] w-full text-[0.75rem]">
-              <SelectValue placeholder="Filter enquiries by" className="text-[0.75rem] text-[#A7A7A7] w-full grow" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Started Discussion">Started Discussion</SelectItem>
-              <SelectItem value="Still Discussing">Still Discussing</SelectItem>
-              <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
-              <SelectItem value="Payment Made">Payment Made</SelectItem>
-              {/* <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Processing">Processing</SelectItem>
-              <SelectItem value="Shipped">Shipped</SelectItem>
-              <SelectItem value="Delivered">Delivered</SelectItem> */}
-            </SelectContent>
-          </Select>
         </div>
         <div className='flex items-center gap-2'>
 

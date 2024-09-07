@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { DM_Sans, Manrope, Poppins } from 'next/font/google';
 import './globals.css';
+import { AllProviders } from '@/contexts';
 
 const dmSans = DM_Sans({
   weight: ['400', '500', '600', '700'],
@@ -35,8 +36,10 @@ export default function RootLayout({
     <html lang='en'>
       <body
         className={`${dmSans.className} ${poppins.variable} ${manrope.variable}`}
-       >
-        {children}
+      >
+        <AllProviders>
+          {children}
+        </AllProviders>
       </body>
     </html>
   );
