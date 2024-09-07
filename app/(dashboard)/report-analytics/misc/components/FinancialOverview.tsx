@@ -2,7 +2,7 @@
 
 import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 export const description = "A multiple bar chart"
@@ -65,14 +65,16 @@ export function FinancialOverview() {
             <Bar dataKey="profit" fill="#00E096" radius={4} />
 
             <Legend
-              verticalAlign="top"
+              verticalAlign="bottom"
               align="center"
               layout="horizontal"
               wrapperStyle={{
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'row',
-
+                alignItems: 'center',
+                justifyContent: 'center',
+bottom: '-10px',
                 // right: '0',
                 // top: '',
                 // transform: 'translateY(50%)',
@@ -85,6 +87,7 @@ export function FinancialOverview() {
             />
           </BarChart>
         </ChartContainer>
+        <CardFooter className="py-4"></CardFooter>
       </CardContent>
     </Card>
   )

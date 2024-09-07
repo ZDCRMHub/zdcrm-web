@@ -24,8 +24,8 @@ export const description = "A donut chart"
 
 const chartData = [
   { location: "Orders Delivered", no_of_orders: 28, fill: "#1C1C1C99" },
-  { location: "Lagos Central", no_of_orders: 15, fill: "#E51B3F" },
-  { location: "Lagos Mainland", no_of_orders: 8, fill: "#34CF5699" },
+  { location: "Orders Sorted", no_of_orders: 15, fill: "#E51B3F" },
+  { location: "Sent to Dispatch", no_of_orders: 8, fill: "#34CF5699" },
 ]
 
 const chartConfig = {
@@ -36,12 +36,12 @@ const chartConfig = {
     label: "Orders Delivered",
     color: "#1C1C1C99",
   },
-  "Lagos Central": {
+  "Orders Sorted": {
     label: "Orders Sorted",
     color: "#E51B3F",
   },
   "Sent to Dispatch": {
-    label: "Lagos Mainland",
+    label: "Sent to Dispatch",
     color: "#34CF5699",
   },
 
@@ -95,10 +95,6 @@ export function OrderStatusChart() {
             />
           </PieChart>
         </ChartContainer>
-
-        <section>
-
-        </section>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
       

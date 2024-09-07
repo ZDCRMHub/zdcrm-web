@@ -1,7 +1,7 @@
 'use client';
 
 import { TrendingUp } from 'lucide-react';
-import { Pie, PieChart } from 'recharts';
+import { Legend, Pie, PieChart } from 'recharts';
 
 import {
   Card,
@@ -23,15 +23,15 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 export const description = 'A donut chart';
 
 const chartData = [
-  { occassion: 'new_year', visitors: 275, fill: '#12B246' },
-  { occassion: 'easter', visitors: 200, fill: '#72DEF6' },
-  { occassion: 'valentine', visitors: 187, fill: '#E3273E' },
-  { occassion: 'christmas', visitors: 173, fill: '#F0933B' },
+  { occassion: 'new_year', orders: 275, fill: '#12B246' },
+  { occassion: 'easter', orders: 200, fill: '#72DEF6' },
+  { occassion: 'valentine', orders: 187, fill: '#E3273E' },
+  { occassion: 'christmas', orders: 173, fill: '#F0933B' },
 ];
 
 const chartConfig = {
-  visitors: {
-    label: 'Visitors',
+  orders: {
+    label: 'orders',
   },
   new_year: {
     label: 'new_year',
@@ -75,9 +75,9 @@ export function TrendsSeasonalitySalesChart() {
       <CardContent className='flex-1 pb-0'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[250px]'>
+          className='mx-auto aspect-square max-h-[250px] w-full'>
           <PieChart>
-            <ChartTooltip
+            {/* <ChartTooltip
               content={({ payload }) => {
                 if (payload && payload.length) {
                   const data = payload[0].payload;
@@ -94,20 +94,45 @@ export function TrendsSeasonalitySalesChart() {
                 }
                 return null;
               }}
+            /> */}
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
             />
             <Pie
               data={chartData}
-              dataKey='visitors'
+              dataKey='orders'
               nameKey='occassion'
               innerRadius={60}
               outerRadius={120}
 
             />
+ <Legend
+              verticalAlign="top"
+              align="right"
+              layout="vertical"
+              wrapperStyle={{
+                position: 'absolute',
+                right: '0',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                paddingLeft: '20px',
+                lineHeight: '2',
+                fontSize: '14px',
+                color: '#6B7280',
+              }}
+              payload={[
+                { value: "New Year", type: "circle", id: "lagos_island", color: "#12B246" },
+                { value: "Easter", type: "circle", id: "lagos_mainland", color: "#72DEF6" },
+                { value: "Valentines", type: "circle", id: "lagos_central", color: "#E3273E" },
+                { value: "Christmas", type: "circle", id: "others", color: "#FFC600" },
+              ]}
+            />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex-col gap-2 text-sm'>
-        
+
       </CardFooter>
     </Card>
   );

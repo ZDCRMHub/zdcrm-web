@@ -4,7 +4,7 @@ import React from 'react';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
 import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -14,14 +14,13 @@ import {
 } from '@/components/ui/select';
 import { OrderTimeLine } from '@/icons/sidebar';
 import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
-import { OrderDeliveryZoneChart } from '../misc/components/OrderDeliveryZoneChart';
 import { FinancialOverview } from '../misc/components/FinancialOverview';
 
 
 
 
 const FinancialReportPage = () => {
-  const branchOptions = ['All Branches', 'Branch A', 'Branch B', 'Branch C'];
+  const branchOptions = ['All Branches', 'Zuzu Delights', 'Prestige Flowers'];
   const dateOptions = [
     'Today',
     'Yesterday',
@@ -50,7 +49,7 @@ const FinancialReportPage = () => {
         onDateChange={handleDateChange}
       />
 
-<div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
+      <div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
         <OrderStatisticsCard
           header='Total Orders'
           icon={<OrderTimeLine className="text-white" />}

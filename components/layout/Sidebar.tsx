@@ -20,6 +20,7 @@ import {
 import { Logo } from '@/icons/core';
 import { SidebarCollapsible } from './SidebarCollapsible';
 import { Gear } from '@phosphor-icons/react';
+import { Graph } from 'iconsax-react';
 
 export const linkGroups = [
   {
@@ -74,7 +75,7 @@ export const linkGroups = [
           {
             link: '/report-analytics/financial-report',
             text: 'Financial Report',
-            icon: <FinancialReport />,
+            icon: <Graph size={20} />,
           },
           {
             link: '/report-analytics/conversion-statistics',
@@ -99,11 +100,11 @@ export const linkGroups = [
             icon: <OrderManagement />,
           },
 
-          {
-            link: '/inventory/store-inventory',
-            text: 'Store Inventory',
-            icon: <OrderManagement />,
-          },
+          // {
+          //   link: '/inventory/store-inventory',
+          //   text: 'Store Inventory',
+          //   icon: <OrderManagement />,
+          // },
         ],
       },
     ],
