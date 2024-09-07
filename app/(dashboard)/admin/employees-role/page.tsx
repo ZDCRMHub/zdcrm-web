@@ -35,6 +35,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { IoChevronUp } from "react-icons/io5";
+import { useBooleanStateControl } from "@/hooks";
+import { ConfirmDeleteModal } from "@/components/ui";
 
 const memberDetails = [
   {
@@ -111,7 +113,14 @@ const memberDetails = [
   },
 ];
 
-const page = () => {
+const Page = () => {
+  const {
+    state: isConfirmDeleteModalOpen,
+    setTrue: openConfirmDeleteModal,
+    setFalse: closeConfirmDeleteModal,
+  } = useBooleanStateControl()
+
+
   return (
     <section className="mt-7 pb-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A] px-[118px] pt-[35px]">
       <div className="flex justify-between items-end">
@@ -208,9 +217,9 @@ const page = () => {
                 <div className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer">
                   <MdOutlineModeEdit color="#fff" size={20} />
                 </div>
-                <div className="p-2 rounded-lg bg-[#E03137] flex items-center cursor-pointer">
+                <button className="p-2 rounded-lg bg-[#E03137] flex items-center cursor-pointer" onClick={openConfirmDeleteModal}>
                   <RiDeleteBin6Line color="#fff" size={20} />
-                </div>
+                </button>
               </TableCell>
             </TableRow>
           ))}
@@ -242,8 +251,17 @@ const page = () => {
           </Button>
         </div>
       </div>
+
+
+      <ConfirmDeleteModal
+        isModalOpen={isConfirmDeleteModalOpen}
+        closeModal={closeConfirmDeleteModal}
+        deleteFn={() => { }}
+        heading="Delete Employee"
+        subheading="Are you sure you want to delete this employee?"
+      />
     </section>
   );
 };
 
-export default page;
+export default Page;

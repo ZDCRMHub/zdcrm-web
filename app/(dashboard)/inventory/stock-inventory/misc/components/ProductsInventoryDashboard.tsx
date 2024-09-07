@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/pagination';
 import {
   Badge,
+  LinkButton,
   Select,
   SelectContent,
   SelectItem,
@@ -272,9 +273,9 @@ const ProductsInventoryDashboard = () => {
                     </div>
                   </div>
 
-                  <Button variant="outline" className="rounded-full border-2 2xl:ml-8" size="sm">
+                  <LinkButton href="/inventory/details" variant="outline" className="rounded-full border-2 2xl:ml-8" size="sm">
                     View
-                  </Button>
+                  </LinkButton>
                 </section>
               </CardContent>
             </Card>

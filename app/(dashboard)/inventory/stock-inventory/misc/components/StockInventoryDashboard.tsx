@@ -98,7 +98,7 @@ const StockInventoryDashboard = () => {
 
       <div className="relative flex mb-4 mt-4">
         <div className="sticky top-0 min-w-[300px] w-1/4 pr-4 h-max">
-            <Card className="mb-4 p-4 ">
+          <Card className="mb-4 p-4 ">
             {/* <h3 className="text-lg font-semibold mb-2">Filters</h3> */}
 
             <div className=' space-y-10 py-8'>
@@ -214,9 +214,9 @@ const StockInventoryDashboard = () => {
                       </div>
                     </div>
 
-                    <Button variant="outline" className="rounded-full border-2" size="sm">
+                    <LinkButton href="/inventory/details" variant="outline" className="rounded-full border-2 2xl:ml-8" size="sm">
                       View
-                    </Button>
+                    </LinkButton>
                   </section>
                 </CardContent>
               </Card>
