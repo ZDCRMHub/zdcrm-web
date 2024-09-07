@@ -24,7 +24,7 @@ const OrdeManagementDelivery = () => {
           <ArrowLeft2 className='h-6 w-6 text-[#A0AEC0]' />
         </Button>
         <Button >
-          Delivery ID: LM-ZD3243
+          Delivery ID: ZD-LM3243
         </Button>
         <Button className='flex items-center gap-1 ml-2.5' variant="outline">
           <UserOctagon size={13} />
