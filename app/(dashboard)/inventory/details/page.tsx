@@ -12,6 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TbCubePlus } from "react-icons/tb";
+import { PiCubeFocusLight } from "react-icons/pi";
+import { TfiWallet } from "react-icons/tfi";
+import { LiaCubesSolid, LiaUserEditSolid } from "react-icons/lia";
+import { GrUpdate } from "react-icons/gr";
 
 const stockHistory = [
   {
@@ -128,20 +133,50 @@ const InventoryDetailsPage = () => {
       <div className="mt-16">
         <h3 className="uppercase mb-[18px]">stock history</h3>
         <div className="px-12 bg-white pt-8 pb-28 rounded-[20px] border border-solid border-[#FCF0F2] mb-14">
-          <Table>
-            <TableHeader>
+          <Table className="">
+            <TableHeader className="">
               <TableRow className="border-none">
-                <TableHead className="">Quantity Used</TableHead>
-                <TableHead className="">Quantity Left</TableHead>
-                <TableHead className="">Amount</TableHead>
-                <TableHead className="">Type of Stock Update</TableHead>
-                <TableHead className="">Staff Name</TableHead>
-                <TableHead className="">Last Updated</TableHead>
+                <TableHead className="w-[15%]">
+                  <div className="flex gap-3 justify-center items-center">
+                    <TbCubePlus size={20} />
+                    Quantity Used
+                  </div>
+                </TableHead>
+                <TableHead className="w-[15%]">
+                  <div className="flex gap-3 justify-center items-center">
+                    <PiCubeFocusLight size={20} />
+                    Quantity Left
+                  </div>
+                </TableHead>
+                <TableHead className="w-[15%]">
+                  <div className="flex gap-3 justify-center items-center">
+                    <TfiWallet size={20} />
+                    Amount
+                  </div>
+                </TableHead>
+                <TableHead className="w-[15%]">
+                  <div className="flex gap-3 justify-center items-center">
+                    <LiaCubesSolid size={24} />
+                    Type of Stock Update
+                  </div>
+                </TableHead>
+                <TableHead className="w-[15%]">
+                  <div className="flex gap-3 justify-center items-center">
+                    <LiaUserEditSolid size={22} />
+                    Staff Name
+                  </div>
+                </TableHead>
+                <TableHead className="w-[15%]">
+                  <div className="flex gap-3 justify-center items-center">
+                    <GrUpdate size={20} color="#E01E1F" />
+                    Last Updated
+                  </div>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="">
               {stockHistory.map((history) => (
-                <TableRow key={history.historyID} className="">
+                <TableRow key={history.historyID} className="text-center">
                   <TableCell>{history.quantityUsed}</TableCell>
                   <TableCell>{history.quantityLeft}</TableCell>
                   <TableCell>{history.amount}</TableCell>
