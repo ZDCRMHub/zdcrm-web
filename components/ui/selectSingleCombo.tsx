@@ -11,6 +11,7 @@ import { SmallSpinner } from "@/icons/core"
 import { Button, Command, CommandGroup, CommandItem } from "."
 import { Popover, PopoverContent, PopoverTrigger } from "."
 import { Label } from "./label"
+import FormError from "./formError"
 // import { SearchIcon } from "@/app/(dashboard)/instant-web/misc/icons"
 
 interface SelectProps<T> {
@@ -18,7 +19,8 @@ interface SelectProps<T> {
   onChange: (value: string) => void;
   options: T[] | undefined;
   name: string;
-  errors?: { [key: string]: { message?: string | undefined } } | FieldErrors<FieldValues>;
+  hasError?: boolean;
+  errorMessage?: string;
   label?: string | React.ReactNode;
   placeholder: string;
   className?: string;
@@ -38,7 +40,8 @@ const SelectSingleCombo = <T extends object>({
   value,
   onChange,
   options,
-  errors,
+  hasError,
+  errorMessage,
   label,
   name,
   placeholder,
@@ -165,8 +168,8 @@ const SelectSingleCombo = <T extends object>({
                 optionsToDisplay?.map((option, index) => (
                   <button
                     className={cn("grid grid-cols-[max-content_1fr] text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                       itemClass, "hover:bg-blue-100 w-full text-sm"
-                      )}
+                      itemClass, "hover:bg-blue-100 w-full text-sm"
+                    )}
                     key={index}
                     onClick={() => handleSelect(option[valueKey] as string)}
                   >
@@ -189,7 +192,11 @@ const SelectSingleCombo = <T extends object>({
         </PopoverContent>
       </Popover>
 
-      {errors && errors[name] && <span className={cn('formerror', errorClass)}>{String(errors[name]?.message)}</span>}
+      {
+        hasError && errorMessage && (
+          <FormError errorMessage={errorMessage} />
+        )
+      }
     </div>
   )
 }

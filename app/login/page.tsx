@@ -1,11 +1,11 @@
 'use client';
 
-import React, {useState} from 'react';
-import {Button} from '@/components/ui/button';
-import {Input} from '@/components/ui/input';
-import {PasswordInput} from '@/components/password-input';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/password-input';
 import Link from 'next/link';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const LoginPage = () => {
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({...formData, [e.target.name]: e.target.value});
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -43,7 +43,8 @@ const LoginPage = () => {
             onChange={handleInputChange}
             className={inputClassName}
           />
-          <PasswordInput
+          <Input
+            type="password"
             name='password'
             placeholder='Enter Password'
             value={formData.password}

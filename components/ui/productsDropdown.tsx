@@ -19,7 +19,8 @@ interface SelectProps<T> {
     onChange: (value: string) => void;
     options: T[] | undefined;
     name: string;
-    errors?: { [key: string]: { message?: string | undefined } } | FieldErrors<FieldValues>;
+    hasError?: boolean;
+    errorMessage?: string;
     label?: string | React.ReactNode;
     placeholder: string;
     className?: string;
@@ -40,7 +41,8 @@ const ProductsDropdown = <T extends object>({
     value,
     onChange,
     options,
-    errors,
+    hasError,
+    errorMessage,
     label,
     name,
     placeholder,
@@ -208,8 +210,11 @@ const ProductsDropdown = <T extends object>({
                     </Command>
                 </PopoverContent>
             </Popover>
-
-            {errors && errors[name] && <span className={cn('formerror', errorClass)}>{String(errors[name]?.message)}</span>}
+            {
+                hasError && errorMessage && (
+                    <FormError errorMessage={errorMessage} />
+                )
+            }
         </div>
     )
 }

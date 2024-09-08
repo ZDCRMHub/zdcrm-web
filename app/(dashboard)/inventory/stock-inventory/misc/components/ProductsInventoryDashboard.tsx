@@ -163,7 +163,6 @@ const ProductsInventoryDashboard = () => {
 
         </div>
         <div className='flex items-center gap-2'>
-          <NewInventorySheet />
           <Button
             variant='outline'
             className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>

@@ -48,7 +48,14 @@ const categoryOptions = [
   { value: 'C', label: 'Cake' },
   { value: 'F', label: 'Flower' },
   { value: 'W', label: 'Wine' },
+  { value: 'CC', label: 'Cup Cake' },
   { value: 'TB', label: 'Teddy Bear' },
+  { value: 'GC', label: 'Gift Card' },
+  { value: 'V', label: 'Vase' },
+  { value: 'CH', label: 'Chocolate' },
+  { value: 'B', label: 'Baloon' },
+  { value: 'P', label: 'Perfume' },
+  { value: 'HB', label: 'Hand Bag' },
 ]
 
 const NewEnquiryPage = () => {

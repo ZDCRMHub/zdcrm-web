@@ -64,7 +64,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           }
           {
             type === "password" && (
-              <button className="absolute right-[3%] top-[25%] cursor-pointer" onClick={() => setShow((prev) => !prev)}>
+              <button type="button" className="absolute right-[3%] top-[25%] cursor-pointer" onClick={() => setShow((prev) => !prev)}>
                 {
                   show ?
                     <HideIcon fill='#395CF5' />
