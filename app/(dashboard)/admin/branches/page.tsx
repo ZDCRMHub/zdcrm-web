@@ -14,10 +14,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogClose
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import { IoIosClose } from "react-icons/io";
 
 type BranchCardProp = {
   name: string;
@@ -83,6 +85,9 @@ const page = () => {
               </div>
             </DialogTrigger>
             <DialogContent className="flex flex-col gap-8 w-[520px] px-[75px] py-8">
+                  <DialogClose className="absolute right-[75px]" >
+                  <IoIosClose size={24} />
+                  </DialogClose>
               <FaArrowLeftLong className="cursor-pointer" />
               <DialogHeader className="">
                 <DialogTitle className="text-2xl">Add a New Branch</DialogTitle>

@@ -1,6 +1,8 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
@@ -17,6 +19,22 @@ import { PiCubeFocusLight } from "react-icons/pi";
 import { TfiWallet } from "react-icons/tfi";
 import { LiaCubesSolid, LiaUserEditSolid } from "react-icons/lia";
 import { GrUpdate } from "react-icons/gr";
+import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { IoIosClose } from "react-icons/io";
+import { PiHashStraightFill } from "react-icons/pi";
+import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 const stockHistory = [
   {
@@ -67,10 +85,32 @@ const stockHistory = [
 ];
 
 const InventoryDetailsPage = () => {
+  const router = useRouter();
+  const [quantityCounter, setQuantityCounter] = useState(0);
+  const [lowStockCounter, setLowStockCounter] = useState(0);
+
+  const quantityPlus = () => {
+    setQuantityCounter(quantityCounter + 1);
+  };
+
+  const quantityMinus = () => {
+    setQuantityCounter(quantityCounter - 1);
+  };
+
+  const lowStockPlus = () => {
+    setLowStockCounter(lowStockCounter + 1);
+  };
+
+  const lowStockMinus = () => {
+    setLowStockCounter(lowStockCounter - 1);
+  };
+
   return (
     <section className="mx-16 mt-8">
       <div className="flex gap-6 flex-col">
-        <FaArrowLeftLong size={20} />
+        <button onClick={() => router.back()}>
+          <FaArrowLeftLong size={20} />
+        </button>
         <h1 className="uppercase text-xl font-bold">view sandra red wine</h1>
       </div>
       <div className="mt-[67px] flex gap-[110px]">
@@ -79,9 +119,82 @@ const InventoryDetailsPage = () => {
           <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-4">
             <p className="text-[18px] uppercase">Quantity at hand</p>
             <p className="text-2xl text-[#113770] font-bold">18</p>
-            <Button className="bg-[#1E1E1E] rounded-none text-sm w-[161px]">
-              Adjust Stock
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild className="cursor-pointer">
+                <Button className="bg-[#1E1E1E] rounded-none text-sm w-[161px]">
+                  Adjust Stock
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="flex flex-col gap-8 w-[596px] px-8 py-8 pt-16">
+                <DialogClose className="absolute right-8">
+                  <IoIosClose size={30} />
+                </DialogClose>
+                <DialogHeader className="">
+                  <DialogTitle className="text-xl font-semibold uppercase">
+                    stock adjustment
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="mt-9 bg-[#72ADE614] h-24 rounded-xl py-3 pl-5 flex gap-10 items-center">
+                  <Image
+                    src="/img/cake1.png"
+                    alt="cake"
+                    width={78}
+                    height={69}
+                    className="rounded-xl"
+                  />
+                  <div className="flex flex-col gap-2">
+                    <h3 className="uppercase font-bold">Chocolate cake</h3>
+                    <div className="flex gap-3">
+                      <PiHashStraightFill />
+                      <p className="text-xs">
+                        Stocked Product:{" "}
+                        <span className="font-semibold">12 in stock</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-xs">Quantity</p>
+                    <div className="border border-solid border-[#E1E1E1] py-3 px-[18px] flex gap-12 mt-2">
+                      <div className="cursor-pointer" onClick={quantityMinus}>
+                        <CiCircleMinus size={20} />
+                      </div>
+                      <div className="font-bold text-sm">{quantityCounter}</div>
+                      <div className="cursor-pointer" onClick={quantityPlus}>
+                        <CiCirclePlus size={20} />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs">Low in Stock</p>
+                    <div className="border border-solid border-[#E1E1E1] py-3 px-[18px] flex gap-12 mt-2">
+                      <div className="cursor-pointer" onClick={lowStockMinus}>
+                        <CiCircleMinus size={20} />
+                      </div>
+                      <div className="font-bold text-sm">{lowStockCounter}</div>
+                      <div className="cursor-pointer" onClick={lowStockPlus}>
+                        <CiCirclePlus size={20} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="price" className="text-xs font-extrabold">
+                    Cost Price (₦)
+                  </Label>
+                  <Input id="price" type="number" className="mt-2" />
+                </div>
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    className="bg-[#17181C] mt-28 mb-3 w-full p-6 h-[70px] rounded-[10px]"
+                  >
+                    Save Changes
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         <div>
@@ -122,7 +235,7 @@ const InventoryDetailsPage = () => {
               </p>
               <div className="flex items-center gap-3">
                 <p className="font-extrabold text-[30px] text-white pl-[18px]">
-                  N2,450
+                  ₦2,450
                 </p>
                 <BiSolidDownArrow color="#fff" size={24} />
               </div>
