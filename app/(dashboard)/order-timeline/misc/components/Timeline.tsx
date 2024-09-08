@@ -11,6 +11,7 @@ import { Phone, } from '@phosphor-icons/react';
 import { useBooleanStateControl } from '@/hooks';
 import AddNewNoteModal from './AddNewNoteModal';
 import axios from 'axios';
+import { cn } from '@/lib/utils';
 
 type TOrder = {
     id: string;
@@ -24,6 +25,7 @@ type TOrder = {
         details: string;
         agent: string;
     }[];
+    type: string;
 }
 // Generate mock data
 export const generateMockOrders = (count: number) => {
@@ -38,7 +40,9 @@ export const generateMockOrders = (count: number) => {
             action: faker.helpers.arrayElement(['started a discussion', 'updated the order', 'sent a message']),
             details: faker.lorem.sentence(),
             agent: faker.person.fullName()
-        }))
+        })),
+        
+        type: faker.helpers.arrayElement(['enquiry', 'order']),
     }));
 };
 
@@ -49,7 +53,7 @@ const mockData = {
     within7Days: generateMockOrders(5)
 };
 
-export const OrderCard = ({ order }: { order: TOrder }) => {
+export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherInfo?:boolean }) => {
     const {
         state: isModalOpen,
         setTrue: openModal,
@@ -87,17 +91,29 @@ export const OrderCard = ({ order }: { order: TOrder }) => {
                         </ul>
                     )}
                 </section>
-                <div className="flex items-center gap-4">
+                <div className={cn("flex items-center gap-4", hideOtherInfo && "hidden")}>
                     <Button variant="outline" onClick={openModal}><Calendar size={16}  /> + Add Note</Button>
-                    <Select defaultValue={order.status}>
+                    <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Pending'}>
                         <SelectTrigger className="w-[120px]">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                            <SelectItem value="Processing">Processing</SelectItem>
-                            <SelectItem value="Shipped">Shipped</SelectItem>
-                            <SelectItem value="Delivered">Delivered</SelectItem>
+                            {
+                                order.type === 'enquiry' ? (
+                                    <>
+                                        <SelectItem value="Still Discussing">Still Discussing</SelectItem>
+                                        <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
+                                    </>
+                                ) : (
+                                    <>
+                                        <SelectItem value="Pending">Pending</SelectItem>
+                                        <SelectItem value="Processing">Processing</SelectItem>
+                                        <SelectItem value="Shipped">Shipped</SelectItem>
+                                        <SelectItem value="Delivered">Delivered</SelectItem>
+                                    </>
+                                )
+                            }
+                           
                         </SelectContent>
                     </Select>
                 </div>

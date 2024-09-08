@@ -88,6 +88,7 @@ export default function EnquiriesTable() {
 
   const handleConfirm = () => {
     console.log(`Confirmed action`);
+    router.push("/order-management/orders")
   };
 
   const {
@@ -218,7 +219,7 @@ export default function EnquiriesTable() {
       <ConfirmDeleteModal
         isModalOpen={isConfirmDeleteModalOpen}
         closeModal={closeConfirmDeleteModal}
-        deleteFn={() => { }}
+        deleteFn={() => {}}
         heading='Delete Enquiry'
         subheading="This action means order enquiry be removed."
 

@@ -12,7 +12,7 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'www.zuzudelights.com',
                 port: '',
-                pathname:"wp-contents/**"
+                pathname:"/**"
             },
             {
                 protocol: 'https',

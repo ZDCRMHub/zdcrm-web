@@ -16,12 +16,15 @@ import { Phone } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { EditPenIcon } from '@/icons/core';
+import { generateMockOrders, OrderCard } from '@/app/(dashboard)/order-timeline/misc/components/Timeline';
+import { CaretRightIcon } from '@/icons/sidebar';
 
 interface OrderDetailsPanelProps {
   orderId: string;
 }
 
 export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
+  const mockOrder = generateMockOrders(1)[0];
 
   return (
     <Sheet>
@@ -55,39 +58,24 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             <div className='flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0'>
               <span className='text-sm'>Order ID: {orderId}</span>
             </div>
-
-            <Select>
-              <SelectTrigger className='w-[150px] bg-transparent'>
-                <SelectValue placeholder='SOA' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='SOA'>SOA</SelectItem>
-                <SelectItem value='SORTED'>SORTED</SelectItem>
-                <SelectItem value='DIS CL'>DIS CL</SelectItem>
-                <SelectItem value='DELIVERED'>DELIVERED</SelectItem>
-                <SelectItem value='CANCELLED'>CANCELLED</SelectItem>
-                <SelectItem value='SENT TO DISPATCH'>SENT TO DISPATCH</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className='flex items-center space-x-2'>
-            <Button
-              variant='outline'
-              className='px flex gap-1 border-[#B9B9B9]'>
-              <EditPenIcon className='h-4 w-4' />
-
-              <span>Edit</span>
-            </Button>
             <Badge
               variant='outline'
-              className='bg-[#367917] bg-opacity-15 border-green-300 px-3 py-3 rounded-[10px] text-[#2D7D08] min-w-max'>
+              className='bg-[#367917] bg-opacity-15 border-green-300 px-3 py-3 rounded-[7px] text-[#2D7D08] min-w-max'>
               Payment Confirmed
             </Badge>
+            <Button
+              variant='outline'
+              className='px flex gap-1 bg-[#1118271C]'>
+              Delivered
+            </Button>
+
           </div>
         </div>
 
-        <div className='py-4 space-y-10'>
+        <div className='py-4 space-y-12'>
           <div className='grid grid-cols-2 gap-4 mt-8'>
             <article className='flex flex-col bg-[#194A7A] text-center text-white rounded-lg shadow-md'>
               <h3 className='font-semibold mb-2 flex items-center justify-center gap-2 text-lg py-3 px-4 border-b border-[#FFC600]'>
@@ -157,6 +145,19 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           </section>
 
 
+          <section className='mt-16 mb-16'>
+            <header className="border-b border-b-[#00000021] mb-6">
+              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                <MessageCircle size={19} />
+                Discussion
+                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+              </p>
+            </header>
+            <OrderCard order={mockOrder} hideOtherInfo />
+          </section>
+
+
+
           <section className='mt-16 mb-8'>
             <header className="border-b border-b-[#00000021]">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
@@ -179,6 +180,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             </div>
           </section>
 
+
           <section className='mb-8'>
             <header className="border-b border-b-[#00000021] mb-6">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5'>
@@ -200,7 +202,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                       />
                     </div>
                     <div className="flex items-center gap-4 self-start">
-                      <Checkbox />
+                      <Checkbox checked={true} disabled />
                     </div>
                   </header>
 
@@ -262,7 +264,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                       />
                     </div>
                     <div className="flex items-center gap-4 self-start">
-                      <Checkbox />
+                      <Checkbox checked={true} disabled />
                     </div>
                   </header>
 
@@ -310,11 +312,6 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                 readOnly
                 containerClassName='w-full'
               />
-              <button className='flex items-center justify-center gap-2 bg-[#FFC600] px-5 py-2 rounded-lg'>
-                <Printer size={20} />
-                Print
-              </button>
-
             </div>
           </section>
 
@@ -324,19 +321,22 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <section className='p-4 px-6 rounded-2xl border'>
             <div className='flex justify-between items-center mb-2 border-b'>
               <h3 className='font-semibold font-manrope'>Delivery Details</h3>
-              <Button variant='ghost' size='sm'>
+              <Button variant='ghost' size='sm' disabled>
                 <EditPenIcon className='h-4 w-4' />
               </Button>
             </div>
             <div className=' grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4'>
               {[
-                ['Delivery Method', 'Dispatch'],
                 ['Primary address', 'No. 8, Adeniran close, Lekki Phase 1'],
                 ['Country', 'Nigeria'],
                 ['State/City', 'Lagos/Ikeja'],
                 ['Delivery Zone', 'L1-Lagos Island'],
                 ['Delivery Date', '21/July/2024'],
                 ['Delivery Fee', 'Lekki Phase 1 - ₦5,000'],
+                ['Driver Name', 'Emmanuel'],
+                ['Delivery Method', 'Dispatch'],
+                ['Driver Number', '09017865543'],
+                ['Rider Platform', 'GIG'],
               ].map(([label, value]) => (
                 <>
                   <span className='text-[#687588] font-manrope'>{label}</span>
@@ -350,26 +350,33 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <section>
             <p className="flex items-center gap-3">
               <span className='text-[#687588] font-manrope'>Total(NGN)</span>
-              <span className="text-[#111827] font-medium">N130,000.00</span>
+              <span className="text-[#111827] font-bold">N130,000.00</span>
             </p>
           </section>
 
           <section className="flex justify-end my-12">
-            <LinkButton href="/order-management/orders/confirm-delivery" className='h-12 px-8' >
-              Proceed to Dispatch
-            </LinkButton>
+            <SheetClose>
+              <Button className='h-12 px-12' >
+                Close
+              </Button>
+            </SheetClose>
           </section>
 
 
           <section className="flex flex-col gap-1.5">
             <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
               <span className='text-[#000]'>Enquiry Logged by: Adeayo</span>
-              <span className="text-[#E01E1F] font-manrope text-sm">15th June, 2024 | 6:00pm</span>
+              <span className="text-[#E01E1F] font-manrope text-sm">15th June, 2024 {" "} |  {" "}6:00pm</span>
             </p>
 
             <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
               <span className='text-[#000] '>Order Approved by: Adeayo</span>
-              <span className="text-[#E01E1F] font-manrope text-sm">15th June, 2024 | 6:00pm</span>
+              <span className="text-[#E01E1F] font-manrope text-sm">15th June, 2024 {" "} |  {" "}6:07pm</span>
+            </p>
+
+            <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
+              <span className='text-[#000] '>Order Completed by: Adeayo</span>
+              <span className="text-[#E01E1F] font-manrope text-sm">16th June, 2024 {" "} |  {" "}2:35pm</span>
             </p>
           </section>
         </div>

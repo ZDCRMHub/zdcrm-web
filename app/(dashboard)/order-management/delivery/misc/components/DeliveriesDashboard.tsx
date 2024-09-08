@@ -82,19 +82,19 @@ export default function DeliveriesDashboard() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="tomorrow">
-                <AccordionTrigger>TOMORROW</AccordionTrigger>
+                <AccordionTrigger>Tomorrow</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within72Hours">
-                <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
+                <AccordionTrigger>IN 72 Hours</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within7Days">
-                <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
+                <AccordionTrigger>In 7 Days</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <DeliveriesTable />
                 </AccordionContent>

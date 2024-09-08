@@ -21,7 +21,7 @@ interface OrderDetailsPanelProps {
   orderId: string;
 }
 
-export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
+export default function DeliveryDetailSheet({ orderId }: OrderDetailsPanelProps) {
 
   return (
     <Sheet>

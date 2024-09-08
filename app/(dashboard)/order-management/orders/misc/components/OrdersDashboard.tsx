@@ -20,6 +20,7 @@ import TabBar from '@/components/TabBar';
 export default function EnquiriesDashboard() {
   const tabs = [
     { name: 'All Orders', count: 450 },
+    { name: 'Payment Made', count: 76 },
     { name: 'SOA', count: 40 },
     { name: 'Sorted', count: 36 },
     { name: 'Sent to dispatch', count: 18 },

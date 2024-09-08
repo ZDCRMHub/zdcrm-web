@@ -10,7 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import OrderDetailSheet from './OrderDetailSheet';
+import DeliveryDetailSheet from './DeliveryDetailSheet';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -35,7 +35,7 @@ interface DeliveryOrder {
     recipientName: string;
     recipientPhone: string;
     riderName: string;
-    riderPhone: string;
+    riderCompany: string;
     deliveryAddress: string;
     status: string;
 }
@@ -59,7 +59,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
             <TableCell>
                 <div>{order.riderName}</div>
-                <div className='text-sm text-gray-500'>{order.riderPhone}</div>
+                <div className='text-sm text-gray-500'>{order.riderCompany}</div>
             </TableCell>
             <TableCell>{order.deliveryAddress}</TableCell>
             <TableCell>
@@ -69,7 +69,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </Badge>
             </TableCell>
             <TableCell>
-                <OrderDetailSheet orderId={order.orderId} />
+                <DeliveryDetailSheet orderId={order.orderId} />
             </TableCell>
         </TableRow>
     );
@@ -85,7 +85,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Adeola',
-            riderPhone: '08034567890',
+            riderCompany: 'GIG Logistics',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'DELIVERED',
         },
@@ -97,7 +97,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
-            riderPhone: '08056789012',
+            riderCompany: 'DHL',
             deliveryAddress: '456 Agege Motor Road, Lagos Mainland',
             status: 'IN DISPATCH',
         },
@@ -109,7 +109,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Olumide',
-            riderPhone: '08078901234',
+            riderCompany: 'DHL',
             deliveryAddress: '789 Victoria Island, Lagos Island',
             status: 'DELIVERED',
         },
@@ -121,7 +121,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Tunde',
-            riderPhone: '08090123456',
+            riderCompany: 'Chowdeck',
             deliveryAddress: '101 Ikoyi, Lagos Central',
             status: 'DELIVERED',
         },
@@ -133,7 +133,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Adeola',
-            riderPhone: '08034567890',
+            riderCompany: 'Zoom Logistics',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'CANCELED',
         },
@@ -145,7 +145,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
-            riderPhone: '08056789012',
+            riderCompany: 'GIG',
             deliveryAddress: '456 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
         },
@@ -157,7 +157,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Adeola',
-            riderPhone: '08034567890',
+            riderCompany: 'GIG',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'DELIVERED',
         },
@@ -169,7 +169,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
-            riderPhone: '08056789012',
+            riderCompany: 'DHL',
             deliveryAddress: '456 Agege Motor Road, Lagos Mainland',
             status: 'IN DISPATCH',
         },
@@ -181,7 +181,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Olumide',
-            riderPhone: '08078901234',
+            riderCompany: '08078901234',
             deliveryAddress: '789 Victoria Island, Lagos Island',
             status: 'DELIVERED',
         },
@@ -193,7 +193,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Tunde',
-            riderPhone: '08090123456',
+            riderCompany: 'DHL',
             deliveryAddress: '101 Ikoyi, Lagos Central',
             status: 'DELIVERED',
         },
@@ -205,7 +205,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Adeola',
-            riderPhone: '08034567890',
+            riderCompany: 'DHL',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'CANCELED',
         },
@@ -217,7 +217,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
-            riderPhone: '08056789012',
+            riderCompany: 'Chowdeck Logistics',
             deliveryAddress: '456 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
         },
@@ -229,7 +229,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Babatunde',
-            riderPhone: '08023456789',
+            riderCompany: 'DHL',
             deliveryAddress: '234 Surulere, Lagos Mainland',
             status: 'DELIVERED',
         },
@@ -241,7 +241,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Chinedu',
-            riderPhone: '08056789012',
+            riderCompany: 'GIG',
             deliveryAddress: '345 Ikeja, Lagos Mainland',
             status: 'IN DISPATCH',
         },
@@ -253,7 +253,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Olumide',
-            riderPhone: '08078901234',
+            riderCompany: 'DHL',
             deliveryAddress: '456 Lekki, Lagos Island',
             status: 'DELIVERED',
         },
@@ -265,7 +265,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Tunde',
-            riderPhone: '08090123456',
+            riderCompany: 'Glovo',
             deliveryAddress: '567 Yaba, Lagos Central',
             status: 'DELIVERED',
         },
@@ -277,7 +277,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Adeola',
-            riderPhone: '08034567890',
+            riderCompany: 'Glovo',
             deliveryAddress: '678 Ikorodu Road, Lagos Mainland',
             status: 'CANCELED',
         },
@@ -289,7 +289,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Chinedu',
-            riderPhone: '08056789012',
+            riderCompany: 'DHL',
             deliveryAddress: '789 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
         },

@@ -10,7 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import OrderDetailSheet from './OrderDetailSheet';
+import OrderDetailSheet from './OrderHistoryDetailSheet';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -112,9 +112,9 @@ const OrdersHistoryTable = () => {
             customerPhone: '08067556644',
             deliveryDate: '2023-10-01',
             category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
+                { category: 'C', isActive: false },
+                { category: 'W', isActive: false },
+                { category: 'TB', isActive: false },
             ],
             messageOnOrder: 'Call Simisola',
             totalAmount: 5000,
@@ -126,6 +126,7 @@ const OrdersHistoryTable = () => {
             customerPhone: '08067556644',
             deliveryDate: '2023-10-02',
             category: [
+                { category: 'C', isActive: true },
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
@@ -167,9 +168,9 @@ const OrdersHistoryTable = () => {
             customerPhone: '08067556644',
             deliveryDate: '2023-10-05',
             category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
+                { category: 'C', isActive: false },
+                { category: 'W', isActive: false },
+                { category: 'TB', isActive: false },
             ],
             messageOnOrder: 'Deliver at door step',
             totalAmount: 4000,
@@ -209,6 +210,7 @@ const OrdersHistoryTable = () => {
             customerPhone: '08034567890',
             deliveryDate: '2023-10-08',
             category: [
+                { category: 'C', isActive: true },
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
@@ -250,9 +252,9 @@ const OrdersHistoryTable = () => {
             customerPhone: '08034567890',
             deliveryDate: '2023-10-11',
             category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
+                { category: 'C', isActive: false },
+                { category: 'W', isActive: false },
+                { category: 'TB', isActive: false },
             ],
             messageOnOrder: 'Deliver at door step',
             totalAmount: 4200,

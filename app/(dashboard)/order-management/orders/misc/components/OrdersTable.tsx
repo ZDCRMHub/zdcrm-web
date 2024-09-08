@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
     Table,
     TableBody,
@@ -50,7 +50,7 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, isActive }) => 
                 isActive && "text-white bg-[#367917] border-transparent"
             )}
         >
-           {category}
+            {category}
         </span>
     );
 };
@@ -69,6 +69,7 @@ interface Order {
     }[];
     orderNotes: string;
     status: string;
+    deliveryNote: string; // Added deliveryNote field
 }
 
 interface OrderRowProps {
@@ -107,13 +108,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
 
             <TableCell>{order.orderNotes}</TableCell>
+            <TableCell>{order.deliveryNote}</TableCell>
             <TableCell>
                 <Badge
                     className={statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max'}>
                     {order.status}
                 </Badge>
             </TableCell>
-               <TableCell>
+            <TableCell>
                 <OrderDetailSheet orderId={order.orderId} />
             </TableCell>
         </TableRow>
@@ -138,7 +140,8 @@ const OrdersTable = () => {
                 { category: 'C', isActive: true },
             ],
             orderNotes: 'Call Simisola',
-            status: 'SOA',
+            status: 'PAYMENT MADE',
+            deliveryNote: 'Deliver by 5 PM',
         },
         {
             orderId: 'ZD/LM6765',
@@ -154,6 +157,7 @@ const OrdersTable = () => {
             ],
             orderNotes: 'Deliver at door step',
             status: 'SORTED',
+            deliveryNote: 'Deliver by 6 PM',
         },
         {
             orderId: 'ZD/LI6765',
@@ -174,6 +178,7 @@ const OrdersTable = () => {
             ],
             orderNotes: 'Deliver at door step',
             status: 'DIS CL',
+            deliveryNote: 'Deliver by 7 PM',
         },
         {
             orderId: 'PF/LC6765',
@@ -190,6 +195,7 @@ const OrdersTable = () => {
             ],
             orderNotes: 'Call Adeola',
             status: 'DELIVERED',
+            deliveryNote: 'Deliver by 8 PM',
         },
         {
             orderId: 'PF/LM6765',
@@ -210,6 +216,7 @@ const OrdersTable = () => {
             ],
             orderNotes: 'Deliver at door step',
             status: 'CANCELED',
+            deliveryNote: 'Deliver by 9 PM',
         },
         {
             orderId: 'ZD/LC6765',
@@ -230,11 +237,9 @@ const OrdersTable = () => {
             ],
             orderNotes: 'Call Simisola',
             status: 'SENT TO DISPATCH',
+            deliveryNote: 'Deliver by 10 PM',
         },
     ];
-
-
-
 
     return (
         <Table>
@@ -246,17 +251,17 @@ const OrdersTable = () => {
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Order Notes</TableHead>
+                    <TableHead>Delivery Note</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>
-             <TableBody>
+            <TableBody>
                 {
                     orders.map((order, index) => (
                         <OrderRow
                             key={index}
                             order={order}
-
                         />
                     ))
                 }
@@ -265,4 +270,4 @@ const OrdersTable = () => {
     )
 }
 
-export default OrdersTable
+export default OrdersTable;
