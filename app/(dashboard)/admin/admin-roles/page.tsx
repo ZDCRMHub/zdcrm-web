@@ -139,10 +139,13 @@ const TabContent = () => {
             Admin
           </p>
           <p className="p-5 border-b-[1px] border-[#E0E0E0] text-[#111827]">
-            Branch Manager
+            Sales Representative
           </p>
           <p className="p-5 border-b-[1px] border-[#E0E0E0] text-[#111827]">
             Delivery Representative
+          </p>
+          <p className="p-5 border-b-[1px] border-[#E0E0E0] text-[#111827]">
+            Operations
           </p>
           <p className="p-5 border-b-[1px] border-[#E0E0E0] text-[#111827]">
             Digital Marketer
@@ -167,23 +170,45 @@ const TabContent = () => {
               <p className="p-5 border-b-[1px] border-[#E0E0E0] text-[#111827] text-sm h-[65px]">
                 10
               </p>
+              <p className="p-5 border-b-[1px] border-[#E0E0E0] text-[#111827] text-sm h-[65px]">
+                10
+              </p>
             </div>
             <div className="flex-1">
               <p className="p-5 bg-[#fafafa] font-bold text-sm">Active</p>
               <div className="p-5 border-b-[1px] border-[#E0E0E0] h-[65px]">
-                <Switch id="admin" />
+                <Switch
+                  id="admin"
+                  className="data-[state=checked]:bg-[#27A376] data-[state=unchecked]:bg-[#CBD5E0]"
+                />
                 <Label htmlFor="admin"></Label>
               </div>
               <div className="p-5 border-b-[1px] border-[#E0E0E0] h-[65px]">
-                <Switch id="branch-manager" />
-                <Label htmlFor="branch-manager"></Label>
+                <Switch
+                  id="sales-rep"
+                  className="data-[state=checked]:bg-[#27A376] data-[state=unchecked]:bg-[#CBD5E0]"
+                />
+                <Label htmlFor="sales-rep"></Label>
               </div>
               <div className="p-5 border-b-[1px] border-[#E0E0E0] h-[65px]">
-                <Switch id="delivery-rep" />
+                <Switch
+                  id="delivery-rep"
+                  className="data-[state=checked]:bg-[#27A376] data-[state=unchecked]:bg-[#CBD5E0]"
+                />
                 <Label htmlFor="delivery-rep"></Label>
               </div>
               <div className="p-5 border-b-[1px] border-[#E0E0E0] h-[65px]">
-                <Switch id="digital-markerter" />
+                <Switch
+                  id="operations"
+                  className="data-[state=checked]:bg-[#27A376] data-[state=unchecked]:bg-[#CBD5E0]"
+                />
+                <Label htmlFor="operations"></Label>
+              </div>
+              <div className="p-5 border-b-[1px] border-[#E0E0E0] h-[65px]">
+                <Switch
+                  id="digital-markerter"
+                  className="data-[state=checked]:bg-[#27A376] data-[state=unchecked]:bg-[#CBD5E0]"
+                />
                 <Label htmlFor="digital-markerter"></Label>
               </div>
             </div>
@@ -243,6 +268,12 @@ const AdminRolesPage = () => {
             </TabsContent>
           </div>
         </Tabs>
+        <div className="mr-7 mt-10 flex justify-end">
+
+        <Button className="h-14 bg-[#194A7A] rounded-xl px-14">
+          Save Changes
+        </Button>
+        </div>
       </div>
     </section>
   );
