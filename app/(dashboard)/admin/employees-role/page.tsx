@@ -33,6 +33,17 @@ import {
 import { IoChevronUp } from "react-icons/io5";
 import { useBooleanStateControl } from "@/hooks";
 import { ConfirmDeleteModal } from "@/components/ui";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Label } from "@radix-ui/react-label";
 
 const memberDetails = [
   {
@@ -143,9 +154,46 @@ const Page = () => {
           <Button className="h-12 flex gap-4 bg-[#111827] rounded-[10px] text-sm px-6">
             Save Changes
           </Button>
-          <Button className="h-12 flex gap-4 bg-transparent text-sm px-6 text-[#111827] border border-solid rounded-[10px]">
+
+          <Sheet>
+            <SheetTrigger asChild>
+            <Button className="h-12 flex gap-4 bg-transparent text-sm px-6 text-[#111827] border border-solid rounded-[10px]">
             Add Employee
           </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle className="text-2xl font-bold pb-8">
+                  Add New Employee
+                </SheetTitle>
+                <SheetDescription className="flex flex-col gap-3">
+                  <Label htmlFor="em-name" className="text-[#111827]">
+                    Employee Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input id="em-name" type="text" className="h-14" />
+                  <Label htmlFor="em-email" className="text-[#111827]">
+                    Employee Email <span className="text-red-500">*</span>
+                  </Label>
+                  <Input id="em-email" type="email" className="h-14" />
+                </SheetDescription>
+              </SheetHeader>
+              <SheetFooter className="mt-20">
+                <SheetClose asChild>
+                  <Button
+                    type="submit"
+                    className="w-full bg-white text-black border border-solid h-14"
+                  >
+                    Cancel
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button type="submit" className="w-full bg-[#111827] h-14">
+                    Create
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
       <Table>
