@@ -37,6 +37,25 @@ export { Input } from './input'
 
 export { LinkButton } from './linkButton'
 
+export {
+  Menubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+  MenubarLabel,
+  MenubarCheckboxItem,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarPortal,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarGroup,
+  MenubarSub,
+  MenubarShortcut,
+} from './menubar'
+
 export { Popover, PopoverTrigger, PopoverContent } from './popover'
 export { default as ProductsDropdown } from './productsDropdown'
 

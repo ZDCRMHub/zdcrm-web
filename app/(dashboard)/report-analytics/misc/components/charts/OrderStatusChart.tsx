@@ -17,7 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { TrendUp } from "iconsax-react"
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue, RangeAndCustomDatePicker } from "@/components/ui"
 import { TrendingUp } from "lucide-react"
 
 export const description = "A donut chart"
@@ -51,7 +51,7 @@ export function OrderStatusChart() {
   return (
     <Card className="flex flex-col">
       <CardHeader className="flex !flex-row items-center justify-between pb-0">
-        <div>
+        <div className="min-w-max shrink-0">
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className='h-6 w-6 text-green-500' />
             Order Status
@@ -60,16 +60,8 @@ export function OrderStatusChart() {
         </div>
 
 
-        <Select defaultValue='today'>
-          <SelectTrigger className='w-max min-w-[120px] h-12 text-xs'>
-            <SelectValue placeholder='Today' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='today'>Today</SelectItem>
-            <SelectItem value='week'>This Week</SelectItem>
-            <SelectItem value='month'>This Month</SelectItem>
-          </SelectContent>
-        </Select>
+        <RangeAndCustomDatePicker className="w-max" />
+
 
       </CardHeader>
       <CardContent className="flex-1 flex pb-0">

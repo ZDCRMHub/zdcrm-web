@@ -6,14 +6,14 @@ import {
   Plus,
   RefreshCcw,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton } from '@/components/ui';
-import TabBar from '@/components/TabBar';
 import DeliveriesTable from './DeliveriesTable';
+import { Location, ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input } from "@/components/ui"
 
 
 
@@ -46,17 +46,52 @@ export default function DeliveriesDashboard() {
             onChange={(e) => setSearchText(e.target.value)}
             rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
           />
-          <Select >
-            <SelectTrigger className="max-w-[150px] w-full text-[0.75rem]">
-              <SelectValue placeholder="Filter location" className="text-[0.75rem] text-[#A7A7A7] w-full grow" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Pending">Lagos Island</SelectItem>
-              <SelectItem value="Processing">Lagos Mainland</SelectItem>
-              <SelectItem value="Shipped">Lagos Central</SelectItem>
-              <SelectItem value="Delivered">Others</SelectItem>
-            </SelectContent>
-          </Select>
+          <Menubar>
+            <MenubarMenu>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter deliveries by <ArrowDown2 size={16} /></MenubarTrigger>
+              <MenubarContent>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Calendar size={18} />Date Range</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <RangeAndCustomDatePicker />
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Category2 size={18} />Category</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem>Cake</MenubarItem>
+                    <MenubarItem>Flower</MenubarItem>
+                    <MenubarItem>Teddy Bear</MenubarItem>
+                    <MenubarItem>Cup Cake</MenubarItem>
+                    <MenubarItem>Vase</MenubarItem>
+                    <MenubarItem>Wine</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><NotificationStatus size={18} />Status</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem>In Dispatch</MenubarItem>
+                    <MenubarItem>Delivered</MenubarItem>
+                    <MenubarItem>Cancelled</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Location size={18} />Location</MenubarSubTrigger>
+                  <MenubarSubContent>
+
+                    <MenubarItem>Lagos Isalnd</MenubarItem>
+                    <MenubarItem>Lagos Mainland</MenubarItem>
+                    <MenubarItem>Lagos Central</MenubarItem>
+                    <MenubarItem>Others</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
         </div>
         <div className='flex items-center gap-2'>
           <Button

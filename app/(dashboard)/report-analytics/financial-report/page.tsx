@@ -3,7 +3,7 @@
 import React from 'react';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/charts/OrderStatisticsCard';
+import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
 import { Button } from '@/components/ui/button';
 import {
   Select,

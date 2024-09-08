@@ -1,7 +1,7 @@
 'use client';
 
 import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/charts/OrderStatisticsCard';
+import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
 import TopProductsTable from '@/app/(dashboard)/report-analytics/misc/components/TopProductsTable';
 import { Button } from '@/components/ui/button';

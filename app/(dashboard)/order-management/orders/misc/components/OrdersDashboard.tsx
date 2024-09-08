@@ -6,14 +6,12 @@ import {
   Plus,
   RefreshCcw,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
-
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton } from '@/components/ui';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input } from "@/components/ui"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton, Button } from '@/components/ui';
 import OrdersTable from './OrdersTable';
 import TabBar from '@/components/TabBar';
+import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
 
 
 
@@ -47,17 +45,47 @@ export default function EnquiriesDashboard() {
             onChange={(e) => setSearchText(e.target.value)}
             rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
           />
-          <Select >
-            <SelectTrigger className="max-w-[150px] w-full text-[0.75rem]">
-              <SelectValue placeholder="Filter enquiries by" className="text-[0.75rem] text-[#A7A7A7] w-full grow" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Processing">Processing</SelectItem>
-              <SelectItem value="Shipped">Shipped</SelectItem>
-              <SelectItem value="Delivered">Delivered</SelectItem>
-            </SelectContent>
-          </Select>
+          <Menubar>
+            <MenubarMenu>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter orders by <ArrowDown2 size={16}/></MenubarTrigger>
+              <MenubarContent>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Calendar size={18} />Date Range</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <RangeAndCustomDatePicker />
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Category2 size={18} />Category</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem>Cake</MenubarItem>
+                    <MenubarItem>Flower</MenubarItem>
+                    <MenubarItem>Teddy Bear</MenubarItem>
+                    <MenubarItem>Cup Cake</MenubarItem>
+                    <MenubarItem>Vase</MenubarItem>
+                    <MenubarItem>Wine</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><NotificationStatus size={18} />Status</MenubarSubTrigger>
+                  <MenubarSubContent>
+
+                    <MenubarItem>Payment Made</MenubarItem>
+                    <MenubarItem>Sorted</MenubarItem>
+                    <MenubarItem>SOA</MenubarItem>
+                    <MenubarItem>Sent to Dispatch</MenubarItem>
+                    <MenubarItem>DIS CL</MenubarItem>
+                    <MenubarItem>Delivered</MenubarItem>
+                    <MenubarItem>DEL CL</MenubarItem>
+                    <MenubarItem>Cancelled</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
         </div>
         <div className='flex items-center gap-2'>
           <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>

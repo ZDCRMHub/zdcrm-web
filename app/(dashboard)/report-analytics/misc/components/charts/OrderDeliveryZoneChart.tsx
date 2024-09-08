@@ -19,7 +19,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { TrendUp } from "iconsax-react"
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui"
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue, RangeAndCustomDatePicker } from "@/components/ui"
 import { TrendingUp } from "lucide-react"
 
 export const description = "A donut chart"
@@ -60,17 +60,8 @@ export function OrderDeliveryZoneChart() {
         <CardTitle>
           Order Delivery Zone
         </CardTitle>
+        <RangeAndCustomDatePicker className="w-max" />
 
-        <Select defaultValue='today'>
-          <SelectTrigger className='w-max min-w-[120px] h-12 text-xs'>
-            <SelectValue placeholder='Today' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='today'>Today</SelectItem>
-            <SelectItem value='week'>This Week</SelectItem>
-            <SelectItem value='month'>This Month</SelectItem>
-          </SelectContent>
-        </Select>
       </CardHeader>
       <CardContent className="flex-1 flex pb-0 min-h-[300px]">
         <ChartContainer
