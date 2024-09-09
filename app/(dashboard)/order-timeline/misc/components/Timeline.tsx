@@ -109,9 +109,11 @@ export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherIn
                                     </>
                                 ) : (
                                     <>
-                                        <SelectItem value="Pending">Pending</SelectItem>
-                                        <SelectItem value="Processing">Processing</SelectItem>
-                                        <SelectItem value="Shipped">Shipped</SelectItem>
+                                        <SelectItem value="Pending">Payment Made</SelectItem>
+                                        <SelectItem value="SOA">SOA</SelectItem>
+                                        <SelectItem value="Sorted">Sorted</SelectItem>
+                                        <SelectItem value="Sent to Dispatch">Sent to Dispatch</SelectItem>
+                                        <SelectItem value="DIS CL">DIS CL</SelectItem>
                                         <SelectItem value="Delivered">Delivered</SelectItem>
                                     </>
                                 )
