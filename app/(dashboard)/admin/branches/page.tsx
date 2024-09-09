@@ -20,7 +20,7 @@ import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
-import { ConfirmSuccessModal } from "@/components/ui";
+import { SuccessModal } from "@/components/ui";
 import { useBooleanStateControl } from "@/hooks";
 
 type BranchCardProp = {
@@ -57,11 +57,11 @@ const BranchCard = ({ name, country }: BranchCardProp) => {
   );
 };
 
-const page = () => {
+const BranchPage = () => {
   const {
-    state: isConfirmSuccessModalOpen,
-    setTrue: openConfirmSuccessModal,
-    setFalse: closeConfirmSuccessModal,
+    state: isSuccessModalOpen,
+    setTrue: openSuccessModal,
+    setFalse: closeSuccessModal,
   } = useBooleanStateControl();
 
   const {
@@ -133,7 +133,7 @@ const page = () => {
                   className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                   onClick={() => {
                     closeAddBranchModal();
-                    openConfirmSuccessModal();
+                    openSuccessModal();
                   }}
                 >
                   Add New Branch
@@ -144,9 +144,9 @@ const page = () => {
         </div>
       </div>
 
-      <ConfirmSuccessModal
-        isModalOpen={isConfirmSuccessModalOpen}
-        closeModal={closeConfirmSuccessModal}
+      <SuccessModal
+        isModalOpen={isSuccessModalOpen}
+        closeModal={closeSuccessModal}
         heading="Branch Added Successfully"
         subheading= "New Branch Added"
       />
@@ -154,4 +154,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default BranchPage;

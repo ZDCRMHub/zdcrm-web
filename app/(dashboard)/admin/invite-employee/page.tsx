@@ -13,15 +13,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ConfirmSuccessModal } from '@/components/ui';
+import { SuccessModal } from '@/components/ui';
 import { useBooleanStateControl } from "@/hooks";
 
-const page = () => {
+const InviteEmployeePage = () => {
 
   const {
-    state: isConfirmSuccessModalOpen,
-    setTrue: openConfirmSuccessModal,
-    setFalse: closeConfirmSuccessModal,
+    state: isSuccessModalOpen,
+    setTrue: openSuccessModal,
+    setFalse: closeSuccessModal,
   } = useBooleanStateControl()
 
 
@@ -70,20 +70,20 @@ const page = () => {
               Recipient will receive an invite email notification and must
               accept notification prompt on or before 3days
             </p>
-            <Button className="h-14 flex gap-4 bg-[#090909] rounded-xl text-[18px] px-7"  onClick={openConfirmSuccessModal}>
+            <Button className="h-14 flex gap-4 bg-[#090909] rounded-xl text-[18px] px-7"  onClick={openSuccessModal}>
               Invite
             </Button>
           </div>
         </div>
       </div>
 
-      <ConfirmSuccessModal
-        isModalOpen={isConfirmSuccessModalOpen}
-        closeModal={closeConfirmSuccessModal}
+      <SuccessModal
+        isModalOpen={isSuccessModalOpen}
+        closeModal={closeSuccessModal}
         heading='New Invitation Sent Successfully'
       />
     </section>
   );
 };
 
-export default page;
+export default InviteEmployeePage;

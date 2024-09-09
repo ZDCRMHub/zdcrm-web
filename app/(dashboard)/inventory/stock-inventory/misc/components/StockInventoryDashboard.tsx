@@ -98,10 +98,10 @@ const StockInventoryDashboard = () => {
 
       <div className="relative flex mb-4 mt-4">
         <div className="sticky top-0 min-w-[300px] w-1/4 pr-4 h-max">
-          <Card className="mb-4 p-4 ">
+          <Card className="mb-4">
             {/* <h3 className="text-lg font-semibold mb-2">Filters</h3> */}
 
-            <div className=' space-y-10 py-8'>
+            <div className=' space-y-10 py-8 px-4'>
               <section className="flex flex-col gap-4">
                 <Label className='text-text-grey text-[14px]'>Product Status</Label>
                 <div className='grid grid-cols-2 gap-1'>
@@ -151,6 +151,10 @@ const StockInventoryDashboard = () => {
                 <Input type='number' placeholder='Max' className='w-full min-w-[200px] text-xs !h-10' containerClassName='overflow-hidden rounded-lg mt-4' leftIcon="₦" leftIconContainerClass="h-full w-6 flex items-center justify-center top-0 left-0 bg-blue-100 px-1.5" />
               </section>
             </div>
+
+            <Button>
+              
+            </Button>
           </Card>
         </div>
 
