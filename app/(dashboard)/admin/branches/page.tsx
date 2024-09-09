@@ -14,12 +14,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
+import { ConfirmSuccessModal } from "@/components/ui";
+import { useBooleanStateControl } from "@/hooks";
 
 type BranchCardProp = {
   name: string;
@@ -56,6 +58,18 @@ const BranchCard = ({ name, country }: BranchCardProp) => {
 };
 
 const page = () => {
+  const {
+    state: isConfirmSuccessModalOpen,
+    setTrue: openConfirmSuccessModal,
+    setFalse: closeConfirmSuccessModal,
+  } = useBooleanStateControl();
+
+  const {
+    state: isAddBranchModalOpen,
+    setTrue: openAddBranchModal,
+    setFalse: closeAddBranchModal,
+  } = useBooleanStateControl();
+
   return (
     <section className="w-[910px] h-auto mx-auto mt-32 flex flex-col gap-16">
       <div className="text-center">
@@ -78,17 +92,24 @@ const page = () => {
         <div className="flex gap-6">
           <BranchCard name="Prestige Flowers" country="Nigeria" />
           <BranchCard name="Zuzu Delights" country="Nigeria" />
-          <Dialog>
-            <DialogTrigger asChild className="cursor-pointer">
-              <div className="bg-[#DFDFDF] w-[264px] rounded-lg flex justify-center items-center">
-                <GoPlus size={24} />
-              </div>
-            </DialogTrigger>
+          <div
+            className="bg-[#DFDFDF] w-[264px] rounded-lg flex justify-center items-center cursor-pointer"
+            onClick={openAddBranchModal}
+          >
+            <GoPlus size={24} />
+          </div>
+          <Dialog open={isAddBranchModalOpen}>
             <DialogContent className="flex flex-col gap-8 w-[520px] px-[75px] py-8">
-                  <DialogClose className="absolute right-[75px]" >
-                  <IoIosClose size={24} />
-                  </DialogClose>
-              <FaArrowLeftLong className="cursor-pointer" />
+              <DialogClose
+                onClick={closeAddBranchModal}
+                className="absolute right-[75px]"
+              >
+                <IoIosClose size={24} />
+              </DialogClose>
+              <FaArrowLeftLong
+                className="cursor-pointer"
+                onClick={closeAddBranchModal}
+              />
               <DialogHeader className="">
                 <DialogTitle className="text-2xl">Add a New Branch</DialogTitle>
               </DialogHeader>
@@ -97,28 +118,38 @@ const page = () => {
                   <Label htmlFor="name" className="text-sm">
                     Name
                   </Label>
-                  <Input
-                    id="name"
-                    className=""
-                  />
+                  <Input id="name" className="" />
                 </div>
                 <div className="">
                   <Label htmlFor="country" className="text-sm">
                     Select Country
                   </Label>
-                  <Input
-                    id="country"
-                    className=""
-                  />
+                  <Input id="country" className="" />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]">Add New Branch</Button>
+                <Button
+                  type="submit"
+                  className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
+                  onClick={() => {
+                    closeAddBranchModal();
+                    openConfirmSuccessModal();
+                  }}
+                >
+                  Add New Branch
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
       </div>
+
+      <ConfirmSuccessModal
+        isModalOpen={isConfirmSuccessModalOpen}
+        closeModal={closeConfirmSuccessModal}
+        heading="Branch Added Successfully"
+        subheading= "New Branch Added"
+      />
     </section>
   );
 };

@@ -13,8 +13,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { ConfirmSuccessModal } from '@/components/ui';
+import { useBooleanStateControl } from "@/hooks";
 
 const page = () => {
+
+  const {
+    state: isConfirmSuccessModalOpen,
+    setTrue: openConfirmSuccessModal,
+    setFalse: closeConfirmSuccessModal,
+  } = useBooleanStateControl()
+
+
   return (
     <section className="mt-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A]">
       <div className="border-b-[1px] border-[#E0E0E0] pl-6 pt-9 pb-5 relative">
@@ -60,12 +70,18 @@ const page = () => {
               Recipient will receive an invite email notification and must
               accept notification prompt on or before 3days
             </p>
-            <Button className="h-14 flex gap-4 bg-[#090909] rounded-xl text-[18px] px-7">
+            <Button className="h-14 flex gap-4 bg-[#090909] rounded-xl text-[18px] px-7"  onClick={openConfirmSuccessModal}>
               Invite
             </Button>
           </div>
         </div>
       </div>
+
+      <ConfirmSuccessModal
+        isModalOpen={isConfirmSuccessModalOpen}
+        closeModal={closeConfirmSuccessModal}
+        heading='New Invitation Sent Successfully'
+      />
     </section>
   );
 };
