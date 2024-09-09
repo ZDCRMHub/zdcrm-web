@@ -31,7 +31,7 @@ type TOrder = {
 // Generate mock data
 export const generateMockOrders = (count: number) => {
     const action = faker.helpers.arrayElement(['placed an order', 'carted an item', 'made an enquiry', 'created an order'])
-    const type = action == 'made an enquiry' ? 'enquiry' : 'order';
+    const type = action == ('made an enquiry' || 'carted an item') ? 'enquiry' : 'order';
     return Array.from({ length: count }, () => ({
         id: faker.string.uuid(),
         customerName: faker.person.fullName(),
@@ -44,7 +44,7 @@ export const generateMockOrders = (count: number) => {
             details: faker.lorem.sentence(),
             agent: faker.person.fullName()
         })),
-        
+
         type
     }));
 };
@@ -56,7 +56,7 @@ const mockData = {
     within7Days: generateMockOrders(5)
 };
 
-export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherInfo?:boolean }) => {
+export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherInfo?: boolean }) => {
     const {
         state: isModalOpen,
         setTrue: openModal,
@@ -95,7 +95,7 @@ export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherIn
                     )}
                 </section>
                 <div className={cn("flex items-center gap-4", hideOtherInfo && "hidden")}>
-                    <Button variant="outline" onClick={openModal}><Calendar size={16}  /> + Add Note</Button>
+                    <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
                     <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Pending'}>
                         <SelectTrigger className="w-[120px]">
                             <SelectValue placeholder="Status" />
@@ -116,7 +116,7 @@ export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherIn
                                     </>
                                 )
                             }
-                           
+
                         </SelectContent>
                     </Select>
                 </div>
@@ -143,7 +143,7 @@ const OrderTimeline = () => {
     //   React.useEffect(() => {
     //     getttt()
     //   }, [])
-    
+
 
 
     return (

@@ -8,7 +8,6 @@ import { Plus, User, X } from 'lucide-react';
 import { Add, Book } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
-import CustomImagePicker from './CustomImagePicker';
 
 // Define the schema using zod
 const schema = z.object({
@@ -16,12 +15,10 @@ const schema = z.object({
     branch: z.string().min(1, { message: 'Branch is required' }),
     category: z.string().min(1, { message: 'Category is required' }),
     amount: z.string().min(1, { message: 'Amount is required' }),
-    image: z.instanceof(File, { message: 'Image is required' }).refine(file => file.size > 0, { message: 'Image is required' }),
 });
 type formType = z.infer<typeof schema>;
-
 export default function NewInventorySheet() {
-    const { control, handleSubmit, formState: { errors, isDirty }, setValue } = useForm<formType>({
+    const { control, handleSubmit, formState: { errors, isDirty },  } = useForm<formType>({
         resolver: zodResolver(schema),
     });
 
@@ -54,11 +51,6 @@ export default function NewInventorySheet() {
                 <Separator />
 
                 <form onSubmit={handleSubmit(onSubmit)} className='grow flex flex-col gap-8 px-8 py-10'>
-                    <CustomImagePicker  
-                        control={control}
-                        name="image"
-                        errors={errors}
-                    />
                     <Controller
                         name="itemName"
                         control={control}
@@ -110,8 +102,7 @@ export default function NewInventorySheet() {
                             />
                         )}
                     />
-
-                    <Controller
+ <Controller
                         name="amount"
                         control={control}
                         render={({ field }) => (
@@ -122,14 +113,13 @@ export default function NewInventorySheet() {
                             />
                         )}
                     />
-
-
                     <div className="flex items-center gap-4 mt-auto">
                         <SheetClose asChild>
                             <Button type="submit" className='h-14 w-full' variant="outline">Cancel</Button>
                         </SheetClose>
                         <Button type="submit" className='h-14 w-full' variant="black" disabled={!isDirty}>Save Record</Button>
                     </div>
+
                 </form>
             </SheetContent>
         </Sheet>
