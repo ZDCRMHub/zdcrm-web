@@ -150,10 +150,15 @@ const StockInventoryDashboard = () => {
                 <Input type='number' placeholder='Min' className='w-full min-w-[200px] text-xs !h-10' containerClassName='overflow-hidden rounded-lg mt-5' leftIcon="₦" leftIconContainerClass="h-full w-6 flex items-center justify-center top-0 left-0 bg-blue-100 px-1.5" />
                 <Input type='number' placeholder='Max' className='w-full min-w-[200px] text-xs !h-10' containerClassName='overflow-hidden rounded-lg mt-4' leftIcon="₦" leftIconContainerClass="h-full w-6 flex items-center justify-center top-0 left-0 bg-blue-100 px-1.5" />
               </section>
+
+              <Button className='w-full min-w-[200px] text-xs !h-10 border' variant="light">
+                Apply Filters
+              </Button>
             </div>
 
-            <Button>
-              
+
+            <Button className='w-full min-w-[200px] text-xs !h-12 rounded-t-none mt-8' variant="light">
+              Reset Filters
             </Button>
           </Card>
         </div>
