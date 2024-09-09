@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui";
 import { OrderManagement, OrderTimeLine } from "@/icons/sidebar";
+import { cn } from "@/lib/utils";
 import { X } from "@phosphor-icons/react";
 import Image from "next/image";
 import React from "react";
@@ -19,12 +20,14 @@ interface ModalProps {
   closeModal: () => void;
   heading?: string;
   subheading?: string | React.ReactNode;
+  headingClass?: string
 }
-const ConfirmSuccessModal: React.FC<ModalProps> = ({
+const SuccessModal: React.FC<ModalProps> = ({
   isModalOpen,
   closeModal,
   heading,
-  subheading
+  subheading,
+  headingClass
 }) => {
   return (
     <Dialog open={isModalOpen}>
@@ -43,9 +46,9 @@ const ConfirmSuccessModal: React.FC<ModalProps> = ({
         </div>
 
         <div className="flex flex-col gap-2.5 items-center px-6">
-            <Image src="/img/illustration.png" alt="success" width={265} height={140} />
-          <h3 className="text-[#1E1E1E] text-xl font-medium mt-2 text-center">
-            {heading ?? "Confirm Action"}
+          <Image src="/img/illustration.png" alt="success" width={265} height={140} />
+          <h3 className={cn("text-[#1E1E1E] text-xl font-medium mt-2 text-center", headingClass)}>
+            {heading ?? "Success!"}
           </h3>
           <p className="text-[#828282] text-xs">
             {subheading ?? ""}
@@ -53,15 +56,15 @@ const ConfirmSuccessModal: React.FC<ModalProps> = ({
         </div>
 
         <DialogFooter className="">
-        <div className="w-full flex justify-center p-6">
-          <Button className="h-14 w-[216px] bg-black" onClick={closeModal}>
-            Okay
-          </Button>
-        </div>
+          <div className="w-full flex justify-center p-6">
+            <Button className="h-14 w-[216px] bg-black" onClick={closeModal}>
+              Okay
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default ConfirmSuccessModal;
+export default SuccessModal;

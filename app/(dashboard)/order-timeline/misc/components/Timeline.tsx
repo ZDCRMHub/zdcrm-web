@@ -30,11 +30,13 @@ type TOrder = {
 }
 // Generate mock data
 export const generateMockOrders = (count: number) => {
+    const action = faker.helpers.arrayElement(['placed an order', 'carted an item', 'made an enquiry', 'created an order'])
+    const type = action == 'made an enquiry' ? 'enquiry' : 'order';
     return Array.from({ length: count }, () => ({
         id: faker.string.uuid(),
         customerName: faker.person.fullName(),
         orderId: faker.string.alphanumeric(6).toUpperCase(),
-        action: faker.helpers.arrayElement(['placed an order', 'carted an item', 'made an enquiry', 'created an order']),
+        action,
         status: faker.helpers.arrayElement(['Still Discussing', 'Finalized Discussion']),
         agent: faker.person.fullName(),
         timeline: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }, () => ({
@@ -43,7 +45,7 @@ export const generateMockOrders = (count: number) => {
             agent: faker.person.fullName()
         })),
         
-        type: faker.helpers.arrayElement(['enquiry', 'order']),
+        type
     }));
 };
 
