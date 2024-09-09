@@ -101,11 +101,11 @@ export const linkGroups = [
             icon: <BagTick2 />,
           },
 
-          // {
-          //   link: '/inventory/store-inventory',
-          //   text: 'Store Inventory',
-          //   icon: <OrderManagement />,
-          // },
+          {
+            link: '/inventory/store-inventory',
+            text: 'Store Inventory',
+            icon: <OrderManagement />,
+          },
         ],
       },
     ],

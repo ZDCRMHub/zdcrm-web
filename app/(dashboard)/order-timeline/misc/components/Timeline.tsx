@@ -12,6 +12,7 @@ import { useBooleanStateControl } from '@/hooks';
 import AddNewNoteModal from './AddNewNoteModal';
 import axios from 'axios';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 type TOrder = {
     id: string;
@@ -147,7 +148,7 @@ const OrderTimeline = () => {
         <>
             <Accordion type="single" collapsible className="w-full max-w-[1440px] px-8" defaultValue='today'>
                 <AccordionItem value="today">
-                    <AccordionTrigger>Today, 22nd of 2024</AccordionTrigger>
+                    <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
                     <AccordionContent className='px-4'>
                         {mockData.today.map(order => <OrderCard key={order.id} order={order} />)}
                     </AccordionContent>
