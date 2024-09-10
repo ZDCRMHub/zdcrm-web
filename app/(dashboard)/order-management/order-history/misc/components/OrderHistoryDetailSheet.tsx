@@ -162,7 +162,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             <header className="border-b border-b-[#00000021]">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
                 <MessageCircle size={19} />
-                Message for order
+                 Order Notes
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
@@ -303,7 +303,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             <header className="border-b border-b-[#00000021]">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
                 <Notepad2 size={19} />
-                Delivery notes
+                Message for order
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>

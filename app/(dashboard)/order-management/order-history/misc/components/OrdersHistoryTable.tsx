@@ -46,7 +46,7 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, isActive }) => 
                 isActive && "text-white bg-[#367917] border-transparent"
             )}
         >
-           {category}
+            {category}
         </span>
     );
 };
@@ -63,6 +63,7 @@ interface Order {
     messageOnOrder: string;
     totalAmount: number;
     status: string;
+    deliveryNotes: string;
 }
 
 interface OrderRowProps {
@@ -91,6 +92,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
             <TableCell>{order.messageOnOrder}</TableCell>
             <TableCell>N {order.totalAmount}0</TableCell>
+            <TableCell>{order.deliveryNotes}</TableCell>
             <TableCell>
                 <Badge
                     className={statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max'}>
@@ -119,6 +121,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Call Simisola',
             totalAmount: 5000,
             status: 'CANCELED',
+            deliveryNotes: 'Order canceled due to customer request.'
         },
         {
             orderId: 'ZD/LM6765',
@@ -133,6 +136,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Deliver at door step',
             totalAmount: 4500,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully at the doorstep.'
         },
         {
             orderId: 'ZD/LI6765',
@@ -147,6 +151,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Deliver at door step',
             totalAmount: 6000,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully at the doorstep.'
         },
         {
             orderId: 'PF/LC6765',
@@ -161,6 +166,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Call Adeola',
             totalAmount: 5500,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully after calling Adeola.'
         },
         {
             orderId: 'PF/LM6765',
@@ -175,6 +181,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Deliver at door step',
             totalAmount: 4000,
             status: 'CANCELED',
+            deliveryNotes: 'Order canceled due to customer request.'
         },
         {
             orderId: 'ZD/LC6765',
@@ -189,6 +196,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Call Simisola',
             totalAmount: 4800,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully after calling Simisola.'
         },
         {
             orderId: 'PF/LM6766',
@@ -203,6 +211,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Call Amina',
             totalAmount: 5200,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully after calling Amina.'
         },
         {
             orderId: 'ZD/LM6766',
@@ -217,6 +226,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Deliver at door step',
             totalAmount: 4700,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully at the doorstep.'
         },
         {
             orderId: 'ZD/LI6766',
@@ -231,6 +241,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Deliver at door step',
             totalAmount: 6200,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully at the doorstep.'
         },
         {
             orderId: 'PF/LC6766',
@@ -245,6 +256,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Call Amina',
             totalAmount: 5700,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully after calling Amina.'
         },
         {
             orderId: 'PF/LM6767',
@@ -259,6 +271,7 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Deliver at door step',
             totalAmount: 4200,
             status: 'CANCELED',
+            deliveryNotes: 'Order canceled due to customer request.'
         },
         {
             orderId: 'ZD/LC6767',
@@ -273,8 +286,10 @@ const OrdersHistoryTable = () => {
             messageOnOrder: 'Call Amina',
             totalAmount: 4900,
             status: 'DELIVERED',
+            deliveryNotes: 'Delivered successfully after calling Amina.'
         },
     ];
+
 
     return (
         <Table>
@@ -286,6 +301,7 @@ const OrdersHistoryTable = () => {
                     <TableHead>Category</TableHead>
                     <TableHead>Message on Order</TableHead>
                     <TableHead>Total Amount</TableHead>
+                    <TableHead>Delivery Notes</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
                 </TableRow>

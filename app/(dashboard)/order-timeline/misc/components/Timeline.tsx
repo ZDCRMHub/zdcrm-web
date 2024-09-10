@@ -96,7 +96,7 @@ export const OrderCard = ({ order, hideOtherInfo }: { order: TOrder, hideOtherIn
                 </section>
                 <div className={cn("flex items-center gap-4", hideOtherInfo && "hidden")}>
                     <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
-                    <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Pending'}>
+                    <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Payment Made'}>
                         <SelectTrigger className="w-[120px]">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
