@@ -7,11 +7,12 @@ import * as z from 'zod'
 import { Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown } from '@/components/ui'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 import { TruckTime } from 'iconsax-react'
-import { generateMockOrders, OrderCard } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
+import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
 import { EditPenIcon } from '@/icons/core';
 import Image from 'next/image'
 import { getSchemaForCategory } from '../misc/schemas'
 import { AllProducts, productOptions } from '@/constants'
+import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard'
 
 // Define your schema here
 const schema = z.object({
@@ -23,6 +24,8 @@ const schema = z.object({
   enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
   deliveryNote: z.string().optional(),
   deliveryDate: z.date(),
+  paymentMode: z.enum(["cash", "transfer", "pos", "online"], { message: "Payment mode is required" }),
+  paymentStatus: z.enum(["pending", "Paid(Naira Transfer)",], { message: "Payment status is required" }),
 
   items: z.array(z.object({
     category: z.enum(["C", "F", "W", "TB"], { message: "Category is required" }),
@@ -150,17 +153,30 @@ const NewEnquiryPage = () => {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value='-discussion'>
-            <AccordionTrigger className=''>
-              <div className='flex items-center gap-5'>
-                <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
-                  <img src='/img/book.svg' alt='' width={24} height={24} />
+          <AccordionItem value="delivery-information">
+            <AccordionTrigger className="flex">
+              <div className="flex items-center gap-3 text-[#194A7A]">
+                <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
+                  <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
                 </div>
-                <p className='text-custom-blue font-medium'>Discussion</p>
+                <h3 className="font-semibold text-base">Delivery Details</h3>
               </div>
             </AccordionTrigger>
-            <AccordionContent className='pt-8 pb-14'>
-              <OrderCard order={mockDiscussion} />
+            <AccordionContent>
+              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14'>
+                <Input
+                  label="Delivery note"
+                  {...register('deliveryNote')}
+                  hasError={!!errors.deliveryNote}
+                  errorMessage={errors.deliveryNote?.message as string}
+                  placeholder='Enter delivery date'
+                />
+                <SingleDatePicker
+                  label="Delivery Date"
+                // control={control}
+                // error={errors.deliveryDate?.message}
+                />
+              </div>
             </AccordionContent>
           </AccordionItem>
 
@@ -227,7 +243,7 @@ const NewEnquiryPage = () => {
                             {
                               field.category === 'C' && (
                                 <>
-                                                              <Controller
+                                  <Controller
                                     name={`items.${index}.layers`}
                                     control={control}
                                     render={({ field }) => (
@@ -465,28 +481,65 @@ const NewEnquiryPage = () => {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="delivery-information">
+          <AccordionItem value='-discussion'>
+            <AccordionTrigger className=''>
+              <div className='flex items-center gap-5'>
+                <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
+                  <img src='/img/book.svg' alt='' width={24} height={24} />
+                </div>
+                <p className='text-custom-blue font-medium'>Discussion</p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className='pt-8 pb-14'>
+              <EnquiryDiscussCard isExpanded order={mockDiscussion} />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="payment-information">
             <AccordionTrigger className="flex">
               <div className="flex items-center gap-3 text-[#194A7A]">
                 <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                   <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
                 </div>
-                <h3 className="font-semibold text-base">Delivery Details</h3>
+                <h3 className="font-semibold text-base">Payment Details</h3>
               </div>
             </AccordionTrigger>
             <AccordionContent>
               <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14'>
                 <Input
-                  label="Delivery note"
-                  {...register('deliveryNote')}
-                  hasError={!!errors.deliveryNote}
-                  errorMessage={errors.deliveryNote?.message as string}
-                  placeholder='Enter delivery date'
+                  label="Name of customer"
+                  {...register('customerName')}
+                  hasError={!!errors.customerName}
+                  errorMessage={errors.customerName?.message as string}
+                  placeholder='Enter customer name'
                 />
-                <SingleDatePicker
-                  label="Delivery Date"
-                // control={control}
-                // error={errors.deliveryDate?.message}
+                <SelectSingleCombo
+                  options={[
+                    { value: 'cash', label: 'Cash' },
+                    { value: 'transfer', label: 'Transfer' },
+                    { value: 'pos', label: 'POS' },
+                    { value: 'online', label: 'Online' },
+                  ]}
+                  label="Payment Mode"
+                  valueKey="value"
+                  labelKey="label"
+                  placeholder="Select Payment Mode"
+                  name='paymentMode'
+                  value={watch('paymentMode')}
+                  onChange={(value: string) => setValue('paymentMode', value as "cash" | "transfer" | "pos" | "online")}
+                />
+                <SelectSingleCombo
+                  options={[
+                    { value: 'pending', label: 'Pending' },
+                    { value: 'Paid(Naira Transfer)', label: 'Paid(Naira Transfer)' },
+                  ]}
+                  label="Payment Status"
+                  valueKey="value"
+                  labelKey="label"
+                  placeholder="Select Payment Status"
+                  name='paymentStatus'
+                  value={watch('paymentStatus')}
+                  onChange={(value: string) => setValue('paymentStatus', value as "pending" | "Paid(Naira Transfer)")}
                 />
               </div>
             </AccordionContent>

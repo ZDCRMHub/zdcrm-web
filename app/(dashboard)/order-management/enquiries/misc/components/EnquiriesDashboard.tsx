@@ -82,8 +82,8 @@ const enquiries = [
 
 const tabs = [
   { name: 'All Enquiries', count: 840 },
-  { name: 'In Cart', count: 400 },
-  { name: 'Manual Enquiries', count: 450 },
+  // { name: 'In Cart', count: 400 },
+  // { name: 'Manual Enquiries', count: 450 },
 ];
 
 export default function EnquiriesDashboard() {
@@ -106,7 +106,7 @@ export default function EnquiriesDashboard() {
           />
           <Menubar>
             <MenubarMenu>
-              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter enquiries by <ArrowDown2 size={16  } /></MenubarTrigger>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter enquiries by <ArrowDown2 size={16} /></MenubarTrigger>
               <MenubarContent>
 
                 <MenubarSub>
@@ -161,32 +161,8 @@ export default function EnquiriesDashboard() {
         searchText.trim() === "" ?
           <>
             <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
-            <Accordion type="single" collapsible className="w-full max-w-[1360px] mt-8" defaultValue='today'>
-              <AccordionItem value="today">
-                <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <EnquiriesTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="tomorrow">
-                <AccordionTrigger>TOMORROW</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <EnquiriesTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="within72Hours">
-                <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <EnquiriesTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="within7Days">
-                <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <EnquiriesTable />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <EnquiriesTable />
+
           </>
 
           :

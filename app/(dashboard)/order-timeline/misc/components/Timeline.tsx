@@ -19,6 +19,7 @@ export type TDiscusssion = {
         agent: string;
     }[];
     type: string;
+    time: Date;
 }
 // Generate mock data
 export const generateMockOrders = (count: number) => {
@@ -42,7 +43,7 @@ export const generateMockOrders = (count: number) => {
             details: faker.lorem.sentence(),
             agent: faker.person.fullName()
         })),
-
+        time: faker.date.future(),
         type
     }));
 };

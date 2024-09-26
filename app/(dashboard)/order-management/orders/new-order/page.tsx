@@ -7,7 +7,7 @@ import * as z from 'zod'
 import { Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown } from '@/components/ui'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 import { TruckTime } from 'iconsax-react'
-import { generateMockOrders, OrderCard } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
+import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
 import { EditPenIcon } from '@/icons/core';
 import Image from 'next/image'
 import { AllProducts, productOptions } from '@/constants'
