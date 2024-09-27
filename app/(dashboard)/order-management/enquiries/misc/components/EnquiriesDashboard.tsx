@@ -93,7 +93,7 @@ export default function EnquiriesDashboard() {
 
 
   return (
-    <div className='max-w-7xl mx-auto p-6'>
+    <div className='max-w-[1440px] mx-auto p-6'>
       <div className='flex justify-between items-center mb-6 gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input

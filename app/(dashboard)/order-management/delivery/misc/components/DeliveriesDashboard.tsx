@@ -117,19 +117,19 @@ export default function DeliveriesDashboard() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="tomorrow">
-                <AccordionTrigger>Tomorrow</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within72Hours">
-                <AccordionTrigger>IN 72 Hours</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <DeliveriesTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within7Days">
-                <AccordionTrigger>In 7 Days</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <DeliveriesTable />
                 </AccordionContent>

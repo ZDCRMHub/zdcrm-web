@@ -109,25 +109,25 @@ export default function EnquiriesDashboard() {
             <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
             <Accordion type="single" collapsible className="w-full max-w-[1360px] mt-8" defaultValue='today'>
               <AccordionItem value="today">
-                <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
+                <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="tomorrow">
-                <AccordionTrigger>TOMORROW</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within72Hours">
-                <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within7Days">
-                <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersTable />
                 </AccordionContent>
