@@ -109,19 +109,19 @@ export default function OrderHistoryDashboard() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="tomorrow">
-                <AccordionTrigger>TOMORROW</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersHistoryTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within72Hours">
-                <AccordionTrigger>IN 72 HOURS</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersHistoryTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within7Days">
-                <AccordionTrigger>IN 7 DAYS</AccordionTrigger>
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
                   <OrdersHistoryTable />
                 </AccordionContent>
