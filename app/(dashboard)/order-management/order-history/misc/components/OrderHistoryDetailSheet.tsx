@@ -16,8 +16,9 @@ import { Phone } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { EditPenIcon } from '@/icons/core';
-import { generateMockOrders, OrderCard } from '@/app/(dashboard)/order-timeline/misc/components/Timeline';
+import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline';
 import { CaretRightIcon } from '@/icons/sidebar';
+import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
 
 interface OrderDetailsPanelProps {
   orderId: string;
@@ -153,7 +154,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
-            <OrderCard order={mockOrder} hideOtherInfo />
+            <EnquiryDiscussCard order={mockOrder} />
           </section>
 
 
