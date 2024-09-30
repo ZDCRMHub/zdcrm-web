@@ -18,6 +18,8 @@ import { EditPenIcon } from '@/icons/core';
 import ConfirmActionModal from '@/components/ui/confirmActionModal';
 import { useBooleanStateControl } from '@/hooks';
 import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
+import { format } from 'date-fns';
+import ConfirmPaymentModal from '../misc/components/ConfirmPaymentModal';
 
 export default function Component() {
   const router = useRouter();
@@ -36,7 +38,7 @@ export default function Component() {
 
 
   return (
-    <div className='max-w-[1440px] mx-auto p-4 space-y-6 px-8'>
+    <div className='max-w-[1440px] mx-auto p-4 space-y-9 px-8'>
       <header className='flex items-center mb-6'>
         <Button
           variant='ghost'
@@ -48,7 +50,7 @@ export default function Component() {
         <h1 className='text-xl font-semibold font-manrope'>Enquiry Summary</h1>
       </header>
 
-      <div className='flex gap-8'>
+      <div className='flex items-start gap-8'>
         <Card className='w-full max-w-[518px] rounded-lg'>
           <CardContent className='flex flex-col justify-between'>
             <div className='py-6 space-y-3'>
@@ -84,7 +86,7 @@ export default function Component() {
           </CardContent>
         </Card>
 
-        <div className='flex flex-col w-96 space-y-6'>
+        <div className='flex flex-col w-96 space-y-4'>
           <Card className='flex-1 space-y-4 p-5 rounded-xl'>
             <div className='flex justify-between items-center'>
               <h2 className='font-semibold font-manrope text-sm'>Delivery Details</h2>
@@ -113,6 +115,19 @@ export default function Component() {
             </div>
           </Card>
         </div>
+
+        <Card className='flex-1 space-y-4 p-5 rounded-xl w-48'>
+          <div className='flex justify-between items-center'>
+            <h2 className='font-semibold font-manrope text-sm'>Dispatch Time</h2>
+            <EditPenIcon className='h-5 w-5 text-[#A0AEC0]' />
+          </div>
+
+          <Separator />
+
+          <div className='flex items-center gap-5'>
+            <p className="text-[0.825rem] font-manrope">{format(new Date(), 'hh:mm a')}</p>
+          </div>
+        </Card>
       </div>
 
 
@@ -128,7 +143,10 @@ export default function Component() {
           </AccordionTrigger>
           <AccordionContent>
             <Card className='py-6 px-10 rounded-xl max-w-2xl'>
-              <h2 className='font-semibold mb-4 text-sm font-manrope'>Item 1</h2>
+              <div className='flex items-center justify-between'>
+                <h2 className='font-semibold mb-4 text-sm font-manrope'>Item 1</h2>
+                <EditPenIcon className='h-5 w-5 text-[#A0AEC0] cursor-pointer' />
+              </div>
 
               <Separator className='mb-2' />
 
@@ -212,13 +230,13 @@ export default function Component() {
         <Separator className='mb-2' />
 
         <div className='space-y-3 text-sm'>
-          <p className="flex items-center gap-1 text-[#111827] font-medium">
+          <p className="flex items-center gap-1 text-[#194A7A] text-base font-medium">
             <span className='text-[#687588] text-xs'>Customer Name:</span> Susan Odere
           </p>
-          <p className="flex items-center gap-1 text-[#111827] font-medium">
+          <p className="flex items-center gap-1 text-[#194A7A] text-base font-medium">
             <span className='text-[#687588] text-xs'>Payment Mode:</span> Bank Transfer
           </p>
-          <p className="flex items-center gap-1 text-[#111827] font-medium">
+          <p className="flex items-center gap-1 text-[#194A7A] text-base font-medium">
             <span className='text-[#687588] text-xs'>Payment Status:</span> Paid (Naira Transfer)
           </p>
         </div>
@@ -244,10 +262,10 @@ export default function Component() {
 
 
 
-      <ConfirmActionModal
+      <ConfirmPaymentModal
         isModalOpen={isConfirmModalOpen}
         closeModal={closeConfirmModal}
-        confirmFn={() => { }}
+        nextStep={() => { }}
         heading='Client made payment'
         subheading="This action converts Enquiries to Order"
 

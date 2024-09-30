@@ -5,6 +5,8 @@ import { faker } from '@faker-js/faker';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { format } from 'date-fns';
 import EnquiryDiscussCard from './EnquiryDiscussCard';
+import { RefreshCcw, Search } from 'lucide-react';
+import { Button, Input } from '@/components/ui';
 
 export type TDiscusssion = {
     id: string;
@@ -62,8 +64,25 @@ const mockData = {
 const OrderTimeline = () => {
 
     return (
-        <>
-            <Accordion type="single" collapsible className="w-full max-w-[1440px] px-8" defaultValue='today'>
+        <div className="w-full max-w-[1440px] px-8">
+            <div className='flex items-center justify-between gap-2 w-full grow pt-6 pb-10'>
+                <Input
+                    type='text'
+                    placeholder='Search (client name, customer rep, phone number)'
+                    className='w-full focus:border min-w-[350px] text-xs !h-10'
+                    // value={searchText}
+                    // onChange={(e) => setSearchText(e.target.value)}
+                    rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
+                />
+
+                <Button
+                    variant='outline'
+                    className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
+                    <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+                </Button>
+            </div>
+
+            <Accordion type="single" collapsible defaultValue='today'>
                 <AccordionItem value="today">
                     <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
                     <AccordionContent className='px-4'>
@@ -91,7 +110,7 @@ const OrderTimeline = () => {
             </Accordion>
 
 
-        </>
+        </div>
     )
 
 };

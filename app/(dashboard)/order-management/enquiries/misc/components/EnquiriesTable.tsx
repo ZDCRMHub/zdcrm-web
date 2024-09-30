@@ -17,7 +17,8 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { ElipsisHorizontal } from '@/icons/core';
 import { useBooleanStateControl } from '@/hooks';
-import { ConfirmActionModal, ConfirmDeleteModal } from '@/components/ui';
+import { ConfirmActionModal, ConfirmDeleteModal, SuccessModal } from '@/components/ui';
+import ConfirmPaymentModal from './ConfirmPaymentModal';
 
 const enquiries = [
   {
@@ -128,6 +129,7 @@ export default function EnquiriesTable() {
 
   const handleConfirm = () => {
     console.log(`Confirmed action`);
+    closeConfirmApproveModal();
     router.push("/order-management/orders")
   };
 
@@ -143,6 +145,11 @@ export default function EnquiriesTable() {
     setFalse: closeConfirmApproveModal,
   } = useBooleanStateControl()
 
+  const {
+    state: isSuccessModalOpen,
+    setTrue: openSuccessModal,
+    setFalse: closeSuccessModal
+  } = useBooleanStateControl()
 
 
 
@@ -164,14 +171,14 @@ export default function EnquiriesTable() {
         {enquiries.map((enquiry, index) => (
           <TableRow key={index}>
             <TableCell>
-              <div className='font-medium'>{enquiry.customerName}</div>
+              <div className='font-medium !min-w-max'>{enquiry.customerName}</div>
               <div className='text-sm text-gray-500'>
                 {enquiry.phoneNumber}
               </div>
             </TableCell>
             <TableCell>
               {enquiry.enquiryItems.map((item, idx) => (
-                <div key={idx}>{item}</div>
+                <div key={idx} className='!min-w-max'>{item}</div>
               ))}
             </TableCell>
             <TableCell>{enquiry.deliveryNotes}</TableCell>
@@ -211,17 +218,17 @@ export default function EnquiriesTable() {
                     className='py-4 px-0 w-[235px]'>
                     <DropdownMenuItem
                       onClick={() => router.push('enquiries/enquiry-details')}>
-                        <Link href='/enquiries/enquiry-details' className="w-full">
-                          <span className='flex items-center gap-2 pl-6 py-3'>
-                            <Image
-                              src='/img/3d-rotate.svg'
-                              alt=''
-                              width={24}
-                              height={24}
-                            />
-                            Enquiry Details
-                          </span>
-                        </Link>
+                      <Link href='/enquiries/enquiry-details' className="w-full">
+                        <span className='flex items-center gap-2 pl-6 py-3'>
+                          <Image
+                            src='/img/3d-rotate.svg'
+                            alt=''
+                            width={24}
+                            height={24}
+                          />
+                          Enquiry Details
+                        </span>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={openConfirmApproveModal}>
                       <span className='flex items-center gap-2 pl-6 py-3'>
@@ -231,7 +238,7 @@ export default function EnquiriesTable() {
                           width={24}
                           height={24}
                         />
-                        Payment Sent
+                        Payment Confirmed
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={openConfirmDeleteModal}>
@@ -255,24 +262,30 @@ export default function EnquiriesTable() {
       </TableBody>
 
 
-      
+
       <ConfirmDeleteModal
         isModalOpen={isConfirmDeleteModalOpen}
         closeModal={closeConfirmDeleteModal}
-        deleteFn={() => {}}
+        deleteFn={() => { }}
         heading='Delete Enquiry'
         subheading="This action means order enquiry be removed."
 
       />
-      
-      <ConfirmActionModal
+
+      <ConfirmPaymentModal
         isModalOpen={isConfirmApproveModalOpen}
         closeModal={closeConfirmApproveModal}
-        confirmFn={handleConfirm}
+        nextStep={openSuccessModal}
         heading='Client made payment'
         subheading="This action converts Enquiries to Order"
 
       />
+
+      <SuccessModal
+        closeModal={handleConfirm}
+        isModalOpen={isSuccessModalOpen}
+      />
+
     </Table>
 
   );

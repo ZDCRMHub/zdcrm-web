@@ -11,27 +11,27 @@ export { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsib
 export { Calendar } from './calendar'
 export { Checkbox } from './checkbox'
 export {
-    Command,
-    CommandDialog,
-    CommandInput,
-    CommandList,
-    CommandEmpty,
-    CommandGroup,
-    CommandItem,
-    CommandShortcut,
-    CommandSeparator,
-  } from './command'  
+  Command,
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+  CommandSeparator,
+} from './command'
 export {
-    Dialog,
-    DialogPortal,
-    DialogOverlay,
-    DialogClose,
-    DialogTrigger,
-    DialogContent,
-    DialogHeader,
-    DialogFooter,
-    DialogTitle,
-    DialogDescription,
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
 } from './dialog'
 
 export { Input } from './input'
@@ -60,41 +60,54 @@ export {
 export { Popover, PopoverTrigger, PopoverContent } from './popover'
 export { default as ProductsDropdown } from './productsDropdown'
 
+
+export {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from './pagination'
+
 export { SingleDatePicker, RangeAndCustomDatePicker, RangeDatePicker } from './datePicker'
 export {
-    Select,
-    SelectGroup,
-    SelectValue,
-    SelectTrigger,
-    SelectContent,
-    SelectLabel,
-    SelectItem,
-    SelectSeparator,
-    SelectScrollUpButton,
-    SelectScrollDownButton,
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
 } from './select'
 export {
-    Sheet,
-    SheetPortal,
-    SheetOverlay,
-    SheetTrigger,
-    SheetClose,
-    SheetContent,
-    SheetHeader,
-    SheetFooter,
-    SheetTitle,
-    SheetDescription,
-  } from './sheet'  
-export {default as SelectSingleCombo} from './selectSingleCombo'
+  Sheet,
+  SheetPortal,
+  SheetOverlay,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+} from './sheet'
+export { default as SelectSingleCombo } from './selectSingleCombo'
 export {
-    Table,
-    TableHeader,
-    TableBody,
-    TableFooter,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableCaption,
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
 } from './table'
+
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip'
 
 export { Textarea } from './textarea'

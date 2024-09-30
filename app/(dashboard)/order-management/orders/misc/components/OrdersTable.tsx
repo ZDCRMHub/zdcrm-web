@@ -87,7 +87,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
             <TableCell>
                 {order.enquiryItems.map((item, idx) => (
-                    <div key={idx}>{item}</div>
+                <div key={idx} className='!min-w-max'>{item}</div>
                 ))}
             </TableCell>
             <TableCell>
