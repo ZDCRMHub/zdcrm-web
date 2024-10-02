@@ -1,5 +1,13 @@
-import Link from 'next/link';
+'use client'
 
+import { useState } from 'react'
+import Link from 'next/link'
+import { ChevronLeft, ChevronRight, IndentDecrease } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Logo } from '@/icons/core'
+import { SidebarLink } from './SidebarLink'
+import { SidebarCollapsible } from './SidebarCollapsible'
 import {
   ClientHistoryIcon,
   ConversionStatisticsIcon,
@@ -12,16 +20,10 @@ import {
   OrderStatistics,
   OrderTimeLine,
   ReportAndAnalytics,
-} from '@/icons/sidebar';
-
-import {
-  SidebarLink,
-} from './SidebarLink';
-import { Logo } from '@/icons/core';
-import { SidebarCollapsible } from './SidebarCollapsible';
-import { Gear } from '@phosphor-icons/react';
-import { Bag2, BagTick2, Graph, I3Dcube, Setting2, ShopRemove } from 'iconsax-react';
-import { UserCircle } from 'lucide-react';
+} from '@/icons/sidebar'
+import { Gear } from '@phosphor-icons/react'
+import { Bag2, BagTick2, Graph, I3Dcube, Setting2, ShopRemove } from 'iconsax-react'
+import { UserCircle } from 'lucide-react'
 
 export const linkGroups = [
   {
@@ -89,7 +91,6 @@ export const linkGroups = [
         text: 'Inventory',
         icon: <Inventory />,
         nestedLinks: [
-
           {
             link: '/inventory/product-inventory',
             text: 'Product Inventory',
@@ -100,7 +101,6 @@ export const linkGroups = [
             text: 'Stock Inventory',
             icon: <BagTick2 />,
           },
-
           {
             link: '/inventory/store-inventory',
             text: 'Store Inventory',
@@ -114,7 +114,6 @@ export const linkGroups = [
     key: 'bottom',
     heading: 'ADMIN',
     links: [
-
       {
         text: 'Manage Admin',
         icon: <UserCircle size={20} strokeWidth={1.5} />,
@@ -141,55 +140,59 @@ export const linkGroups = [
           },
         ],
       },
-
     ],
   },
-
-
-];
+]
 
 export function Sidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
   return (
-    <div className="no-scrollbar h-full pb-8 lg:min-w-[17rem]">
+    <div
+      className={cn(
+        "relative h-full pb-8 transition-all duration-300 ease-in-out",
+        isCollapsed ? "w-28" : "w-72"
+      )}
+    >
       <nav className="relative flex flex-col gap-6 h-full">
-        <Logo className=" pl-4 pr-5" />
+        <div className="flex items-center justify-between p-4">
+          <Logo className="" isCollapsed={isCollapsed} />
+          <Button
+            variant="unstyled"
+            size="icon"
+            className="h-[100px] py-6"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            {/* {isCollapsed ? <ChevronRight className="h-4 w-4" /> :  */}
+            <IndentDecrease className="h-5 w-5" />
+          </Button>
+        </div>
 
-        <ul className='grow flex flex-col  overflow-y-scroll pl-4 pr-5 pt-8'>
-          {
-            linkGroups.map(({ heading, key, links }) => {
-              return (
-                <li className="py-6 first-of-type:mb-8" key={key}>
-                  <h2 className="mb-5 px-3 uppercase text-xs text-[#8B909A]">{heading}</h2>
+        <ul className='grow flex flex-col overflow-y-auto pl-4 pr-5 pt-8'>
+          {linkGroups.map(({ heading, key, links }) => (
+            <li className="py-6 first-of-type:mb-8" key={key}>
+              <h2 className="mb-5 px-3 uppercase text-xs text-[#8B909A]">{heading}</h2>
 
-                  <ul className="space-y-6">
-                    {
-                      links.map(({ icon, link, text, nestedLinks }) => {
-                        return (
-                          <li key={link}>
-                            {
-                              !!nestedLinks && !link && (
-                                <SidebarCollapsible
-                                  icon={icon}
-                                  nestedLinks={nestedLinks}
-                                  text={text}
-                                />
-                              )
-                            }
-
-                            {
-                              !nestedLinks && !!link && (
-                                <SidebarLink icon={icon} link={link} text={text} />
-                              )
-                            }
-                          </li>
-                        );
-                      })}
-                  </ul>
-                </li>
-              );
-            })}
+              <ul className="space-y-6">
+                {links.map(({ icon, link, text, nestedLinks }) => (
+                  <li key={link || text}>
+                    {!!nestedLinks && !link ? (
+                      <SidebarCollapsible
+                        icon={icon}
+                        nestedLinks={nestedLinks}
+                        text={text}
+                        isCollapsed={isCollapsed}
+                      />
+                    ) : (
+                      <SidebarLink icon={icon} link={link} text={text} isCollapsed={isCollapsed} />
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
         </ul>
       </nav>
     </div>
-  );
+  )
 }

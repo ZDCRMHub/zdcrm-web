@@ -82,7 +82,7 @@ const EnquiryDiscussCard = ({ order, isExpanded = false }: { order: TDiscusssion
                             <div className="flex items-center gap-4">
                                 <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
                                 <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Payment Made'}>
-                                    <SelectTrigger className="w-[120px]">
+                                    <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
                                         <SelectValue placeholder="Status" />
                                     </SelectTrigger>
                                     <SelectContent>

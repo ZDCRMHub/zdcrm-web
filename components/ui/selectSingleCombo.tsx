@@ -158,7 +158,7 @@ const SelectSingleCombo = <T extends object>({
                 onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
-            <CommandGroup className="flex flex-col gap-2">
+            <CommandGroup className="flex flex-col gap-3 px-5">
               {isLoadingOptions && (
                 <CommandItem className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
                   <SmallSpinner color='#000000' /> Loading options...
@@ -168,7 +168,8 @@ const SelectSingleCombo = <T extends object>({
                 optionsToDisplay?.map((option, index) => (
                   <button
                     className={cn("grid grid-cols-[max-content_1fr] text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                      itemClass, "hover:bg-blue-100 w-full text-sm"
+                      itemClass, "hover:bg-blue-100 w-full text-sm",
+                      "py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
                     )}
                     key={index}
                     onClick={() => handleSelect(option[valueKey] as string)}

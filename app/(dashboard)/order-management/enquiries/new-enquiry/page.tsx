@@ -13,12 +13,13 @@ import Image from 'next/image'
 import { getSchemaForCategory } from '../misc/schemas'
 import { AllProducts, productOptions } from '@/constants'
 import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard'
+import { cn } from '@/lib/utils'
 
 // Define your schema here
 const schema = z.object({
   customerName: z.string().min(1, { message: "Customer's name is required" }),
   customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
+  enquiryChannel: z.string({ message: "Invalid email address" }),
   recipientName: z.string().min(1, { message: "Recipient's name is required" }),
   recipientPhone: z.string().min(1, { message: "Recipient's phone number is required" }),
   enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
@@ -122,13 +123,6 @@ const NewEnquiryPage = () => {
                   placeholder='Enter customer phone number'
                 />
                 <Input
-                  label="Email"
-                  {...register('email')}
-                  hasError={!!errors.email}
-                  errorMessage={errors.email?.message as string}
-                  placeholder='Enter email'
-                />
-                <Input
                   label="Recipient's Name"
                   {...register('recipientName')}
                   hasError={!!errors.recipientName}
@@ -148,6 +142,22 @@ const NewEnquiryPage = () => {
                   hasError={!!errors.enquiryOccasion}
                   errorMessage={errors.enquiryOccasion?.message as string}
                   placeholder='Enter occasion'
+                />
+                <SelectSingleCombo
+                  options={[
+                    { value: 'email', label: 'Email' },
+                    { value: 'whatsapp', label: 'WhatsApp' },
+                    { value: 'phone', label: 'Phone' },
+                    { value: 'instagram', label: 'Instagram' },
+                  ]}
+                  label="Enquiry Channel"
+                  valueKey="value"
+                  labelKey="label"
+                  placeholder="Select enquiry channel"
+                  name='enquiryChannel'
+                  value={watch('enquiryChannel')}
+                  onChange={(value: string) => setValue('enquiryChannel', value)}
+
                 />
               </div>
             </AccordionContent>
@@ -429,51 +439,65 @@ const NewEnquiryPage = () => {
                       )
                         :
                         (
-                          <article className="flex gap-6 w-full max-w-[700px] bg-white p-6 rounded-xl mb-10">
-                            <div className='relative w-[180px] aspect-[5/4] p-6 rounded-xl bg-[#F6F6F6]'>
-                              <Image
-                                src='/img/cake.png'
-                                alt='cake'
-                                fill
-                                className='object-cover rounded-xl border-8 border-[#F6F6F6]'
-                              />
-                            </div>
-                            <section className='flex flex-col justify-between'><h5 className="text-[#194A7A] text-xl font-medium">
-                              Adeline Fautline Cake
-                            </h5>
-                              <div className='py-6 space-y-3'>
+                          <>
 
-                                <div className='flex items-center gap-1'>
-                                  <h2 className='text-sm font-medium text-[#687588]'>Customer Name:</h2>
-                                  <p className='font-medium text-custom-blue'>Adetunji Emmanuel</p>
-                                </div>
-                                <div className='flex items-center gap-1'>
-                                  <h2 className='text-sm font-medium text-[#687588]'>Email:</h2>
-                                  <p className='font-medium text-custom-blue'>adel23@gmail.com</p>
-                                </div>
-                                <div className='flex items-center gap-1'>
-                                  <h2 className='text-sm font-medium text-[#687588]'>Phone Number:</h2>
-                                  <p className='font-medium text-custom-blue'>08034344433</p>
-                                </div>
-                                <div className='flex items-center gap-1'>
-                                  <h2 className='text-sm font-medium text-[#687588]'>Message on cake:</h2>
-                                  <p className='font-medium text-custom-blue'>Love me like you always do</p>
-                                </div>
+                            <article className="flex gap-6 w-full max-w-[700px] bg-white p-6 rounded-xl mb-10">
+                              <div className='relative w-[180px] aspect-[5/4] p-6 rounded-xl bg-[#F6F6F6]'>
+                                <Image
+                                  src='/img/cake.png'
+                                  alt='cake'
+                                  fill
+                                  className='object-cover rounded-xl border-8 border-[#F6F6F6]'
+                                />
                               </div>
-                              <div className='flex justify-between items-center gap-1'>
+                              <section className='flex flex-col justify-between'><h5 className="text-[#194A7A] text-xl font-medium">
+                                Adeline Fautline Cake
+                              </h5>
+                                <div className='py-6 space-y-3'>
 
+                                  <div className='flex items-center gap-1'>
+                                    <h2 className='text-sm font-medium text-[#687588]'>Customer Name:</h2>
+                                    <p className='font-medium text-custom-blue'>Adetunji Emmanuel</p>
+                                  </div>
+                                  <div className='flex items-center gap-1'>
+                                    <h2 className='text-sm font-medium text-[#687588]'>Email:</h2>
+                                    <p className='font-medium text-custom-blue'>adel23@gmail.com</p>
+                                  </div>
+                                  <div className='flex items-center gap-1'>
+                                    <h2 className='text-sm font-medium text-[#687588]'>Phone Number:</h2>
+                                    <p className='font-medium text-custom-blue'>08034344433</p>
+                                  </div>
+                                  <div className='flex items-center gap-1'>
+                                    <h2 className='text-sm font-medium text-[#687588]'>Message on cake:</h2>
+                                    <p className='font-medium text-custom-blue'>Love me like you always do</p>
+                                  </div>
+                                </div>
+                                <div className='flex justify-between items-center gap-1'>
+
+                                </div>
+                              </section>
+                              <div className="flex items-center gap-4 self-start">
+                                <button onClick={() => setValue(`items.${index}.isEditing`, true)} className="text-[#2463EB]">
+                                  <EditPenIcon />
+                                </button>
+                                <button type="button" onClick={() => remove(index)} className="">
+                                  <Trash2 size={17} className="text-red-400" />
+                                </button>
                               </div>
-                            </section>
-                            <div className="flex items-center gap-4 self-start">
-                              <button onClick={() => setValue(`items.${index}.isEditing`, true)} className="text-[#2463EB]">
-                                <EditPenIcon />
-                              </button>
-                              <button type="button" onClick={() => remove(index)} className="">
-                                <Trash2 size={17} className="text-red-400" />
-                              </button>
+                            </article>
+
+                            <div className="flex items-center">
+                              <Button type="button" onClick={addNewItem}
+                                className={cn("h-12 ml-auto", (controlledFields.length !== index + 1) && "hidden", controlledFields.length == 0 && "!visible")} variant="outline" size="lg"
+                              >
+                                <Plus className="mr-1.5" size={16} />
+                                Add Item
+                              </Button>
                             </div>
-                          </article>
+                          </>
                         )
+
+
                     }
                   </>
                 ))}
