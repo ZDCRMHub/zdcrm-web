@@ -64,7 +64,7 @@ const mockData = {
 const OrderTimeline = () => {
 
     return (
-        <div className="w-full max-w-[1792px] px-8">
+        <div className="w-full md:w-[90%] max-w-[1792px] px-8">
             <div className='flex items-center justify-between gap-2 w-full grow pt-6 pb-10'>
                 <Input
                     type='text'
@@ -82,7 +82,7 @@ const OrderTimeline = () => {
                 </Button>
             </div>
 
-            <Accordion type="single" collapsible defaultValue='today'>
+            <Accordion type="single" collapsible defaultValue='today' className='w-full'>
                 <AccordionItem value="today">
                     <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
                     <AccordionContent className='px-4'>

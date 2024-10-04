@@ -1,0 +1,135 @@
+'use client';
+
+import React, { useState } from 'react';
+import {
+  Search,
+  Plus,
+  RefreshCcw,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input } from "@/components/ui"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton, Button } from '@/components/ui';
+import PaymentsTable from './PaymentsTable';
+import TabBar from '@/components/TabBar';
+import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
+
+
+
+export default function PaymentsDashboard() {
+  const tabs = [
+    { name: 'All Order Payments', count: 450 },
+  ];
+
+  const [activeTab, setActiveTab] = useState(tabs[0].name);
+  const [searchText, setSearchText] = useState("")
+
+
+
+  return (
+    <div className='w-full md:w-[90%] max-w-[1792px] mx-auto p-6'>
+      <div className='flex justify-between items-center mb-10 gap-4'>
+        <div className='flex items-center gap-2 w-80 grow'>
+          <Input
+            type='text'
+            placeholder='Search (client name, customer rep, phone number)'
+            className='w-full focus:border min-w-[350px] text-xs !h-10'
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
+          />
+          <Menubar>
+            <MenubarMenu>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter orders by <ArrowDown2 size={16}/></MenubarTrigger>
+              <MenubarContent>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Calendar size={18} />Date Range</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <RangeAndCustomDatePicker />
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Category2 size={18} />Category</MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <MenubarItem>Cake</MenubarItem>
+                    <MenubarItem>Flower</MenubarItem>
+                    <MenubarItem>Teddy Bear</MenubarItem>
+                    <MenubarItem>Cup Cake</MenubarItem>
+                    <MenubarItem>Vase</MenubarItem>
+                    <MenubarItem>Wine</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><NotificationStatus size={18} />Status</MenubarSubTrigger>
+                  <MenubarSubContent>
+
+                    <MenubarItem>Payment Made</MenubarItem>
+                    <MenubarItem>Sorted</MenubarItem>
+                    <MenubarItem>SOA</MenubarItem>
+                    <MenubarItem>Sent to Dispatch</MenubarItem>
+                    <MenubarItem>DIS CL</MenubarItem>
+                    <MenubarItem>Delivered</MenubarItem>
+                    <MenubarItem>DEL CL</MenubarItem>
+                    <MenubarItem>Cancelled</MenubarItem>
+                  </MenubarSubContent>
+                </MenubarSub>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
+        </div>
+        <div className='flex items-center gap-2'>
+          <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
+            <Plus className='mr-2 h-4 w-4' /> Add Order
+          </LinkButton>
+          <Button
+            variant='outline'
+            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
+            <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+          </Button>
+        </div>
+      </div>
+
+      {
+        searchText.trim() !== "" &&
+        <h3 className="mb-4">Search Results</h3>
+      }
+      {
+        searchText.trim() === "" ?
+          <>
+            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+            <Accordion type="single" collapsible className="w-full max-w-[1792px] mt-8" defaultValue='today'>
+              <AccordionItem value="today">
+                <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <PaymentsTable />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="tomorrow">
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <PaymentsTable />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="within72Hours">
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <PaymentsTable />
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="within7Days">
+                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
+                <AccordionContent className='px-4'>
+                  <PaymentsTable />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </>
+
+          :
+          <PaymentsTable />
+      }
+    </div>
+  );
+}

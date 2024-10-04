@@ -55,7 +55,7 @@ export const linkGroups = [
             icon: <OrderTimeLine />,
           },
           {
-            link: '/order-management/payment',
+            link: '/order-management/payments',
             text: 'Payment',
             icon: <DiscountShape />,
           },

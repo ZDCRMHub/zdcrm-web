@@ -1,9 +1,14 @@
-import React from 'react'
+'use client';
 
-const PaymentPage = () => {
+import React from 'react';
+import PaymentsDashboard from './misc/components/PaymentsDashboard';
+
+const page = () => {
   return (
-    <div>PaymentPage</div>
-  )
-}
+    <>
+      <PaymentsDashboard />
+    </>
+  );
+};
 
-export default PaymentPage
+export default page;
