@@ -26,6 +26,7 @@ const buttonVariants = cva(
           "placeholder:!text-[#A4A4A4]  focus-visible:outline-none focus:border-[#31A5F9] focus:bg-[#E3F2FD] focus:border-[1.75px]",
           "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
         ),
+        yellow:"bg-[#FFC600] text-[#111827] hover:opacity-90",
       },
       size: {
         default: "h-10 px-4 py-2",

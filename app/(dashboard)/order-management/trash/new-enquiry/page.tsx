@@ -94,7 +94,7 @@ const NewEnquiryPage = () => {
   }
 
   return (
-    <main className='px-8 2xl:px-14 max-w-[1792px]'>
+    <main className='px-8 2xl:px-14 max-w-[1560px]'>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Accordion type="multiple" defaultValue={["customer-information", "enquiry-information", "delivery-information", "initial-discussion"]}>
           <AccordionItem value="customer-information">

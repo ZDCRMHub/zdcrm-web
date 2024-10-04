@@ -59,12 +59,12 @@ const ConfirmActionModal: React.FC<ModalProps> = ({
           <h3 className="text-[#194A7A] text-xl font-semibold mt-2">
             {heading ?? "Confirm Action"}
           </h3>
-          <p className="text-[#828282] text-xs">
+          <p className="text-[#828282] text-xs text-center text-balance">
             {subheading ?? "Click confirm button to confirm action"}
           </p>
         </div>
 
-        <DialogFooter className="grid grid-cols-2 p-6 xl:p-8">
+        <DialogFooter className="grid grid-cols-2 pt-0 p-6 xl:p-8 xl:pt-2">
           <Button className="h-14 bg-black" onClick={confirmFn}>
             {customConfirmText ?? "Confirm"}
           </Button>

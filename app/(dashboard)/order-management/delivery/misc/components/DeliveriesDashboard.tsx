@@ -35,7 +35,7 @@ export default function DeliveriesDashboard() {
 
 
   return (
-    <div className='max-w-[1440px] mx-auto p-6'>
+    <div className='w-full md:w-[90%] max-w-[1792px] mx-auto p-6'>
       <div className='flex justify-between items-center mb-10 gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -109,7 +109,7 @@ export default function DeliveriesDashboard() {
       {
         searchText.trim() === "" ?
           <>
-            <Accordion type="single" collapsible className="w-full max-w-[1360px] mt-8" defaultValue='today'>
+            <Accordion type="single" collapsible className="w-full max-w-[1792px] mt-8" defaultValue='today'>
               <AccordionItem value="today">
                 <AccordionTrigger>Today, {format(new Date(), 'dd MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
