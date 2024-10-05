@@ -10,7 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import OrderDetailSheet from './OrderDetailSheet';
+import OrderDetailSheet from './PaymentsDetailSheet';
 import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
 

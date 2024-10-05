@@ -11,7 +11,7 @@ import { useBooleanStateControl } from '@/hooks';
 import { TDiscusssion } from './Timeline';
 import { format } from 'date-fns';
 
-const EnquiryDiscussCard = ({ order, isExpanded = false }: { order: TDiscusssion; isExpanded?: boolean }) => {
+const EnquiryDiscussCard = ({ order, isExpanded = false, hideOtherDetails = false }: { order: TDiscusssion; isExpanded?: boolean; hideOtherDetails?: boolean }) => {
     const {
         state: isModalOpen,
         setTrue: openModal,
@@ -79,31 +79,34 @@ const EnquiryDiscussCard = ({ order, isExpanded = false }: { order: TDiscusssion
                                     </ul>
                                 )}
                             </section>
-                            <div className="flex items-center gap-4">
-                                <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
-                                <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Payment Made'}>
-                                    <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
-                                        <SelectValue placeholder="Status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {order.type === 'enquiry' ? (
-                                            <>
-                                                <SelectItem value="Still Discussing">Still Discussing</SelectItem>
-                                                <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <SelectItem value="Payment Made">Payment Made</SelectItem>
-                                                <SelectItem value="SOA">SOA</SelectItem>
-                                                <SelectItem value="Sorted">Sorted</SelectItem>
-                                                <SelectItem value="Sent to Dispatch">Sent to Dispatch</SelectItem>
-                                                <SelectItem value="DIS CL">DIS CL</SelectItem>
-                                                <SelectItem value="Delivered">Delivered</SelectItem>
-                                            </>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            {
+                                !hideOtherDetails &&
+                                <div className="flex items-center gap-4">
+                                    <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
+                                    <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Payment Made'}>
+                                        <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {order.type === 'enquiry' ? (
+                                                <>
+                                                    <SelectItem value="Still Discussing">Still Discussing</SelectItem>
+                                                    <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <SelectItem value="Payment Made">Payment Made</SelectItem>
+                                                    <SelectItem value="SOA">SOA</SelectItem>
+                                                    <SelectItem value="Sorted">Sorted</SelectItem>
+                                                    <SelectItem value="Sent to Dispatch">Sent to Dispatch</SelectItem>
+                                                    <SelectItem value="DIS CL">DIS CL</SelectItem>
+                                                    <SelectItem value="Delivered">Delivered</SelectItem>
+                                                </>
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            }
                         </CardContent>
                     </AccordionContent>
                 </AccordionItem>

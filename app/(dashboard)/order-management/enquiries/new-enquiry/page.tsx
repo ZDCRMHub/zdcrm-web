@@ -4,7 +4,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
-import { Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown } from '@/components/ui'
+import { Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown, FilePicker } from '@/components/ui'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 import { TruckTime } from 'iconsax-react'
 import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
@@ -19,16 +19,18 @@ import { cn } from '@/lib/utils'
 const schema = z.object({
   customerName: z.string().min(1, { message: "Customer's name is required" }),
   customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
-  enquiryChannel: z.string({ message: "Invalid email address" }),
+  enquiryChannel: z.string({ message: "Invalid enquiry channel" }),
   recipientName: z.string().min(1, { message: "Recipient's name is required" }),
   recipientPhone: z.string().min(1, { message: "Recipient's phone number is required" }),
   enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
   deliveryNote: z.string().optional(),
   deliveryDate: z.date(),
   paymentMode: z.enum(["cash", "transfer", "pos", "online"], { message: "Payment mode is required" }),
-  paymentStatus: z.enum(["pending", "Paid(Naira Transfer)",], { message: "Payment status is required" }),
+  paymentStatus: z.enum(["pending", "Paid(Naira Transfer)"], { message: "Payment status is required" }),
+  proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
 
   items: z.array(z.object({
+    branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
     category: z.enum(["C", "F", "W", "TB"], { message: "Category is required" }),
     productType: z.string().min(1, { message: "Product type is required" }),
     productSize: z.string().optional(),
@@ -37,7 +39,7 @@ const schema = z.object({
     isEditing: z.boolean().optional(),
     layers: z.enum(["2", "3", "4", "5"]).optional(),
     flavour: z.enum(["vanilla", "chocolate", "red velvet"]).optional(),
-    whippedCreamUpgrade: z.enum(["true", "false", "red velvet"]).optional(),
+    whippedCreamUpgrade: z.enum(["true", "false"]).optional(),
     toppings: z.enum(["none", "chocolate", "fruits", "mixed"]).optional(),
     vase: z.enum(["none", "25cm", "50cm"]).optional(),
     size: z.enum(["8 inches", "10 inches", "12 inches"]).optional(),
@@ -90,13 +92,13 @@ const NewEnquiryPage = () => {
   };
 
   const addNewItem = () => {
-    append({ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true });
+    append({ branch: 'Zuzu Delights', category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true });
   }
 
   return (
-    <main className='px-8 2xl:px-14 max-w-[1792px]'>
+    <div className='px-8 md:pt-12 w-full md:w-[90%] max-w-[1792px] mx-auto'>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Accordion type="multiple" defaultValue={["customer-information", "enquiry-information", "delivery-information", "initial-discussion"]}>
+        <Accordion type="multiple" defaultValue={["customer-information", "enquiry-information", "delivery-information", "initial-discussion", "payment-information"]} className='w-full'>
           <AccordionItem value="customer-information">
             <AccordionTrigger className="flex">
               <div className="flex items-center gap-3 text-[#194A7A]">
@@ -107,7 +109,7 @@ const NewEnquiryPage = () => {
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14'>
+              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full'>
                 <Input
                   label="Customer's Name"
                   {...register('customerName')}
@@ -147,8 +149,12 @@ const NewEnquiryPage = () => {
                   options={[
                     { value: 'email', label: 'Email' },
                     { value: 'whatsapp', label: 'WhatsApp' },
-                    { value: 'phone', label: 'Phone' },
+                    { value: 'website', label: 'Website' },
+                    { value: 'walk-in', label: 'Store Walk In' },
                     { value: 'instagram', label: 'Instagram' },
+                    { value: 'phone', label: 'Phone Call' },
+                    { value: 'facebook', label: 'Facebook' },
+                    { value: 'tik-tok', label: 'Tik Tok' },
                   ]}
                   label="Enquiry Channel"
                   valueKey="value"
@@ -173,7 +179,7 @@ const NewEnquiryPage = () => {
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14'>
+              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full'>
                 <Input
                   label="Delivery note"
                   {...register('deliveryNote')}
@@ -210,6 +216,25 @@ const NewEnquiryPage = () => {
                             <h3 className='font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max'>Item {index + 1}</h3>
                           </header>
 
+                          <section className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
+                            <Controller
+                              name={`items.${index}.branch`}
+                              control={control}
+                              render={({ field }) => (
+                                <SelectSingleCombo
+                                  options={[
+                                    { value: 'Zuzu Delights', label: 'Zuzu Delights' },
+                                    { value: 'Prestige Flowers', label: 'Prestige Flowers' },
+                                  ]}
+                                  label="Branch"
+                                  valueKey="value"
+                                  labelKey="label"
+                                  placeholder="Select Branch"
+                                  {...field}
+                                />
+                              )}
+                            />
+                          </section>
                           <div key={field.id} className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
                             <Controller
                               name={`items.${index}.category`}
@@ -501,7 +526,19 @@ const NewEnquiryPage = () => {
                     }
                   </>
                 ))}
+              {
+                controlledFields.length === 0 && (
 
+                  <footer className="flex items-center justify-end gap-4">
+                    <Button type="button" onClick={addNewItem}
+                      className="h-12" variant="outline" size="lg"
+                    >
+                      <Plus className="mr-1.5" size={16} />
+                      Add Item
+                    </Button>
+                  </footer>
+                )
+              }
             </AccordionContent>
           </AccordionItem>
 
@@ -520,16 +557,17 @@ const NewEnquiryPage = () => {
           </AccordionItem>
 
           <AccordionItem value="payment-information">
-            <AccordionTrigger className="flex">
-              <div className="flex items-center gap-3 text-[#194A7A]">
-                <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
+            <AccordionTrigger className=''>
+              <div className='flex items-center gap-5'>
+                <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
                   <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
                 </div>
-                <h3 className="font-semibold text-base">Payment Details</h3>
+                <p className='text-custom-blue font-medium'>Payment Details</p>
               </div>
             </AccordionTrigger>
+
             <AccordionContent>
-              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14'>
+              <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full'>
                 <Input
                   label="Name of customer"
                   {...register('customerName')}
@@ -565,6 +603,14 @@ const NewEnquiryPage = () => {
                   value={watch('paymentStatus')}
                   onChange={(value: string) => setValue('paymentStatus', value as "pending" | "Paid(Naira Transfer)")}
                 />
+                <FilePicker
+                  onFileSelect={(file) => setValue('proofOfPayment', file)}
+                  hasError={!!errors.proofOfPayment}
+                  errorMessage={errors.proofOfPayment?.message as string}
+                  maxSize={10}
+                  title='Upload Payment Proof'
+                  supportedFileTypes={["image/*", "application/pdf"]}
+                />
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -576,7 +622,7 @@ const NewEnquiryPage = () => {
           </LinkButton>
         </footer>
       </form>
-    </main>
+    </div>
   )
 }
 

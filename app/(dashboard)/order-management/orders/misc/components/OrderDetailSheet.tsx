@@ -16,12 +16,20 @@ import { Phone } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { EditPenIcon } from '@/icons/core';
+import EditDeliveryDetailsModal from './EditDeliveryDetailsModal';
+import { useBooleanStateControl } from '@/hooks';
 
 interface OrderDetailsPanelProps {
   orderId: string;
 }
 
 export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
+  const {
+    state: isEditDeliveryDetailsModalOpen,
+    setTrue: openEditDeliveryDetailsModal,
+    setFalse: closeEditDeliveryDetailsModal,
+  } = useBooleanStateControl();
+
 
   return (
     <Sheet>
@@ -182,8 +190,8 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <section className='mb-8'>
             <header className="border-b border-b-[#00000021] mb-6">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5'>
-                Product Item
-                <span className="absolute bottom-[-2px]w-full bottom-0 left-0 bg-black" />
+                Oder Items
+                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
 
@@ -324,8 +332,8 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <section className='p-4 px-6 rounded-2xl border'>
             <div className='flex justify-between items-center mb-2 border-b'>
               <h3 className='font-semibold font-manrope'>Delivery Details</h3>
-              <Button variant='ghost' size='sm'>
-                <EditPenIcon className='h-4 w-4' />
+              <Button variant='ghost' size='sm' onClick={openEditDeliveryDetailsModal}>
+                <EditPenIcon className='h-5 w-5' />
               </Button>
             </div>
             <div className=' grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4'>
@@ -373,6 +381,12 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             </p>
           </section>
         </div>
+
+        <EditDeliveryDetailsModal
+          closeModal={closeEditDeliveryDetailsModal}
+          isModalOpen={isEditDeliveryDetailsModalOpen}
+          onSave={() => { }}
+        />
       </SheetContent>
     </Sheet >
 
