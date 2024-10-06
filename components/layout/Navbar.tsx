@@ -10,7 +10,7 @@ const pathName = usePathname()
 
   return (
     <nav className='bg-[#F1F5F9] shadow-sm'>
-      <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+      <div className='max-w-[1792px] w-full md:w-[95%] mx-auto px-4 sm:px-6 lg:px-8'>
         <div className='flex justify-between items-center h-[100px]'>
           <div className='flex items-center'>
             <h1 className='flex items-center gap-2 text-lg font-semibold text-[#194A7A]'>

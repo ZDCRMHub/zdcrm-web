@@ -22,7 +22,7 @@ import {
   ReportAndAnalytics,
 } from '@/icons/sidebar'
 import { Gear } from '@phosphor-icons/react'
-import { Bag2, BagTick2, Graph, I3Dcube, Setting2, ShopRemove } from 'iconsax-react'
+import { Bag2, BagTick2, DiscountShape, Graph, I3Dcube, Setting2, ShopRemove, Trash } from 'iconsax-react'
 import { UserCircle } from 'lucide-react'
 
 export const linkGroups = [
@@ -55,6 +55,11 @@ export const linkGroups = [
             icon: <OrderTimeLine />,
           },
           {
+            link: '/order-management/payments',
+            text: 'Payment',
+            icon: <DiscountShape />,
+          },
+          {
             link: '/order-management/order-history',
             text: 'Order History',
             icon: <OrderManagement />,
@@ -63,6 +68,11 @@ export const linkGroups = [
             link: '/order-management/client-history',
             text: 'Client History',
             icon: <ClientHistoryIcon />,
+          },
+          {
+            link: '/order-management/trash',
+            text: 'Trash',
+            icon: <Trash />,
           },
         ],
       },

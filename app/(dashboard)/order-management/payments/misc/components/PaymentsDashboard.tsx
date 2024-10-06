@@ -9,23 +9,15 @@ import {
 import { format } from 'date-fns';
 import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input } from "@/components/ui"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton, Button } from '@/components/ui';
-import OrdersTable from './OrdersTable';
+import PaymentsTable from './PaymentsTable';
 import TabBar from '@/components/TabBar';
 import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
 
 
 
-export default function EnquiriesDashboard() {
+export default function PaymentsDashboard() {
   const tabs = [
-    { name: 'All Orders', count: 450 },
-    { name: 'Payment Made', count: 76 },
-    { name: 'SOA', count: 40 },
-    { name: 'Sorted', count: 36 },
-    { name: 'Sent to dispatch', count: 18 },
-    { name: 'DIS CL', count: 40 },
-    { name: 'Delivered', count: 23 },
-    { name: 'DEL CL', count: 23 },
-    { name: 'Canceled Orders', count: 5 },
+    { name: 'All Order Payments', count: 450 },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
@@ -111,32 +103,32 @@ export default function EnquiriesDashboard() {
               <AccordionItem value="today">
                 <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <PaymentsTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="tomorrow">
                 <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <PaymentsTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within72Hours">
                 <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <PaymentsTable />
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="within7Days">
                 <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
                 <AccordionContent className='px-4'>
-                  <OrdersTable />
+                  <PaymentsTable />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           </>
 
           :
-          <OrdersTable />
+          <PaymentsTable />
       }
     </div>
   );

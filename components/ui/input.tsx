@@ -27,7 +27,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className={cn("flex flex-col gap-2", containerClassName)}>
         {
           label && (
-            <Label className="text-sm text-[#0F172B] font-poppins font-medium pb" htmlFor={label}>
+            <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={label}>
               {label}
             </Label>
           )

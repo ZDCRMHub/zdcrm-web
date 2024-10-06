@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox, Button, LinkButton } from '@/components/ui';
 import { Mail, MessageCircle, User, X } from 'lucide-react';
-import { Book, Notepad2, UserOctagon, Printer } from 'iconsax-react';
+import { Book, Notepad2, UserOctagon, Printer, Messages2 } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
 import {
   Select,
@@ -16,19 +16,16 @@ import { Phone } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { EditPenIcon } from '@/icons/core';
-import EditDeliveryDetailsModal from './EditDeliveryDetailsModal';
-import { useBooleanStateControl } from '@/hooks';
+import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
+import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline';
 
-interface OrderDetailsPanelProps {
+interface PaymentsDetailSheetDetailsPanelProps {
   orderId: string;
 }
 
-export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
-  const {
-    state: isEditDeliveryDetailsModalOpen,
-    setTrue: openEditDeliveryDetailsModal,
-    setFalse: closeEditDeliveryDetailsModal,
-  } = useBooleanStateControl();
+export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDetailsPanelProps) {
+  const mockDiscussion = generateMockOrders(1)[0];
+
 
 
   return (
@@ -44,7 +41,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
       </SheetTrigger>
 
       <SheetContent className='!w-[90vw] !max-w-[800px] h-screen overflow-y-scroll xl:px-12'>
-        <SheetTitle>
+        <SheetTitle className="border-b border-gray-200">
           <h2 className='text-xl font-semibold flex items-center gap-4'>
             <span className='bg-[#E8EEFD] p-2 rounded-full'>
               <Book size={25} variant='Bold' color='#194A7A' />
@@ -60,23 +57,10 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
 
         <div className='flex justify-between pt-8'>
           <div className='flex items-center gap-5'>
-            <div className='flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0'>
-              <span className='text-sm'>Order ID: {orderId}</span>
+            <div className='flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0 h-12 bg-[#FFC600]'>
+              <span className='text-sm font-semibold text-[#111827] font-dm-sans'>Order ID: {orderId}</span>
             </div>
 
-            <Select>
-              <SelectTrigger className='w-[150px] bg-transparent'>
-                <SelectValue placeholder='SOA' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='SOA'>SOA</SelectItem>
-                <SelectItem value='SORTED'>SORTED</SelectItem>
-                <SelectItem value='DIS CL'>DIS CL</SelectItem>
-                <SelectItem value='DELIVERED'>DELIVERED</SelectItem>
-                <SelectItem value='CANCELLED'>CANCELLED</SelectItem>
-                <SelectItem value='SENT TO DISPATCH'>SENT TO DISPATCH</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className='flex items-center space-x-2'>
@@ -168,18 +152,14 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <section className='mt-16 mb-8'>
             <header className="border-b border-b-[#00000021]">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
-                <MessageCircle size={19} />
-                Message for order
+                <Notepad2 size={19} />
+                Delivery Note
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
             <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
               <Input value="Happy Anniversary"
-                // rightIcon={
-                //   <Button variant='ghost' size='sm'>
-                //     <EditPenIcon className='h-4 w-4' />
-                //   </Button>
-                // }
+              
                 readOnly
                 containerClassName='w-full'
               />
@@ -187,10 +167,26 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             </div>
           </section>
 
+          <section className='mt-16 mb-8'>
+            <header className="border-b border-b-[#00000021]">
+              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                <Messages2 size={19} />
+                Discussion
+                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+              </p>
+            </header>
+            <div className="py-4">
+              <EnquiryDiscussCard isExpanded hideOtherDetails order={mockDiscussion} />
+            </div>
+          </section>
+
+
+
           <section className='mb-8'>
-            <header className="border-b border-b-[#00000021] mb-6">
-              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5'>
-                Oder Items
+            <header className="border-b border-b-[#00000021]">
+              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                {/* <MessageCircle size={19} /> */}
+                Product Items
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
@@ -303,36 +299,10 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           </section>
 
 
-
-
-          <section className='mt-16 mb-8'>
-            <header className="border-b border-b-[#00000021]">
-              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
-                <Notepad2 size={19} />
-                Delivery notes
-                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
-              </p>
-            </header>
-            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full'>
-              <Input value="Happy Anniversary"
-                readOnly
-                containerClassName='w-full'
-              />
-              <button className='flex items-center justify-center gap-2 bg-[#FFC600] px-5 py-2 rounded-lg'>
-                <Printer size={20} />
-                Print
-              </button>
-
-            </div>
-          </section>
-
-
-
-
           <section className='p-4 px-6 rounded-2xl border'>
             <div className='flex justify-between items-center mb-2 border-b'>
               <h3 className='font-semibold font-manrope'>Delivery Details</h3>
-              <Button variant='ghost' size='sm' onClick={openEditDeliveryDetailsModal}>
+              <Button variant='ghost' size='sm'>
                 <EditPenIcon className='h-5 w-5' />
               </Button>
             </div>
@@ -355,17 +325,36 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           </section>
 
 
-          <section>
+          <section className='mb-8'>
             <p className="flex items-center gap-3">
               <span className='text-[#687588] font-manrope'>Total(NGN)</span>
               <span className="text-[#111827] font-medium">N130,000.00</span>
             </p>
           </section>
 
+          <section className='mt-16 mb-8'>
+            <header className="border-b border-b-[#00000021]">
+              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                <Notepad2 size={19} />
+                Customer&apos;s Feedback
+                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+              </p>
+            </header>
+            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
+              <Input value="The order was delivered intact. Rider was polite and professional"
+              
+                readOnly
+                containerClassName='w-full'
+              />
+
+            </div>
+          </section>
+
+
           <section className="flex justify-end my-12">
-            <LinkButton href="/order-management/orders/confirm-delivery" className='h-12 px-8' >
-              Proceed to Dispatch
-            </LinkButton>
+            <SheetClose  className='h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md' onClick={close} >
+              Close
+            </SheetClose>
           </section>
 
 
@@ -379,14 +368,13 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
               <span className='text-[#000] '>Order Approved by: Adeayo</span>
               <span className="text-[#E01E1F] font-manrope text-sm">15th June, 2024 | 6:00pm</span>
             </p>
+
+            <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
+              <span className='text-[#000] '>Order Completed by: Adeayo</span>
+              <span className="text-[#E01E1F] font-manrope text-sm">15th June, 2024 | 6:00pm</span>
+            </p>
           </section>
         </div>
-
-        <EditDeliveryDetailsModal
-          closeModal={closeEditDeliveryDetailsModal}
-          isModalOpen={isEditDeliveryDetailsModalOpen}
-          onSave={() => { }}
-        />
       </SheetContent>
     </Sheet >
 

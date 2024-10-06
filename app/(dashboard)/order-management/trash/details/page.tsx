@@ -20,6 +20,7 @@ import { useBooleanStateControl } from '@/hooks';
 import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
 import { format } from 'date-fns';
 import ConfirmPaymentModal from '../misc/components/ConfirmPaymentModal';
+import { Refresh } from 'iconsax-react';
 
 export default function Component() {
   const router = useRouter();
@@ -38,16 +39,30 @@ export default function Component() {
 
 
   return (
-    <div className='max-w-[1792px] mx-auto p-4 space-y-9 px-8'>
-      <header className='flex items-center mb-6'>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='mr-2'
-          onClick={() => goBack()}>
-          <CaretLeft className='h-6 w-6 text-[#A0AEC0]' />
-        </Button>
-        <h1 className='text-xl font-semibold font-manrope'>Enquiry Summary</h1>
+    <div className='w-full md:w-[90%] max-w-[1440px] mx-auto p-4 space-y-9 px-8'>
+      <header className='flex items-center justify-between flex-wrap mb-6'>
+        <section className="flex items-center justify-center">
+
+          <Button
+            variant='ghost'
+            size='icon'
+            className='mr-2'
+            onClick={() => goBack()}>
+            <CaretLeft className='h-6 w-6 text-[#A0AEC0]' />
+          </Button>
+          <h1 className='text-xl font-semibold font-manrope'>Enquiry Summary</h1>
+        </section>
+
+        <div>
+          <Button
+            variant='yellow'
+            className=''
+            onClick={() => { }}
+          >
+            <Refresh className='h-4 w-4 mr-2' />
+            Restore Enquiry
+          </Button>        
+        </div>
       </header>
 
       <div className='flex items-start gap-8'>
@@ -116,7 +131,7 @@ export default function Component() {
           </Card>
         </div>
 
-        <Card className='flex-1 space-y-4 p-5 rounded-xl w-48'>
+        <Card className='space-y-4 p-5 rounded-xl w-60 '>
           <div className='flex justify-between items-center'>
             <h2 className='font-semibold font-manrope text-sm'>Dispatch Time</h2>
             <EditPenIcon className='h-5 w-5 text-[#A0AEC0]' />
