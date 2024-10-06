@@ -64,7 +64,7 @@ const mockData = {
 const OrderTimeline = () => {
 
     return (
-        <div className="w-full md:w-[90%] max-w-[1792px] px-8">
+        <div className="w-full md:w-[95%] max-w-[1792px] px-8">
             <div className='flex items-center justify-between gap-2 w-full grow pt-6 pb-10'>
                 <Input
                     type='text'

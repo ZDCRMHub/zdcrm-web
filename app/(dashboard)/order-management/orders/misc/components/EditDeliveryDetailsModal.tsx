@@ -45,13 +45,11 @@ type FormData = z.infer<typeof schema>;
 interface ModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
-    onSave: (data: FormData) => void;
 }
 
 const EditDeliveryDetailsModal: React.FC<ModalProps> = ({
     isModalOpen,
     closeModal,
-    onSave,
 }) => {
     const form = useForm<FormData>({
         resolver: zodResolver(schema),
@@ -65,7 +63,6 @@ const EditDeliveryDetailsModal: React.FC<ModalProps> = ({
     });
 
     const onSubmit = (data: FormData) => {
-        onSave(data);
         closeModal();
     };
 

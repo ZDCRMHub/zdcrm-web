@@ -1,22 +1,24 @@
 'use client'
 import React from 'react'
+import Image from 'next/image'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
+import { TruckTime } from 'iconsax-react'
+import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 
 import {
     Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown, FilePicker, FormControl,
     FormField, FormItem, FormLabel, FormMessage,
-    Form
+    Form,
+    TimePicker
 } from '@/components/ui'
-import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
-import { TruckTime } from 'iconsax-react'
 import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
 import { EditPenIcon } from '@/icons/core';
-import Image from 'next/image'
 import { AllProducts, productOptions } from '@/constants'
 import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard'
 import { cn } from '@/lib/utils'
+import { zodResolver } from '@hookform/resolvers/zod'
+
 import { getSchemaForCategory } from '../../enquiries/misc/schemas'
 
 // Define your schema here
@@ -36,6 +38,8 @@ const schema = z.object({
     paymentMode: z.enum(["cash", "transfer", "pos", "online"], { message: "Payment mode is required" }),
     paymentStatus: z.enum(["pending", "Paid(Naira Transfer)"], { message: "Payment status is required" }),
     proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
+    deliveryFee: z.string().optional(),
+    dispatchTime: z.date().optional(),
 
     items: z.array(z.object({
         branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
@@ -56,6 +60,42 @@ const schema = z.object({
         const dynamicValidation = getSchemaForCategory(item.category);
         return dynamicValidation.safeParse(item).success;
     }, { message: "Invalid product details for the selected category" }))
+}).refine((data) => {
+    const errors = [];
+
+    if (data.isCustomDelivery) {
+        if (!data.deliveryFee) {
+            errors.push({
+                path: ["deliveryFee"],
+                message: "Delivery fee is required for custom delivery",
+                code: "custom" as const
+            });
+        }
+    }
+
+    if (!data.isCustomDelivery) {
+        if (!data.deliveryMethod) {
+            errors.push({
+                path: ["deliveryMethod"],
+                message: "Delivery method is required when not using custom delivery",
+                code: "custom" as const
+            });
+        }
+    }
+
+    if (data.items.length === 0) {
+        errors.push({
+            path: ["items"],
+            message: "At least one item is required",
+            code: "custom" as const
+        });
+    }
+
+    if (errors.length > 0) {
+        throw new z.ZodError(errors);
+    }
+
+    return true;
 });
 
 const categoryOptions = [
@@ -76,24 +116,7 @@ const NewOrderPage = () => {
     const form = useForm<z.infer<typeof schema>>({
         // resolver: zodResolver(getSchemaForCategory('default')),
         resolver: zodResolver(schema),
-        // defaultValues: {
-        //     customerName: '',
-        //     customerPhone: '',
-        //     enquiryChannel: '',
-        //     recipientName: '',
-        //     recipientPhone: '',
-        //     enquiryOccasion: '',
-        //     deliveryNote: '',
-        //     deliveryDate: new Date(),
-        //     deliveryMethod: '',
-        //     deliveryAddress: '',
-        //     deliveryZone: '',
-        //     paymentMode: '',
-        //     paymentStatus: '',
-        //     proofOfPayment: null,
-        //     items: [{ branch: 'Zuzu Delights', category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true  }],
-
-        // },
+       
         defaultValues: {
             items: [{ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true }]
         }
@@ -114,6 +137,7 @@ const NewOrderPage = () => {
     const { fields, append, remove } = arrayField;
 
     const watchFieldArray = watch("items");
+    const isCustomDelivery = watch('isCustomDelivery');
     const controlledFields = fields.map((field, index) => {
         return {
             ...field,
@@ -133,17 +157,17 @@ const NewOrderPage = () => {
 
 
     return (
-        <div className='px-8 md:pt-12 w-full md:w-[90%] max-w-[1792px] mx-auto'>
+        <div className='px-8 md:pt-12 w-full md:w-[95%] max-w-[1792px] mx-auto'>
             <Form {...form}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Accordion type="multiple" defaultValue={["customer-information", "enquiry-information", "delivery-information", "initial-discussion", "payment-information"]} className='w-full'>
                         <AccordionItem value="customer-information">
                             <AccordionTrigger className="py-4 flex">
-                                <div className="flex items-center gap-3 text-[#194A7A]">
+                                <div className="flex items-center gap-5 text-[#194A7A]">
                                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                                         <UserIcon className='text-custom-blue' stroke="#194a7a" fill="#194a7a" size={18} />
                                     </div>
-                                    <h3 className="font-semibold text-base">Customer Information</h3>
+                                    <h3 className="text-custom-blue font-medium">Customer Information</h3>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
@@ -209,14 +233,14 @@ const NewOrderPage = () => {
 
                         <AccordionItem value="delivery-information">
                             <AccordionTrigger className="py-4 flex">
-                                <div className="flex items-center gap-3 text-[#194A7A]">
+                                <div className="flex items-center gap-5 text-[#194A7A]">
                                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                                         <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
                                     </div>
-                                    <h3 className="font-semibold text-base">Delivery Details</h3>
+                                    <h3 className="text-custom-blue font-medium">Delivery Details</h3>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent>
+                            <AccordionContent className='pt-5'>
                                 <Input
                                     label="Delivery note"
                                     {...register('deliveryNote')}
@@ -225,26 +249,29 @@ const NewOrderPage = () => {
                                     placeholder='Enter delivery note'
                                 />
                                 <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full'>
-                                    <FormField
-                                        control={control}
-                                        name="deliveryMethod"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <SelectSingleCombo
-                                                    label="Delivery Method"
-                                                    options={[
-                                                        { value: "Dispatch", label: "Dispatch" },
-                                                        { value: "Pickup", label: "Pickup" },
-                                                    ]}
-                                                    {...field}
-                                                    valueKey={"value"}
-                                                    labelKey={"label"}
-                                                    placeholder="Select delivery method"
+                                    {
+                                        !isCustomDelivery &&
+                                        <FormField
+                                            control={control}
+                                            name="deliveryMethod"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <SelectSingleCombo
+                                                        label="Delivery Method"
+                                                        options={[
+                                                            { value: "Dispatch", label: "Dispatch" },
+                                                            { value: "Pickup", label: "Pickup" },
+                                                        ]}
+                                                        {...field}
+                                                        valueKey={"value"}
+                                                        labelKey={"label"}
+                                                        placeholder="Select delivery method"
 
-                                                />
-                                            </FormItem>
-                                        )}
-                                    />
+                                                    />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    }
 
                                     <FormField
                                         control={control}
@@ -256,10 +283,11 @@ const NewOrderPage = () => {
                                                         className=""
                                                         label="Delivery Address"
                                                         {...field}
+                                                        hasError={!!errors.deliveryAddress}
+                                                        errorMessage={errors.deliveryAddress?.message as string}
                                                         placeholder='Enter delivery address'
                                                     />
                                                 </FormControl>
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -280,13 +308,36 @@ const NewOrderPage = () => {
                                                     valueKey={"value"}
                                                     labelKey={"label"}
                                                     placeholder="Select delivery zone"
-
+                                                    hasError={!!errors.deliveryZone}
+                                                    errorMessage={errors.deliveryZone?.message as string}
                                                 />
 
-                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
+
+                                    {
+                                        isCustomDelivery &&
+
+                                        <FormField
+                                            control={control}
+                                            name="deliveryFee"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            className=""
+                                                            label="Delivery Fee"
+                                                            {...field}
+                                                            hasError={!!errors.deliveryFee}
+                                                            errorMessage={errors.deliveryFee?.message as string}
+                                                            placeholder='Enter delivery fee'
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    }
 
                                     <FormField
                                         control={control}
@@ -298,14 +349,41 @@ const NewOrderPage = () => {
                                                     value={field.value}
                                                     onChange={field.onChange}
                                                     placeholder="Select delivery date"
-                                                />
+                                                    
+                                                    />
                                                 <FormMessage />
-                                                <Button className='rounded-none text-sm px-4 py-1.5 h-10 w-max bg-gray-200' variant="unstyled" onClick={() => setValue('isCustomDelivery', !watch('isCustomDelivery'))} >
-                                                    + Custom Delivery
+                                                <Button type="button" className='rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200' variant="unstyled" onClick={() => setValue('isCustomDelivery', !watch('isCustomDelivery'))} >
+                                                    +
+                                                    {
+                                                        isCustomDelivery ? ' Default ' : ' Custom '
+                                                    }
+                                                    Delivery
                                                 </Button>
                                             </FormItem>
                                         )}
-                                    />
+                                        />
+                                        {
+                                            isCustomDelivery &&
+    
+                                            <FormField
+                                                control={control}
+                                                name="dispatchTime"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <TimePicker
+                                                                className=""
+                                                                label="Dispatch Time"
+                                                                {...field}
+                                                                hasError={!!errors.dispatchTime}
+                                                                errorMessage={errors.dispatchTime?.message as string}
+                                                                // placeholder='Enter delivery fee'
+                                                            />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        }
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -345,6 +423,8 @@ const NewOrderPage = () => {
                                                                         labelKey="label"
                                                                         placeholder="Select Branch"
                                                                         {...field}
+                                                                        hasError={!!errors.items?.[index]?.branch}
+                                                                        errorMessage={errors.items?.[index]?.branch?.message}
                                                                     />
                                                                 )}
                                                             />
@@ -361,6 +441,8 @@ const NewOrderPage = () => {
                                                                         labelKey="label"
                                                                         placeholder="Select Category"
                                                                         {...field}
+                                                                        hasError={!!errors.items?.[index]?.category}
+                                                                        errorMessage={errors.items?.[index]?.category?.message}
                                                                     />
                                                                 )}
                                                             />
@@ -403,6 +485,8 @@ const NewOrderPage = () => {
                                                                                     labelKey="label"
                                                                                     placeholder="Select layers"
                                                                                     {...field}
+                                                                                    hasError={!!errors.items?.[index]?.layers}
+                                                                                    errorMessage={errors.items?.[index]?.layers?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -417,6 +501,8 @@ const NewOrderPage = () => {
                                                                                     labelKey="label"
                                                                                     placeholder="Select Flavour"
                                                                                     {...field}
+                                                                                    hasError={!!errors.items?.[index]?.flavour}
+                                                                                    errorMessage={errors.items?.[index]?.flavour?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -431,6 +517,8 @@ const NewOrderPage = () => {
                                                                                     labelKey="label"
                                                                                     placeholder="Select Toppings"
                                                                                     {...field}
+                                                                                    hasError={!!errors.items?.[index]?.toppings}
+                                                                                    errorMessage={errors.items?.[index]?.toppings?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -448,6 +536,8 @@ const NewOrderPage = () => {
                                                                                     labelKey="label"
                                                                                     placeholder="Add Whipped Cream"
                                                                                     {...field}
+                                                                                    hasError={!!errors.items?.[index]?.whippedCreamUpgrade}
+                                                                                    errorMessage={errors.items?.[index]?.whippedCreamUpgrade?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -468,6 +558,8 @@ const NewOrderPage = () => {
                                                                                 labelKey="label"
                                                                                 placeholder="Select Vase"
                                                                                 {...field}
+                                                                                hasError={!!errors.items?.[index]?.vase}
+                                                                                errorMessage={errors.items?.[index]?.vase?.message}
                                                                             />
                                                                         )}
                                                                     />
@@ -493,6 +585,8 @@ const NewOrderPage = () => {
                                                                                     labelKey="label"
                                                                                     placeholder="Select Size"
                                                                                     {...field}
+                                                                                    hasError={!!errors.items?.[index]?.size}
+                                                                                    errorMessage={errors.items?.[index]?.size?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -514,6 +608,8 @@ const NewOrderPage = () => {
                                                                                     labelKey="label"
                                                                                     placeholder="Select Bouquet"
                                                                                     {...field}
+                                                                                    hasError={!!errors.items?.[index]?.bouquet}
+                                                                                    errorMessage={errors.items?.[index]?.bouquet?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -703,6 +799,8 @@ const NewOrderPage = () => {
                                         name='paymentMode'
                                         value={watch('paymentMode')}
                                         onChange={(value: string) => setValue('paymentMode', value as "cash" | "transfer" | "pos" | "online")}
+                                        hasError={!!errors.paymentMode}
+                                        errorMessage={errors.paymentMode?.message as string}
                                     />
                                     <SelectSingleCombo
                                         options={[
@@ -716,6 +814,8 @@ const NewOrderPage = () => {
                                         name='paymentStatus'
                                         value={watch('paymentStatus')}
                                         onChange={(value: string) => setValue('paymentStatus', value as "pending" | "Paid(Naira Transfer)")}
+                                        hasError={!!errors.paymentStatus}
+                                        errorMessage={errors.paymentStatus?.message as string}
                                     />
                                     <FilePicker
                                         onFileSelect={(file) => setValue('proofOfPayment', file)}

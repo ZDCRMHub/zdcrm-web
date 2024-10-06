@@ -10,29 +10,51 @@ import {
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
+import FormError from "./formError"
 
 interface TimePickerProps {
-  date: Date | undefined
-  setDate: (date: Date | undefined) => void
+  value: Date | undefined
+  onChange: (date: Date | undefined) => void
+  className?: string
+  hasError?: boolean
+  errorMessage?: string
+  errorMessageClass?: string
+  leftIcon?: React.ReactNode
+  leftIconContainerClass?: string
+  rightIcon?: React.ReactNode
+  containerClassName?: string
+  label?: string
 }
 
-function TimePicker({ date, setDate }: TimePickerProps) {
+function TimePicker({
+  className,
+  containerClassName,
+  value,
+  onChange,
+  hasError,
+  errorMessage,
+  errorMessageClass,
+  leftIcon,
+  leftIconContainerClass,
+  rightIcon,
+  label,
+}: TimePickerProps) {
   const minuteRef = React.useRef<HTMLInputElement>(null)
   const hourRef = React.useRef<HTMLInputElement>(null)
   const secondRef = React.useRef<HTMLInputElement>(null)
 
-  const [hour, setHour] = React.useState(date ? date.getHours() : 0)
-  const [minute, setMinute] = React.useState(date ? date.getMinutes() : 0)
-  const [second, setSecond] = React.useState(date ? date.getSeconds() : 0)
+  const [hour, setHour] = React.useState(value ? value.getHours() : 0)
+  const [minute, setMinute] = React.useState(value ? value.getMinutes() : 0)
+  const [second, setSecond] = React.useState(value ? value.getSeconds() : 0)
 
   const handleTimeChange = () => {
-    if (!date) return
+    if (!value) return
 
-    const newDate = new Date(date)
+    const newDate = new Date(value)
     newDate.setHours(hour)
     newDate.setMinutes(minute)
     newDate.setSeconds(second)
-    setDate(newDate)
+    onChange(newDate)
   }
 
   React.useEffect(() => {
@@ -86,66 +108,89 @@ function TimePicker({ date, setDate }: TimePickerProps) {
     }
   }
 
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={"outline"}
-          className={cn(
-            "w-[280px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
-          )}
-        >
-          <Clock className="mr-2 h-4 w-4" />
-          {date ? format(date, "HH:mm:ss") : <span>Pick a time</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <div className="flex items-end gap-2 p-3">
-          <div className="grid gap-1 text-center">
-            <Label htmlFor="hours" className="text-xs">
-              Hours
-            </Label>
-            <Input
-              id="hours"
-              className="w-16 text-center"
-              value={hour.toString().padStart(2, '0')}
-              onChange={handleHourChange}
-              onKeyDown={(e) => handleInputKeyDown(e, 'hour')}
-              ref={hourRef}
-            />
-          </div>
-          <span className="text-2xl mb-3">:</span>
-          <div className="grid gap-1 text-center">
-            <Label htmlFor="minutes" className="text-xs">
-              Minutes
-            </Label>
-            <Input
-              id="minutes"
-              className="w-16 text-center"
-              value={minute.toString().padStart(2, '0')}
-              onChange={handleMinuteChange}
-              onKeyDown={(e) => handleInputKeyDown(e, 'minute')}
-              ref={minuteRef}
-            />
-          </div>
-          <span className="text-2xl mb-3">:</span>
-          <div className="grid gap-1 text-center">
-            <Label htmlFor="seconds" className="text-xs">
-              Seconds
-            </Label>
-            <Input
-              id="seconds"
-              className="w-16 text-center"
-              value={second.toString().padStart(2, '0')}
-              onChange={handleSecondChange}
-              onKeyDown={(e) => handleInputKeyDown(e, 'second')}
-              ref={secondRef}
-            />
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+    <div className={cn("flex flex-col gap-2", containerClassName)}>
+      {label && (
+        <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={label}>
+          {label}
+        </Label>
+      )}
+      <div className="relative">
+        {leftIcon && (
+          <span className={cn("absolute left-4 top-[25%] cursor-pointer", leftIconContainerClass)}>
+            {leftIcon}
+          </span>
+        )}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-full max-w-[560px] h-14 justify-start text-left font-normal rounded-lg border border-input bg-background px-4 py-3 text-sm",
+              "focus:border-[#31A5F9] focus:bg-[#E3F2FD] focus:border-[1.75px]",
+              "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
+                !value && "text-muted-foreground"
+              )}
+            >
+              <Clock className="mr-2 h-4 w-4" />
+              {value ? format(value, "HH:mm:ss") : <span>Pick a time</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <div className="flex items-end gap-2 p-3">
+              <div className="grid gap-1 text-center">
+                <Label htmlFor="hours" className="text-xs">
+                  Hours
+                </Label>
+                <Input
+                  id="hours"
+                  className="w-16 text-center"
+                  value={hour.toString().padStart(2, '0')}
+                  onChange={handleHourChange}
+                  onKeyDown={(e) => handleInputKeyDown(e, 'hour')}
+                  ref={hourRef}
+                />
+              </div>
+              <span className="text-2xl mb-3">:</span>
+              <div className="grid gap-1 text-center">
+                <Label htmlFor="minutes" className="text-xs">
+                  Minutes
+                </Label>
+                <Input
+                  id="minutes"
+                  className="w-16 text-center"
+                  value={minute.toString().padStart(2, '0')}
+                  onChange={handleMinuteChange}
+                  onKeyDown={(e) => handleInputKeyDown(e, 'minute')}
+                  ref={minuteRef}
+                />
+              </div>
+              <span className="text-2xl mb-3">:</span>
+              <div className="grid gap-1 text-center">
+                <Label htmlFor="seconds" className="text-xs">
+                  Seconds
+                </Label>
+                <Input
+                  id="seconds"
+                  className="w-16 text-center"
+                  value={second.toString().padStart(2, '0')}
+                  onChange={handleSecondChange}
+                  onKeyDown={(e) => handleInputKeyDown(e, 'second')}
+                  ref={secondRef}
+                />
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        {rightIcon && (
+          <span className="absolute right-4 top-[25%] cursor-pointer">
+            {rightIcon}
+          </span>
+        )}
+      </div>
+      {hasError && <FormError className={errorMessageClass} errorMessage={errorMessage} />}
+    </div>
   )
 }
 

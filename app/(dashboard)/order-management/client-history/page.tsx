@@ -4,7 +4,7 @@ import React from 'react';
 
 const page = () => {
   return (
-    <div className='container mx-auto p-4 px-8'>
+    <div className='w-full md:w-[95%] max-w-[1759px] mx-auto p-4 px-8'>
       <ClientHistoryDataTable />
     </div>
   );

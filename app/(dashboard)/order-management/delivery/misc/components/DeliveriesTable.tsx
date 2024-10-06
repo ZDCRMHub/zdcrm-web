@@ -299,13 +299,13 @@ const DeliveriesTable = () => {
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Order ID</TableHead>
-                    <TableHead>Customer Details</TableHead>
+                    <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                    <TableHead className='min-w-[200px]'>Customer Details</TableHead>
                     <TableHead>Delivery Date</TableHead>
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Rider Details</TableHead>
-                    <TableHead>Delivery Address</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className='min-w-[150px]'>Delivery Address</TableHead>
+                    <TableHead className='min-w-[150px] max-w-max'>Status</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>

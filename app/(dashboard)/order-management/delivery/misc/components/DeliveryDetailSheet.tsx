@@ -16,12 +16,21 @@ import { Phone } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { EditPenIcon } from '@/icons/core';
+import EditDeliveryDetailsModal from '../../../orders/misc/components/EditDeliveryDetailsModal';
+import { useBooleanStateControl } from '@/hooks';
 
 interface OrderDetailsPanelProps {
   orderId: string;
 }
 
 export default function DeliveryDetailSheet({ orderId }: OrderDetailsPanelProps) {
+const {
+  state: isEditDeliveryDetailsModalOpen,
+  setTrue: openEditDeliveryDetailsModal,
+  setFalse: closeEditDeliveryDetailsModal,
+} = useBooleanStateControl();
+
+
 
   return (
     <Sheet>
@@ -75,7 +84,7 @@ export default function DeliveryDetailSheet({ orderId }: OrderDetailsPanelProps)
             <Button
               variant='outline'
               className='px flex gap-1 border-[#B9B9B9]'>
-              <EditPenIcon className='h-4 w-4' />
+              <EditPenIcon className='h-5 w-5' />
 
               <span>Edit</span>
             </Button>
@@ -169,7 +178,7 @@ export default function DeliveryDetailSheet({ orderId }: OrderDetailsPanelProps)
               <Input value="Happy Anniversary"
                 // rightIcon={
                 //   <Button variant='ghost' size='sm'>
-                //     <EditPenIcon className='h-4 w-4' />
+                //     <EditPenIcon className='h-5 w-5' />
                 //   </Button>
                 // }
                 readOnly
@@ -325,7 +334,7 @@ export default function DeliveryDetailSheet({ orderId }: OrderDetailsPanelProps)
             <div className='flex justify-between items-center mb-2 border-b'>
               <h3 className='font-semibold font-manrope'>Delivery Details</h3>
               <Button variant='ghost' size='sm'>
-                <EditPenIcon className='h-4 w-4' />
+                <EditPenIcon className='h-5 w-5' onClick={openEditDeliveryDetailsModal} />
               </Button>
             </div>
             <div className=' grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4'>
@@ -373,6 +382,10 @@ export default function DeliveryDetailSheet({ orderId }: OrderDetailsPanelProps)
             </p>
           </section>
         </div>
+        <EditDeliveryDetailsModal
+          closeModal={closeEditDeliveryDetailsModal}
+          isModalOpen={isEditDeliveryDetailsModalOpen}
+        />
       </SheetContent>
     </Sheet >
 

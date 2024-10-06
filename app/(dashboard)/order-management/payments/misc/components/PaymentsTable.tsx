@@ -129,6 +129,25 @@ const PaymentsTable = () => {
             deliveryDate: new Date('2024-10-04T17:00:00'), 
         },
         {
+            orderId: 'PF/LM6765',
+            customerName: 'Ife Adebayo',
+            phoneNumber: '08067556644',
+            zone: 'Lagos Mainland',
+            orderItems: [
+                'Adeline Faultline Cake',
+                'Moet Chandon',
+                'Large size teddy',
+            ],
+            recipientName: 'Simisola',
+            paymentMethod: 'Card Payment',
+            category: [
+                { category: 'C', isActive: true },
+            ],
+            amount: 50000, 
+            status: 'Paid (Naira Transfer)',
+            deliveryDate: new Date('2024-10-04T17:00:00'), 
+        },
+        {
             orderId: 'PF/LM6766',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',

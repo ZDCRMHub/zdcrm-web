@@ -79,8 +79,8 @@ interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     return (
         <TableRow>
-            <TableCell>{order.orderId}</TableCell>
-            <TableCell>
+            <TableCell className='min-w-[150px]'>{order.orderId}</TableCell>
+            <TableCell className='min-w-max max-w-[500px]'>
                 <div>{order.customerName}</div>
                 <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
                 <div className='text-xs text-gray-400'>{order.zone}</div>
@@ -96,7 +96,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
 
             <TableCell>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-2 min-w-max'>
                     {(['C', 'W', 'F', 'TB'] as Category[]).map(cat => (
                         <CategoryBadge
                             key={cat}
@@ -107,11 +107,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </div>
             </TableCell>
 
-            <TableCell>{order.orderNotes}</TableCell>
-            <TableCell>{order.deliveryNote}</TableCell>
-            <TableCell>
+            <TableCell className='min-w-max max-w-[500px]'>{order.orderNotes}</TableCell>
+            <TableCell className='min-w-[150px] max-w-[500px]'>{order.deliveryNote}</TableCell>
+            <TableCell className='min-w-max'>
                 <Badge
-                    className={statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max'}>
+                    className={cn(
+                        statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                        'rounded-md w-max'
+                    )}>
                     {order.status}
                 </Badge>
             </TableCell>
@@ -142,6 +145,22 @@ const OrdersTable = () => {
             orderNotes: 'Call Simisola',
             status: 'PAYMENT MADE',
             deliveryNote: 'Deliver by 5 PM',
+        },
+        {
+            orderId: 'ZD/LM6765',
+            customerName: 'Ife Adebayo',
+            phoneNumber: '08067556644',
+            zone: 'Zone: Lagos Mainland',
+            enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
+            recipientName: 'Simisola',
+            recipientPhone: '07023544455',
+            category: [
+                { category: 'W', isActive: true },
+                { category: 'TB', isActive: true },
+            ],
+            orderNotes: 'Deliver at door step',
+            status: 'SORTED',
+            deliveryNote: 'Deliver by 6 PM',
         },
         {
             orderId: 'ZD/LM6765',
@@ -245,14 +264,14 @@ const OrdersTable = () => {
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Order ID</TableHead>
+                    <TableHead className='min-w-[150px]'>Order ID</TableHead>
                     <TableHead>Customers Details</TableHead>
                     <TableHead>Enquiry Item</TableHead>
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Order Notes</TableHead>
                     <TableHead>Delivery Note</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className='min-w-[150px]'>Status</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>

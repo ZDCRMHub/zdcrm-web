@@ -7,7 +7,7 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input } from "@/components/ui"
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext } from "@/components/ui"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton, Button } from '@/components/ui';
 import PaymentsTable from './PaymentsTable';
 import TabBar from '@/components/TabBar';
@@ -26,8 +26,8 @@ export default function PaymentsDashboard() {
 
 
   return (
-    <div className='w-full md:w-[90%] max-w-[1792px] mx-auto p-6'>
-      <div className='flex justify-between items-center mb-10 gap-4'>
+    <div className='relative flex flex-col w-full md:w-[95%] max-w-[1792px] mx-auto p-6 max-h-full'>
+      <div className='sticky top-0 flex justify-between items-center mb-10 gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
             type='text'
@@ -39,7 +39,7 @@ export default function PaymentsDashboard() {
           />
           <Menubar>
             <MenubarMenu>
-              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter orders by <ArrowDown2 size={16}/></MenubarTrigger>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter orders by <ArrowDown2 size={16} /></MenubarTrigger>
               <MenubarContent>
 
                 <MenubarSub>
@@ -91,45 +91,56 @@ export default function PaymentsDashboard() {
         </div>
       </div>
 
-      {
-        searchText.trim() !== "" &&
-        <h3 className="mb-4">Search Results</h3>
-      }
-      {
-        searchText.trim() === "" ?
-          <>
-            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
-            <Accordion type="single" collapsible className="w-full max-w-[1792px] mt-8" defaultValue='today'>
-              <AccordionItem value="today">
-                <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <PaymentsTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="tomorrow">
-                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <PaymentsTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="within72Hours">
-                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <PaymentsTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="within7Days">
-                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <PaymentsTable />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </>
+      <section className='grow'> 
+        {
+          searchText.trim() !== "" &&
+          <h3 className="mb-4">Search Results</h3>
+        }
+        {
+          searchText.trim() === "" ?
+            <>
+              <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+              <PaymentsTable />
 
-          :
-          <PaymentsTable />
-      }
+            </>
+
+            :
+            <PaymentsTable />
+        }
+      </section>
+
+      <footer className='sticky bottom-0'>
+        <div className='flex items-center justify-between mt-auto bg-background py-1.5'>
+          <Pagination className='justify-start bg-background'>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href='#' />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>2</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>3</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>10</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href='#' />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+          <div className='text-sm text-gray-500 w-max shrink-0'>
+            Showing 1 to 8 of 50 entries
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

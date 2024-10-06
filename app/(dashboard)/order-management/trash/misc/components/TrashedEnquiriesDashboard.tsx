@@ -92,7 +92,7 @@ export default function TrashedEnquiriesDashboard() {
 
 
   return (
-    <div className='w-full md:w-[90%] max-w-[1792px] mx-auto p-6'>
+    <div className='w-full md:w-[95%] max-w-[1792px] mx-auto p-6'>
       <div className='flex justify-between items-center mb-6 gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -141,9 +141,7 @@ export default function TrashedEnquiriesDashboard() {
         </div>
 
         <div className='flex items-center gap-2'>
-          <LinkButton href="./enquiries/new-enquiry" variant='default' className='bg-black text-white'>
-            <Plus className='mr-2 h-4 w-4' /> Add Enquiry
-          </LinkButton>
+         
           <Button
             variant='outline'
             className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
