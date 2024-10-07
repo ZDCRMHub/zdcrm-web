@@ -385,7 +385,6 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
         <EditDeliveryDetailsModal
           closeModal={closeEditDeliveryDetailsModal}
           isModalOpen={isEditDeliveryDetailsModalOpen}
-          onSave={() => { }}
         />
       </SheetContent>
     </Sheet >

@@ -34,6 +34,7 @@ interface SelectProps<T> {
   triggerColor?: string;
   valueKey: keyof T;
   labelKey: keyof T;
+  showSelectedValue?: boolean;
 }
 
 const SelectSingleCombo = <T extends object>({
@@ -55,7 +56,8 @@ const SelectSingleCombo = <T extends object>({
   isLoadingOptions,
   valueKey,
   labelKey,
-  triggerColor
+  triggerColor,
+  showSelectedValue=true,
 }: SelectProps<T>) => {
   const [open, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
@@ -121,10 +123,15 @@ const SelectSingleCombo = <T extends object>({
                 '!overflow-hidden text-sm w-full font-normal',
                 (value && options && options?.length) ? '' : '!text-[#A4A4A4]'
               )}>
-                {(value && options && options?.length)
+                {
+                  (showSelectedValue && value && options && options?.length)
+                    ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                    : placeholder
+                }
+                {/* {(value && options && options?.length)
                   ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
                   : placeholder
-                }
+                } */}
               </span>
               <svg
                 className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", open && "rotate-180")}

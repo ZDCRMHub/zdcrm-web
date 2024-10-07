@@ -39,7 +39,7 @@ export default function Component() {
 
 
   return (
-    <div className='w-full md:w-[90%] max-w-[1440px] mx-auto p-4 space-y-9 px-8'>
+    <div className='w-full md:w-[95%] max-w-[1440px] mx-auto p-4 space-y-9 px-8'>
       <header className='flex items-center justify-between flex-wrap mb-6'>
         <section className="flex items-center justify-center">
 

@@ -7,7 +7,7 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input } from "@/components/ui"
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext } from "@/components/ui"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton, Button } from '@/components/ui';
 import OrdersTable from './OrdersTable';
 import TabBar from '@/components/TabBar';
@@ -18,24 +18,16 @@ import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-rea
 export default function EnquiriesDashboard() {
   const tabs = [
     { name: 'All Orders', count: 450 },
-    { name: 'Payment Made', count: 76 },
-    { name: 'SOA', count: 40 },
-    { name: 'Sorted', count: 36 },
-    { name: 'Sent to dispatch', count: 18 },
-    { name: 'DIS CL', count: 40 },
-    { name: 'Delivered', count: 23 },
-    { name: 'DEL CL', count: 23 },
-    { name: 'Canceled Orders', count: 5 },
   ];
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
   const [searchText, setSearchText] = useState("")
-
+  const [sortBy, setSortBy] = useState('All Orders')
 
 
   return (
-    <div className='w-full md:w-[90%] max-w-[1792px] mx-auto p-6'>
-      <div className='flex justify-between items-center mb-10 gap-4'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[95%] max-w-[1792px] mx-auto pb-6 max-h-full'>
+      <div className='sticky top-0 flex justify-between items-center mb-10 gap-4 pt-6 z-[2] bg-background'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
             type='text'
@@ -47,7 +39,7 @@ export default function EnquiriesDashboard() {
           />
           <Menubar>
             <MenubarMenu>
-              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter orders by <ArrowDown2 size={16}/></MenubarTrigger>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter orders by <ArrowDown2 size={16} /></MenubarTrigger>
               <MenubarContent>
 
                 <MenubarSub>
@@ -86,6 +78,29 @@ export default function EnquiriesDashboard() {
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
+
+          <SelectSingleCombo
+            name='sortBy'
+            options={[
+              { value: 'All Orders', label: 'All Orders' },
+              { value: 'Payment Made', label: 'Payment Made' },
+              { value: 'SOA', label: 'SOA' },
+              { value: 'Sorted', label: 'Sorted' },
+              { value: 'Sent to Dispatch', label: 'Sent to Dispatch' },
+              { value: 'DIS CL', label: 'DIS CL' },
+              { value: 'Delivered', label: 'Delivered' },
+              { value: 'DEL CL', label: 'DEL CL' },
+              { value: 'Cancelled', label: 'Cancelled' },
+            ]}
+            value={sortBy}
+            onChange={(value) => setSortBy(value)}
+            valueKey='value'
+            labelKey='label'
+            placeholder='Sort by'
+            className='w-32 !h-10 text-[#8B909A] text-xs'
+            triggerColor='#8B909A'
+            showSelectedValue={false}
+          />
         </div>
         <div className='flex items-center gap-2'>
           <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
@@ -99,45 +114,57 @@ export default function EnquiriesDashboard() {
         </div>
       </div>
 
-      {
-        searchText.trim() !== "" &&
-        <h3 className="mb-4">Search Results</h3>
-      }
-      {
-        searchText.trim() === "" ?
-          <>
-            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
-            <Accordion type="single" collapsible className="w-full max-w-[1792px] mt-8" defaultValue='today'>
-              <AccordionItem value="today">
-                <AccordionTrigger>Today, {format(new Date(), 'do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <OrdersTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="tomorrow">
-                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 1)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <OrdersTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="within72Hours">
-                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <OrdersTable />
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="within7Days">
-                <AccordionTrigger>{format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}</AccordionTrigger>
-                <AccordionContent className='px-4'>
-                  <OrdersTable />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </>
+      <section>
+        {
+          searchText.trim() !== "" &&
+          <h3 className="mb-4">Search Results</h3>
+        }
+        {
+          searchText.trim() === "" ?
+            <>
+              <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+              <OrdersTable />
 
-          :
-          <OrdersTable />
-      }
+            </>
+
+            :
+            <OrdersTable />
+        }
+      </section>
+
+      <footer className='sticky bottom-0'>
+        <div className='flex items-center justify-between mt-auto bg-background py-1.5'>
+          <Pagination className='justify-start bg-background'>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href='#' />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>1</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>2</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>3</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#'>10</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href='#' />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+          <div className='text-sm text-gray-500 w-max shrink-0'>
+            Showing 1 to 8 of 50 entries
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 }
