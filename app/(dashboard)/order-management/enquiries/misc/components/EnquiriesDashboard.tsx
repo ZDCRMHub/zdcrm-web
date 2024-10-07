@@ -93,7 +93,7 @@ export default function EnquiriesDashboard() {
 
 
   return (
-    <div className='max-w-[1440px] mx-auto p-6'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[95%] max-w-[1792px] mx-auto pb-6 max-h-full'>
       <div className='flex justify-between items-center mb-6 gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -169,8 +169,8 @@ export default function EnquiriesDashboard() {
           <EnquiriesTable />
       }
 
-<div className='flex items-center justify-between mt-auto'>
-        <Pagination>
+      <div className='flex items-center justify-between mt-auto'>
+        <Pagination className='justify-start'>
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious href='#' />

@@ -11,6 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import OrderDetailSheet from './OrderDetailSheet';
+import { format } from 'date-fns';
+import { convertNumberToNaira } from '@/utils/currency';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -70,6 +72,9 @@ interface Order {
     orderNotes: string;
     status: string;
     deliveryNote: string; // Added deliveryNote field
+    deliveryDate: Date;
+    amount?: number;
+    paymentStatus: string;
 }
 
 interface OrderRowProps {
@@ -80,15 +85,15 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     return (
         <TableRow>
             <TableCell className='min-w-[150px]'>{order.orderId}</TableCell>
-            <TableCell className='min-w-max max-w-[500px]'>
-                <div>{order.customerName}</div>
-                <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
-                <div className='text-xs text-gray-400'>{order.zone}</div>
-            </TableCell>
             <TableCell>
                 {order.enquiryItems.map((item, idx) => (
                 <div key={idx} className='!min-w-max'>{item}</div>
                 ))}
+            </TableCell>
+            <TableCell className='min-w-max max-w-[500px]'>
+                <div>{order.customerName}</div>
+                <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
+                <div className='text-xs text-gray-400'>{order.zone}</div>
             </TableCell>
             <TableCell>
                 <div>{order.recipientName}</div>
@@ -108,7 +113,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
 
             <TableCell className='min-w-max max-w-[500px]'>{order.orderNotes}</TableCell>
-            <TableCell className='min-w-[150px] max-w-[500px]'>{order.deliveryNote}</TableCell>
+            <TableCell className='min-w-[150px] max-w-[500px]'>{format(order.deliveryDate, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Badge
                     className={cn(
@@ -117,6 +122,10 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     )}>
                     {order.status}
                 </Badge>
+            </TableCell>
+            <TableCell className='min-w-max'>
+                <div>{convertNumberToNaira(order.amount || 0)}</div>
+                <div>{order.paymentStatus}</div>
             </TableCell>
             <TableCell>
                 <OrderDetailSheet orderId={order.orderId} />
@@ -145,6 +154,9 @@ const OrdersTable = () => {
             orderNotes: 'Call Simisola',
             status: 'PAYMENT MADE',
             deliveryNote: 'Deliver by 5 PM',
+            deliveryDate: new Date(),
+            amount: 5000,
+            paymentStatus: 'Paid(USD Transfer)'
         },
         {
             orderId: 'ZD/LM6765',
@@ -161,6 +173,9 @@ const OrdersTable = () => {
             orderNotes: 'Deliver at door step',
             status: 'SORTED',
             deliveryNote: 'Deliver by 6 PM',
+            deliveryDate: new Date(),
+            amount: 60000,
+            paymentStatus: 'Paid(USD Transfer)'
         },
         {
             orderId: 'ZD/LM6765',
@@ -177,6 +192,9 @@ const OrdersTable = () => {
             orderNotes: 'Deliver at door step',
             status: 'SORTED',
             deliveryNote: 'Deliver by 6 PM',
+            deliveryDate: new Date(),
+            amount: 70000,
+            paymentStatus: 'Paid(Website Card)'
         },
         {
             orderId: 'ZD/LI6765',
@@ -198,6 +216,9 @@ const OrdersTable = () => {
             orderNotes: 'Deliver at door step',
             status: 'DIS CL',
             deliveryNote: 'Deliver by 7 PM',
+            deliveryDate: new Date(),
+            amount: 80000,
+            paymentStatus: 'Paid(Bitcoin)'
         },
         {
             orderId: 'PF/LC6765',
@@ -215,6 +236,9 @@ const OrdersTable = () => {
             orderNotes: 'Call Adeola',
             status: 'DELIVERED',
             deliveryNote: 'Deliver by 8 PM',
+            deliveryDate: new Date(),
+            amount: 90000,
+            paymentStatus: 'Paid(USD Transfer)'
         },
         {
             orderId: 'PF/LM6765',
@@ -236,6 +260,9 @@ const OrdersTable = () => {
             orderNotes: 'Deliver at door step',
             status: 'CANCELED',
             deliveryNote: 'Deliver by 9 PM',
+            deliveryDate: new Date(),
+            amount: 10000,
+            paymentStatus: 'Not Received(Paid)'
         },
         {
             orderId: 'ZD/LC6765',
@@ -257,6 +284,9 @@ const OrdersTable = () => {
             orderNotes: 'Call Simisola',
             status: 'SENT TO DISPATCH',
             deliveryNote: 'Deliver by 10 PM',
+            deliveryDate: new Date(),
+            amount: 11000,
+            paymentStatus: 'Paid(USD Transfer)'
         },
     ];
 
@@ -265,13 +295,14 @@ const OrdersTable = () => {
             <TableHeader>
                 <TableRow>
                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                    <TableHead>Order Items</TableHead>
                     <TableHead>Customers Details</TableHead>
-                    <TableHead>Enquiry Item</TableHead>
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Order Notes</TableHead>
                     <TableHead>Delivery Note</TableHead>
                     <TableHead className='min-w-[150px]'>Status</TableHead>
+                    <TableHead>Payment</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>
