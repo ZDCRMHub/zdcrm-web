@@ -3,7 +3,7 @@
 import React from 'react';
 import PaymentsDashboard from './misc/components/PaymentsDashboard';
 
-const page = () => {
+const PaymentsPage = () => {
   return (
     <>
       <PaymentsDashboard />
@@ -11,4 +11,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default PaymentsPage;

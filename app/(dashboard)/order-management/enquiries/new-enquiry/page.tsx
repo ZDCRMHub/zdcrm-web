@@ -240,7 +240,7 @@ const NewOrderPage = () => {
                                     <h3 className="font-semibold text-base">Delivery Details</h3>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent className="pt-5">
+                            <AccordionContent className="pt-5n">
                                 <Input
                                     label="Delivery note"
                                     {...register('deliveryNote')}

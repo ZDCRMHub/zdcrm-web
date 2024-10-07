@@ -352,7 +352,7 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
 
 
           <section className="flex justify-end my-12">
-            <SheetClose  className='h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md' onClick={close} >
+            <SheetClose  className='h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md'>
               Close
             </SheetClose>
           </section>
