@@ -8,11 +8,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import OrderDetailSheet from './OrderDetailSheet';
 import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
+import { Tag } from 'iconsax-react';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -61,7 +61,6 @@ interface Order {
     orderId: string;
     customerName: string;
     phoneNumber: string;
-    zone: string;
     enquiryItems: string[];
     recipientName: string;
     recipientPhone: string;
@@ -71,10 +70,11 @@ interface Order {
     }[];
     orderNotes: string;
     status: string;
-    deliveryNote: string; // Added deliveryNote field
+    deliveryNote: string;
     deliveryDate: Date;
     amount?: number;
     paymentStatus: string;
+    tag?: string;
 }
 
 interface OrderRowProps {
@@ -84,16 +84,29 @@ interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     return (
         <TableRow>
-            <TableCell className='min-w-[150px]'>{order.orderId}</TableCell>
+            <TableCell className='min-w-[150px]'>
+                <div>{order.orderId}</div>
+                {
+                    order.tag &&
+                    <div className="flex items-center gap-1.5 text-[#494949] text-xs">
+                        <span>
+                            <Tag size={15} />
+                        </span>
+                        <span>
+                            {order.tag}
+                        </span>
+                    </div>
+                }
+
+            </TableCell>
             <TableCell>
                 {order.enquiryItems.map((item, idx) => (
-                <div key={idx} className='!min-w-max'>{item}</div>
+                    <div key={idx} className='!min-w-max'>{item}</div>
                 ))}
             </TableCell>
             <TableCell className='min-w-max max-w-[500px]'>
                 <div>{order.customerName}</div>
                 <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
-                <div className='text-xs text-gray-400'>{order.zone}</div>
             </TableCell>
             <TableCell>
                 <div>{order.recipientName}</div>
@@ -113,7 +126,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
 
             <TableCell className='min-w-max max-w-[500px]'>{order.orderNotes}</TableCell>
-            <TableCell className='min-w-[150px] max-w-[500px]'>{format(order.deliveryDate, 'dd/MMM/yyyy')}</TableCell>
+            <TableCell className='min-w-[150px] max-w-[500px] uppercase'>{format(order.deliveryDate, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Badge
                     className={cn(
@@ -140,7 +153,6 @@ const OrdersTable = () => {
             orderId: 'PF/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Mainland',
             enquiryItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
@@ -156,13 +168,13 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 5 PM',
             deliveryDate: new Date(),
             amount: 5000,
-            paymentStatus: 'Paid(USD Transfer)'
+            paymentStatus: 'Paid(USD Transfer)',
+            tag: '123456'
         },
         {
             orderId: 'ZD/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Mainland',
             enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
@@ -181,7 +193,6 @@ const OrdersTable = () => {
             orderId: 'ZD/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Mainland',
             enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
@@ -194,13 +205,13 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 6 PM',
             deliveryDate: new Date(),
             amount: 70000,
-            paymentStatus: 'Paid(Website Card)'
+            paymentStatus: 'Paid(Website Card)',
+            tag: '123456'
         },
         {
             orderId: 'ZD/LI6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Island',
             enquiryItems: [
                 'Delectable Choco cake',
                 'Moet Chandon',
@@ -218,13 +229,13 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 7 PM',
             deliveryDate: new Date(),
             amount: 80000,
-            paymentStatus: 'Paid(Bitcoin)'
+            paymentStatus: 'Paid(Bitcoin)',
+            tag: '123456'
         },
         {
             orderId: 'PF/LC6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Central',
             enquiryItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
@@ -244,7 +255,6 @@ const OrdersTable = () => {
             orderId: 'PF/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Mainland',
             enquiryItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
@@ -268,7 +278,6 @@ const OrdersTable = () => {
             orderId: 'ZD/LC6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Zone: Lagos Central',
             enquiryItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
@@ -286,7 +295,8 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 10 PM',
             deliveryDate: new Date(),
             amount: 11000,
-            paymentStatus: 'Paid(USD Transfer)'
+            paymentStatus: 'Paid(USD Transfer)',
+            tag: '123456'
         },
     ];
 
@@ -300,7 +310,7 @@ const OrdersTable = () => {
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Order Notes</TableHead>
-                    <TableHead>Delivery Note</TableHead>
+                    <TableHead>Delivery Date</TableHead>
                     <TableHead className='min-w-[150px]'>Status</TableHead>
                     <TableHead>Payment</TableHead>
                     <TableHead></TableHead>

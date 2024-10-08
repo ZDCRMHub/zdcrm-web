@@ -1,197 +1,163 @@
 import * as React from "react"
-import { Clock } from "lucide-react"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import { ChevronDown, ChevronUp, Clock } from "lucide-react"
+import { useController, Control } from "react-hook-form"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import FormError from "./formError"
+import { Label } from "@/components/ui/label"
+import FormError from "@/components/ui/formError"
+import { PopoverClose } from "@radix-ui/react-popover"
 
-interface TimePickerProps {
-  value: Date | undefined
-  onChange: (date: Date | undefined) => void
+interface CustomTimePickerProps {
   className?: string
+  control: Control<any>
+  name: string
+  label?: string
   hasError?: boolean
   errorMessage?: string
   errorMessageClass?: string
-  leftIcon?: React.ReactNode
-  leftIconContainerClass?: string
-  rightIcon?: React.ReactNode
   containerClassName?: string
-  label?: string
 }
 
-function TimePicker({
+function CustomTimePicker({
   className,
-  containerClassName,
-  value,
-  onChange,
+  control,
+  name,
+  label,
   hasError,
   errorMessage,
   errorMessageClass,
-  leftIcon,
-  leftIconContainerClass,
-  rightIcon,
-  label,
-}: TimePickerProps) {
-  const minuteRef = React.useRef<HTMLInputElement>(null)
-  const hourRef = React.useRef<HTMLInputElement>(null)
-  const secondRef = React.useRef<HTMLInputElement>(null)
+  containerClassName,
+}: CustomTimePickerProps) {
+  const {
+    field: { value, onChange },
+  } = useController({
+    name,
+    control,
+    defaultValue: "",
+  })
 
-  const [hour, setHour] = React.useState(value ? value.getHours() : 0)
-  const [minute, setMinute] = React.useState(value ? value.getMinutes() : 0)
-  const [second, setSecond] = React.useState(value ? value.getSeconds() : 0)
+  const [hour, setHour] = React.useState("12")
+  const [minute, setMinute] = React.useState("00")
+  const [period, setPeriod] = React.useState("AM")
+
+  React.useEffect(() => {
+    if (value) {
+      const [time, ampm] = value.split(" ")
+      const [h, m] = time.split(":")
+      setHour(h)
+      setMinute(m)
+      setPeriod(ampm)
+    }
+  }, [value])
 
   const handleTimeChange = () => {
-    if (!value) return
+    const time = `${hour}:${minute} ${period}`
+    onChange(time)
 
-    const newDate = new Date(value)
-    newDate.setHours(hour)
-    newDate.setMinutes(minute)
-    newDate.setSeconds(second)
-    onChange(newDate)
   }
 
   React.useEffect(() => {
     handleTimeChange()
-  }, [hour, minute, second])
+  }, [hour, minute, period])
 
-  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value)
-    if (value >= 0 && value <= 23) {
-      setHour(value)
-      if (value > 2) {
-        minuteRef.current?.focus()
-      }
-    }
+  const incrementHour = () => {
+    const newHour = parseInt(hour) + 1
+    setHour(newHour > 12 ? "01" : newHour.toString().padStart(2, "0"))
   }
 
-  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value)
-    if (value >= 0 && value <= 59) {
-      setMinute(value)
-      if (value > 5) {
-        secondRef.current?.focus()
-      }
-    }
+  const decrementHour = () => {
+    const newHour = parseInt(hour) - 1
+    setHour(newHour < 1 ? "12" : newHour.toString().padStart(2, "0"))
   }
 
-  const handleSecondChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value)
-    if (value >= 0 && value <= 59) {
-      setSecond(value)
-    }
+  const incrementMinute = () => {
+    const newMinute = parseInt(minute) + 1
+    setMinute(newMinute > 59 ? "00" : newMinute.toString().padStart(2, "0"))
   }
 
-  const handleInputKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    type: 'hour' | 'minute' | 'second'
-  ) => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-      e.preventDefault()
-      const increment = e.key === 'ArrowUp' ? 1 : -1
-      switch (type) {
-        case 'hour':
-          setHour((prevHour) => (prevHour + increment + 24) % 24)
-          break
-        case 'minute':
-        case 'second':
-          const setter = type === 'minute' ? setMinute : setSecond
-          setter((prev) => (prev + increment + 60) % 60)
-          break
-      }
-    }
+  const decrementMinute = () => {
+    const newMinute = parseInt(minute) - 1
+    setMinute(newMinute < 0 ? "59" : newMinute.toString().padStart(2, "0"))
   }
 
+  const togglePeriod = () => {
+    setPeriod(period === "AM" ? "PM" : "AM")
+  }
 
   return (
     <div className={cn("flex flex-col gap-2", containerClassName)}>
       {label && (
-        <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={label}>
+        <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={name}>
           {label}
         </Label>
       )}
-      <div className="relative">
-        {leftIcon && (
-          <span className={cn("absolute left-4 top-[25%] cursor-pointer", leftIconContainerClass)}>
-            {leftIcon}
-          </span>
-        )}
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-full max-w-[560px] h-14 justify-start text-left font-normal rounded-lg border border-input bg-background px-4 py-3 text-sm",
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            id={name}
+            className={cn(
+              "relative w-full justify-start text-left font-normal h-14 rounded-lg",
               "focus:border-[#31A5F9] focus:bg-[#E3F2FD] focus:border-[1.75px]",
-              "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px] disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200",
-                !value && "text-muted-foreground"
-              )}
-            >
-              <Clock className="mr-2 h-4 w-4" />
-              {value ? format(value, "HH:mm:ss") : <span>Pick a time</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <div className="flex items-end gap-2 p-3">
-              <div className="grid gap-1 text-center">
-                <Label htmlFor="hours" className="text-xs">
-                  Hours
-                </Label>
-                <Input
-                  id="hours"
-                  className="w-16 text-center"
-                  value={hour.toString().padStart(2, '0')}
-                  onChange={handleHourChange}
-                  onKeyDown={(e) => handleInputKeyDown(e, 'hour')}
-                  ref={hourRef}
-                />
+              "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px]",
+              "transition-all duration-200",
+              !value && "text-muted-foreground",
+              className
+            )}
+          >
+            <Clock className="mr-2 h-5 w-5 absolute right-4 top-[30%]" />
+            {value || "Select time"}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[300px] p-0" align="start">
+          <div className="p-4 bg-white rounded-lg shadow-lg">
+            <h2 className="text-lg font-semibold mb-4 text-center">Select Time</h2>
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-center w-1/3">
+                <Button variant="ghost" size="sm" onClick={incrementHour} className="mb-2">
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <div className="text-2xl font-bold">{hour}</div>
+                <Button variant="ghost" size="sm" onClick={decrementHour} className="mt-2">
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
               </div>
-              <span className="text-2xl mb-3">:</span>
-              <div className="grid gap-1 text-center">
-                <Label htmlFor="minutes" className="text-xs">
-                  Minutes
-                </Label>
-                <Input
-                  id="minutes"
-                  className="w-16 text-center"
-                  value={minute.toString().padStart(2, '0')}
-                  onChange={handleMinuteChange}
-                  onKeyDown={(e) => handleInputKeyDown(e, 'minute')}
-                  ref={minuteRef}
-                />
+              <div className="text-center w-1/3">
+                <Button variant="ghost" size="sm" onClick={incrementMinute} className="mb-2">
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <div className="text-2xl font-bold">{minute}</div>
+                <Button variant="ghost" size="sm" onClick={decrementMinute} className="mt-2">
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
               </div>
-              <span className="text-2xl mb-3">:</span>
-              <div className="grid gap-1 text-center">
-                <Label htmlFor="seconds" className="text-xs">
-                  Seconds
-                </Label>
-                <Input
-                  id="seconds"
-                  className="w-16 text-center"
-                  value={second.toString().padStart(2, '0')}
-                  onChange={handleSecondChange}
-                  onKeyDown={(e) => handleInputKeyDown(e, 'second')}
-                  ref={secondRef}
-                />
+              <div className="text-center w-1/3">
+                <Button variant="ghost" size="sm" onClick={togglePeriod} className="mb-2">
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <div className="text-2xl font-bold">{period}</div>
+                <Button variant="ghost" size="sm" onClick={togglePeriod} className="mt-2">
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-          </PopoverContent>
-        </Popover>
-        {rightIcon && (
-          <span className="absolute right-4 top-[25%] cursor-pointer">
-            {rightIcon}
-          </span>
-        )}
-      </div>
+            <PopoverClose asChild className="w-full" onClick={() => handleTimeChange()}>
+              <Button>
+                OK
+              </Button>
+            </PopoverClose>
+          </div>
+        </PopoverContent>
+      </Popover>
       {hasError && <FormError className={errorMessageClass} errorMessage={errorMessage} />}
     </div>
   )
 }
 
-export default TimePicker
+export default CustomTimePicker

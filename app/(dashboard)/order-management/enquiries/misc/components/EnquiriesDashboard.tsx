@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui"
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, SelectSingleCombo } from "@/components/ui"
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton } from '@/components/ui';
 import EnquiriesTable from './EnquiriesTable';
@@ -89,12 +89,12 @@ const tabs = [
 export default function EnquiriesDashboard() {
   const [activeTab, setActiveTab] = useState(tabs[0].name);
   const [searchText, setSearchText] = useState("")
-
+  const [sortBy, setSortBy] = useState('All Enquiries')
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[95%] max-w-[1792px] mx-auto pb-6 max-h-full'>
-      <div className='flex justify-between items-center mb-6 gap-4'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full'>
+      <div className='flex justify-between items-center mb-6 gap-4 pt-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
             type='text'
@@ -139,6 +139,24 @@ export default function EnquiriesDashboard() {
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
+          <SelectSingleCombo
+            name='sortBy'
+            options={[
+              { value: 'All Enquiries', label: 'All Enquiries' },
+              { value: 'Started Discussion', label: 'Started Discussion' },
+              { value: 'Still Discussing', label: 'Still Discussing' },
+              { value: 'Finalized Discussion', label: 'Finalized Discussion' },
+            ]}
+            value={sortBy}
+            onChange={(value) => setSortBy(value)}
+            valueKey='value'
+            labelKey='label'
+            placeholder='Sort by'
+            className='w-32 !h-10 text-[#8B909A]'
+            placeHolderClass='text-[#8B909A] text-xs'
+            triggerColor='#8B909A'
+            showSelectedValue={false}
+          />
         </div>
 
         <div className='flex items-center gap-2'>

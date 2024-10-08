@@ -26,7 +26,7 @@ export default function EnquiriesDashboard() {
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[95%] max-w-[1792px] mx-auto pb-6 max-h-full'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full'>
       <div className='sticky top-0 flex justify-between items-center mb-10 gap-4 pt-6 z-[2] bg-background'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -98,6 +98,7 @@ export default function EnquiriesDashboard() {
             labelKey='label'
             placeholder='Sort by'
             className='w-32 !h-10 text-[#8B909A] text-xs'
+            placeHolderClass='text-[#8B909A] text-xs'
             triggerColor='#8B909A'
             showSelectedValue={false}
           />

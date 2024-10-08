@@ -7,8 +7,8 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext } from "@/components/ui"
-import {  LinkButton, Button } from '@/components/ui';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext, SelectSingleCombo } from "@/components/ui"
+import { LinkButton, Button } from '@/components/ui';
 import PaymentsTable from './PaymentsTable';
 import TabBar from '@/components/TabBar';
 import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
@@ -22,11 +22,11 @@ export default function PaymentsDashboard() {
 
   const [activeTab, setActiveTab] = useState(tabs[0].name);
   const [searchText, setSearchText] = useState("")
-
+  const [sortBy, setSortBy] = useState('All Enquiries')
 
 
   return (
-    <div className='relative flex flex-col w-full md:w-[95%] max-w-[1792px] mx-auto p-6 max-h-full'>
+    <div className='relative flex flex-col w-full md:w-[92.5%] max-w-[1792px] mx-auto p-6 max-h-full'>
       <div className='sticky top-0 flex justify-between items-center mb-10 gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -78,11 +78,28 @@ export default function PaymentsDashboard() {
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
+
+          <SelectSingleCombo
+            name='sortBy'
+            options={[
+              {label: 'All Payments', value: 'All Payments'},
+              {label: 'Paid(Naira Transfer)', value: 'Paid(Naira Transfer)'},
+              {label: 'Paid(Card Payment)', value: 'Paid(Card Payment)'},
+              {label: 'Not Received(Payment Made)', value: 'Not Received'},
+
+            ]}
+            value={sortBy}
+            onChange={(value) => setSortBy(value)}
+            valueKey='value'
+            labelKey='label'
+            placeholder='Sort by'
+            className='w-32 !h-10 text-[#8B909A]'
+            placeHolderClass='text-[#8B909A] text-xs'
+            triggerColor='#8B909A'
+            showSelectedValue={false}
+          />
         </div>
         <div className='flex items-center gap-2'>
-          <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-            <Plus className='mr-2 h-4 w-4' /> Add Order
-          </LinkButton>
           <Button
             variant='outline'
             className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
@@ -91,7 +108,7 @@ export default function PaymentsDashboard() {
         </div>
       </div>
 
-      <section className='grow'> 
+      <section className='grow'>
         {
           searchText.trim() !== "" &&
           <h3 className="mb-4">Search Results</h3>

@@ -165,32 +165,33 @@ const enquiries = [
 export default function EnquiriesTable() {
   const router = useRouter();
 
-  const handleConfirm = () => {
-    console.log(`Confirmed action`);
-    closeConfirmApproveModal();
-    router.push("/order-management/orders")
-  };
-
+  
   const {
     state: isConfirmDeleteModalOpen,
     setTrue: openConfirmDeleteModal,
     setFalse: closeConfirmDeleteModal,
   } = useBooleanStateControl()
-
+  
   const {
     state: isConfirmApproveModalOpen,
     setTrue: openConfirmApproveModal,
     setFalse: closeConfirmApproveModal,
   } = useBooleanStateControl()
-
+  
   const {
     state: isSuccessModalOpen,
     setTrue: openSuccessModal,
     setFalse: closeSuccessModal
   } = useBooleanStateControl()
-
-
-
+  
+  const handleConfirm = () => {
+    console.log(`Confirmed action`);
+    closeConfirmApproveModal();
+    closeSuccessModal();
+    router.push("/order-management/orders")
+  };
+  
+  
 
 
   return (
@@ -221,7 +222,7 @@ export default function EnquiriesTable() {
               ))}
             </TableCell>
             <TableCell>{enquiry.deliveryNotes}</TableCell>
-            <TableCell>{format(new Date(enquiry.deliveryDate), 'dd/MMM/yyyy')}</TableCell>
+            <TableCell className='uppercase'>{format(new Date(enquiry.deliveryDate), 'dd/MMM/yyyy')}</TableCell>
             <TableCell>
               <div className='flex space-x-1'>
                 {enquiry.category.map((cat, idx) => (
@@ -324,6 +325,8 @@ export default function EnquiriesTable() {
       <SuccessModal
         closeModal={handleConfirm}
         isModalOpen={isSuccessModalOpen}
+        heading='Order Approved!'
+        subheading='Enquiry has been approved as an order'
       />
 
     </Table>
