@@ -1,6 +1,6 @@
 'use client'
-import OrderSummary from '@/app/(dashboard)/order-management/orders/misc/components/OrderSSS';
 import React from 'react';
+import OrderSummary from '../misc/components/OrderSummary';
 
 const OrderSummaryPage = () => {
   return (
