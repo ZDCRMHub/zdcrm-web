@@ -11,7 +11,7 @@ interface Props {
 }
 const OrderItemCard: React.FC<Props> = ({ editFn, deleteFn}) => {
     return (
-        <Card className='py-6 px-10 rounded-xl max-w-3xl mb-8 lg:mb-12'>
+        <Card className='py-6 px-10 rounded-xl max-w-3xl'>
 
             <div className='flex gap-10'>
                 <div className='flex flex-col'>

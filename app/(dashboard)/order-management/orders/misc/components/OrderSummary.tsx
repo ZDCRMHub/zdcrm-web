@@ -1,15 +1,17 @@
 'use client'
 import React, { useState } from 'react';
-import { ArrowLeft, Disc, Pencil, Plus, UserIcon } from 'lucide-react';
-import { Input, Button, LinkButton, Form, SelectSingleCombo } from '@/components/ui';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, Plus } from 'lucide-react';
 import Image from 'next/image';
-import { Book, Edit2, Trash } from 'iconsax-react';
 import { useRouter } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { Book, Edit2, Money, Trash } from 'iconsax-react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { Input, Button, LinkButton, Form, SelectSingleCombo } from '@/components/ui';
+import { Card, CardContent } from '@/components/ui/card';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { EditPenIcon } from '@/icons/core';
+
 
 interface AdditionalCost {
   itemName: string;
@@ -82,8 +84,8 @@ export default function OrderSummary() {
             </div>
           )
           :
-          <div className='flex flex-col max-w-[1280px] mr-auto p-6 xl:px-12'>
-            <div className='flex items-center mb-8'>
+          <div className='flex flex-col w-full md:w[92.5%] max-w-[1280px] mr-auto p-6 xl:px-12'>
+            <div className='flex items-center mb-10'>
               <Button
                 variant='ghost'
                 size='icon'
@@ -94,7 +96,7 @@ export default function OrderSummary() {
               <h1 className='text-2xl font-semibold font-manrope'>Order Summary</h1>
             </div>
 
-            <section className='flex flex-col gap-3 first-line:bg-white p-6 rounded-2xl shadow-sm mb-6'>
+            <section className='flex flex-col gap-3 first-line:bg-white p-6 rounded-2xl shadow-sm mb-10'>
               <article>
                 <div className='grid grid-cols-3 gap-6 mb-6'>
                   <div>
@@ -120,7 +122,7 @@ export default function OrderSummary() {
               </article>
             </section>
 
-            <section className='grid grid-cols-[1fr,0.5fr] gap-8 mt-6 '>
+            <section className='grid grid-cols-[1fr,0.5fr] gap-8 mb-10 '>
               <div>
                 <article className="flex gap-6 w-full max-w-[800px] bg-white p-6 rounded-2xl mb-10 text-sm">
                   <div className='relative w-[180px] aspect-[5/3] p-6 rounded-xl bg-[#F6F6F6]'>
@@ -275,7 +277,7 @@ export default function OrderSummary() {
                       </Button>
                     </section>
 
-                    <div className='text-right my-6'>
+                    <div className='text-right mt-3 mb-6'>
                       <p className='text-base font-medium text-[#8B909A]'>Total (NGN)</p>
                       <p className='text-xl font-semibold'>
                         ₦{fields.reduce((sum, field) => sum + field.cost, 0).toLocaleString()}
@@ -287,7 +289,7 @@ export default function OrderSummary() {
 
 
                 <section>
-                  <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4">
+                  <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4 p-1.5">
                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                       <Book className='text-custom-blue' stroke="#194a7a" fill="#194a7a" size={18} />
                     </div>
@@ -317,35 +319,33 @@ export default function OrderSummary() {
                   </div>
                 </section>
 
-
-                <section>
-                  <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4">
+                <section className="mt-10">
+                  <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4 p-1.5">
                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
-                      <Book className='text-custom-blue' stroke="#194a7a" fill="#194a7a" size={18} />
+                      <Money className='text-custom-blue' stroke="#194a7a" fill="#194a7a" size={18} />
                     </div>
-                    <h3 className="text-custom-blue font-medium PB-3">Discount {" "}
-                      <span className="text-[#BEBEBE text-sm font-normal">
-                        (optional)
-                      </span>
-                    </h3>
+                    <h3 className="text-custom-blue font-medium pb-3 text-lg">Final Costing {" "}</h3>
                   </header>
-                  <div>
-                    <SelectSingleCombo
-                      name='discountType'
-                      className='max-w-[520px]'
-                      value={form.watch('discountType')}
-                      onChange={(value) => form.setValue('discountType', value)}
-                      label='Discount Type'
-                      labelKey={'label'}
-                      valueKey={'value'}
-                      placeholder='Select discount type'
-                      options={[
-                        { label: 'Eid Discount', value: 'eid' },
-                        { label: 'Christmas Discount', value: 'christmas' },
-                        { label: 'Valentine Discount', value: 'valentine' },
-                        { label: 'Birthday Discount', value: 'birthday' },
-                      ]}
-                    />
+                  <div className='grid grid-cols-2 '>
+                    <div></div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Sub Total</span>
+                        <span className="text-[#194A7A] font-medium">₦146,000.00</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Delivery Fee</span>
+                        <span className="text-[#194A7A] font-medium">+ ₦4,000.00</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-500">Discount</span>
+                        <span className="text-red-500 font-medium">- ₦5,500.00</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-2 border-t">
+                        <span className="font-medium">Total Due</span>
+                        <span className="text-[#194A7A] font-bold text-lg">₦144,500.00</span>
+                      </div>
+                    </div>
                   </div>
                 </section>
               </div>
@@ -396,7 +396,7 @@ export default function OrderSummary() {
             </section>
 
 
-            <footer className="flex items-center justify-end gap-4">
+            <footer className="flex items-center justify-end gap-4 mb-10">
               <Button variant={"outline"} className="h-14 ml-auto px-10" >
                 Cancel
               </Button>

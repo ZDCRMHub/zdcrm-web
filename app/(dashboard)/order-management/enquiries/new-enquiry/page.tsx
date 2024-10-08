@@ -37,6 +37,7 @@ const schema = z.object({
     }),
     deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
     deliveryZone: z.enum(["Lagos Mainland (LM)", "Lagos Central (LC)", "Lagos Island (LI)"], { message: "Delivery zone is required" }),
+    deliveryAddress: z.string(),
     paymentMode: z.enum(["cash", "transfer", "pos", "online"], { message: "Payment mode is required" }),
     paymentStatus: z.enum(["pending", "Paid(Naira Transfer)"], { message: "Payment status is required" }),
     proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
@@ -245,46 +246,138 @@ const NewOrderPage = () => {
                             </AccordionContent>
                         </AccordionItem>
 
+                       
                         <AccordionItem value="delivery-information">
                             <AccordionTrigger className="py-4 flex">
-                                <div className="flex items-center gap-3 text-[#194A7A]">
+                                <div className="flex items-center gap-5 text-[#194A7A]">
                                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                                         <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
                                     </div>
-                                    <h3 className="font-semibold text-base">Delivery Details</h3>
+                                    <h3 className="text-custom-blue font-medium">Delivery Details</h3>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent className="pt-5n">
-
+                            <AccordionContent className='pt-5'>
+                                <Input
+                                    label="Delivery note"
+                                    {...register('deliveryNote')}
+                                    hasError={!!errors.deliveryNote}
+                                    errorMessage={errors.deliveryNote?.message as string}
+                                    placeholder='Enter delivery note'
+                                />
                                 <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full'>
+                                    {
+                                        !isCustomDelivery &&
+                                        <FormField
+                                            control={control}
+                                            name="deliveryMethod"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <SelectSingleCombo
+                                                        label="Delivery Method"
+                                                        options={[
+                                                            { value: "Dispatch", label: "Dispatch" },
+                                                            { value: "Pickup", label: "Pickup" },
+                                                        ]}
+                                                        {...field}
+                                                        valueKey={"value"}
+                                                        labelKey={"label"}
+                                                        placeholder="Select delivery method"
 
+                                                    />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    }
 
                                     <FormField
                                         control={control}
-                                        name="deliveryDate"
+                                        name="deliveryAddress"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <SingleDatePicker
-                                                        label="Delivery Date"
-                                                        value={field.value}
-                                                        onChange={field.onChange}
-                                                        placeholder="Select delivery date"
+                                                    <Input
+                                                        className=""
+                                                        label="Delivery Address"
+                                                        {...field}
+                                                        hasError={!!errors.deliveryAddress}
+                                                        errorMessage={errors.deliveryAddress?.message as string}
+                                                        placeholder='Enter delivery address'
                                                     />
                                                 </FormControl>
                                             </FormItem>
                                         )}
                                     />
 
-                                    <Input
-                                        label="Delivery note"
-                                        {...register('deliveryNote')}
-                                        className=''
-                                        hasError={!!errors.deliveryNote}
-                                        errorMessage={errors.deliveryNote?.message as string}
-                                        placeholder='Enter delivery note'
+                                    <FormField
+                                        control={control}
+                                        name="deliveryZone"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <SelectSingleCombo
+                                                    label="Delivery Zone"
+                                                    options={[
+                                                        { value: "Lagos Mainland (LM)", label: "Lagos Mainland (LM)" },
+                                                        { value: "Lagos Central (LC)", label: "Lagos Central (LC)" },
+                                                        { value: "Lagos Island (LI)", label: "Lagos Island (LI)" },
+                                                    ]}
+                                                    {...field}
+                                                    valueKey={"value"}
+                                                    labelKey={"label"}
+                                                    placeholder="Select delivery zone"
+                                                    hasError={!!errors.deliveryZone}
+                                                    errorMessage={errors.deliveryZone?.message as string}
+                                                />
+
+                                            </FormItem>
+                                        )}
                                     />
 
+                                    {
+                                        isCustomDelivery &&
+
+                                        <FormField
+                                            control={control}
+                                            name="deliveryFee"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            className=""
+                                                            label="Delivery Fee"
+                                                            {...field}
+                                                            hasError={!!errors.deliveryFee}
+                                                            errorMessage={errors.deliveryFee?.message as string}
+                                                            placeholder='Enter delivery fee'
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    }
+
+                                    <FormField
+                                        control={control}
+                                        name="deliveryDate"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-col">
+                                                <SingleDatePicker
+                                                    label="Delivery Date"
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    placeholder="Select delivery date"
+
+                                                />
+                                                <FormMessage />
+                                                <Button type="button" className='rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200' variant="unstyled" onClick={() => setValue('isCustomDelivery', !watch('isCustomDelivery'))} >
+                                                    +
+                                                    {
+                                                        isCustomDelivery ? ' Default ' : ' Custom '
+                                                    }
+                                                    Delivery
+                                                </Button>
+                                            </FormItem>
+                                        )}
+                                    />
                                     <FormField
                                         control={control}
                                         name="dispatchTime"

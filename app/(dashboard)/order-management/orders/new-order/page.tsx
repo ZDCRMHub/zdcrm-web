@@ -3,7 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { TruckTime } from 'iconsax-react'
+import { Money, TruckTime } from 'iconsax-react'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 
 import {
@@ -32,6 +32,7 @@ const schema = z.object({
     enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
     isCustomDelivery: z.boolean(),
     deliveryNote: z.string().optional(),
+    messageOnOrder: z.string().optional(),
     deliveryDate: z.date(),
     deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
     deliveryAddress: z.string().min(1, { message: "Delivery address is required" }),
@@ -41,7 +42,6 @@ const schema = z.object({
     proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
     deliveryFee: z.string().optional(),
     dispatchTime: z.date().optional(),
-
     items: z.array(z.object({
         branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
         category: z.enum(["C", "F", "W", "TB"], { message: "Category is required" }),
@@ -124,12 +124,13 @@ const NewOrderPage = () => {
         resolver: zodResolver(schema),
 
         defaultValues: {
-            items: [{ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true,
+            items: [{
+                category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true,
 
-                additionalItems:[
-                    {name: '', cost:'', quantity:0}
+                additionalItems: [
+                    { name: '', cost: '', quantity: 0 }
                 ]
-             }]
+            }]
         }
     });
     const { register, handleSubmit, formState: { errors }, control, watch, setValue } = form;
@@ -170,7 +171,7 @@ const NewOrderPage = () => {
         <div className='px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto'>
             <Form {...form}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Accordion type="multiple" defaultValue={["customer-information", "enquiry-information", "delivery-information", "initial-discussion", "payment-information"]} className='w-full'>
+                    <Accordion type="multiple" defaultValue={["customer-information", "order-information", "delivery-information", "order-Instruction", "payment-information"]} className='w-full'>
                         <AccordionItem value="customer-information">
                             <AccordionTrigger className="py-4 flex">
                                 <div className="flex items-center gap-5 text-[#194A7A]">
@@ -383,28 +384,24 @@ const NewOrderPage = () => {
                                             </FormItem>
                                         )}
                                     />
-                                    {
-                                        isCustomDelivery &&
-
-                                        <FormField
-                                            control={control}
-                                            name="dispatchTime"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <TimePicker
-                                                            className=""
-                                                            label="Dispatch Time"
-                                                            {...field}
-                                                            control={control}
-                                                            hasError={!!errors.dispatchTime}
-                                                            errorMessage={errors.dispatchTime?.message as string}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    }
+                                    <FormField
+                                        control={control}
+                                        name="dispatchTime"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <TimePicker
+                                                        className=""
+                                                        control={control}
+                                                        label="Dispatch Time"
+                                                        {...field}
+                                                        hasError={!!errors.dispatchTime}
+                                                        errorMessage={errors.dispatchTime?.message as string}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
@@ -415,7 +412,7 @@ const NewOrderPage = () => {
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
-                        <AccordionItem value='enquiry-information'>
+                        <AccordionItem value='order-information'>
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
@@ -716,10 +713,10 @@ const NewOrderPage = () => {
                                                                     editFn={() => setValue(`items.${index}.isEditing`, true)}
                                                                     deleteFn={() => remove(index)}
                                                                 />
-                                                                <section>
+                                                                <section className='mt-4 mb-8 lg:mb-12'>
                                                                     {
                                                                         field.additionalItems?.map((item, i) => (
-                                                                            <div className='grid grid-cols-3' key={i}>
+                                                                            <div className='grid grid-cols-3 gap-4' key={i}>
                                                                                 <Input
                                                                                     label="Additional Item Name"
                                                                                     {...register(`items.${index}.additionalItems.${i}.name`)}
@@ -744,7 +741,7 @@ const NewOrderPage = () => {
                                                                                 AdditionalItemsFieldArray(index).append({ name: 'Biscuits', quantity: 1, cost: '' }, { shouldFocus: true });
                                                                             }
                                                                         }
-                                                                        className="bg-white py-1.5 px-4"
+                                                                        className="bg-white py-1.5 px-4 mt-2"
                                                                         type='button'
                                                                     >
                                                                         Add More
@@ -783,17 +780,23 @@ const NewOrderPage = () => {
                             </AccordionContent>
                         </AccordionItem>
 
-                        <AccordionItem value='-discussion'>
+                        <AccordionItem value='order-Instruction'>
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
-                                        <img src='/img/book.svg' alt='' width={24} height={24} />
+                                        <Image src='/img/book.svg' alt='' width={24} height={24} />
                                     </div>
-                                    <p className='text-custom-blue font-medium'>Discussion</p>
+                                    <p className='text-custom-blue font-medium'>Order Instruction</p>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent className='pt-8 pb-14'>
-                                <EnquiryDiscussCard isExpanded order={mockDiscussion} />
+                                <Input
+                                    label="Message on Order"
+                                    hasError={!!errors.messageOnOrder}
+                                    errorMessage={errors.messageOnOrder?.message as string}
+                                    placeholder='Enter message on order'
+                                    {...register('messageOnOrder')}
+                                />
                             </AccordionContent>
                         </AccordionItem>
 
@@ -801,9 +804,9 @@ const NewOrderPage = () => {
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
-                                        <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
+                                        <Money className='text-custom-blue' stroke="#194a7a" size={18} />
                                     </div>
-                                    <p className='text-custom-blue font-medium'>Payment Details</p>
+                                    <p className='text-custom-blue font-medium'>Payment</p>
                                 </div>
                             </AccordionTrigger>
 
