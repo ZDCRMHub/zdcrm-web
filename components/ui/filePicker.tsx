@@ -7,7 +7,7 @@ import { Label } from './label'
 interface CustomFilePickerProps {
     title: string
     maxSize: number
-    supportedFileTypes: string[]
+    supportedFileTypes?: string[]
     onFileSelect: (file: File) => void
     hasError?: boolean
     errorMessage?: string
@@ -24,7 +24,28 @@ export default function FilePicker({
 }: CustomFilePickerProps) {
     const [dragActive, setDragActive] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
+    const handleFiles = (file: File) => {
+        if (file.size > maxSize * 1024 * 1024) {
+            alert(`File size should not exceed ${maxSize} MB`)
+            return
+        }
+        const fileExtension = file.name.split('.').pop()?.toUpperCase()
+        if (fileExtension && !supportedFileTypes.includes(fileExtension)) {
+            alert(`Unsupported file type. Please upload ${supportedFileTypes.join(', ')}`)
+            return
+        }
+        setSelectedFile(file)
+        onFileSelect(file)
+    }
+
+    const handleDelete = () => {
+        setSelectedFile(null)
+        if (inputRef.current) {
+            inputRef.current.value = ''
+        }
+    }
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         e.stopPropagation()
@@ -51,18 +72,18 @@ export default function FilePicker({
         }
     }
 
-    const handleFiles = (file: File) => {
-        if (file.size > maxSize * 1024 * 1024) {
-            alert(`File size should not exceed ${maxSize} MB`)
-            return
-        }
-        const fileExtension = file.name.split('.').pop()?.toUpperCase()
-        if (fileExtension && !supportedFileTypes.includes(fileExtension)) {
-            alert(`Unsupported file type. Please upload ${supportedFileTypes.join(', ')}`)
-            return
-        }
-        onFileSelect(file)
-    }
+    // const handleFiles = (file: File) => {
+    //     if (file.size > maxSize * 1024 * 1024) {
+    //         alert(`File size should not exceed ${maxSize} MB`)
+    //         return
+    //     }
+    //     const fileExtension = file.name.split('.').pop()?.toUpperCase()
+    //     if (fileExtension && !supportedFileTypes.includes(fileExtension)) {
+    //         alert(`Unsupported file type. Please upload ${supportedFileTypes.join(', ')}`)
+    //         return
+    //     }
+    //     onFileSelect(file)
+    // }
 
     const onButtonClick = () => {
         inputRef.current?.click()
@@ -90,11 +111,14 @@ export default function FilePicker({
                         onChange={handleChange}
                         accept={supportedFileTypes.map(type => `.${type.toLowerCase()}`).join(',')}
                     />
-                    <div className="flex items-center gap-2 ">
+                    <div className="flex items-center gap-2 cursor-pointer ">
                         <DocumentUpload className="h-7 w-7 text-[#2463EB]" />
                         <div>
-                            <p className="mt-2 text-[0.825rem] font-poppins text-[#2463EB]">
-                                Upload {title} (Max. {maxSize} MB)
+                            <p className="mt-2 text-[0.825rem] font-poppins text-[#2463EB] truncate">
+                                {
+                                    selectedFile ? selectedFile.name : `Upload ${title} (Max. {maxSize} MB)`
+                                }
+                                
                             </p>
                             <p className="mt-1 text-xs text-[#828282]">
                                 Supported file type: {supportedFileTypes.join(', ')}.

@@ -1,37 +1,37 @@
+import { BRANCH_OPTIONS, PRODUCT_TYPES_OPTIONS } from "@/constants";
 import { z } from "zod";
 
-// Base schema
-const schema = z.object({
-  customerName: z.string().min(1, { message: "Customer's name is required" }),
-  customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  recipientName: z.string().min(1, { message: "Recipient's name is required" }),
-  recipientPhone: z.string().min(1, { message: "Recipient's phone number is required" }),
-  enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
-  deliveryNote: z.string().optional(),
-  deliveryDate: z.date(),
-  
-  // Items array containing dynamic product details
-  items: z.array(z.object({
-    category: z.enum(["cake", "flowers", "teddy"], { message: "Category is required" }),
-    productType: z.string().min(1, { message: "Product type is required" }),
-    quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
-    message: z.string().optional(),
-    isEditing: z.boolean().optional(),
-    // We'll dynamically merge the category-specific fields here
-  }).refine((item) => {
-    // Dynamically validate based on the category
-    const dynamicValidation = getSchemaForCategory(item.category);
-    return dynamicValidation.safeParse(item).success;
-  }, { message: "Invalid product details for the selected category" }))
-});
 
-// Category-specific schemas
-const cakeSchema = z.object({
-  layers: z.number().min(1, "Must have at least 1 layer").optional(),
-  flavour: z.enum(["vanilla", "chocolate", "red velvet"]).optional(),
-  whippedCreamUpgrade: z.boolean().optional(),
-  toppings: z.enum(["none", "chocolate", "fruits", "mixed"]).optional(),
+
+// branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
+// isCustomOrder: z.boolean().optional(),
+// itemImage: z.instanceof(File).optional(),
+// category: z.enum(CATEGORIES_OPTIONS.map(cat => cat.value) as [string, ...string[]], { message: "Category is required" }),
+// productType: z.string().min(1, { message: "Product type is required" }),
+// productSize: z.string().optional(),
+// quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
+// message: z.string().optional(),
+// isEditing: z.boolean().optional(),
+// layers: z.enum(["2", "3", "4", "5"]).optional(),
+// flavour: z.enum(["vanilla", "chocolate", "red velvet"]).optional(),
+// whippedCreamUpgrade: z.enum(["true", "false"]).optional(),
+// toppings: z.enum(["none", "chocolate", "fruits", "mixed"]).optional(),
+// vase: z.enum(["none", "25cm", "50cm"]).optional(),
+// size: z.enum(["8 inches", "10 inches", "12 inches"]).optional(),
+// bouquet: z.enum(["entry", "xsmall", "small", "medium", "standard", "human"]).optional(),
+// additionalItems: z.array(z.object({
+  //     name: z.string().min(1, { message: "Name is required" }),
+  //     quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
+  //     cost: z.string().min(1, { message: "Price is required" }),
+  // })).optional(),
+  const cakeSchema = z.object({
+    branch:  z.enum(BRANCH_OPTIONS.map(cat => cat.value) as [string, ...string[]], { message: "Branch is required" }),
+    layers: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.layers.map(layer => layer.value) as [string, ...string[]]),
+    toppings: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.toppings.map(topping => topping.value) as [string, ...string[]]),
+    flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]]),
+    size: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.sizes.map(size => size.value) as [string, ...string[]]),
+    whippedCreamUpgrade: z.enum(["true", "false"]),
+  // whippedCreamUpgrade: z.boolean().optional(),
 });
 
 const flowersSchema = z.object({
@@ -45,48 +45,15 @@ const teddySchema = z.object({
 
 // Function to dynamically select the schema for the category
 export const getSchemaForCategory = (category: string) => {
+  console.log("category", category);
   switch (category) {
-    case "cake":
+    case "C":
       return cakeSchema;
-    case "flowers":
+    case "F":
       return flowersSchema;
-    case "teddy":
+    case "TB":
       return teddySchema;
     default:
       return z.object({});
   }
 };
-
-// Example usage
-const formData = {
-  customerName: "John Doe",
-  customerPhone: "1234567890",
-  email: "john@example.com",
-  recipientName: "Jane Doe",
-  recipientPhone: "0987654321",
-  enquiryOccasion: "Birthday",
-  deliveryNote: "Leave at the door",
-  deliveryDate: new Date(),
-  items: [
-    {
-      category: "cake",
-      productType: "birthday cake",
-      productSize: "medium",
-      quantity: 2,
-      layers: 3,
-      flavour: "vanilla",
-      whippedCreamUpgrade: true,
-      toppings: "chocolate",
-      isEditing: false
-    }
-  ]
-};
-
-// Perform validation
-const validation = schema.safeParse(formData);
-
-if (!validation.success) {
-  console.log(validation.error.errors);
-} else {
-  console.log("Form validation successful", validation.data);
-}

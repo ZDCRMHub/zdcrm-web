@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { Controller, FieldErrors, useFieldArray, useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Money, TruckTime } from 'iconsax-react'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
@@ -13,139 +13,38 @@ import {
     TimePicker
 } from '@/components/ui'
 import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
-import { EditPenIcon } from '@/icons/core';
-import { AllProducts, productOptions } from '@/constants'
-import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard'
+import { AllProducts, CATEGORIES_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { getSchemaForCategory } from '../../enquiries/misc/schemas'
-import { OrderItemCard } from '../misc/components'
+import { OrderItemCard, OrderItemCardAdditionalItems } from '../misc/components'
+import { NewOrderFormValues, NewOrderSchema } from '../misc/utils/schema'
 
-// Define your schema here
-const schema = z.object({
-    customerName: z.string().min(1, { message: "Customer's name is required" }),
-    customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
-    enquiryChannel: z.string({ message: "Invalid enquiry channel" }),
-    recipientName: z.string().min(1, { message: "Recipient's name is required" }),
-    recipientPhone: z.string().min(1, { message: "Recipient's phone number is required" }),
-    enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
-    isCustomDelivery: z.boolean(),
-    deliveryNote: z.string().optional(),
-    messageOnOrder: z.string().optional(),
-    deliveryDate: z.date(),
-    deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
-    deliveryAddress: z.string().min(1, { message: "Delivery address is required" }),
-    deliveryZone: z.enum(["Lagos Mainland (LM)", "Lagos Central (LC)", "Lagos Island (LI)"], { message: "Delivery zone is required" }),
-    paymentMode: z.enum(["cash", "transfer", "pos", "online"], { message: "Payment mode is required" }),
-    paymentStatus: z.enum(["pending", "Paid(Naira Transfer)"], { message: "Payment status is required" }),
-    proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
-    deliveryFee: z.string().optional(),
-    dispatchTime: z.date().optional(),
-    items: z.array(z.object({
-        branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
-        category: z.enum(["C", "F", "W", "TB"], { message: "Category is required" }),
-        productType: z.string().min(1, { message: "Product type is required" }),
-        productSize: z.string().optional(),
-        quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
-        message: z.string().optional(),
-        isEditing: z.boolean().optional(),
-        layers: z.enum(["2", "3", "4", "5"]).optional(),
-        flavour: z.enum(["vanilla", "chocolate", "red velvet"]).optional(),
-        whippedCreamUpgrade: z.enum(["true", "false"]).optional(),
-        toppings: z.enum(["none", "chocolate", "fruits", "mixed"]).optional(),
-        vase: z.enum(["none", "25cm", "50cm"]).optional(),
-        size: z.enum(["8 inches", "10 inches", "12 inches"]).optional(),
-        bouquet: z.enum(["entry", "xsmall", "small", "medium", "standard", "human"]).optional(),
-        additionalItems: z.array(z.object({
-            name: z.string().min(1, { message: "Name is required" }),
-            quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
-            cost: z.string().min(1, { message: "Price is required" }),
-        })).optional(),
-    }).refine((item) => {
-        const dynamicValidation = getSchemaForCategory(item.category);
-        return dynamicValidation.safeParse(item).success;
-    }, { message: "Invalid product details for the selected category" }))
-}).refine((data) => {
-    const errors = [];
 
-    if (data.isCustomDelivery) {
-        if (!data.deliveryFee) {
-            errors.push({
-                path: ["deliveryFee"],
-                message: "Delivery fee is required for custom delivery",
-                code: "custom" as const
-            });
-        }
-    }
 
-    if (!data.isCustomDelivery) {
-        if (!data.deliveryMethod) {
-            errors.push({
-                path: ["deliveryMethod"],
-                message: "Delivery method is required when not using custom delivery",
-                code: "custom" as const
-            });
-        }
-    }
 
-    if (data.items.length === 0) {
-        errors.push({
-            path: ["items"],
-            message: "At least one item is required",
-            code: "custom" as const
-        });
-    }
-
-    if (errors.length > 0) {
-        throw new z.ZodError(errors);
-    }
-
-    return true;
-});
-
-const categoryOptions = [
-    { value: 'C', label: 'Cake' },
-    { value: 'F', label: 'Flower' },
-    { value: 'W', label: 'Wine' },
-    { value: 'CC', label: 'Cup Cake' },
-    { value: 'TB', label: 'Teddy Bear' },
-    { value: 'GC', label: 'Gift Card' },
-    { value: 'V', label: 'Vase' },
-    { value: 'CH', label: 'Chocolate' },
-    { value: 'B', label: 'Baloon' },
-    { value: 'P', label: 'Perfume' },
-    { value: 'HB', label: 'Hand Bag' },
-]
 
 const NewOrderPage = () => {
-    const form = useForm<z.infer<typeof schema>>({
-        // resolver: zodResolver(getSchemaForCategory('default')),
-        resolver: zodResolver(schema),
-
+    const form = useForm<z.infer<typeof NewOrderSchema>>({
+        resolver: zodResolver(NewOrderSchema),
         defaultValues: {
-            items: [{
-                category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true,
-
-                additionalItems: [
-                    { name: '', cost: '', quantity: 0 }
-                ]
+            items: [{ 
+                category: 'C', productType: '', quantity: 1, message: '', isEditing: true,
             }]
         }
     });
     const { register, handleSubmit, formState: { errors }, control, watch, setValue } = form;
-    const mockDiscussion = generateMockOrders(1)[0];
     const AdditionalItemsFieldArray = (index: number) => {
         return useFieldArray({
             control,
             name: `items.${index}.additionalItems`
         });
     }
-    const arrayField = useFieldArray({
+    const orderItemsField = useFieldArray({
         control,
         name: "items"
     });
-    const { fields, append, remove } = arrayField;
+    const { fields, append, remove } = orderItemsField;
 
     const watchFieldArray = watch("items");
     const isCustomDelivery = watch('isCustomDelivery');
@@ -161,8 +60,15 @@ const NewOrderPage = () => {
     };
 
     const addNewItem = () => {
-        append({ branch: 'Zuzu Delights', category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true });
+        append({
+            branch: 'Zuzu Delights', category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
+            flavour: 'Vanilla', layers: '2', size: '6 inches', toppings: 'none', isCustomOrder: false
+        });
     }
+    const getFieldError = (errors: FieldErrors<NewOrderFormValues>, index: number, field: string) => {
+        const itemErrors = errors.items?.[index] as FieldErrors<NewOrderFormValues['items'][number]> | undefined;
+        return itemErrors?.[field as keyof typeof itemErrors];
+    };
 
 
 
@@ -172,6 +78,12 @@ const NewOrderPage = () => {
             <Form {...form}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Accordion type="multiple" defaultValue={["customer-information", "order-information", "delivery-information", "order-Instruction", "payment-information"]} className='w-full'>
+
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////                CUSTOMER INFORMATION                 ///////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
                         <AccordionItem value="customer-information">
                             <AccordionTrigger className="py-4 flex">
                                 <div className="flex items-center gap-5 text-[#194A7A]">
@@ -185,10 +97,10 @@ const NewOrderPage = () => {
                                 <div className='grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full'>
                                     <Input
                                         label="Customer's Name"
-                                        {...register('customerName')}
                                         hasError={!!errors.customerName?.message}
                                         errorMessage={errors.customerName?.message as string}
                                         placeholder='Enter customer name'
+                                        {...register('customerName')}
                                     />
                                     <Input
                                         label="Customer's Phone Number"
@@ -211,35 +123,27 @@ const NewOrderPage = () => {
                                         errorMessage={errors.recipientPhone?.message as string}
                                         placeholder='Enter recipient name'
                                     />
-                                    <SelectSingleCombo
+                                    <FormField
+                                        control={control}
                                         name="enquiryOccasion"
-                                        options={[
-                                            { value: 'birthday', label: 'Birthday' },
-                                            { value: 'anniversary', label: 'Anniversary' },
-                                            { value: 'wedding', label: 'Wedding' },
-                                            { value: 'father_s_Day', label: "Father's Day" },
-                                            { value: 'mother_s_Day', label: "Mother's Day" },
-                                        ]}
-                                        value={watch('enquiryOccasion')}
-                                        onChange={(value: string) => setValue('enquiryOccasion', value)}
-                                        valueKey="value"
-                                        label="Enquiry Occasion"
-                                        labelKey="label"
-                                        placeholder="Select enquiry occasion"
-                                        hasError={!!errors.enquiryOccasion}
-                                        errorMessage={errors.enquiryOccasion?.message as string}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <SelectSingleCombo
+                                                    options={ENQUIRY_OCCASION_OPTIONS}
+                                                    valueKey="value"
+                                                    label="Enquiry Occasion"
+                                                    labelKey="label"
+                                                    placeholder="Select enquiry occasion"
+                                                    hasError={!!errors.enquiryOccasion}
+                                                    errorMessage={errors.enquiryOccasion?.message as string}
+                                                    {...field}
+                                                />
+                                            </FormItem>
+                                        )}
                                     />
+
                                     <SelectSingleCombo
-                                        options={[
-                                            { value: 'email', label: 'Email' },
-                                            { value: 'whatsapp', label: 'WhatsApp' },
-                                            { value: 'website', label: 'Website' },
-                                            { value: 'walk-in', label: 'Store Walk In' },
-                                            { value: 'instagram', label: 'Instagram' },
-                                            { value: 'phone', label: 'Phone Call' },
-                                            { value: 'facebook', label: 'Facebook' },
-                                            { value: 'tik-tok', label: 'Tik Tok' },
-                                        ]}
+                                        options={ENQUIRY_CHANNEL_OPTIONS}
                                         label="Enquiry Channel"
                                         valueKey="value"
                                         labelKey="label"
@@ -280,14 +184,13 @@ const NewOrderPage = () => {
                                                 <FormItem>
                                                     <SelectSingleCombo
                                                         label="Delivery Method"
-                                                        options={[
-                                                            { value: "Dispatch", label: "Dispatch" },
-                                                            { value: "Pickup", label: "Pickup" },
-                                                        ]}
+                                                        options={DISPATCH_METHOD_OPTIONS}
                                                         {...field}
                                                         valueKey={"value"}
                                                         labelKey={"label"}
                                                         placeholder="Select delivery method"
+                                                        hasError={!!errors.deliveryMethod}
+                                                        errorMessage={errors.deliveryMethod?.message as string}
 
                                                     />
                                                 </FormItem>
@@ -408,8 +311,10 @@ const NewOrderPage = () => {
 
 
 
+
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////                  ORDER INFORMATION                  ///////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         <AccordionItem value='order-information'>
@@ -421,15 +326,24 @@ const NewOrderPage = () => {
                                     <p className='text-custom-blue font-medium'>Order Details</p>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent className='pt-3 pb-14'>
+                            <AccordionContent className='flex flex-col pt-3 pb-14 gap-y-12 lg:gap-y-20'>
                                 {
                                     controlledFields.map((field, index) => (
-                                        <>
+                                        <div key={index}>
                                             {
                                                 field?.isEditing ? (
                                                     <section>
-                                                        <header className='flex items-center mb-8'>
+                                                        <header className='flex items-center justify-between mb-8'>
                                                             <h3 className='font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max'>Item {index + 1}</h3>
+                                                            <Button variant="black"
+                                                                onClick={() => {
+                                                                    setValue(`items.${index}.isCustomOrder`, !field.isCustomOrder)
+                                                                }}
+                                                            >
+                                                                {
+                                                                    field.isCustomOrder ? 'Default Order' : 'Custom Order'
+                                                                }
+                                                            </Button>
                                                         </header>
 
                                                         <section className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
@@ -453,13 +367,14 @@ const NewOrderPage = () => {
                                                                 )}
                                                             />
                                                         </section>
+
                                                         <div key={field.id} className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
                                                             <Controller
                                                                 name={`items.${index}.category`}
                                                                 control={control}
                                                                 render={({ field }) => (
                                                                     <SelectSingleCombo
-                                                                        options={categoryOptions}
+                                                                        options={CATEGORIES_OPTIONS}
                                                                         label="Category"
                                                                         valueKey="value"
                                                                         labelKey="label"
@@ -495,14 +410,14 @@ const NewOrderPage = () => {
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={productOptions.Cakes.layers}
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.layers}
                                                                                     label="Layers"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Select layers"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.layers}
-                                                                                    errorMessage={errors.items?.[index]?.layers?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'layers')}
+                                                                                    errorMessage={getFieldError(errors, index, 'layers')?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -511,14 +426,14 @@ const NewOrderPage = () => {
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={productOptions.Cakes.flavours}
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.flavours}
                                                                                     label="Flavour"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Select Flavour"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.flavour}
-                                                                                    errorMessage={errors.items?.[index]?.flavour?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'flavour')}
+                                                                                    errorMessage={getFieldError(errors, index, 'flavour')?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -527,14 +442,14 @@ const NewOrderPage = () => {
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={productOptions.Cakes.toppings}
-                                                                                    label="Toppings"
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.toppings}
+                                                                                    label="Topping"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
-                                                                                    placeholder="Select Toppings"
+                                                                                    placeholder="Select Topping"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.toppings}
-                                                                                    errorMessage={errors.items?.[index]?.toppings?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'toppings')}
+                                                                                    errorMessage={getFieldError(errors, index, 'toppings')?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -543,14 +458,14 @@ const NewOrderPage = () => {
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={productOptions.Cakes.sizes}
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.sizes}
                                                                                     label="Size"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Select Size"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.size}
-                                                                                    errorMessage={errors.items?.[index]?.size?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'size')}
+                                                                                    errorMessage={getFieldError(errors, index, 'size')?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -559,17 +474,14 @@ const NewOrderPage = () => {
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={[
-                                                                                        { label: "True", value: "true" },
-                                                                                        { label: "False", value: "false" },
-                                                                                    ]}
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade}
                                                                                     label="Upgrade From Buttercream to Whipped Cream"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Add Whipped Cream"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.whippedCreamUpgrade}
-                                                                                    errorMessage={errors.items?.[index]?.whippedCreamUpgrade?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'whippedCreamUpgrade')}
+                                                                                    errorMessage={getFieldError(errors, index, 'whippedCreamUpgrade')?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -577,48 +489,41 @@ const NewOrderPage = () => {
                                                                 )
                                                             }
 
-                                                            {
-                                                                field.category === 'F' && (
-                                                                    <Controller
-                                                                        name={`items.${index}.vase`}
-                                                                        control={control}
-                                                                        render={({ field }) => (
-                                                                            <SelectSingleCombo
-                                                                                options={productOptions.Flowers.vaseOptions}
-                                                                                label="Vase"
-                                                                                valueKey="value"
-                                                                                labelKey="label"
-                                                                                placeholder="Select Vase"
-                                                                                {...field}
-                                                                                hasError={!!errors.items?.[index]?.vase}
-                                                                                errorMessage={errors.items?.[index]?.vase?.message}
-                                                                            />
-                                                                        )}
-                                                                    />
-                                                                )
-                                                            }
+                                                            {field.category === "F" && (
+                                                                <Controller
+                                                                    name={`items.${index}.vase`}
+                                                                    control={control}
+                                                                    render={({ field }) => (
+                                                                        <SelectSingleCombo
+                                                                            options={PRODUCT_TYPES_OPTIONS.Flowers.vaseOptions}
+                                                                            label="Vase"
+                                                                            valueKey="value"
+                                                                            labelKey="label"
+                                                                            placeholder="Select Vase"
+                                                                            {...field}
+                                                                            hasError={!!getFieldError(errors, index, 'vase')}
+                                                                            errorMessage={getFieldError(errors, index, 'vase')?.message}
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            )}
 
                                                             {
-                                                                field.category === 'W' && (
+                                                                field.category === "TB" && (
                                                                     <>
                                                                         <Controller
                                                                             name={`items.${index}.size`}
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={[
-                                                                                        { value: 'entry', label: 'Entry' },
-                                                                                        { value: 'xsmall', label: 'XSmall' },
-                                                                                        { value: 'small', label: 'Small' },
-                                                                                        { value: 'medium', label: 'Medium' },
-                                                                                    ]}
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Teddies.sizes}
                                                                                     label="Size"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Select Size"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.size}
-                                                                                    errorMessage={errors.items?.[index]?.size?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'size')}
+                                                                                    errorMessage={getFieldError(errors, index, 'size')?.message}
                                                                                 />
                                                                             )}
                                                                         />
@@ -627,27 +532,21 @@ const NewOrderPage = () => {
                                                                             control={control}
                                                                             render={({ field }) => (
                                                                                 <SelectSingleCombo
-                                                                                    options={[
-                                                                                        { value: 'entry', label: 'Entry' },
-                                                                                        { value: 'xsmall', label: 'XSmall' },
-                                                                                        { value: 'small', label: 'Small' },
-                                                                                        { value: 'medium', label: 'Medium' },
-                                                                                        { value: 'standard', label: 'Standard' },
-                                                                                        { value: 'human', label: 'Human' },
-                                                                                    ]}
+                                                                                    options={PRODUCT_TYPES_OPTIONS.Teddies.bouquets}
                                                                                     label="Bouquet"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Select Bouquet"
                                                                                     {...field}
-                                                                                    hasError={!!errors.items?.[index]?.bouquet}
-                                                                                    errorMessage={errors.items?.[index]?.bouquet?.message}
+                                                                                    hasError={!!getFieldError(errors, index, 'bouquet')}
+                                                                                    errorMessage={getFieldError(errors, index, 'bouquet')?.message}
                                                                                 />
                                                                             )}
                                                                         />
                                                                     </>
                                                                 )
                                                             }
+
 
                                                             <Input
                                                                 label="Message"
@@ -706,47 +605,19 @@ const NewOrderPage = () => {
                                                 )
                                                     :
                                                     (
-                                                        <>
+                                                        <article>
 
                                                             <div>
                                                                 <OrderItemCard
                                                                     editFn={() => setValue(`items.${index}.isEditing`, true)}
                                                                     deleteFn={() => remove(index)}
                                                                 />
-                                                                <section className='mt-4 mb-8 lg:mb-12'>
-                                                                    {
-                                                                        field.additionalItems?.map((item, i) => (
-                                                                            <div className='grid grid-cols-3 gap-4' key={i}>
-                                                                                <Input
-                                                                                    label="Additional Item Name"
-                                                                                    {...register(`items.${index}.additionalItems.${i}.name`)}
-                                                                                    hasError={!!errors.items?.[index]?.additionalItems?.[i]?.name}
-                                                                                    errorMessage={errors.items?.[index]?.additionalItems?.[i]?.name?.message}
-                                                                                    placeholder='Enter name'
-                                                                                />
-
-                                                                                <Input
-                                                                                    label="Cost"
-                                                                                    {...register(`items.${index}.additionalItems.${i}.cost`)}
-                                                                                    hasError={!!errors.items?.[index]?.additionalItems?.[i]?.cost}
-                                                                                    errorMessage={errors.items?.[index]?.additionalItems?.[i]?.cost?.message}
-                                                                                    placeholder='Enter cost'
-                                                                                />
-                                                                            </div>
-                                                                        ))
-                                                                    }
-                                                                    <button
-                                                                        onClick={
-                                                                            () => {
-                                                                                AdditionalItemsFieldArray(index).append({ name: 'Biscuits', quantity: 1, cost: '' }, { shouldFocus: true });
-                                                                            }
-                                                                        }
-                                                                        className="bg-white py-1.5 px-4 mt-2"
-                                                                        type='button'
-                                                                    >
-                                                                        Add More
-                                                                    </button>
-                                                                </section>
+                                                                <OrderItemCardAdditionalItems
+                                                                    index={index}
+                                                                    control={control}
+                                                                    register={register}
+                                                                    errors={errors}
+                                                                />
                                                             </div>
 
                                                             <div className="flex items-center">
@@ -757,12 +628,12 @@ const NewOrderPage = () => {
                                                                     Add Item
                                                                 </Button>
                                                             </div>
-                                                        </>
+                                                        </article>
                                                     )
 
 
                                             }
-                                        </>
+                                        </div>
                                     ))}
                                 {
                                     controlledFields.length === 0 && (
@@ -780,6 +651,14 @@ const NewOrderPage = () => {
                             </AccordionContent>
                         </AccordionItem>
 
+
+
+
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////                  ORDER INSTRUCTION                  ///////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
                         <AccordionItem value='order-Instruction'>
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
@@ -819,45 +698,54 @@ const NewOrderPage = () => {
                                         errorMessage={errors.customerName?.message as string}
                                         placeholder='Enter customer name'
                                     />
-                                    <SelectSingleCombo
-                                        options={[
-                                            { value: 'cash', label: 'Cash' },
-                                            { value: 'transfer', label: 'Transfer' },
-                                            { value: 'pos', label: 'POS' },
-                                            { value: 'online', label: 'Online' },
-                                        ]}
-                                        label="Payment Mode"
-                                        valueKey="value"
-                                        labelKey="label"
-                                        placeholder="Select Payment Mode"
-                                        name='paymentMode'
-                                        value={watch('paymentMode')}
-                                        onChange={(value: string) => setValue('paymentMode', value as "cash" | "transfer" | "pos" | "online")}
-                                        hasError={!!errors.paymentMode}
-                                        errorMessage={errors.paymentMode?.message as string}
+
+                                    <FormField
+                                        control={control}
+                                        name="paymentMode"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <SelectSingleCombo
+                                                        options={PAYMENT_METHODS}
+                                                        label="Payment Mode"
+                                                        valueKey="value"
+                                                        labelKey="label"
+                                                        placeholder="Select Payment Mode"
+                                                        hasError={!!errors.paymentMode}
+                                                        errorMessage={errors.paymentMode?.message as string}
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
-                                    <SelectSingleCombo
-                                        options={[
-                                            { value: 'pending', label: 'Pending' },
-                                            { value: 'Paid(Naira Transfer)', label: 'Paid(Naira Transfer)' },
-                                        ]}
-                                        label="Payment Status"
-                                        valueKey="value"
-                                        labelKey="label"
-                                        placeholder="Select Payment Status"
-                                        name='paymentStatus'
-                                        value={watch('paymentStatus')}
-                                        onChange={(value: string) => setValue('paymentStatus', value as "pending" | "Paid(Naira Transfer)")}
-                                        hasError={!!errors.paymentStatus}
-                                        errorMessage={errors.paymentStatus?.message as string}
+                                    <FormField
+                                        control={control}
+                                        name="paymentStatus"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <SelectSingleCombo
+                                                        options={PAYMENT_STATUS_OPTIONS}
+                                                        label="Payment Status"
+                                                        valueKey="value"
+                                                        labelKey="label"
+                                                        placeholder="Select Payment Status"
+                                                        hasError={!!errors.paymentStatus}
+                                                        errorMessage={errors.paymentStatus?.message as string}
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
                                     />
+
                                     <FilePicker
                                         onFileSelect={(file) => setValue('proofOfPayment', file)}
                                         hasError={!!errors.proofOfPayment}
                                         errorMessage={errors.proofOfPayment?.message as string}
                                         maxSize={10}
                                         title='Upload Payment Proof'
-                                        supportedFileTypes={["image/*", "application/pdf"]}
                                     />
                                 </div>
                             </AccordionContent>
