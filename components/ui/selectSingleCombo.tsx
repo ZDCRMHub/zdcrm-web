@@ -27,7 +27,6 @@ interface SelectProps<T> {
   containerClass?: string;
   labelClass?: string;
   itemClass?: string;
-  errorClass?: string;
   fullWidth?: boolean;
   withIcon?: boolean;
   isLoadingOptions?: boolean;
@@ -35,6 +34,7 @@ interface SelectProps<T> {
   valueKey: keyof T;
   labelKey: keyof T;
   showSelectedValue?: boolean;
+  placeHolderClass?: string;
 }
 
 const SelectSingleCombo = <T extends object>({
@@ -50,8 +50,8 @@ const SelectSingleCombo = <T extends object>({
   containerClass,
   labelClass,
   itemClass,
-  errorClass,
   fullWidth,
+  placeHolderClass,
   withIcon,
   isLoadingOptions,
   valueKey,
@@ -121,7 +121,7 @@ const SelectSingleCombo = <T extends object>({
             >
               <span className={cn(
                 '!overflow-hidden text-sm w-full font-normal',
-                (value && options && options?.length) ? '' : '!text-[#A4A4A4]'
+                (value && options && options?.length) ? '' : '!text-[#A4A4A4]', placeHolderClass
               )}>
                 {
                   (showSelectedValue && value && options && options?.length)

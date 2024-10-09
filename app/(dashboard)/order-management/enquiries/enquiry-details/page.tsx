@@ -20,6 +20,7 @@ import { useBooleanStateControl } from '@/hooks';
 import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
 import { format } from 'date-fns';
 import ConfirmPaymentModal from '../misc/components/ConfirmPaymentModal';
+import { LinkButton } from '@/components/ui';
 
 export default function Component() {
   const router = useRouter();
@@ -38,7 +39,7 @@ export default function Component() {
 
 
   return (
-    <div className='max-w-[1792px] mx-auto p-4 space-y-9 px-8'>
+    <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto p-4 space-y-9 '>
       <header className='flex items-center mb-6'>
         <Button
           variant='ghost'
@@ -51,9 +52,17 @@ export default function Component() {
       </header>
 
       <div className='flex items-start gap-8'>
-        <Card className='w-full max-w-[518px] rounded-lg'>
-          <CardContent className='flex flex-col justify-between'>
-            <div className='py-6 space-y-3'>
+        <Card className='w-full max-w-[518px] rounded-xl px-6 py-4'>
+          <header className='flex justify-between items-center'>
+            <h2 className='font-semibold font-manrope text-sm'>Customer Details</h2>
+            <LinkButton href='./new-enquiry' variant="unstyled" >
+              <EditPenIcon className='h-5 w-5 text-[#A0AEC0]' />
+            </LinkButton>
+          </header>
+          <Separator />
+
+          <div className='flex flex-col justify-between px-0 py-6'>
+            <div className=' space-y-3'>
               <div className='flex items-center gap-1'>
                 <h2 className='text-sm font-medium text-[#687588]'>Customer Name:</h2>
                 <p className='font-medium text-custom-blue'>Adetunji Emmanuel</p>
@@ -67,7 +76,7 @@ export default function Component() {
                 <p className='font-medium text-custom-blue'>08034344433</p>
               </div>
             </div>
-            <div className='flex justify-between items-center gap-1'>
+            <div className='flex justify-between items-center gap-1 mt-4'>
               <div className='flex items-center gap-1'>
                 <p className='text-sm text-light-grey font-medium'>
                   Enquiry Occasion:
@@ -83,10 +92,10 @@ export default function Component() {
                 <p className='text-sm text-[#111827] font-medium'>Manual</p>
               </div>
             </div>
-          </CardContent>
+          </div>
         </Card>
 
-        <div className='flex flex-col w-96 space-y-4'>
+        <div className='flex flex-col w-96 space-y-4 '>
           <Card className='flex-1 space-y-4 p-5 rounded-xl'>
             <div className='flex justify-between items-center'>
               <h2 className='font-semibold font-manrope text-sm'>Delivery Details</h2>
@@ -116,11 +125,11 @@ export default function Component() {
           </Card>
         </div>
 
-        <Card className='flex-1 space-y-4 p-5 rounded-xl w-48'>
-          <div className='flex justify-between items-center'>
+        <Card className='space-y-4 p-5 rounded-xl w-60'>
+          <header className='flex justify-between items-center'>
             <h2 className='font-semibold font-manrope text-sm'>Dispatch Time</h2>
             <EditPenIcon className='h-5 w-5 text-[#A0AEC0]' />
-          </div>
+          </header>
 
           <Separator />
 

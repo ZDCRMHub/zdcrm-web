@@ -3,7 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import * as z from 'zod'
-import { TruckTime } from 'iconsax-react'
+import { Money, TruckTime } from 'iconsax-react'
 import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
 
 import {
@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { getSchemaForCategory } from '../../enquiries/misc/schemas'
+import { OrderItemCard } from '../misc/components'
 
 // Define your schema here
 const schema = z.object({
@@ -31,6 +32,7 @@ const schema = z.object({
     enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
     isCustomDelivery: z.boolean(),
     deliveryNote: z.string().optional(),
+    messageOnOrder: z.string().optional(),
     deliveryDate: z.date(),
     deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
     deliveryAddress: z.string().min(1, { message: "Delivery address is required" }),
@@ -40,7 +42,6 @@ const schema = z.object({
     proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
     deliveryFee: z.string().optional(),
     dispatchTime: z.date().optional(),
-
     items: z.array(z.object({
         branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
         category: z.enum(["C", "F", "W", "TB"], { message: "Category is required" }),
@@ -56,6 +57,11 @@ const schema = z.object({
         vase: z.enum(["none", "25cm", "50cm"]).optional(),
         size: z.enum(["8 inches", "10 inches", "12 inches"]).optional(),
         bouquet: z.enum(["entry", "xsmall", "small", "medium", "standard", "human"]).optional(),
+        additionalItems: z.array(z.object({
+            name: z.string().min(1, { message: "Name is required" }),
+            quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
+            cost: z.string().min(1, { message: "Price is required" }),
+        })).optional(),
     }).refine((item) => {
         const dynamicValidation = getSchemaForCategory(item.category);
         return dynamicValidation.safeParse(item).success;
@@ -116,20 +122,25 @@ const NewOrderPage = () => {
     const form = useForm<z.infer<typeof schema>>({
         // resolver: zodResolver(getSchemaForCategory('default')),
         resolver: zodResolver(schema),
-       
+
         defaultValues: {
-            items: [{ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true }]
+            items: [{
+                category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true,
+
+                additionalItems: [
+                    { name: '', cost: '', quantity: 0 }
+                ]
+            }]
         }
     });
     const { register, handleSubmit, formState: { errors }, control, watch, setValue } = form;
     const mockDiscussion = generateMockOrders(1)[0];
-    // const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<z.infer<typeof schema>>({
-    //     resolver: zodResolver(schema),
-    //     defaultValues: {
-    //         items: [{ category: 'C', productType: '', productSize: '', quantity: 1, message: '', isEditing: true }]
-    //     }
-    // });
-
+    const AdditionalItemsFieldArray = (index: number) => {
+        return useFieldArray({
+            control,
+            name: `items.${index}.additionalItems`
+        });
+    }
     const arrayField = useFieldArray({
         control,
         name: "items"
@@ -157,10 +168,10 @@ const NewOrderPage = () => {
 
 
     return (
-        <div className='px-8 md:pt-12 w-full md:w-[95%] max-w-[1792px] mx-auto'>
+        <div className='px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto'>
             <Form {...form}>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Accordion type="multiple" defaultValue={["customer-information", "enquiry-information", "delivery-information", "initial-discussion", "payment-information"]} className='w-full'>
+                    <Accordion type="multiple" defaultValue={["customer-information", "order-information", "delivery-information", "order-Instruction", "payment-information"]} className='w-full'>
                         <AccordionItem value="customer-information">
                             <AccordionTrigger className="py-4 flex">
                                 <div className="flex items-center gap-5 text-[#194A7A]">
@@ -200,12 +211,23 @@ const NewOrderPage = () => {
                                         errorMessage={errors.recipientPhone?.message as string}
                                         placeholder='Enter recipient name'
                                     />
-                                    <Input
+                                    <SelectSingleCombo
+                                        name="enquiryOccasion"
+                                        options={[
+                                            { value: 'birthday', label: 'Birthday' },
+                                            { value: 'anniversary', label: 'Anniversary' },
+                                            { value: 'wedding', label: 'Wedding' },
+                                            { value: 'father_s_Day', label: "Father's Day" },
+                                            { value: 'mother_s_Day', label: "Mother's Day" },
+                                        ]}
+                                        value={watch('enquiryOccasion')}
+                                        onChange={(value: string) => setValue('enquiryOccasion', value)}
+                                        valueKey="value"
                                         label="Enquiry Occasion"
-                                        {...register('enquiryOccasion')}
+                                        labelKey="label"
+                                        placeholder="Select enquiry occasion"
                                         hasError={!!errors.enquiryOccasion}
                                         errorMessage={errors.enquiryOccasion?.message as string}
-                                        placeholder='Enter occasion'
                                     />
                                     <SelectSingleCombo
                                         options={[
@@ -349,8 +371,8 @@ const NewOrderPage = () => {
                                                     value={field.value}
                                                     onChange={field.onChange}
                                                     placeholder="Select delivery date"
-                                                    
-                                                    />
+
+                                                />
                                                 <FormMessage />
                                                 <Button type="button" className='rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200' variant="unstyled" onClick={() => setValue('isCustomDelivery', !watch('isCustomDelivery'))} >
                                                     +
@@ -361,34 +383,36 @@ const NewOrderPage = () => {
                                                 </Button>
                                             </FormItem>
                                         )}
-                                        />
-                                        {
-                                            isCustomDelivery &&
-    
-                                            <FormField
-                                                control={control}
-                                                name="dispatchTime"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <TimePicker
-                                                                className=""
-                                                                label="Dispatch Time"
-                                                                {...field}
-                                                                hasError={!!errors.dispatchTime}
-                                                                errorMessage={errors.dispatchTime?.message as string}
-                                                                // placeholder='Enter delivery fee'
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        }
+                                    />
+                                    <FormField
+                                        control={control}
+                                        name="dispatchTime"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <TimePicker
+                                                        className=""
+                                                        control={control}
+                                                        label="Dispatch Time"
+                                                        {...field}
+                                                        hasError={!!errors.dispatchTime}
+                                                        errorMessage={errors.dispatchTime?.message as string}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
 
-                        <AccordionItem value='enquiry-information'>
+
+
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        {/* /////////////////////////////////////////////////////////////////////////////// */}
+                        <AccordionItem value='order-information'>
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
@@ -461,14 +485,6 @@ const NewOrderPage = () => {
                                                                     />
                                                                 )}
                                                             />
-                                                            <Input
-                                                                label="Product Type"
-                                                                {...register(`items.${index}.productType`)}
-                                                                hasError={!!errors.items?.[index]?.productType}
-                                                                errorMessage={errors.items?.[index]?.productType?.message}
-                                                                placeholder='Enter product type'
-                                                            />
-
 
 
                                                             {
@@ -523,6 +539,22 @@ const NewOrderPage = () => {
                                                                             )}
                                                                         />
                                                                         <Controller
+                                                                            name={`items.${index}.size`}
+                                                                            control={control}
+                                                                            render={({ field }) => (
+                                                                                <SelectSingleCombo
+                                                                                    options={productOptions.Cakes.sizes}
+                                                                                    label="Size"
+                                                                                    valueKey="value"
+                                                                                    labelKey="label"
+                                                                                    placeholder="Select Size"
+                                                                                    {...field}
+                                                                                    hasError={!!errors.items?.[index]?.size}
+                                                                                    errorMessage={errors.items?.[index]?.size?.message}
+                                                                                />
+                                                                            )}
+                                                                        />
+                                                                        <Controller
                                                                             name={`items.${index}.whippedCreamUpgrade`}
                                                                             control={control}
                                                                             render={({ field }) => (
@@ -531,7 +563,7 @@ const NewOrderPage = () => {
                                                                                         { label: "True", value: "true" },
                                                                                         { label: "False", value: "false" },
                                                                                     ]}
-                                                                                    label="Whipped Cream Upgrade"
+                                                                                    label="Upgrade From Buttercream to Whipped Cream"
                                                                                     valueKey="value"
                                                                                     labelKey="label"
                                                                                     placeholder="Add Whipped Cream"
@@ -676,50 +708,46 @@ const NewOrderPage = () => {
                                                     (
                                                         <>
 
-                                                            <article className="flex gap-6 w-full max-w-[700px] bg-white p-6 rounded-xl mb-10">
-                                                                <div className='relative w-[180px] aspect-[5/4] p-6 rounded-xl bg-[#F6F6F6]'>
-                                                                    <Image
-                                                                        src='/img/cake.png'
-                                                                        alt='cake'
-                                                                        fill
-                                                                        className='object-cover rounded-xl border-8 border-[#F6F6F6]'
-                                                                    />
-                                                                </div>
-                                                                <section className='flex flex-col justify-between'><h5 className="text-[#194A7A] text-xl font-medium">
-                                                                    Adeline Fautline Cake
-                                                                </h5>
-                                                                    <div className='py-6 space-y-3'>
+                                                            <div>
+                                                                <OrderItemCard
+                                                                    editFn={() => setValue(`items.${index}.isEditing`, true)}
+                                                                    deleteFn={() => remove(index)}
+                                                                />
+                                                                <section className='mt-4 mb-8 lg:mb-12'>
+                                                                    {
+                                                                        field.additionalItems?.map((item, i) => (
+                                                                            <div className='grid grid-cols-3 gap-4' key={i}>
+                                                                                <Input
+                                                                                    label="Additional Item Name"
+                                                                                    {...register(`items.${index}.additionalItems.${i}.name`)}
+                                                                                    hasError={!!errors.items?.[index]?.additionalItems?.[i]?.name}
+                                                                                    errorMessage={errors.items?.[index]?.additionalItems?.[i]?.name?.message}
+                                                                                    placeholder='Enter name'
+                                                                                />
 
-                                                                        <div className='flex items-center gap-1'>
-                                                                            <h2 className='text-sm font-medium text-[#687588]'>Customer Name:</h2>
-                                                                            <p className='font-medium text-custom-blue'>Adetunji Emmanuel</p>
-                                                                        </div>
-                                                                        <div className='flex items-center gap-1'>
-                                                                            <h2 className='text-sm font-medium text-[#687588]'>Email:</h2>
-                                                                            <p className='font-medium text-custom-blue'>adel23@gmail.com</p>
-                                                                        </div>
-                                                                        <div className='flex items-center gap-1'>
-                                                                            <h2 className='text-sm font-medium text-[#687588]'>Phone Number:</h2>
-                                                                            <p className='font-medium text-custom-blue'>08034344433</p>
-                                                                        </div>
-                                                                        <div className='flex items-center gap-1'>
-                                                                            <h2 className='text-sm font-medium text-[#687588]'>Message on cake:</h2>
-                                                                            <p className='font-medium text-custom-blue'>Love me like you always do</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div className='flex justify-between items-center gap-1'>
-
-                                                                    </div>
+                                                                                <Input
+                                                                                    label="Cost"
+                                                                                    {...register(`items.${index}.additionalItems.${i}.cost`)}
+                                                                                    hasError={!!errors.items?.[index]?.additionalItems?.[i]?.cost}
+                                                                                    errorMessage={errors.items?.[index]?.additionalItems?.[i]?.cost?.message}
+                                                                                    placeholder='Enter cost'
+                                                                                />
+                                                                            </div>
+                                                                        ))
+                                                                    }
+                                                                    <button
+                                                                        onClick={
+                                                                            () => {
+                                                                                AdditionalItemsFieldArray(index).append({ name: 'Biscuits', quantity: 1, cost: '' }, { shouldFocus: true });
+                                                                            }
+                                                                        }
+                                                                        className="bg-white py-1.5 px-4 mt-2"
+                                                                        type='button'
+                                                                    >
+                                                                        Add More
+                                                                    </button>
                                                                 </section>
-                                                                <div className="flex items-center gap-4 self-start">
-                                                                    <button onClick={() => setValue(`items.${index}.isEditing`, true)} className="text-[#2463EB]">
-                                                                        <EditPenIcon />
-                                                                    </button>
-                                                                    <button type="button" onClick={() => remove(index)} className="">
-                                                                        <Trash2 size={17} className="text-red-400" />
-                                                                    </button>
-                                                                </div>
-                                                            </article>
+                                                            </div>
 
                                                             <div className="flex items-center">
                                                                 <Button type="button" onClick={addNewItem}
@@ -752,17 +780,23 @@ const NewOrderPage = () => {
                             </AccordionContent>
                         </AccordionItem>
 
-                        <AccordionItem value='-discussion'>
+                        <AccordionItem value='order-Instruction'>
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
-                                        <img src='/img/book.svg' alt='' width={24} height={24} />
+                                        <Image src='/img/book.svg' alt='' width={24} height={24} />
                                     </div>
-                                    <p className='text-custom-blue font-medium'>Discussion</p>
+                                    <p className='text-custom-blue font-medium'>Order Instruction</p>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent className='pt-8 pb-14'>
-                                <EnquiryDiscussCard isExpanded order={mockDiscussion} />
+                                <Input
+                                    label="Message on Order"
+                                    hasError={!!errors.messageOnOrder}
+                                    errorMessage={errors.messageOnOrder?.message as string}
+                                    placeholder='Enter message on order'
+                                    {...register('messageOnOrder')}
+                                />
                             </AccordionContent>
                         </AccordionItem>
 
@@ -770,9 +804,9 @@ const NewOrderPage = () => {
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
-                                        <TruckTime className='text-custom-blue' stroke="#194a7a" size={18} />
+                                        <Money className='text-custom-blue' stroke="#194a7a" size={18} />
                                     </div>
-                                    <p className='text-custom-blue font-medium'>Payment Details</p>
+                                    <p className='text-custom-blue font-medium'>Payment</p>
                                 </div>
                             </AccordionTrigger>
 
@@ -831,7 +865,7 @@ const NewOrderPage = () => {
                     </Accordion>
 
                     <footer className="flex py-16">
-                        <LinkButton href="./enquiry-details" type="submit" variant="default" size="lg" className='ml-auto'>
+                        <LinkButton href="./order-summary" type="submit" variant="default" size="lg" className='ml-auto'>
                             Proceed
                         </LinkButton>
                     </footer>

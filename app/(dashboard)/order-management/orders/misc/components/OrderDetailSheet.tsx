@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox, Button, LinkButton } from '@/components/ui';
 import { Mail, MessageCircle, User, X } from 'lucide-react';
-import { Book, Notepad2, UserOctagon, Printer } from 'iconsax-react';
+import { Book, Notepad2, UserOctagon, Printer, EmojiHappy } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
 import {
   Select,
@@ -151,7 +151,9 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
 
           <section className='flex items-center gap-8 mb-16 mt-3'>
             <div className='flex items-center gap-1 text-sm text-[#111827]'>
-              <span className='text-sm text-[#687588]'>Order Occasion:{" "}</span>
+              <span className='flex items-center text-sm text-[#687588]'>
+                <EmojiHappy size={18} className='mr-2' />
+                Order Occasion:{" "}</span>
               <p>Happy Anniversary</p>
             </div>
             <div className='flex items-center gap-1 text-sm text-[#111827]'>
@@ -163,34 +165,36 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
               <p>Bank Transfer</p>
             </div>
           </section>
+          
+
 
 
           <section className='mt-16 mb-8'>
             <header className="border-b border-b-[#00000021]">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
-                <MessageCircle size={19} />
-                Message for order
+                <Notepad2 size={19} />
+                Delivery Note
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
-            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
+            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full'>
               <Input value="Happy Anniversary"
-                // rightIcon={
-                //   <Button variant='ghost' size='sm'>
-                //     <EditPenIcon className='h-4 w-4' />
-                //   </Button>
-                // }
                 readOnly
                 containerClassName='w-full'
               />
-
+              <button className='flex items-center justify-center gap-2 bg-[#FFC600] px-5 py-2 rounded-lg'>
+                <Printer size={20} />
+                Print
+              </button>
             </div>
           </section>
+
+
 
           <section className='mb-8'>
             <header className="border-b border-b-[#00000021] mb-6">
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5'>
-                Oder Items
+                Order Items
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
@@ -208,7 +212,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                       />
                     </div>
                     <div className="flex items-center gap-4 self-start">
-                      <Checkbox />
+                      <Checkbox checked />
                     </div>
                   </header>
 
@@ -270,7 +274,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                       />
                     </div>
                     <div className="flex items-center gap-4 self-start">
-                      <Checkbox />
+                      <Checkbox checked />
                     </div>
                   </header>
 
@@ -304,34 +308,9 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
 
 
 
-
-          <section className='mt-16 mb-8'>
-            <header className="border-b border-b-[#00000021]">
-              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
-                <Notepad2 size={19} />
-                Delivery notes
-                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
-              </p>
-            </header>
-            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full'>
-              <Input value="Happy Anniversary"
-                readOnly
-                containerClassName='w-full'
-              />
-              <button className='flex items-center justify-center gap-2 bg-[#FFC600] px-5 py-2 rounded-lg'>
-                <Printer size={20} />
-                Print
-              </button>
-
-            </div>
-          </section>
-
-
-
-
           <section className='p-4 px-6 rounded-2xl border'>
             <div className='flex justify-between items-center mb-2 border-b'>
-              <h3 className='font-semibold font-manrope'>Delivery Details</h3>
+              <h3 className='font-semibold font-manrope text-lg'>Delivery Details</h3>
               <Button variant='ghost' size='sm' onClick={openEditDeliveryDetailsModal}>
                 <EditPenIcon className='h-5 w-5' />
               </Button>
@@ -357,8 +336,8 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
 
           <section>
             <p className="flex items-center gap-3">
-              <span className='text-[#687588] font-manrope'>Total(NGN)</span>
-              <span className="text-[#111827] font-medium">N130,000.00</span>
+              <span className='text-[#8B909A] font-dm-sans text-sm'>Total(NGN)</span>
+              <span className="text-[#111827] font-semibold text-lg font-poppins">N130,000.00</span>
             </p>
           </section>
 

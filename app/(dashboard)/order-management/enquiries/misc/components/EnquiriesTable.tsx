@@ -19,19 +19,35 @@ import { ElipsisHorizontal } from '@/icons/core';
 import { useBooleanStateControl } from '@/hooks';
 import { ConfirmActionModal, ConfirmDeleteModal, SuccessModal } from '@/components/ui';
 import ConfirmPaymentModal from './ConfirmPaymentModal';
+import { format } from 'date-fns';
 
 const enquiries = [
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
-    ],
-    deliveryNotes: 'Deliver at door step',
+    customerName: 'John Doe',
+    phoneNumber: '08012345678',
+    enquiryItems: ['Chocolate Cake', 'Red Wine', 'Small Teddy Bear'],
+    deliveryNotes: 'Leave at the front desk',
+    category: ['C', 'F', 'TB'],
+    status: 'STILL DISCUSSING',
+    deliveryDate: '2023-10-01',
+  },
+  {
+    customerName: 'Jane Smith',
+    phoneNumber: '08087654321',
+    enquiryItems: ['Vanilla Cake', 'White Wine', 'Medium Teddy Bear'],
+    deliveryNotes: 'Ring the doorbell',
+    category: ['C', 'F', 'TB'],
+    status: 'PAYMENT MADE',
+    deliveryDate: '2023-10-02',
+  },
+  {
+    customerName: 'Alice Johnson',
+    phoneNumber: '08011223344',
+    enquiryItems: ['Strawberry Cake', 'Champagne', 'Large Teddy Bear'],
+    deliveryNotes: 'Leave with the neighbor',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
+    deliveryDate: '2023-10-03',
   },
   {
     customerName: 'Ife Adebayo',
@@ -44,6 +60,20 @@ const enquiries = [
     deliveryNotes: 'Deliver at door step',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
+    deliveryDate: '2023-10-03',
+  },
+  {
+    customerName: 'Ife Adebayo',
+    phoneNumber: '08067556644',
+    enquiryItems: [
+      'Adeline Faultline Cake',
+      'Moet Chandon',
+      'Large size teddy',
+    ],
+    deliveryNotes: 'Deliver at door step',
+    category: ['C', 'F', 'TB'],
+    status: 'FINALIZED DISCUSSION',
+    deliveryDate: '2023-10-03',
   },
   {
     customerName: 'Ife Adebayo',
@@ -54,6 +84,7 @@ const enquiries = [
       'Large size teddy',
     ],
     deliveryNotes: 'Call Simisola',
+    deliveryDate: '2023-10-03',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
   },
@@ -64,6 +95,7 @@ const enquiries = [
     deliveryNotes: 'Deliver at door step',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
+    deliveryDate: '2023-10-03',
   },
   {
     customerName: 'Ife Adebayo',
@@ -71,6 +103,7 @@ const enquiries = [
     enquiryItems: ['Delectable Choco cake', 'Moet Chandon', 'Large size teddy'],
     deliveryNotes: 'Deliver at door step',
     category: ['C', 'F', 'TB'],
+    deliveryDate: '2023-10-03',
     status: 'FINALIZED DISCUSSION',
   },
   {
@@ -78,6 +111,7 @@ const enquiries = [
     phoneNumber: '08067556644',
     enquiryItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
     deliveryNotes: 'Call Adeola',
+    deliveryDate: '2023-10-03',
     category: ['C', 'F', 'TB'],
     status: 'PAYMENT MADE',
   },
@@ -86,6 +120,7 @@ const enquiries = [
     phoneNumber: '08067556644',
     enquiryItems: ['Delectable Choco cake', 'Moet Chandon', 'Large size teddy'],
     deliveryNotes: 'Deliver at door step',
+    deliveryDate: '2023-10-03',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
   },
@@ -98,6 +133,7 @@ const enquiries = [
       'Large size teddy',
     ],
     deliveryNotes: 'Call Simisola',
+    deliveryDate: '2023-10-03',
     category: ['C', 'F', 'TB'],
     status: 'STILL DISCUSSING',
   },
@@ -110,6 +146,7 @@ const enquiries = [
       'Large size teddy',
     ],
     deliveryNotes: 'Deliver at door step',
+    deliveryDate: '2023-10-03',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
   },
@@ -117,6 +154,7 @@ const enquiries = [
     customerName: 'Ife Adebayo',
     phoneNumber: '08067556644',
     enquiryItems: ['Delectable Choco cake', 'Moet Chandon', 'Large size teddy'],
+    deliveryDate: '2023-10-03',
     deliveryNotes: 'Deliver at door step',
     category: ['C', 'F', 'TB'],
     status: 'FINALIZED DISCUSSION',
@@ -127,32 +165,33 @@ const enquiries = [
 export default function EnquiriesTable() {
   const router = useRouter();
 
-  const handleConfirm = () => {
-    console.log(`Confirmed action`);
-    closeConfirmApproveModal();
-    router.push("/order-management/orders")
-  };
-
+  
   const {
     state: isConfirmDeleteModalOpen,
     setTrue: openConfirmDeleteModal,
     setFalse: closeConfirmDeleteModal,
   } = useBooleanStateControl()
-
+  
   const {
     state: isConfirmApproveModalOpen,
     setTrue: openConfirmApproveModal,
     setFalse: closeConfirmApproveModal,
   } = useBooleanStateControl()
-
+  
   const {
     state: isSuccessModalOpen,
     setTrue: openSuccessModal,
     setFalse: closeSuccessModal
   } = useBooleanStateControl()
-
-
-
+  
+  const handleConfirm = () => {
+    console.log(`Confirmed action`);
+    closeConfirmApproveModal();
+    closeSuccessModal();
+    router.push("/order-management/orders")
+  };
+  
+  
 
 
   return (
@@ -162,6 +201,7 @@ export default function EnquiriesTable() {
           <TableHead className='text-gray-500'>Customer Details</TableHead>
           <TableHead className='text-gray-500'>Enquiry Item</TableHead>
           <TableHead className='text-gray-500'>Delivery Notes</TableHead>
+          <TableHead className='text-gray-500'>Delivery Date</TableHead>
           <TableHead className='text-gray-500'>Category</TableHead>
           <TableHead className='text-gray-500'>Status</TableHead>
           <TableHead></TableHead>
@@ -182,6 +222,7 @@ export default function EnquiriesTable() {
               ))}
             </TableCell>
             <TableCell>{enquiry.deliveryNotes}</TableCell>
+            <TableCell className='uppercase'>{format(new Date(enquiry.deliveryDate), 'dd/MMM/yyyy')}</TableCell>
             <TableCell>
               <div className='flex space-x-1'>
                 {enquiry.category.map((cat, idx) => (
@@ -284,6 +325,8 @@ export default function EnquiriesTable() {
       <SuccessModal
         closeModal={handleConfirm}
         isModalOpen={isSuccessModalOpen}
+        heading='Order Approved!'
+        subheading='Enquiry has been approved as an order'
       />
 
     </Table>

@@ -9,6 +9,7 @@ import {
   DialogClose,
   DialogTitle,
 } from "@/components/ui";
+import { SuccessConfetti } from "@/icons/core";
 import { OrderManagement, OrderTimeLine } from "@/icons/sidebar";
 import { cn } from "@/lib/utils";
 import { X } from "@phosphor-icons/react";
@@ -46,7 +47,7 @@ const SuccessModal: React.FC<ModalProps> = ({
         </div>
 
         <div className="flex flex-col gap-2.5 items-center px-6">
-          <Image src="/img/illustration.png" alt="success" width={265} height={140} />
+          <SuccessConfetti width={265} height={140} />
           <h3 className={cn("text-[#1E1E1E] text-xl font-medium mt-2 text-center", headingClass)}>
             {heading ?? "Success!"}
           </h3>
