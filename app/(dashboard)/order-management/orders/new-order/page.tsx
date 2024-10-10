@@ -4,22 +4,19 @@ import Image from 'next/image'
 import { Controller, FieldErrors, useFieldArray, useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Money, TruckTime } from 'iconsax-react'
-import { Plus, Trash, Trash2, UserIcon } from 'lucide-react'
+import { Plus, UserIcon } from 'lucide-react'
+import Link from 'next/link'
 
 import {
     Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown, FilePicker, FormControl,
-    FormField, FormItem, FormLabel, FormMessage,
-    Form,
-    TimePicker
+    FormField, FormItem, FormMessage, Form, TimePicker
 } from '@/components/ui'
-import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
-import { AllProducts, CATEGORIES_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
+import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { OrderItemCard, OrderItemCardAdditionalItems } from '../misc/components'
 import { NewOrderFormValues, NewOrderSchema } from '../misc/utils/schema'
-import Link from 'next/link'
 
 
 
@@ -29,18 +26,13 @@ const NewOrderPage = () => {
     const form = useForm<z.infer<typeof NewOrderSchema>>({
         resolver: zodResolver(NewOrderSchema),
         defaultValues: {
-            items: [{ 
+            items: [{
                 category: 'C', productType: '', quantity: 1, message: '', isEditing: true,
             }]
         }
     });
     const { register, handleSubmit, formState: { errors }, control, watch, setValue } = form;
-    const AdditionalItemsFieldArray = (index: number) => {
-        return useFieldArray({
-            control,
-            name: `items.${index}.additionalItems`
-        });
-    }
+
     const orderItemsField = useFieldArray({
         control,
         name: "items"
@@ -62,8 +54,14 @@ const NewOrderPage = () => {
 
     const addNewItem = () => {
         append({
-            branch: 'Zuzu Delights', category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
+            category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
             flavour: 'Vanilla', layers: '2', size: '6 inches', toppings: 'none', isCustomOrder: false
+        });
+    }
+    const addNewCustomItem = () => {
+        append({
+            category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
+            flavour: 'Vanilla', layers: '2', size: '6 inches', toppings: 'none', isCustomOrder: true
         });
     }
     const getFieldError = (errors: FieldErrors<NewOrderFormValues>, index: number, field: string) => {
@@ -110,10 +108,10 @@ const NewOrderPage = () => {
                                         errorMessage={errors.customerPhone?.message as string}
                                         placeholder='Enter customer phone number'
                                         footer={
-                                            watch('customerPhone').length == 10 && (
-                                            <div className="flex justify-end">
-                                              <Link href="/order-management/order-history?filter=0909090909" className="text-[#194A7A] font-poppins font-medium">View History</Link>
-                                            </div>
+                                            watch('customerPhone')?.length == 10 && (
+                                                <div className="flex justify-end">
+                                                    <Link href="/order-management/order-history?filter=0909090909" className="text-[#194A7A] font-poppins font-medium">View History</Link>
+                                                </div>
                                             )
                                         }
                                     />
@@ -334,328 +332,337 @@ const NewOrderPage = () => {
                                     <p className='text-custom-blue font-medium'>Order Details</p>
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent className='flex flex-col pt-3 pb-14 gap-y-12 lg:gap-y-20'>
-                                {
-                                    controlledFields.map((field, index) => (
-                                        <div key={index}>
-                                            {
-                                                field?.isEditing ? (
-                                                    <section>
-                                                        <header className='flex items-center justify-between mb-8'>
-                                                            <h3 className='font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max'>Item {index + 1}</h3>
-                                                            <Button variant="black"
-                                                                onClick={() => {
-                                                                    setValue(`items.${index}.isCustomOrder`, !field.isCustomOrder)
-                                                                }}
-                                                            >
-                                                                {
-                                                                    field.isCustomOrder ? 'Default Order' : 'Custom Order'
-                                                                }
-                                                            </Button>
-                                                        </header>
+                            <AccordionContent className='flex flex-col pt-3 pb-14 gap-y-8'>
+                                <section className='flex items-center justify-between gap-10'>
+                                    <Controller
+                                        name={`branch`}
+                                        control={control}
+                                        render={({ field }) => (
+                                            <SelectSingleCombo
+                                                options={BRANCH_OPTIONS}
+                                                valueKey="value"
+                                                labelKey="label"
+                                                placeholder="Select Branch"
+                                                className='!h-10 min-w-40'
+                                                {...field}
+                                                hasError={!!errors.branch}
+                                                errorMessage={errors.branch?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Button variant="outline"
+                                        onClick={addNewCustomItem}
+                                        type='button'
+                                    >
+                                        + Custom Order
+                                    </Button>
+                                </section>
+                                <section className='flex flex-col gap-y-12 lg:gap-y-20'>
+                                    {
+                                        controlledFields.map((field, index) => (
+                                            <div key={index}>
+                                                {
+                                                    field?.isEditing ? (
+                                                        <section>
+                                                            <header className='flex items-center justify-between mb-8'>
+                                                                <h3 className='font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max'>Item {index + 1}</h3>
+                                                            </header>
 
-                                                        <section className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
-                                                            <Controller
-                                                                name={`items.${index}.branch`}
-                                                                control={control}
-                                                                render={({ field }) => (
-                                                                    <SelectSingleCombo
-                                                                        options={[
-                                                                            { value: 'Zuzu Delights', label: 'Zuzu Delights' },
-                                                                            { value: 'Prestige Flowers', label: 'Prestige Flowers' },
-                                                                        ]}
-                                                                        label="Branch"
-                                                                        valueKey="value"
-                                                                        labelKey="label"
-                                                                        placeholder="Select Branch"
-                                                                        {...field}
-                                                                        hasError={!!errors.items?.[index]?.branch}
-                                                                        errorMessage={errors.items?.[index]?.branch?.message}
-                                                                    />
-                                                                )}
-                                                            />
-                                                        </section>
-
-                                                        <div key={field.id} className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
-                                                            <Controller
-                                                                name={`items.${index}.category`}
-                                                                control={control}
-                                                                render={({ field }) => (
-                                                                    <SelectSingleCombo
-                                                                        options={CATEGORIES_OPTIONS}
-                                                                        label="Category"
-                                                                        valueKey="value"
-                                                                        labelKey="label"
-                                                                        placeholder="Select Category"
-                                                                        {...field}
-                                                                        hasError={!!errors.items?.[index]?.category}
-                                                                        errorMessage={errors.items?.[index]?.category?.message}
-                                                                    />
-                                                                )}
-                                                            />
-                                                            <Controller
-                                                                name={`items.${index}.productType`}
-                                                                control={control}
-                                                                render={({ field }) => (
-                                                                    <ProductsDropdown
-                                                                        options={AllProducts}
-                                                                        label="Product Type"
-                                                                        valueKey="category"
-                                                                        labelKey="name"
-                                                                        imageKey="image"
-                                                                        placeholder="Select product type"
-                                                                        {...field}
-                                                                    />
-                                                                )}
-                                                            />
-
-
-                                                            {
-                                                                field.category === 'C' && (
-                                                                    <>
-                                                                        <Controller
-                                                                            name={`items.${index}.layers`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.layers}
-                                                                                    label="Layers"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Select layers"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'layers')}
-                                                                                    errorMessage={getFieldError(errors, index, 'layers')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                        <Controller
-                                                                            name={`items.${index}.flavour`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.flavours}
-                                                                                    label="Flavour"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Select Flavour"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'flavour')}
-                                                                                    errorMessage={getFieldError(errors, index, 'flavour')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                        <Controller
-                                                                            name={`items.${index}.toppings`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.toppings}
-                                                                                    label="Topping"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Select Topping"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'toppings')}
-                                                                                    errorMessage={getFieldError(errors, index, 'toppings')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                        <Controller
-                                                                            name={`items.${index}.size`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.sizes}
-                                                                                    label="Size"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Select Size"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'size')}
-                                                                                    errorMessage={getFieldError(errors, index, 'size')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                        <Controller
-                                                                            name={`items.${index}.whippedCreamUpgrade`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade}
-                                                                                    label="Upgrade From Buttercream to Whipped Cream"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Add Whipped Cream"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'whippedCreamUpgrade')}
-                                                                                    errorMessage={getFieldError(errors, index, 'whippedCreamUpgrade')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                    </>
-                                                                )
-                                                            }
-
-                                                            {field.category === "F" && (
+                                                            <div key={field.id} className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
                                                                 <Controller
-                                                                    name={`items.${index}.vase`}
+                                                                    name={`items.${index}.category`}
                                                                     control={control}
                                                                     render={({ field }) => (
                                                                         <SelectSingleCombo
-                                                                            options={PRODUCT_TYPES_OPTIONS.Flowers.vaseOptions}
-                                                                            label="Vase"
+                                                                            options={CATEGORIES_OPTIONS}
+                                                                            label="Category"
                                                                             valueKey="value"
                                                                             labelKey="label"
-                                                                            placeholder="Select Vase"
+                                                                            placeholder="Select Category"
                                                                             {...field}
-                                                                            hasError={!!getFieldError(errors, index, 'vase')}
-                                                                            errorMessage={getFieldError(errors, index, 'vase')?.message}
+                                                                            hasError={!!errors.items?.[index]?.category}
+                                                                            errorMessage={errors.items?.[index]?.category?.message}
                                                                         />
                                                                     )}
                                                                 />
-                                                            )}
-
-                                                            {
-                                                                field.category === "TB" && (
-                                                                    <>
-                                                                        <Controller
-                                                                            name={`items.${index}.size`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Teddies.sizes}
-                                                                                    label="Size"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Select Size"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'size')}
-                                                                                    errorMessage={getFieldError(errors, index, 'size')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                        <Controller
-                                                                            name={`items.${index}.bouquet`}
-                                                                            control={control}
-                                                                            render={({ field }) => (
-                                                                                <SelectSingleCombo
-                                                                                    options={PRODUCT_TYPES_OPTIONS.Teddies.bouquets}
-                                                                                    label="Bouquet"
-                                                                                    valueKey="value"
-                                                                                    labelKey="label"
-                                                                                    placeholder="Select Bouquet"
-                                                                                    {...field}
-                                                                                    hasError={!!getFieldError(errors, index, 'bouquet')}
-                                                                                    errorMessage={getFieldError(errors, index, 'bouquet')?.message}
-                                                                                />
-                                                                            )}
-                                                                        />
-                                                                    </>
-                                                                )
-                                                            }
-
-
-                                                            <Input
-                                                                label="Message"
-                                                                {...register(`items.${index}.message`)}
-                                                                placeholder='Enter message'
-                                                            />
-
-
-                                                            <div>
-                                                                <label htmlFor="">Quantity</label>
-                                                                <div className="flex items-center justify-start gap-2 h-14">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            const newQuantity = controlledFields[index].quantity - 1;
-                                                                            if (newQuantity >= 1) {
-                                                                                const updatedFields = [...controlledFields];
-                                                                                updatedFields[index].quantity = newQuantity;
-                                                                                setValue(`items.${index}.quantity`, newQuantity);
-                                                                            }
-                                                                        }}
-                                                                        className="flex items-center justify-center size-7 border border-[#0F172B] text-lg"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <span className="w-9 text-center">{controlledFields[index].quantity}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            const newQuantity = controlledFields[index].quantity + 1;
-                                                                            const updatedFields = [...controlledFields];
-                                                                            updatedFields[index].quantity = newQuantity;
-                                                                            setValue(`items.${index}.quantity`, newQuantity);
-                                                                        }}
-                                                                        className="flex items-center justify-center size-7 border border-[#0F172B] text-lg text-center"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-
-                                                        <footer className="flex items-center justify-end gap-4">
-                                                            <Button type="button" onClick={addNewItem}
-                                                                className="h-12" variant="outline" size="lg"
-                                                            >
-                                                                <Plus className="mr-1.5" size={16} />
-                                                                Add Item
-                                                            </Button>
-                                                            <Button type="button" onClick={() => { setValue(`items.${index}.isEditing`, false) }} className="h-12" size="lg">
-                                                                Confirm
-                                                            </Button>
-                                                        </footer>
-                                                    </section>
-                                                )
-                                                    :
-                                                    (
-                                                        <article>
-
-                                                            <div>
-                                                                <OrderItemCard
-                                                                    editFn={() => setValue(`items.${index}.isEditing`, true)}
-                                                                    deleteFn={() => remove(index)}
-                                                                />
-                                                                <OrderItemCardAdditionalItems
-                                                                    index={index}
+                                                                <Controller
+                                                                    name={`items.${index}.productType`}
                                                                     control={control}
-                                                                    register={register}
-                                                                    errors={errors}
+                                                                    render={({ field }) => (
+                                                                        <ProductsDropdown
+                                                                            options={AllProducts}
+                                                                            label="Product Type"
+                                                                            valueKey="category"
+                                                                            labelKey="name"
+                                                                            imageKey="image"
+                                                                            placeholder="Select product type"
+                                                                            {...field}
+                                                                        />
+                                                                    )}
                                                                 />
+
+
+                                                                {
+                                                                    field.category === 'C' && (
+                                                                        <>
+                                                                            <Controller
+                                                                                name={`items.${index}.layers`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Cakes.layers}
+                                                                                        label="Layers"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Select layers"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'layers')}
+                                                                                        errorMessage={getFieldError(errors, index, 'layers')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                            <Controller
+                                                                                name={`items.${index}.flavour`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Cakes.flavours}
+                                                                                        label="Flavour"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Select Flavour"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'flavour')}
+                                                                                        errorMessage={getFieldError(errors, index, 'flavour')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                            <Controller
+                                                                                name={`items.${index}.toppings`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Cakes.toppings}
+                                                                                        label="Topping"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Select Topping"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'toppings')}
+                                                                                        errorMessage={getFieldError(errors, index, 'toppings')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                            <Controller
+                                                                                name={`items.${index}.size`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Cakes.sizes}
+                                                                                        label="Size"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Select Size"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'size')}
+                                                                                        errorMessage={getFieldError(errors, index, 'size')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                            <Controller
+                                                                                name={`items.${index}.whippedCreamUpgrade`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade}
+                                                                                        label="Upgrade From Buttercream to Whipped Cream"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Add Whipped Cream"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'whippedCreamUpgrade')}
+                                                                                        errorMessage={getFieldError(errors, index, 'whippedCreamUpgrade')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                        </>
+                                                                    )
+                                                                }
+
+                                                                {field.category === "F" && (
+                                                                    <Controller
+                                                                        name={`items.${index}.vase`}
+                                                                        control={control}
+                                                                        render={({ field }) => (
+                                                                            <SelectSingleCombo
+                                                                                options={PRODUCT_TYPES_OPTIONS.Flowers.vaseOptions}
+                                                                                label="Vase"
+                                                                                valueKey="value"
+                                                                                labelKey="label"
+                                                                                placeholder="Select Vase"
+                                                                                {...field}
+                                                                                hasError={!!getFieldError(errors, index, 'vase')}
+                                                                                errorMessage={getFieldError(errors, index, 'vase')?.message}
+                                                                            />
+                                                                        )}
+                                                                    />
+                                                                )}
+
+                                                                {
+                                                                    field.category === "TB" && (
+                                                                        <>
+                                                                            <Controller
+                                                                                name={`items.${index}.size`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Teddies.sizes}
+                                                                                        label="Size"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Select Size"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'size')}
+                                                                                        errorMessage={getFieldError(errors, index, 'size')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                            <Controller
+                                                                                name={`items.${index}.bouquet`}
+                                                                                control={control}
+                                                                                render={({ field }) => (
+                                                                                    <SelectSingleCombo
+                                                                                        options={PRODUCT_TYPES_OPTIONS.Teddies.bouquets}
+                                                                                        label="Bouquet"
+                                                                                        valueKey="value"
+                                                                                        labelKey="label"
+                                                                                        placeholder="Select Bouquet"
+                                                                                        {...field}
+                                                                                        hasError={!!getFieldError(errors, index, 'bouquet')}
+                                                                                        errorMessage={getFieldError(errors, index, 'bouquet')?.message}
+                                                                                    />
+                                                                                )}
+                                                                            />
+                                                                        </>
+                                                                    )
+                                                                }
+
+
+                                                                <Input
+                                                                    label="Message"
+                                                                    {...register(`items.${index}.message`)}
+                                                                    placeholder='Enter message'
+                                                                />
+
+
+                                                                <div className="flex items-start">
+                                                                    {
+                                                                        watch(`items.${index}.isCustomOrder`) &&
+                                                                        <FilePicker
+                                                                            onFileSelect={(file) => setValue(`items.${index}.itemImage`, file!)}
+                                                                            hasError={!!getFieldError(errors, index, 'itemImage')}
+                                                                            errorMessage={getFieldError(errors, index, 'itemImage')?.message}
+                                                                            maxSize={10}
+                                                                            title='Upload Item Image(800 x 600)'
+                                                                            variant="preview"
+                                                                        />
+                                                                    }
+                                                                    <div>
+                                                                        <label htmlFor="">Quantity</label>
+                                                                        <div className="flex items-center justify-start gap-2 h-14">
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    const newQuantity = controlledFields[index].quantity - 1;
+                                                                                    if (newQuantity >= 1) {
+                                                                                        const updatedFields = [...controlledFields];
+                                                                                        updatedFields[index].quantity = newQuantity;
+                                                                                        setValue(`items.${index}.quantity`, newQuantity);
+                                                                                    }
+                                                                                }}
+                                                                                className="flex items-center justify-center size-7 border border-[#0F172B] text-lg"
+                                                                            >
+                                                                                -
+                                                                            </button>
+                                                                            <span className="w-9 text-center">{controlledFields[index].quantity}</span>
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => {
+                                                                                    const newQuantity = controlledFields[index].quantity + 1;
+                                                                                    const updatedFields = [...controlledFields];
+                                                                                    updatedFields[index].quantity = newQuantity;
+                                                                                    setValue(`items.${index}.quantity`, newQuantity);
+                                                                                }}
+                                                                                className="flex items-center justify-center size-7 border border-[#0F172B] text-lg text-center"
+                                                                            >
+                                                                                +
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
                                                             </div>
 
-                                                            <div className="flex items-center">
+                                                            <footer className="flex items-center justify-end gap-4">
                                                                 <Button type="button" onClick={addNewItem}
-                                                                    className={cn("h-12 ml-auto", (controlledFields.length !== index + 1) && "hidden", controlledFields.length == 0 && "!visible")} variant="outline" size="lg"
+                                                                    className="h-12" variant="outline" size="lg"
                                                                 >
                                                                     <Plus className="mr-1.5" size={16} />
                                                                     Add Item
                                                                 </Button>
-                                                            </div>
-                                                        </article>
+                                                                <Button type="button" onClick={() => { setValue(`items.${index}.isEditing`, false) }} className="h-12" size="lg">
+                                                                    Confirm
+                                                                </Button>
+                                                            </footer>
+                                                        </section>
                                                     )
+                                                        :
+                                                        (
+                                                            <article>
+
+                                                                <div>
+                                                                    <OrderItemCard
+                                                                        editFn={() => setValue(`items.${index}.isEditing`, true)}
+                                                                        deleteFn={() => remove(index)}
+                                                                    />
+                                                                    <OrderItemCardAdditionalItems
+                                                                        index={index}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        errors={errors}
+                                                                    />
+                                                                </div>
+
+                                                                <div className="flex items-center">
+                                                                    <Button type="button" onClick={addNewItem}
+                                                                        className={cn("h-12 ml-auto", (controlledFields.length !== index + 1) && "hidden", controlledFields.length == 0 && "!visible")} variant="outline" size="lg"
+                                                                    >
+                                                                        <Plus className="mr-1.5" size={16} />
+                                                                        Add Item
+                                                                    </Button>
+                                                                </div>
+                                                            </article>
+                                                        )
 
 
-                                            }
-                                        </div>
-                                    ))}
-                                {
-                                    controlledFields.length === 0 && (
+                                                }
+                                            </div>
+                                        ))}
+                                    {
+                                        controlledFields.length === 0 && (
 
-                                        <footer className="flex items-center justify-end gap-4">
-                                            <Button type="button" onClick={addNewItem}
-                                                className="h-12" variant="outline" size="lg"
-                                            >
-                                                <Plus className="mr-1.5" size={16} />
-                                                Add Item
-                                            </Button>
-                                        </footer>
-                                    )
-                                }
+                                            <footer className="flex items-center justify-end gap-4">
+                                                <Button type="button" onClick={addNewItem}
+                                                    className="h-12" variant="outline" size="lg"
+                                                >
+                                                    <Plus className="mr-1.5" size={16} />
+                                                    Add Item
+                                                </Button>
+                                            </footer>
+                                        )
+                                    }
+                                </section>
+
                             </AccordionContent>
                         </AccordionItem>
 
@@ -749,7 +756,7 @@ const NewOrderPage = () => {
                                     />
 
                                     <FilePicker
-                                        onFileSelect={(file) => setValue('proofOfPayment', file)}
+                                        onFileSelect={(file) => setValue('proofOfPayment', file!)}
                                         hasError={!!errors.proofOfPayment}
                                         errorMessage={errors.proofOfPayment?.message as string}
                                         maxSize={10}

@@ -1,8 +1,8 @@
 export const PRODUCT_TYPES_OPTIONS = {
   Cakes: {
     sizes: [
-      { label: "6 inches", value: "6 inches)" },
-      { label: "8 inches", value: "8 inches)" },
+      { label: "6 inches", value: "6 inches" },
+      { label: "8 inches", value: "8 inches" },
       { label: "10 inches", value: "10 inches" },
       { label: "12 inches", value: "12 inches" }
     ],
