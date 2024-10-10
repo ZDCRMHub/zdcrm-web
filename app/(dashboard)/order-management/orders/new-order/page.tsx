@@ -19,6 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { OrderItemCard, OrderItemCardAdditionalItems } from '../misc/components'
 import { NewOrderFormValues, NewOrderSchema } from '../misc/utils/schema'
+import Link from 'next/link'
 
 
 
@@ -108,6 +109,13 @@ const NewOrderPage = () => {
                                         hasError={!!errors.customerPhone}
                                         errorMessage={errors.customerPhone?.message as string}
                                         placeholder='Enter customer phone number'
+                                        footer={
+                                            watch('customerPhone').length == 10 && (
+                                            <div className="flex justify-end">
+                                              <Link href="/order-management/order-history?filter=0909090909" className="text-[#194A7A] font-poppins font-medium">View History</Link>
+                                            </div>
+                                            )
+                                        }
                                     />
                                     <Input
                                         label="Recipient's Name"

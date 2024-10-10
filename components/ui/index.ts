@@ -6,7 +6,6 @@ export { Button, buttonVariants } from './button'
 export { default as ConfirmDeleteModal } from './confirmDeleteModal'
 export { default as ConfirmActionModal } from './confirmActionModal'
 export { default as FilePicker } from './filePicker'
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card'
 export { Collapsible, CollapsibleTrigger, CollapsibleContent } from './collapsible'
 export { Calendar } from './calendar'
 export { Checkbox } from './checkbox'
@@ -33,6 +32,8 @@ export {
   DialogTitle,
   DialogDescription,
 } from './dialog'
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card'
 
 export {
   useFormField,
