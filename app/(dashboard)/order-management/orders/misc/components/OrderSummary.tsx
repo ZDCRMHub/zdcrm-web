@@ -12,6 +12,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditPenIcon } from '@/icons/core';
 import OrderItemSummaryCard from './OrderItemSummaryCard';
+import { useBooleanStateControl } from '@/hooks';
+import OrderSummaryExportModal from './OrderSummaryExportModal';
 
 
 interface AdditionalCost {
@@ -34,6 +36,12 @@ const schema = z.object({
 });
 
 export default function OrderSummary() {
+  const {
+    state: isExportSummaaryModalOpen,
+    setTrue: openExportSummaryModal,
+    setFalse: closeExportSummaryModal
+  } = useBooleanStateControl()
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -66,8 +74,26 @@ export default function OrderSummary() {
     console.log(data);
   }
 
-
-
+  const orderData = {
+    branch: 'Zuzu Delights',
+    orderNumber: 'ORD123456',
+    date: '2023-10-01',
+    customerName: 'Adetunji Emmanuel',
+    phoneNumber: '08034344433',
+    address: 'No. 45, Adeniji close, Lekki Phase 1',
+    items: [
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+    ],
+    subtotal: 300000,
+    tax: 20000,
+    discount: 10000,
+    deliveryFee: 5000,
+    total: 315000
+  }
 
 
   return (
@@ -345,13 +371,19 @@ export default function OrderSummary() {
 
 
             <footer className="flex items-center justify-end gap-4 mb-10">
-              <Button variant={"outline"} className="h-14 ml-auto px-10" >
-                Cancel
+              <Button variant={"outline"} className="h-14 ml-auto px-16" onClick={openExportSummaryModal} >
+                Export
               </Button>
               <Button className='w-max bg-gray-900 hover:bg-gray-800 text-white px-8  ' variant="inputButton" onClick={() => setprocessed(true)}>
                 Send For Processing
               </Button>
             </footer>
+
+            <OrderSummaryExportModal
+              isModalOpen={isExportSummaaryModalOpen}
+              closeModal={closeExportSummaryModal}
+              orderData={orderData}
+            />
           </div>
       }
     </>
