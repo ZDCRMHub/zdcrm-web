@@ -43,7 +43,7 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
         <Dialog open={isModalOpen}>
             <DialogContent
                 onPointerDownOutside={closeModal}
-                className="flex flex-col items-center justify-center p-0 !rounded-2xl min-w-full lg:min-w-[60%] max w-[600px] max-h-[90vh] overflow-y-auto"
+                className="flex flex-col items-center justify-center p-0 !rounded-2xl min-w-full lg:min-w-[50%] max-w-[600px] max-h-[90vh] overflow-y-auto"
             >
                 <DialogClose
                     onClick={closeModal}
