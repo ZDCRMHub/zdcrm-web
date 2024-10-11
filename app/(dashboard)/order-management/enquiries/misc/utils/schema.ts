@@ -2,7 +2,6 @@ import { CATEGORIES_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TY
 import { z } from "zod";
 
 const baseItemSchema = z.object({
-    branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
     category: z.enum(CATEGORIES_OPTIONS.map(category => category.value) as [string, ...string[]], { message: "Category is required" }),
     productType: z.string().min(1),
     quantity: z.number().min(1),
@@ -48,6 +47,7 @@ const itemSchema = z.discriminatedUnion("category", [
 export type NewEnquiryFormValues = z.infer<typeof NewOrderSchema>;
 
 export const NewOrderSchema = z.object({
+    branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
     customerName: z.string().min(1, { message: "Customer's name is required" }),
     customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
     enquiryChannel: z.string({ message: "Invalid enquiry channel" }),
