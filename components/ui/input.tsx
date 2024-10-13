@@ -15,10 +15,11 @@ export interface InputProps
   rightIcon?: React.ReactNode
   containerClassName?: string
   label?: string
+  footer?: React.ReactNode
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, containerClassName, type, hasError, leftIcon, leftIconContainerClass, rightIcon, errorMessageClass, label, ...props }, ref) => {
+  ({ className, containerClassName, type, hasError, leftIcon, leftIconContainerClass, rightIcon, errorMessageClass, label, footer, ...props }, ref) => {
     const [show, setShow] = React.useState(false)
     const inputType = show ? "text" : "password"
 
@@ -75,6 +76,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )
           }
         </div>
+        {
+          footer && footer
+        }
         {
           hasError && <FormError className={errorMessageClass} errorMessage={props.errorMessage} />
         }

@@ -61,7 +61,7 @@ interface Order {
     orderId: string;
     customerName: string;
     phoneNumber: string;
-    enquiryItems: string[];
+    orderItems: string[];
     recipientName: string;
     recipientPhone: string;
     category: {
@@ -99,14 +99,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 }
 
             </TableCell>
-            <TableCell>
-                {order.enquiryItems.map((item, idx) => (
-                    <div key={idx} className='!min-w-max'>{item}</div>
-                ))}
-            </TableCell>
             <TableCell className='min-w-max max-w-[500px]'>
                 <div>{order.customerName}</div>
                 <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
+            </TableCell>
+            <TableCell>
+                {order.orderItems.map((item, idx) => (
+                    <div key={idx} className='!min-w-max'>{item}</div>
+                ))}
             </TableCell>
             <TableCell>
                 <div>{order.recipientName}</div>
@@ -125,7 +125,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </div>
             </TableCell>
 
-            <TableCell className='min-w-max max-w-[500px]'>{order.orderNotes}</TableCell>
+            <TableCell className='min-w-[180px] max-w-[500px]'>{order.orderNotes}</TableCell>
             <TableCell className='min-w-[150px] max-w-[500px] uppercase'>{format(order.deliveryDate, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Badge
@@ -153,7 +153,7 @@ const OrdersTable = () => {
             orderId: 'PF/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: [
+            orderItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
                 'Large size teddy',
@@ -175,14 +175,14 @@ const OrdersTable = () => {
             orderId: 'ZD/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
+            orderItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             category: [
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
-            orderNotes: 'Deliver at door step',
+            orderNotes: 'This is a very very long Order note. Deliver at door step',
             status: 'SORTED',
             deliveryNote: 'Deliver by 6 PM',
             deliveryDate: new Date(),
@@ -193,7 +193,7 @@ const OrdersTable = () => {
             orderId: 'ZD/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
+            orderItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             category: [
@@ -212,7 +212,7 @@ const OrdersTable = () => {
             orderId: 'ZD/LI6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: [
+            orderItems: [
                 'Delectable Choco cake',
                 'Moet Chandon',
                 'Large size teddy',
@@ -236,7 +236,7 @@ const OrdersTable = () => {
             orderId: 'PF/LC6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
+            orderItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             category: [
@@ -255,7 +255,7 @@ const OrdersTable = () => {
             orderId: 'PF/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: [
+            orderItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
                 'Large size teddy',
@@ -278,7 +278,7 @@ const OrdersTable = () => {
             orderId: 'ZD/LC6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            enquiryItems: [
+            orderItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
                 'Large size teddy',

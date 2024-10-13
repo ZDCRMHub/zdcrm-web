@@ -1,29 +1,49 @@
+'use client'
+
 import React, { useState, useRef, ChangeEvent } from 'react'
+import { Trash2, Upload } from 'lucide-react'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { DocumentUpload } from 'iconsax-react'
-
 import FormError from './formError'
-import { Label } from './label'
+import Image from 'next/image'
 
-interface CustomFilePickerProps {
-    title: string
-    maxSize: number
-    supportedFileTypes: string[]
-    onFileSelect: (file: File) => void
+interface FilePickerProps {
+    title?: string
+    maxSize?: number
+    acceptedFileTypes?: string[]
+    onFileSelect: (file: File | null) => void
+    className?: string
+    variant?: 'default' | 'preview'
     hasError?: boolean
     errorMessage?: string
 
 }
 
 export default function FilePicker({
-    title = "Proof of Payment",
-    maxSize = 2,
-    supportedFileTypes = ["JPEG", "PNG", "PDF"],
+    title = "Upload File",
+    maxSize = 5,
+    acceptedFileTypes = ["image/*", "application/pdf"],
     onFileSelect,
+    className,
+    variant = 'default',
     hasError,
     errorMessage
-}: CustomFilePickerProps) {
+}: FilePickerProps) {
     const [dragActive, setDragActive] = useState(false)
+    const [selectedFile, setSelectedFile] = useState<File | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
+
+    const handleFiles = (file: File) => {
+        if (file.size > maxSize * 1024 * 1024) {
+            alert(`File size should not exceed ${maxSize} MB`)
+            return
+        }
+        setSelectedFile(file)
+        onFileSelect(file)
+    }
 
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
@@ -51,62 +71,103 @@ export default function FilePicker({
         }
     }
 
-    const handleFiles = (file: File) => {
-        if (file.size > maxSize * 1024 * 1024) {
-            alert(`File size should not exceed ${maxSize} MB`)
-            return
-        }
-        const fileExtension = file.name.split('.').pop()?.toUpperCase()
-        if (fileExtension && !supportedFileTypes.includes(fileExtension)) {
-            alert(`Unsupported file type. Please upload ${supportedFileTypes.join(', ')}`)
-            return
-        }
-        onFileSelect(file)
-    }
-
     const onButtonClick = () => {
         inputRef.current?.click()
     }
 
-
+    const handleRemove = () => {
+        setSelectedFile(null)
+        onFileSelect(null)
+        if (inputRef.current) {
+            inputRef.current.value = ''
+        }
+    }
 
     return (
-        <div>
-            <div className="w-full max-w-lg mx-auto">
-                <Label className="text-sm text-[#0F172B] font-poppins font-medium">{title}</Label>
-                <div
-                    className={`relative border-2 border-dashed rounded-lg px-4 py-2.5 ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-                        }`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                    onClick={onButtonClick}
-                >
-                    <input
-                        ref={inputRef}
-                        type="file"
-                        className="hidden"
-                        onChange={handleChange}
-                        accept={supportedFileTypes.map(type => `.${type.toLowerCase()}`).join(',')}
-                    />
-                    <div className="flex items-center gap-2 ">
-                        <DocumentUpload className="h-7 w-7 text-[#2463EB]" />
-                        <div>
-                            <p className="mt-2 text-[0.825rem] font-poppins text-[#2463EB]">
-                                Upload {title} (Max. {maxSize} MB)
-                            </p>
-                            <p className="mt-1 text-xs text-[#828282]">
-                                Supported file type: {supportedFileTypes.join(', ')}.
-                            </p>
-                        </div>
-                    </div>
+        <div className={cn("w-full", className)}>
+            <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">{title}</Label>
+            <div
+                className={cn(
+                    "mt-1 flex justify-center border-2 border-dashed rounded-md",
+                    dragActive ? "border-primary" : "border-gray-300",
+                    hasError ? "border-destructive" : "",
+                    variant == 'preview' && "aspect-square max-w-60",
+                    "focus-within:outline-none focus-within:border-[1.25px] focus-within:border-solid focus-within:border-[#31A5F9] focus-within:bg-[#E3F2FD]"
+                )}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+            >
+                <div className="relative flex text-sm text-gray-600 w-full">
+                    <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary-dark p-4 w-full"
+                    >
+                        {
+                            variant === 'default' && (
+                                <div className="flex items-center gap-2 cursor-pointer w-full truncate ">
+                                    <DocumentUpload className="h-7 w-7 text-[#2463EB]" />
+                                    <div>
+                                        <p className="mt-2 text-[0.825rem] font-poppins text-[#2463EB] truncate">
+                                            {
+                                                selectedFile ? selectedFile.name : `${title} (Max. ${maxSize} MB)`
+                                            }
+
+                                        </p>
+                                        <p className="mt-1 text-xs text-[#828282]">
+                                            Supported file type: {acceptedFileTypes.join(', ')}.
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        }
+
+                        {
+                            variant === 'preview' &&
+
+                            <div className="relative w-full max-w-60 aspect-square">
+                                {
+                                    (selectedFile && selectedFile?.type.startsWith('image/')) ?
+                                        <Image
+                                            src={URL.createObjectURL(selectedFile)} alt={selectedFile.name}
+                                            className="w-full rounded-md object-cover"
+                                            fill
+
+                                        />
+
+                                        :
+                                        <div className="flex items-center justify-center w-full h-full bg-gray-100 rounded-md">
+                                            <Upload size={24} />
+                                        </div>
+                                }
+                            </div>
+                        }
+                        <Button
+                            type="button" onClick={handleRemove} variant="destructive" size="sm"
+                            className={cn("absolute aspect-square -right-[5%] -top-[30%] mt-2 rounded-full bg-red-100 text-red-400 hover:text-white", !selectedFile && "hidden",
+                            variant === 'preview' && "right-2 top-2"
+                            )}
+                        >
+                            <Trash2 size={16} />
+                        </Button>
+                        <Input
+                            id="file-upload"
+                            ref={inputRef}
+                            name="file-upload"
+                            type="file"
+                            className="sr-only"
+                            onChange={handleChange}
+                            accept={acceptedFileTypes.join(',')}
+                        />
+                    </label>
                 </div>
+
             </div>
+
             {
-                hasError && errorMessage && (
-                    <FormError errorMessage={errorMessage} />
-                )
+                hasError &&
+                <FormError errorMessage={errorMessage} />
             }
         </div>
     )

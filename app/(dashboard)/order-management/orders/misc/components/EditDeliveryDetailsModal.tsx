@@ -25,6 +25,7 @@ import {
     FormMessage,
     SelectSingleCombo,
     SingleDatePicker,
+    TimePicker,
 } from "@/components/ui";
 import { X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -38,6 +39,7 @@ const schema = z.object({
     deliveryAddress: z.string().min(1, "Delivery address is required"),
     deliveryZone: z.string().min(1, "Delivery zone is required"),
     deliveryDate: z.date(),
+    dispatchTime: z.string().min(1, "Dispatch time is required"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -59,6 +61,7 @@ const EditDeliveryDetailsModal: React.FC<ModalProps> = ({
             deliveryAddress: "No. 6, Adeniran close, Ikeja",
             deliveryZone: "Lagos Mainland (LM)",
             deliveryDate: new Date(),
+            dispatchTime: "10:00 AM",
         },
     });
 
@@ -182,6 +185,19 @@ const EditDeliveryDetailsModal: React.FC<ModalProps> = ({
                                             placeholder="Select delivery date"
                                         />
                                         <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="dispatchTime"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <TimePicker
+                                            name="dispatchTime"
+                                            label="Dispatch Time"
+                                            control={form.control}
+                                        />
                                     </FormItem>
                                 )}
                             />

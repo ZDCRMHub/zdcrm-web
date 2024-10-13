@@ -11,6 +11,9 @@ import { Input, Button, LinkButton, Form, SelectSingleCombo } from '@/components
 import { Card, CardContent } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditPenIcon } from '@/icons/core';
+import OrderItemSummaryCard from './OrderItemSummaryCard';
+import { useBooleanStateControl } from '@/hooks';
+import OrderSummaryExportModal from './OrderSummaryExportModal';
 
 
 interface AdditionalCost {
@@ -33,6 +36,12 @@ const schema = z.object({
 });
 
 export default function OrderSummary() {
+  const {
+    state: isExportSummaaryModalOpen,
+    setTrue: openExportSummaryModal,
+    setFalse: closeExportSummaryModal
+  } = useBooleanStateControl()
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -65,8 +74,26 @@ export default function OrderSummary() {
     console.log(data);
   }
 
-
-
+  const orderData = {
+    branch: 'Zuzu Delights',
+    orderNumber: 'ORD123456',
+    date: '2023-10-01',
+    customerName: 'Adetunji Emmanuel',
+    phoneNumber: '08034344433',
+    address: 'No. 45, Adeniji close, Lekki Phase 1',
+    items: [
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+      { description: 'Toys and branded cardboard', quantity: 1, price: 60000 },
+    ],
+    subtotal: 300000,
+    tax: 20000,
+    discount: 10000,
+    deliveryFee: 5000,
+    total: 315000
+  }
 
 
   return (
@@ -96,27 +123,37 @@ export default function OrderSummary() {
               <h1 className='text-2xl font-semibold font-manrope'>Order Summary</h1>
             </div>
 
-            <section className='flex flex-col gap-3 first-line:bg-white p-6 rounded-2xl shadow-sm mb-10'>
+            <section className='flex flex-col gap-3 bg-white p-6 rounded-2xl shadow-sm mb-10'>
               <article>
                 <div className='grid grid-cols-3 gap-6 mb-6'>
                   <div>
                     <p className='text-lg text-gray-500'>
                       Customer Name:{' '}
-                      <span className='text-[#194A7A] text-xl font-medium'>
+                      <span className='text-[#194A7A] text-lg font-semibold'>
                         Adetunji Emmanuel
                       </span>
                     </p>
-                    <p className='text-sm text-gray-500 mt-2'>Phone Number: 08034344433</p>
+                    <p className='text-gray-500 mt-2'>
+                      Phone Number: {" "}
+                      <span className="text-[#194A7A]">
+                        08034344433
+                      </span>
+                    </p>
                   </div>
                   <div>
                     <p className='text-lg text-gray-500'>
                       Recipient Name:{' '}
-                      <span className='text-[#194A7A] text-xl font-medium'>Lawal Rose</span>
+                      <span className='text-[#194A7A] font-medium'>Lawal Rose</span>
                     </p>
-                    <p className='text-sm text-gray-500 mt-2'>Phone Number: 08034344433</p>
+                    <p className='text-gray-500 mt-2'>
+                      Phone Number: {" "}
+                      <span className="text-[#194A7A]">
+                        08034344433
+                      </span>
+                    </p>
                   </div>
-                  <p className='text-sm text-gray-500'>
-                    Order Occasion: <span className='font-medium'>Birthday</span>
+                  <p className='flex flex-col text-sm text-[#687588] font-medium'>
+                    Order Occasion: <span className='font-semibold text-[#194A7A]'>Birthday</span>
                   </p>
                 </div>
               </article>
@@ -124,72 +161,9 @@ export default function OrderSummary() {
 
             <section className='grid grid-cols-[1fr,0.5fr] gap-8 mb-10 '>
               <div>
-                <article className="flex gap-6 w-full max-w-[800px] bg-white p-6 rounded-2xl mb-10 text-sm">
-                  <div className='relative w-[180px] aspect-[5/3] p-6 rounded-xl bg-[#F6F6F6]'>
-                    <Image
-                      src='/img/cake.png'
-                      alt='cake'
-                      fill
-                      className='object-cover rounded-xl border-8 border-[#F6F6F6]'
-                    />
-                  </div>
-                  <section className='flex flex-col justify-between'><h5 className="text-[#194A7A] text-lg font-medium">
-                    Adeline Fautline Cake
-                  </h5>
-                    <div className='py-6 space-y-3'>
-                      <div className="flex items-center gap-x-4 flex-wrap font-medium">
-                        <p className="text-[#687588]">
-                          Quantity:{" "}
-                          <span className="text-[#111827] font-medium">
-                            1pcs
-                          </span>
-                        </p>
-                        <p className="text-[#687588]">
-                          Category:{" "}
-                          <span className="text-[#111827] font-medium">
-                            Cake
-                          </span>
-                        </p>
-                        <p className="text-[#687588]">
-                          Size:{" "}
-                          <span className="text-[#111827] font-medium">
-                            6 inches
-                          </span>
-                        </p>
-                        <p className="text-[#687588]">
-                          Layers:{" "}
-                          <span className="text-[#111827] font-medium">
-                            3 layers
-                          </span>
-                        </p>
-                      </div>
-                      <p className="text-[#687588]">
-                        Flavour: {" "}
-                        <span className="text-[#111827] font-medium">
-                          Chocolate, Vanilla, Strawberry
-                        </span>
-                      </p>
-                      <p className="text-[#687588]">
-                        Cake toppings: {" "}
-                        <span className="text-[#111827] font-medium">
-                          Fruits, chocolate & cookies
-                        </span>
-                      </p>
-                      <p className="text-[#687588]">
-                        Message on cake: {" "}
-                        <span className="text-[#111827] font-medium">
-                          Love Me Like You Always Do
-                        </span>
-                      </p>
-                    </div>
-                    <div className='flex justify-between items-center gap-1'>
-
-                    </div>
-                  </section>
-                </article>
-
+                <OrderItemSummaryCard />
                 <Form {...form}>
-                  <form onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(onSubmit)} className='mt-16'>
                     <section>
                       <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4">
                         <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
@@ -360,21 +334,21 @@ export default function OrderSummary() {
                         <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>
-                    <div className='grid grid-cols-[max-content,1fr] gap-4 text-[0.75rem] px-4 pb-4'>
+                    <div className='grid grid-cols-[max-content,1fr] gap-4 text-[0.75rem] px-4 pb-4 font-manrope'>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
                         Primary address:{' '}
-                        <span className='font-medium text-[#111827] font-manrope'>
+                        <span className='font-semibold text-[#111827] font-manrope'>
                           No. 45, Adeniji close, Lekki Phase 1
                         </span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
-                        Country: <span className='font-medium text-[#111827] font-manrope'>Nigeria</span>
+                        Country: <span className='font-semibold text-[#111827] font-manrope'>Nigeria</span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
-                        State: <span className='font-medium text-[#111827] font-manrope'>Lagos</span>
+                        Delivey Date: <span className='font-semibold text-[#111827] font-manrope'>12-SEP-2024</span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
-                        City: <span className='font-medium text-[#111827] font-manrope'>Ikeja</span>
+                        Dispatch Time: <span className='font-semibold text-[#111827] font-manrope'>12:00PM</span>
                       </p>
                     </div>
                   </CardContent>
@@ -397,13 +371,19 @@ export default function OrderSummary() {
 
 
             <footer className="flex items-center justify-end gap-4 mb-10">
-              <Button variant={"outline"} className="h-14 ml-auto px-10" >
-                Cancel
+              <Button variant={"outline"} className="h-14 ml-auto px-16" onClick={openExportSummaryModal} >
+                Export
               </Button>
               <Button className='w-max bg-gray-900 hover:bg-gray-800 text-white px-8  ' variant="inputButton" onClick={() => setprocessed(true)}>
                 Send For Processing
               </Button>
             </footer>
+
+            <OrderSummaryExportModal
+              isModalOpen={isExportSummaaryModalOpen}
+              closeModal={closeExportSummaryModal}
+              orderData={orderData}
+            />
           </div>
       }
     </>

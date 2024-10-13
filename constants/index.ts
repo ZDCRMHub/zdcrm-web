@@ -1,8 +1,8 @@
-export const productOptions = {
+export const PRODUCT_TYPES_OPTIONS = {
   Cakes: {
     sizes: [
-      { label: "6 inches", value: "6 inches)" },
-      { label: "8 inches", value: "8 inches)" },
+      { label: "6 inches", value: "6 inches" },
+      { label: "8 inches", value: "8 inches" },
       { label: "10 inches", value: "10 inches" },
       { label: "12 inches", value: "12 inches" }
     ],
@@ -19,11 +19,11 @@ export const productOptions = {
       { label: "None", value: "None" }
     ],
     whippedCreamUpgrade: [
-      { label: "1 Layer", value: 0 },
-      { label: "2 Layers", value: 5000 },
-      { label: "3 Layers", value: 7000 },
-      { label: "5 Layers", value: 7000 },
-      { label: "Tiered", value: 15000 }
+      { label: "1 Layer", value: "0" },
+      { label: "2 Layers", value: "5000" },
+      { label: "3 Layers", value: "7000" },
+      { label: "5 Layers", value: "7000" },
+      { label: "Tiered", value: "15000" }
     ],
     toppings: [
       { label: "None", value: "none" },
@@ -40,10 +40,14 @@ export const productOptions = {
   },
   Teddies: {
     sizes: [
-      { label: "25cm (Entry)", value: { size: "25cm", price: 20000 } },
-      { label: "30cm (X-Small)", value: { size: "30cm", price: 45000 } },
-      { label: "40cm (Small)", value: { size: "40cm", price: 52000 } },
-      { label: "60cm (Medium)", value: { size: "60cm", price: 72000 } }
+      // { label: "25cm (Entry)", value: { size: "25cm", price: 20000 } },
+      // { label: "30cm (X-Small)", value: { size: "30cm", price: 45000 } },
+      // { label: "40cm (Small)", value: { size: "40cm", price: 52000 } },
+      // { label: "60cm (Medium)", value: { size: "60cm", price: 72000 } }
+      { label: "25cm (Entry)", value: "25cm", price: 20000 },
+      { label: "30cm (X-Small)", value: "30cm", price: 45000 },
+      { label: "40cm (Small)", value: "40cm", price: 52000 },
+      { label: "60cm (Medium)", value: "60cm", price: 72000 }
     ],
     bouquets: [
       { label: "Entry", value: "Entry" },
@@ -441,7 +445,10 @@ export const AllProducts = [
 ];
 
 
-
+export const BRANCH_OPTIONS = [
+  { label: "Zuzu Delights", value: "Zuzu Delights" },
+  { label: "Prestige Flowers", value: "Prestige Flowers" }
+]
 
 export const paymentOptions = [
   { label: "Not Paid (But Go Ahead)", value: "not_paid_go_ahead" },
@@ -455,3 +462,59 @@ export const paymentOptions = [
   { label: "Paid (Bitcoin)", value: "paid_bitcoin" },
   { label: "Not Received (Paid)", value: "not_received_paid" }
 ];
+
+export const CATEGORIES_OPTIONS = [
+  { value: 'C', label: 'Cake' },
+  { value: 'F', label: 'Flower' },
+  { value: 'W', label: 'Wine' },
+  { value: 'CC', label: 'Cup Cake' },
+  { value: 'TB', label: 'Teddy Bear' },
+  { value: 'GC', label: 'Gift Card' },
+  { value: 'V', label: 'Vase' },
+  { value: 'CH', label: 'Chocolate' },
+  { value: 'B', label: 'Baloon' },
+  { value: 'P', label: 'Perfume' },
+  { value: 'HB', label: 'Hand Bag' },
+]
+
+export const PAYMENT_STATUS_OPTIONS = [
+  { label: "Not Paid", value: "not_paid" },
+  { label: "Paid", value: "paid" },
+  { label: "Part Payment", value: "part_payment" },
+  { label: "Not Received(Paid)", value: "not_received" }
+]
+
+export const PAYMENT_METHODS = [
+  { label: "Website Card", value: "website_card" },
+  { label: "Naira Transfer", value: "naira_transfer" },
+  { label: "POS", value: "pos" },
+  { label: "USD Transfer", value: "usd_transfer" },
+  { label: "Paypal", value: "paypal" },
+  { label: "Cash Paid", value: "cash_paid" },
+  { label: "Part Payment", value: "part_payment" },
+  { label: "Bitcoin", value: "bitcoin" }
+]
+
+export const ENQUIRY_CHANNEL_OPTIONS = [
+  { value: 'email', label: 'Email' },
+  { value: 'whatsapp', label: 'WhatsApp' },
+  { value: 'website', label: 'Website' },
+  { value: 'walk-in', label: 'Store Walk In' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'phone', label: 'Phone Call' },
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'tik-tok', label: 'Tik Tok' },
+]
+
+export const ENQUIRY_OCCASION_OPTIONS = [
+  { value: 'birthday', label: 'Birthday' },
+  { value: 'anniversary', label: 'Anniversary' },
+  { value: 'wedding', label: 'Wedding' },
+  { value: 'father_s_Day', label: "Father's Day" },
+  { value: 'mother_s_Day', label: "Mother's Day" },
+]
+
+export const DISPATCH_METHOD_OPTIONS = [
+  { value: "Dispatch", label: "Dispatch" },
+  { value: "Pickup", label: "Pickup" },
+]

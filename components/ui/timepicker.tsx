@@ -24,7 +24,7 @@ interface CustomTimePickerProps {
   containerClassName?: string
 }
 
-function CustomTimePicker({
+const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>(function CustomTimePicker({
   className,
   control,
   name,
@@ -33,7 +33,7 @@ function CustomTimePicker({
   errorMessage,
   errorMessageClass,
   containerClassName,
-}: CustomTimePickerProps) {
+}: CustomTimePickerProps, ref) {
   const {
     field: { value, onChange },
   } = useController({
@@ -158,6 +158,7 @@ function CustomTimePicker({
       {hasError && <FormError className={errorMessageClass} errorMessage={errorMessage} />}
     </div>
   )
-}
+})
+CustomTimePicker.displayName = "CustomTimePicker"
 
 export default CustomTimePicker

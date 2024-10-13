@@ -6,14 +6,24 @@ import Image from 'next/image'
 import React from 'react'
 
 interface Props {
-    editFn: () => void
-    deleteFn: () => void
+    // editFn: () => void
+    // deleteFn: () => void
 }
-const OrderItemCard: React.FC<Props> = ({ editFn, deleteFn}) => {
+const OrderItemSummaryCard: React.FC<Props> = ({ }) => {
     return (
         <Card className='py-6 px-10 rounded-xl max-w-3xl'>
+            <header className='w-full flex items-center text-sm gap-10 font-manrope'>
+                <p className="w-36 font-semibold text-[#111827] ">
+                    Item1
+                </p>
+                <p className="font-dm-sans font-medium text-[#687588]">
+                    Branch:{" "}
+                    <span className="text-[#111827]">Zuzu Delights</span>
+                </p>
+            </header>
+            <Separator className="my-4" />
             <div className='flex gap-10'>
-                <div className='flex flex-col'>
+                <div className='flex flex-col items-center w-36'>
                     <div className='bg-white-grey rounded-[6px] w-fit'>
                         <Image
                             src='/img/cake.png'
@@ -24,11 +34,11 @@ const OrderItemCard: React.FC<Props> = ({ editFn, deleteFn}) => {
                         />
                     </div>
 
-                    <p className='text-custom-blue font-medium'>
+                    <p className='text-custom-blue text-sm text-center font-medium'>
                         Adeline Fautline Cake
                     </p>
                 </div>
-                <div className='space-y-3 text-sm'>
+                <div className='space-y-2 text-sm grow'>
                     <div className='flex items-center gap-x-5 gap-y-2 flex-wrap'>
                         <p className="flex items-center gap-1 text-[#111827] font-medium">
                             <span className='text-[#687588]'>Quantity:</span> 1 pcs
@@ -55,25 +65,32 @@ const OrderItemCard: React.FC<Props> = ({ editFn, deleteFn}) => {
                         <span className='text-[#687588]'>Message on cake:</span> Love Me
                         Like You Always Do
                     </p>
-                </div>
-                <div className="flex items-center gap-4 self-start">
-                    <button onClick={editFn} className="text-[#2463EB]">
-                        <EditPenIcon />
-                    </button>
-                    <button type="button" onClick={deleteFn} className="">
-                        <Trash2 size={17} className="text-red-400" />
-                    </button>
+                    <Separator className='mt-5 mb-2.5' />
+
+                    <p className='flex items-end justify-end mb-3 w-full'>
+                        <span className='font-semibold text-[#687588]'>Cost: {" "}</span>
+                        <span className='font-semibold text-[#111827]'>₦50,000.00</span>
+                    </p>
+                    <section>
+                        <p className='flex items-center justify-between w-full'>
+                            <span className='font-light italic text-[#687588] text-xs'>
+                                Additional Item Name:{" "}
+                                <span className="text-[#111827] font-medium not-italic">Fan</span>
+                            </span>
+                            <span className='font-semibold italic text-xs text-[#111827]'>₦40,000.00</span>
+                        </p>
+                    </section>
                 </div>
             </div>
 
-            <Separator className='mt-7 mb-4' />
+            <Separator className='mt-5 mb-2.5' />
 
-            <div className='flex items-end justify-end mb-3 w-full'>
-                <p className='font-semibold text-[#194A7A]'>Amount:{" "}</p>
-                <p className='font-semibold text-[#194A7A]'>₦50,000.00</p>
+            <div className='flex items-end justify-end w-full font-dm-sans'>
+                <p className='font-medium text-[#194A7A]'>Total Cost for Item 1: {" "}</p>
+                <p className='font-medium text-[#194A7A]'>₦90,000.00</p>
             </div>
         </Card>
     )
 }
 
-export default OrderItemCard
+export default OrderItemSummaryCard
