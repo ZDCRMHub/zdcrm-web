@@ -183,7 +183,7 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
 
             </div>
           </section>
-          
+
 
           <section className='mb-8'>
             <header className="border-b border-b-[#00000021]">
@@ -311,13 +311,16 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
             </div>
             <div className=' grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4'>
               {[
-                ['Delivery Method', 'Dispatch'],
                 ['Primary address', 'No. 8, Adeniran close, Lekki Phase 1'],
                 ['Country', 'Nigeria'],
                 ['State/City', 'Lagos/Ikeja'],
                 ['Delivery Zone', 'L1-Lagos Island'],
                 ['Delivery Date', '21/July/2024'],
-                ['Delivery Fee', 'Lekki Phase 1 - ₦5,000'],
+                ['Delivery Method', 'Dispatch'],
+                ['Driver Name', 'Alli Emmanuel'],
+                ['Driver Phone Number', '0800998999'],
+                ['Rider Platform', 'GIG'],
+                // ['Delivery Fee', 'Lekki Phase 1 - ₦5,000'],
               ].map(([label, value]) => (
                 <>
                   <span className='text-[#687588] font-manrope'>{label}</span>
