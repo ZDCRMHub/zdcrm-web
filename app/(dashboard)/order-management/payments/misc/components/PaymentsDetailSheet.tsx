@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox, Button, LinkButton } from '@/components/ui';
+import { Checkbox, Button, LinkButton, SelectSingleCombo } from '@/components/ui';
 import { Mail, MessageCircle, User, X } from 'lucide-react';
 import { Book, Notepad2, UserOctagon, Printer, Messages2 } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
@@ -18,6 +18,7 @@ import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from
 import { EditPenIcon } from '@/icons/core';
 import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
 import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline';
+import { PAYMENT_STATUS_OPTIONS } from '@/constants';
 
 interface PaymentsDetailSheetDetailsPanelProps {
   orderId: string;
@@ -25,7 +26,7 @@ interface PaymentsDetailSheetDetailsPanelProps {
 
 export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDetailsPanelProps) {
   const mockDiscussion = generateMockOrders(1)[0];
-
+  const [paymentStatus, setPaymentStatus] = React.useState('not_paid');
 
 
   return (
@@ -64,18 +65,19 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
           </div>
 
           <div className='flex items-center space-x-2'>
-            <Button
-              variant='outline'
-              className='px flex gap-1 border-[#B9B9B9]'>
-              <EditPenIcon className='h-4 w-4' />
-
-              <span>Edit</span>
+            <SelectSingleCombo
+              name="paymentStatus"
+              placeholder="Select Payment Status"
+              value={paymentStatus}
+              onChange={(e) => setPaymentStatus(e)}
+              className='w-max !h-10 bg-[#E9EAEC] text-[#083E7D]'
+              options={PAYMENT_STATUS_OPTIONS}
+              valueKey="value"
+              labelKey="label"
+            />
+            <Button variant='unstyled' size='sm' className='bg-[#1118271C] text-[#111827] h-10'>
+              Delivered
             </Button>
-            <Badge
-              variant='outline'
-              className='bg-[#367917] bg-opacity-15 border-green-300 px-3 py-3 rounded-[10px] text-[#2D7D08] min-w-max'>
-              Payment Confirmed
-            </Badge>
           </div>
         </div>
 
@@ -149,23 +151,7 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
           </section>
 
 
-          <section className='mt-16 mb-8'>
-            <header className="border-b border-b-[#00000021]">
-              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
-                <Notepad2 size={19} />
-                Delivery Note
-                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
-              </p>
-            </header>
-            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
-              <Input value="Happy Anniversary"
-              
-                readOnly
-                containerClassName='w-full'
-              />
-
-            </div>
-          </section>
+        
 
           <section className='mt-16 mb-8'>
             <header className="border-b border-b-[#00000021]">
@@ -180,7 +166,24 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
             </div>
           </section>
 
+          <section className='mt-16 mb-8'>
+            <header className="border-b border-b-[#00000021]">
+              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                <Notepad2 size={19} />
+                Delivery Note
+                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+              </p>
+            </header>
+            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
+              <Input value="Happy Anniversary"
 
+                readOnly
+                containerClassName='w-full'
+              />
+
+            </div>
+          </section>
+          
 
           <section className='mb-8'>
             <header className="border-b border-b-[#00000021]">
@@ -342,7 +345,7 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
             </header>
             <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
               <Input value="The order was delivered intact. Rider was polite and professional"
-              
+
                 readOnly
                 containerClassName='w-full'
               />
@@ -352,7 +355,7 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
 
 
           <section className="flex justify-end my-12">
-            <SheetClose  className='h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md'>
+            <SheetClose className='h-12 px-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md'>
               Close
             </SheetClose>
           </section>
