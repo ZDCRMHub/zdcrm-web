@@ -160,7 +160,7 @@ const ProductsDropdown = <T extends object>({
                             <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
                             <input
                                 className="focus:!ring-0 !ring-0 bg-transparent pl-5 p-3 !outline-none text-sm placeholder:text-[#86898ec7] border-b border-[#E6E6E6] w-full rounded-none"
-                                placeholder={`Search` || placeholder}
+                                placeholder={placeholder || "Search..."}
                                 type="text"
                                 onChange={(e) => setSearchText(e.target.value)}
                             />

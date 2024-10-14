@@ -385,7 +385,7 @@ const NewOrderPage = () => {
                                                                         <ProductsDropdown
                                                                             options={AllProducts}
                                                                             label="Product Type"
-                                                                            valueKey="category"
+                                                                            valueKey="id"
                                                                             labelKey="name"
                                                                             imageKey="image"
                                                                             placeholder="Select product type"

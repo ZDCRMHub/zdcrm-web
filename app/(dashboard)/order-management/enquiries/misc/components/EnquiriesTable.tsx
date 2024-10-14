@@ -271,7 +271,7 @@ export default function EnquiriesTable() {
                         </span>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={openConfirmApproveModal}>
+                    {/* <DropdownMenuItem onSelect={openConfirmApproveModal}>
                       <span className='flex items-center gap-2 pl-6 py-3'>
                         <Image
                           src='/img/cash.svg'
@@ -281,7 +281,7 @@ export default function EnquiriesTable() {
                         />
                         Payment Confirmed
                       </span>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem onSelect={openConfirmDeleteModal}>
                       <span className='flex items-center gap-2 pl-6  py-3'>
                         <Image
