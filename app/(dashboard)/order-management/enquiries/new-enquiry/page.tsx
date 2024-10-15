@@ -763,7 +763,7 @@ const NewOrderPage = () => {
                     </Accordion>
 
                     <footer className="flex py-16">
-                        <LinkButton href="./order-summary" type="submit" variant="default" size="lg" className='ml-auto'>
+                        <LinkButton href="./enquiry-details" type="submit" variant="default" size="lg" className='ml-auto'>
                             Proceed
                         </LinkButton>
                     </footer>
