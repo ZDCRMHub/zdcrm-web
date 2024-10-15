@@ -19,6 +19,7 @@ export type TDiscusssion = {
         action: string;
         details: string;
         agent: string;
+        time: Date;
     }[];
     type: string;
     time: Date;
@@ -26,7 +27,7 @@ export type TDiscusssion = {
 // Generate mock data
 export const generateMockOrders = (count: number) => {
     const action = faker.helpers.arrayElement(['placed an order', 'carted an item', 'made an enquiry', 'created an order'])
-    const type = action == ('made an enquiry' || 'carted an item') ? 'enquiry' : 'order';
+    const type = action === 'made an enquiry' || action === 'carted an item' ? 'enquiry' : 'order';
     const generateId = () => {
         const prefix = faker.helpers.arrayElement(['ZD', 'PF']);
         const letters = faker.string.alpha({ length: 2 }).toUpperCase();
@@ -40,10 +41,11 @@ export const generateMockOrders = (count: number) => {
         action,
         status: faker.helpers.arrayElement(['Still Discussing', 'Finalized Discussion']),
         agent: faker.person.fullName(),
-        timeline: Array.from({ length: faker.number.int({ min: 0, max: 3 }) }, () => ({
+        timeline: Array.from({ length: faker.number.int({ min: 1, max: 4 }) }, () => ({
             action: faker.helpers.arrayElement(['started a discussion', 'updated the order', 'sent a message']),
             details: faker.lorem.sentence(),
-            agent: faker.person.fullName()
+            agent: faker.person.fullName(),
+            time: faker.date.future(),
         })),
         time: faker.date.future(),
         type

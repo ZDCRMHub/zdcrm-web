@@ -305,8 +305,8 @@ const OrdersTable = () => {
             <TableHeader>
                 <TableRow>
                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
-                    <TableHead>Order Items</TableHead>
                     <TableHead>Customers Details</TableHead>
+                    <TableHead>Order Items</TableHead>
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Order Notes</TableHead>

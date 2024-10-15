@@ -361,12 +361,12 @@ const NewOrderPage = () => {
                                     {
                                         controlledFields.map((field, index) => (
                                             <div key={index}>
+                                                <header className='flex items-center justify-between mb-8'>
+                                                    <h3 className='font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max'>Item {index + 1}</h3>
+                                                </header>
                                                 {
                                                     field?.isEditing ? (
                                                         <section>
-                                                            <header className='flex items-center justify-between mb-8'>
-                                                                <h3 className='font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max'>Item {index + 1}</h3>
-                                                            </header>
 
                                                             <div key={field.id} className='grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8'>
                                                                 <Controller

@@ -36,7 +36,12 @@ export default function Component() {
 
   } = useBooleanStateControl()
 
-
+  const nextStep = () => {
+    setTimeout(() => {
+      closeConfirmModal()
+      router.push('/order-management/orders/new-order?prefill=true')
+    }, 2000)
+  }
 
   return (
     <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto p-4 space-y-9 '>
@@ -274,7 +279,7 @@ export default function Component() {
       <ConfirmPaymentModal
         isModalOpen={isConfirmModalOpen}
         closeModal={closeConfirmModal}
-        nextStep={() => { }}
+        nextStep={nextStep}
         heading='Client made payment'
         subheading="This action converts Enquiries to Order"
 

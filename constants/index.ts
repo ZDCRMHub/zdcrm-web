@@ -40,10 +40,6 @@ export const PRODUCT_TYPES_OPTIONS = {
   },
   Teddies: {
     sizes: [
-      // { label: "25cm (Entry)", value: { size: "25cm", price: 20000 } },
-      // { label: "30cm (X-Small)", value: { size: "30cm", price: 45000 } },
-      // { label: "40cm (Small)", value: { size: "40cm", price: 52000 } },
-      // { label: "60cm (Medium)", value: { size: "60cm", price: 72000 } }
       { label: "25cm (Entry)", value: "25cm", price: 20000 },
       { label: "30cm (X-Small)", value: "30cm", price: 45000 },
       { label: "40cm (Small)", value: "40cm", price: 52000 },
@@ -518,3 +514,64 @@ export const DISPATCH_METHOD_OPTIONS = [
   { value: "Dispatch", label: "Dispatch" },
   { value: "Pickup", label: "Pickup" },
 ]
+
+
+export const MOCK_FORM_DEFAULT_VALUE = {
+  branch: "Zuzu Delights", 
+  customerName: "Oni Khalid",
+  customerPhone: "09008998899",
+  enquiryChannel: "website",
+  recipientName: "Oni Ayobami",
+  recipientPhone: "09008998899",
+  enquiryOccasion: "mother_s_Day",
+  isCustomDelivery: false,
+  deliveryNote: "Be especially careful to avoid damaging the cake",
+  messageOnOrder: "Happy Birthday, Mum",
+  deliveryDate: new Date(),
+  deliveryMethod: "Dispatch",
+  deliveryAddress: "12, Alhaji Ilesanmi Street, Off Lekki-Epe Expressway, Lagos",
+  deliveryZone: "Lagos Mainland (LM)",
+  paymentMode: PAYMENT_METHODS[0].value,
+  paymentStatus: PAYMENT_STATUS_OPTIONS[0].value,
+  proofOfPayment: undefined, 
+  deliveryFee: "30000",
+  dispatchTime: "",
+  items: [
+    {
+      category: "C",
+      productType: "cake-1",
+      quantity: 5, 
+      message: "",
+      isCustomOrder: false,
+      itemImage: undefined,
+      isEditing: false,
+      additionalItems: [],
+      layers: PRODUCT_TYPES_OPTIONS.Cakes.layers[0].value, 
+      flavour: PRODUCT_TYPES_OPTIONS.Cakes.flavours[0].value, 
+      toppings: PRODUCT_TYPES_OPTIONS.Cakes.toppings[0].value,
+      size: PRODUCT_TYPES_OPTIONS.Cakes.sizes[0].value, 
+      whippedCreamUpgrade: PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade[0].value, 
+    }, 
+    {
+      category: "F",
+      productType: "flower-1",
+      quantity: 5, 
+      message: "",
+      isCustomOrder: false,
+      itemImage: undefined,
+      isEditing: false,
+      vase: PRODUCT_TYPES_OPTIONS.Flowers.vaseOptions[0].value, 
+    },
+     {
+      category: "TB",
+      productType: "teddy-1",
+      quantity: 5, 
+      message: "",
+      isCustomOrder: false,
+      itemImage: undefined,
+      isEditing: false,
+      size: PRODUCT_TYPES_OPTIONS.Teddies.sizes[0].value, 
+      bouquet: PRODUCT_TYPES_OPTIONS.Teddies.bouquets[0].value, 
+    }
+  ]
+};
