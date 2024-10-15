@@ -188,7 +188,9 @@ export default function EnquiriesTable() {
     console.log(`Confirmed action`);
     closeConfirmApproveModal();
     closeSuccessModal();
-    router.push("/order-management/orders")
+    setTimeout(() => {
+      router.push("/order-management/orders")
+    }, 1500);
   };
   
   

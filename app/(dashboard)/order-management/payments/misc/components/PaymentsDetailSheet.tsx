@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox, Button, LinkButton, SelectSingleCombo } from '@/components/ui';
 import { Mail, MessageCircle, User, X } from 'lucide-react';
-import { Book, Notepad2, UserOctagon, Printer, Messages2 } from 'iconsax-react';
+import { Book, Notepad2, UserOctagon, Printer, Messages2, ProfileCircle, UserEdit } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
 import {
   Select,
@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../../../components/ui/select';
-import { Card, CardContent } from '../../../../../../components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../../../../components/ui/card';
 import { Phone } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
@@ -82,57 +82,61 @@ export default function PaymentsDetailSheet({ orderId }: PaymentsDetailSheetDeta
         </div>
 
         <div className='py-4 space-y-10'>
-          <div className='grid grid-cols-2 gap-4 mt-8'>
-            <article className='flex flex-col bg-[#194A7A] text-center text-white rounded-lg shadow-md'>
-              <h3 className='font-semibold mb-2 flex items-center justify-center gap-2 text-lg py-3 px-4 border-b border-[#FFC600]'>
-                <span>
-                  <UserOctagon size={25} variant='Linear' color='#FFC600' />
-                </span>
-                <span>Customers Info</span>
-              </h3>
+        <div className='grid grid-cols-2 gap-2.5 mt-8'>
+            <Card className="flex-1 bg-[#194A7A] text-white rounded-lg">
+              <CardHeader className="border-b border-[#FFC600] pb-4">
+                <CardTitle className="flex items-center justify-center gap-2 text-lg">
+                  <UserOctagon size={25} color="#FFC600" />
+                  <span>Customer&apos;s Info</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 flex justify-center">
+                <div className="space-y-4">
 
-              <Separator />
+                  <div className="space-y-2">
+                    <p className="flex items-center gap-2 text-sm">
+                      <UserEdit size={20} className="text-[#FFC600] flex-shrink-0" />
+                      <span>Ife Adebayo</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Mail size={20} className="text-[#FFC600] flex-shrink-0" />
+                      <span>adebayo@gmail.com</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Phone size={20} className="text-[#FFC600] flex-shrink-0" />
+                      <span>08031823849</span>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-              <section className="flex flex-col items-center p-4 space-y-3 text-left">
-                <p>Name: Ife Adebayo</p>
-                <p className='text-sm flex gap-2 items-center justify-start'>
-                  <span>
-                    <Mail size={20} className="text-[#FFC600]" />
-                  </span>
-                  adebayo@gmail.com
-                </p>
-                <p className='text-sm flex gap-2 items-center justify-start'>
-                  <span>
-                    <Phone size={20} className="text-[#FFC600]" />
-                  </span>
-                  08031823849
-                </p>
-              </section>
-            </article>
-            <article className='flex flex-col bg-[#194A7A] text-center text-white rounded-lg shadow-md'>
-              <h3 className='font-semibold mb-2 flex items-center justify-center gap-2 text-lg py-3 px-4 border-b border-[#FFC600]'>
-                <span>
-                  <User size={25} color='#FFC600' />
-                </span>
-                <span>Recipient Info</span>
-              </h3>
-
-              <div className='flex flex-col items-center p-4 space-y-3 text-left'>
-                <p>Name: Paul Adeola</p>
-                <p className='text-sm flex gap-2 items-center justify-start'>
-                  <span>
-                    <Mail size={20} className="text-[#FFC600]" />
-                  </span>
-                  onikhalidayo@gmail.com
-                </p>
-                <p className='text-sm flex gap-2 items-center justify-start'>
-                  <span>
-                    <Phone size={20} className="text-[#FFC600]" />
-                  </span>
-                  08031823849
-                </p>
-              </div>
-            </article>
+            <Card className="flex-1 bg-[#194A7A] text-white rounded-lg">
+              <CardHeader className="border-b border-[#FFC600] pb-4">
+                <CardTitle className="flex items-center justify-center gap-2 text-lg">
+                  <ProfileCircle size={25} color="#FFC600" />
+                  <span>Recipient Info</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 flex justify-center">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="flex items-center gap-2 text-sm">
+                      <UserEdit size={20} className="text-[#FFC600] flex-shrink-0" />
+                      <span>Paul Adeola</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Mail size={20} className="text-[#FFC600] flex-shrink-0" />
+                      <span>onikhalidayo@gmail.com</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Phone size={20} className="text-[#FFC600] flex-shrink-0" />
+                      <span>08031823849</span>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           <section className='flex items-center gap-8 mb-16 mt-3'>
