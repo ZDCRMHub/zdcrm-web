@@ -34,7 +34,7 @@ export default function NewInventorySheet() {
         <Sheet>
             <SheetTrigger asChild>
                 <Button variant='default' className='bg-black text-white'>
-                    <Plus className='mr-2 h-4 w-4' /> Add Inventory
+                    <Plus className='mr-2 h-4 w-4' /> Add New Stock Item
                 </Button>
             </SheetTrigger>
 

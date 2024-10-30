@@ -46,24 +46,28 @@ const OrdeManagementDelivery = () => {
           <Separator />
 
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
+            <h3 className='text-sm text-gray-500 font-manrope'>Delivery Method</h3>
+            <p className="text-[0.92rem] text-[#111827] font-medium">Dispatch</p>
+          </div>
+          <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
             <h3 className='text-sm text-gray-500 font-manrope'>Primary address</h3>
             <p className="text-[0.92rem] text-[#111827] font-medium">No. 8, Adeniran close, Lekki Phase 1</p>
           </div>
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
-            <h3 className='text-sm text-gray-500 font-manrope'>Country</h3>
-            <p className="text-[0.92rem] text-[#111827] font-medium">Nigeria</p>
-          </div>
-          <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
-            <h3 className='text-sm text-gray-500 font-manrope'>State/City</h3>
-            <p className="text-[0.92rem] text-[#111827] font-medium">Lagos/Ikeja</p>
-          </div>
-          <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
-            <h3 className='text-sm text-gray-500 font-manrope'>Delivery Date</h3>
-            <p className="text-[0.92rem] text-[#111827] font-medium">2/July/2024</p>
+            <h3 className='text-sm text-gray-500 font-manrope'>Delivery Location</h3>
+            <p className="text-[0.92rem] text-[#111827] font-medium">Yaba(N5000)</p>
           </div>
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
             <h3 className='text-sm text-gray-500 font-manrope'>Location Zone</h3>
             <p className="text-[0.92rem] text-[#111827] font-medium">Lagos Mainland</p>
+          </div>
+          <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
+            <h3 className='text-sm text-gray-500 font-manrope'>Dispatch Time</h3>
+            <p className="text-[0.92rem] text-[#111827] font-medium">8:00AM</p>
+          </div>
+          <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
+            <h3 className='text-sm text-gray-500 font-manrope'>Delivery Date</h3>
+            <p className="text-[0.92rem] text-[#111827] font-medium">2/July/2024</p>
           </div>
         </Card>
 

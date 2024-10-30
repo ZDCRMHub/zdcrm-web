@@ -1,9 +1,9 @@
 import React from 'react';
-import ProductInventory from '../stock-inventory/misc/components/ProductsInventoryDashboard';
+import { ProductsInventoryDashboard } from '../misc';
 
 const page = () => {
   return (
-    <ProductInventory/>
+    <ProductsInventoryDashboard/>
   )
 };
 
