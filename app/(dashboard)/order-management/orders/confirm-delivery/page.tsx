@@ -105,13 +105,19 @@ const OrdeManagementDelivery = () => {
             placeholder='Enter delivery note'
             className='w-full focus:border min-w-[350px] text-xs'
           />
+
           <Input
             label='Delivery Platform *'
             type='text'
             placeholder='Enter delivery platform'
             className='w-full focus:border min-w-[350px] text-xs'
           />
-
+          <Input
+            label='Delivery Expenses *'
+            type='text'
+            placeholder='Enter delivery expenses'
+            className='w-full focus:border min-w-[350px] text-xs'
+          />
           <LinkButton href="./complete-order" variant='default' className='bg-black text-white w-full h-14' size="lg">
             Proceed
           </LinkButton>

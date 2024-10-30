@@ -318,11 +318,10 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
               {[
                 ['Delivery Method', 'Dispatch'],
                 ['Primary address', 'No. 8, Adeniran close, Lekki Phase 1'],
-                ['Country', 'Nigeria'],
-                ['State/City', 'Lagos/Ikeja'],
+                ['Delivery Location', 'Yaba(N5000)'],
                 ['Delivery Zone', 'L1-Lagos Island'],
+                ['Dispatch Time', '8:00AM'],
                 ['Delivery Date', '21/July/2024'],
-                ['Delivery Fee', 'Lekki Phase 1 - ₦5,000'],
               ].map(([label, value]) => (
                 <>
                   <span className='text-[#687588] font-manrope'>{label}</span>

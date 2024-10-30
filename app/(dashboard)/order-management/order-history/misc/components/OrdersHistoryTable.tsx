@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import OrderDetailSheet from './OrderHistoryDetailSheet';
+import { format } from 'date-fns';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -78,7 +79,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div>{order.customerName}</div>
                 <div className='text-sm text-gray-500'>{order.customerPhone}</div>
             </TableCell>
-            <TableCell>{order.deliveryDate}</TableCell>
+            <TableCell>{format(new Date(order.deliveryDate), 'dd/MMM/yyyy')}</TableCell>
             <TableCell>
                 <div className='flex items-center gap-2'>
                     {(['C', 'W', 'TB'] as Category[]).map(cat => (
@@ -92,7 +93,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
             <TableCell>{order.messageOnOrder}</TableCell>
             <TableCell>N {order.totalAmount}0</TableCell>
-            <TableCell>{order.deliveryNotes}</TableCell>
             <TableCell>
                 <Badge
                     className={statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max'}>
@@ -301,7 +301,6 @@ const OrdersHistoryTable = () => {
                     <TableHead>Category</TableHead>
                     <TableHead>Message on Order</TableHead>
                     <TableHead>Total Amount</TableHead>
-                    <TableHead>Delivery Notes</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>
                 </TableRow>

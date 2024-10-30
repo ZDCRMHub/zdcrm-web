@@ -8,19 +8,26 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import PaymentsDetailSheet from './PaymentsDetailSheet';
+// import OrderDetailSheet from './OrderDetailSheet';
 import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
+import { Tag } from 'iconsax-react';
 
+type StatusColor =
+    | 'bg-green-100 hover:bg-green-100 text-green-800'
+    | 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800'
+    | 'bg-purple-100 hover:bg-purple-100 text-purple-800'
+    | 'bg-gray-100 hover:bg-gray-100 text-gray-800'
+    | 'bg-red-100 hover:bg-red-100 text-red-800'
+    | 'bg-blue-100 hover:bg-blue-100 text-blue-800';
 
-const statusColors: Record<string, string> = {
-    'Paid (Naira Transfer)': 'bg-green-100 hover:bg-green-100 text-green-800 w-full text-center',
-    'Paid (Bitcoin)': 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
+const statusColors: Record<string, StatusColor> = {
+    SOA: 'bg-green-100 hover:bg-green-100 text-green-800',
+    SORTED: 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
     'DIS CL': 'bg-purple-100 hover:bg-purple-100 text-purple-800',
     DELIVERED: 'bg-gray-100 hover:bg-gray-100 text-gray-800',
-    'Not Received (Paid)': 'bg-red-100 hover:bg-red-100 text-red-800',
+    CANCELED: 'bg-red-100 hover:bg-red-100 text-red-800',
     'SENT TO DISPATCH': 'bg-blue-100 hover:bg-blue-100 text-blue-800',
 };
 
@@ -54,17 +61,20 @@ interface Order {
     orderId: string;
     customerName: string;
     phoneNumber: string;
-    zone: string;
     orderItems: string[];
     recipientName: string;
-    paymentMethod: string;
+    recipientPhone: string;
     category: {
         category: Category;
         isActive: boolean;
     }[];
-    amount: number;
+    orderNotes: string;
     status: string;
-    deliveryDate: Date; 
+    deliveryNote: string;
+    deliveryDate: Date;
+    amount?: number;
+    paymentStatus: string;
+    tag?: string;
 }
 
 interface OrderRowProps {
@@ -74,209 +84,235 @@ interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     return (
         <TableRow>
-            <TableCell>{order.orderId}</TableCell>
-            <TableCell>
+            <TableCell className='min-w-[150px]'>
+                <div>{order.orderId}</div>
+                {
+                    order.tag &&
+                    <div className="flex items-center gap-1.5 text-[#494949] text-xs">
+                        <span>
+                            <Tag size={15} />
+                        </span>
+                        <span>
+                            {order.tag}
+                        </span>
+                    </div>
+                }
+
+            </TableCell>
+            <TableCell className='min-w-max max-w-[500px]'>
                 <div>{order.customerName}</div>
                 <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
             </TableCell>
             <TableCell>
                 {order.orderItems.map((item, idx) => (
-                <div key={idx} className='!min-w-max'>{item}</div>
+                    <div key={idx} className='!min-w-max'>{item}</div>
                 ))}
             </TableCell>
             <TableCell>
-                <div className=''>{order.paymentMethod}</div>
+                <div>{order.recipientName}</div>
+                <div className='text-sm text-gray-500'>{order.recipientPhone}</div>
             </TableCell>
 
-
-            <TableCell>{convertNumberToNaira(order.amount)}</TableCell>
-            <TableCell>${convertNumberToNaira(order.amount)}</TableCell>
-            <TableCell>{format(order.deliveryDate, 'dd-MM-yyyy')}</TableCell>
             <TableCell>
+                <div className='flex items-center gap-2 min-w-max'>
+                    {(['C', 'W', 'F', 'TB'] as Category[]).map(cat => (
+                        <CategoryBadge
+                            key={cat}
+                            category={cat}
+                            isActive={order.category.find(c => c.category === cat)?.isActive || false}
+                        />
+                    ))}
+                </div>
+            </TableCell>
+
+            <TableCell className='min-w-[180px] max-w-[500px]'>{order.orderNotes}</TableCell>
+            <TableCell className='min-w-[150px] max-w-[500px] uppercase'>{format(order.deliveryDate, 'dd/MMM/yyyy')}</TableCell>
+            <TableCell className='min-w-max'>
                 <Badge
                     className={cn(
-                        'flex items-center justify-center',
-                        statusColors[order.status] || ' bg-gray-100 text-gray-800 w-full text-center min-w-max'
+                        statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                        'rounded-md w-max'
                     )}>
                     {order.status}
                 </Badge>
             </TableCell>
+            <TableCell className='min-w-max'>
+                <div>{convertNumberToNaira(order.amount || 0)}</div>
+                <div>{order.paymentStatus}</div>
+            </TableCell>
             <TableCell>
-                <PaymentsDetailSheet orderId={order.orderId} />
+                {/* <OrderDetailSheet orderId={order.orderId} /> */}
             </TableCell>
         </TableRow>
     );
 };
 
-const PaymentsTable = () => {
+const ProductsInventory = () => {
     const orders: Order[] = [
         {
             orderId: 'PF/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Lagos Mainland',
             orderItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
                 'Large size teddy',
             ],
             recipientName: 'Simisola',
-            paymentMethod: 'Card Payment',
+            recipientPhone: '07023544455',
             category: [
                 { category: 'C', isActive: true },
             ],
-            amount: 50000, 
-            status: 'Paid (Naira Transfer)',
-            deliveryDate: new Date('2024-10-04T17:00:00'), 
-        },
-        {
-            orderId: 'PF/LM6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            zone: 'Lagos Mainland',
-            orderItems: [
-                'Adeline Faultline Cake',
-                'Moet Chandon',
-                'Large size teddy',
-            ],
-            recipientName: 'Simisola',
-            paymentMethod: 'Card Payment',
-            category: [
-                { category: 'C', isActive: true },
-            ],
-            amount: 50000, 
-            status: 'Paid (Naira Transfer)',
-            deliveryDate: new Date('2024-10-04T17:00:00'), 
-        },
-        {
-            orderId: 'PF/LM6766',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            zone: 'Lagos Mainland',
-            orderItems: [
-                'Adeline Faultline Cake',
-                'Moet Chandon',
-                'Large size teddy',
-            ],
-            recipientName: 'Simisola',
-            paymentMethod: 'Card Payment',
-            category: [
-                { category: 'C', isActive: true },
-            ],
-            amount: 50000, 
-            status: 'Paid (Bitcoin)',
-            deliveryDate: new Date('2024-10-04T17:00:00'), 
+            orderNotes: 'Call Simisola',
+            status: 'PAYMENT MADE',
+            deliveryNote: 'Deliver by 5 PM',
+            deliveryDate: new Date(),
+            amount: 5000,
+            paymentStatus: 'Paid(USD Transfer)',
+            tag: '123456'
         },
         {
             orderId: 'ZD/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Lagos Mainland',
             orderItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
-            paymentMethod: 'Bank Transfer',
+            recipientPhone: '07023544455',
             category: [
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
-            amount: 45000, 
-            status: 'Paid (Naira Transfer)',
-            deliveryDate: new Date('2024-10-04T18:00:00'), 
+            orderNotes: 'This is a very very long Order note. Deliver at door step',
+            status: 'SORTED',
+            deliveryNote: 'Deliver by 6 PM',
+            deliveryDate: new Date(),
+            amount: 60000,
+            paymentStatus: 'Paid(USD Transfer)'
+        },
+        {
+            orderId: 'ZD/LM6765',
+            customerName: 'Ife Adebayo',
+            phoneNumber: '08067556644',
+            orderItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
+            recipientName: 'Simisola',
+            recipientPhone: '07023544455',
+            category: [
+                { category: 'W', isActive: true },
+                { category: 'TB', isActive: true },
+            ],
+            orderNotes: 'Deliver at door step',
+            status: 'SORTED',
+            deliveryNote: 'Deliver by 6 PM',
+            deliveryDate: new Date(),
+            amount: 70000,
+            paymentStatus: 'Paid(Website Card)',
+            tag: '123456'
         },
         {
             orderId: 'ZD/LI6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Lagos Island',
             orderItems: [
                 'Delectable Choco cake',
                 'Moet Chandon',
                 'Large size teddy',
             ],
-            recipientName: 'Simisola',            
-            paymentMethod: 'Credit Card',
+            recipientName: 'Simisola',
+            recipientPhone: '07023544455',
             category: [
                 { category: 'C', isActive: true },
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
-            amount: 55000, 
-            status: 'Not Received (Paid)',
-            deliveryDate: new Date('2024-10-04T19:00:00'), 
+            orderNotes: 'Deliver at door step',
+            status: 'DIS CL',
+            deliveryNote: 'Deliver by 7 PM',
+            deliveryDate: new Date(),
+            amount: 80000,
+            paymentStatus: 'Paid(Bitcoin)',
+            tag: '123456'
         },
         {
             orderId: 'PF/LC6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Lagos Central',
             orderItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
             recipientName: 'Simisola',
-            paymentMethod: 'Paypal',
+            recipientPhone: '07023544455',
             category: [
                 { category: 'C', isActive: true },
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
-            amount: 60000, 
-            status: 'Not Received (Paid)',
-            deliveryDate: new Date('2024-10-04T20:00:00'), 
+            orderNotes: 'Call Adeola',
+            status: 'DELIVERED',
+            deliveryNote: 'Deliver by 8 PM',
+            deliveryDate: new Date(),
+            amount: 90000,
+            paymentStatus: 'Paid(USD Transfer)'
         },
         {
-            orderId: 'PF/LM6767',
+            orderId: 'PF/LM6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Lagos Mainland',
             orderItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
                 'Large size teddy',
             ],
             recipientName: 'Simisola',
-            paymentMethod: 'Bank Transfer',
+            recipientPhone: '07023544455',
             category: [
                 { category: 'C', isActive: true },
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
-            amount: 50000, 
-            status: 'Paid (Naira Transfer)',
-            deliveryDate: new Date('2024-10-04T21:00:00'), 
+            orderNotes: 'Deliver at door step',
+            status: 'CANCELED',
+            deliveryNote: 'Deliver by 9 PM',
+            deliveryDate: new Date(),
+            amount: 10000,
+            paymentStatus: 'Not Received(Paid)'
         },
         {
             orderId: 'ZD/LC6765',
             customerName: 'Ife Adebayo',
             phoneNumber: '08067556644',
-            zone: 'Lagos Central',
             orderItems: [
                 'Adeline Faultline Cake',
                 'Moet Chandon',
                 'Large size teddy',
             ],
             recipientName: 'Simisola',
-            paymentMethod: 'Card Payment',            
+            recipientPhone: '07023544455',
             category: [
                 { category: 'C', isActive: true },
                 { category: 'W', isActive: true },
                 { category: 'TB', isActive: true },
             ],
-            amount: 55000, 
-            status: 'Paid (Bitcoin)',
-            deliveryDate: new Date('2024-10-04T22:00:00'), 
+            orderNotes: 'Call Simisola',
+            status: 'SENT TO DISPATCH',
+            deliveryNote: 'Deliver by 10 PM',
+            deliveryDate: new Date(),
+            amount: 11000,
+            paymentStatus: 'Paid(USD Transfer)',
+            tag: '123456'
         },
     ];
 
     return (
         <Table>
             <TableHeader>
-                <TableRow className='text-[#113770] font-medium'>
-                    <TableHead>Order ID</TableHead>
+                <TableRow>
+                    <TableHead className='min-w-[150px]'>Order ID</TableHead>
                     <TableHead>Customers Details</TableHead>
                     <TableHead>Order Items</TableHead>
-                    <TableHead>Payment Mode</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Amount(USD)</TableHead>
+                    <TableHead>Recipient Details</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Order Notes</TableHead>
                     <TableHead>Delivery Date</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className='min-w-[150px]'>Status</TableHead>
+                    <TableHead>Payment</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>
@@ -294,4 +330,4 @@ const PaymentsTable = () => {
     )
 }
 
-export default PaymentsTable;
+export default ProductsInventory;
