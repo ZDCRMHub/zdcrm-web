@@ -19,7 +19,7 @@ import { PiCubeFocusLight } from "react-icons/pi";
 import { TfiWallet } from "react-icons/tfi";
 import { LiaCubesSolid, LiaUserEditSolid } from "react-icons/lia";
 import { GrUpdate } from "react-icons/gr";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Dialog,
   DialogClose,
@@ -35,6 +35,7 @@ import { Label } from "@/components/ui/label";
 import { IoIosClose } from "react-icons/io";
 import { PiHashStraightFill } from "react-icons/pi";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
+import { SelectSingleCombo } from "@/components/ui";
 
 const stockHistory = [
   {
@@ -105,6 +106,19 @@ const InventoryDetailsPage = () => {
     setLowStockCounter(lowStockCounter - 1);
   };
 
+
+
+  ////////////////////////////////////////////////
+  ////////THIS IS ABSOLUTELY DUMMY //////////////
+  ///////////// JUST TO FINISH UP THE UI ////////
+  const params = useSearchParams()
+  const isStock = params.get('stock') === 'true'
+  ////////////////////////////////////////////////
+
+
+
+const [selectedVariant, setSelectedVariant] = useState<string|undefined>(undefined);
+
   return (
     <section className="mx-16 mt-8">
       <div className="flex gap-6 flex-col">
@@ -113,6 +127,26 @@ const InventoryDetailsPage = () => {
         </button>
         <h1 className="uppercase text-xl font-bold">view sandra red wine</h1>
       </div>
+
+      {
+        isStock &&
+        <SelectSingleCombo
+          placeholder='Variations'
+          options={[
+            { label: '6 inches', value: '6 inches' },
+            { label: '8 inches', value: '8 inches' },
+            { label: '12 inches', value: '12 inches' }
+          ]}
+          className='w-96 !h-12 text-[#8B909A] text-xs mt-4'
+          placeHolderClass='text-[#8B909A] text-xs'
+          triggerColor='#8B909A'
+          value={selectedVariant}
+          onChange={() => {}}
+          name="variations"
+          valueKey="value"
+          labelKey="label"
+        />
+      }
       <div className="mt-[67px] flex gap-[110px]">
         <div className="p-8 bg-[#F6F6F6] rounded-xl w-[522px] shadow-inner shadow-white">
           <p className="text-2xl font-medium text-center mb-3">Stock</p>

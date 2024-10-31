@@ -1,11 +1,10 @@
 import React from 'react';
-import StockInventoryDashboard from '../stock-inventory/misc/components/StockInventoryDashboard';
+// import StockInventoryDashboard from '../stock-inventory/misc/components/StockInventoryDashboard';
+import { StoreInventoryDashboard } from '../misc';
 
 const page = () => {
   return (
-    <div className='container'>
-      <StockInventoryDashboard />
-    </div>
+    <StoreInventoryDashboard />
   );
 };
 

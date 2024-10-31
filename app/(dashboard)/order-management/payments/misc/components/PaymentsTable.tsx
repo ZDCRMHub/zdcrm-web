@@ -90,6 +90,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
 
 
             <TableCell>{convertNumberToNaira(order.amount)}</TableCell>
+            <TableCell>${convertNumberToNaira(order.amount)}</TableCell>
             <TableCell>{format(order.deliveryDate, 'dd-MM-yyyy')}</TableCell>
             <TableCell>
                 <Badge
@@ -273,6 +274,7 @@ const PaymentsTable = () => {
                     <TableHead>Order Items</TableHead>
                     <TableHead>Payment Mode</TableHead>
                     <TableHead>Amount</TableHead>
+                    <TableHead>Amount(USD)</TableHead>
                     <TableHead>Delivery Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead></TableHead>

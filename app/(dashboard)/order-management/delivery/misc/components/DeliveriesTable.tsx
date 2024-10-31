@@ -36,6 +36,7 @@ interface DeliveryOrder {
     recipientPhone: string;
     riderName: string;
     riderCompany: string;
+    riderPhone: string;
     deliveryAddress: string;
     status: string;
 }
@@ -58,8 +59,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div className='text-sm text-gray-500'>{order.recipientPhone}</div>
             </TableCell>
             <TableCell>
-                <div>{order.riderName}</div>
-                <div className='text-sm text-gray-500'>{order.riderCompany}</div>
+                <div>{order.riderCompany} - {order.riderName} </div>
+                <div className='text-sm text-gray-500'>{order.riderPhone}</div>
             </TableCell>
             <TableCell>{order.deliveryAddress}</TableCell>
             <TableCell>
@@ -86,6 +87,7 @@ const DeliveriesTable = () => {
             recipientPhone: '07023544455',
             riderName: 'Adeola',
             riderCompany: 'GIG Logistics',
+            riderPhone: '090000000000',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'DELIVERED',
         },
@@ -98,6 +100,7 @@ const DeliveriesTable = () => {
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
             riderCompany: 'DHL',
+            riderPhone: '090000000000',
             deliveryAddress: '456 Agege Motor Road, Lagos Mainland',
             status: 'IN DISPATCH',
         },
@@ -110,6 +113,7 @@ const DeliveriesTable = () => {
             recipientPhone: '07023544455',
             riderName: 'Olumide',
             riderCompany: 'DHL',
+            riderPhone: '090000000000',
             deliveryAddress: '789 Victoria Island, Lagos Island',
             status: 'DELIVERED',
         },
@@ -121,6 +125,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Tunde',
+            riderPhone: '090000000000',
             riderCompany: 'Chowdeck',
             deliveryAddress: '101 Ikoyi, Lagos Central',
             status: 'DELIVERED',
@@ -135,6 +140,7 @@ const DeliveriesTable = () => {
             riderName: 'Adeola',
             riderCompany: 'Zoom Logistics',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
+            riderPhone: '090000000000',
             status: 'CANCELED',
         },
         {
@@ -145,6 +151,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
+            riderPhone: '090000000000',
             riderCompany: 'GIG',
             deliveryAddress: '456 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
@@ -158,6 +165,7 @@ const DeliveriesTable = () => {
             recipientPhone: '07023544455',
             riderName: 'Adeola',
             riderCompany: 'GIG',
+            riderPhone: '090000000000',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'DELIVERED',
         },
@@ -169,6 +177,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Chinedu',
+            riderPhone: '090000000000',
             riderCompany: 'DHL',
             deliveryAddress: '456 Agege Motor Road, Lagos Mainland',
             status: 'IN DISPATCH',
@@ -179,6 +188,7 @@ const DeliveriesTable = () => {
             customerPhone: '08067556644',
             deliveryDate: '2023-10-03',
             recipientName: 'Simisola',
+            riderPhone: '090000000000',
             recipientPhone: '07023544455',
             riderName: 'Olumide',
             riderCompany: '08078901234',
@@ -193,6 +203,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Tunde',
+            riderPhone: '090000000000',
             riderCompany: 'DHL',
             deliveryAddress: '101 Ikoyi, Lagos Central',
             status: 'DELIVERED',
@@ -205,6 +216,7 @@ const DeliveriesTable = () => {
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
             riderName: 'Adeola',
+            riderPhone: '090000000000',
             riderCompany: 'DHL',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'CANCELED',
@@ -216,6 +228,7 @@ const DeliveriesTable = () => {
             deliveryDate: '2023-10-06',
             recipientName: 'Simisola',
             recipientPhone: '07023544455',
+            riderPhone: '090000000000',
             riderName: 'Chinedu',
             riderCompany: 'Chowdeck Logistics',
             deliveryAddress: '456 Agege Motor Road, Lagos Central',
@@ -229,6 +242,7 @@ const DeliveriesTable = () => {
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Babatunde',
+            riderPhone: '090000000000',
             riderCompany: 'DHL',
             deliveryAddress: '234 Surulere, Lagos Mainland',
             status: 'DELIVERED',
@@ -239,6 +253,7 @@ const DeliveriesTable = () => {
             customerPhone: '08034567890',
             deliveryDate: '2023-10-08',
             recipientName: 'Amina',
+            riderPhone: '090000000000',
             recipientPhone: '07034567890',
             riderName: 'Chinedu',
             riderCompany: 'GIG',
@@ -248,6 +263,7 @@ const DeliveriesTable = () => {
         {
             orderId: 'ZD/LI6766',
             customerName: 'Tunde Oladapo',
+            riderPhone: '090000000000',
             customerPhone: '08034567890',
             deliveryDate: '2023-10-09',
             recipientName: 'Amina',
@@ -263,6 +279,7 @@ const DeliveriesTable = () => {
             customerPhone: '08034567890',
             deliveryDate: '2023-10-10',
             recipientName: 'Amina',
+            riderPhone: '090000000000',
             recipientPhone: '07034567890',
             riderName: 'Tunde',
             riderCompany: 'Glovo',
@@ -274,6 +291,7 @@ const DeliveriesTable = () => {
             customerName: 'Gbenga Aderibigbe',
             customerPhone: '08034567890',
             deliveryDate: '2023-10-11',
+            riderPhone: '090000000000',
             recipientName: 'Amina',
             recipientPhone: '07034567890',
             riderName: 'Adeola',
@@ -285,6 +303,7 @@ const DeliveriesTable = () => {
             orderId: 'ZD/LC6767',
             customerName: 'Saliu Oladapo',
             customerPhone: '08034567890',
+            riderPhone: '090000000000',
             deliveryDate: '2023-10-12',
             recipientName: 'Amina',
             recipientPhone: '07034567890',
@@ -294,6 +313,8 @@ const DeliveriesTable = () => {
             status: 'DISPATCH',
         },
     ];
+
+
 
     return (
         <Table>
