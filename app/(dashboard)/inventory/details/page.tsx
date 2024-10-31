@@ -108,16 +108,11 @@ const InventoryDetailsPage = () => {
 
 
 
-  ////////////////////////////////////////////////
-  ////////THIS IS ABSOLUTELY DUMMY //////////////
-  ///////////// JUST TO FINISH UP THE UI ////////
-  const params = useSearchParams()
-  const isStock = params.get('stock') === 'true'
-  ////////////////////////////////////////////////
 
 
 
-const [selectedVariant, setSelectedVariant] = useState<string|undefined>(undefined);
+
+  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(undefined);
 
   return (
     <section className="mx-16 mt-8">
@@ -129,7 +124,7 @@ const [selectedVariant, setSelectedVariant] = useState<string|undefined>(undefin
       </div>
 
       {
-        isStock &&
+        
         <SelectSingleCombo
           placeholder='Variations'
           options={[
@@ -141,7 +136,7 @@ const [selectedVariant, setSelectedVariant] = useState<string|undefined>(undefin
           placeHolderClass='text-[#8B909A] text-xs'
           triggerColor='#8B909A'
           value={selectedVariant}
-          onChange={() => {}}
+          onChange={(value) => setSelectedVariant(value)}
           name="variations"
           valueKey="value"
           labelKey="label"
