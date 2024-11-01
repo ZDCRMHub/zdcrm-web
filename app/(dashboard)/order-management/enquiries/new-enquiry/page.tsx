@@ -13,11 +13,13 @@ import {
     TimePicker,
     SelectMultipleSpecialCombo
 } from '@/components/ui'
-import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
+import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DELIVERY_LOCATION_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NewEnquiryFormValues, NewOrderSchema } from '../misc/utils/schema'
 import { EnquiryItemCard, EnquiryItemCardAdditionalItems } from '../misc/components'
+import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard'
+import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline'
 
 
 
@@ -61,7 +63,7 @@ const NewOrderPage = () => {
     }
     const addNewCustomItem = () => {
         append({
-            category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
+            category: 'C', productType: 'CUSTOM_ORDER', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
             flavours: ['Vanilla'], layers: '2', sizes: ['6 inches'], toppings: 'none', isCustomOrder: true
         });
     }
@@ -70,7 +72,7 @@ const NewOrderPage = () => {
         return itemErrors?.[field as keyof typeof itemErrors];
     };
 
-
+    const mockDiscussion = generateMockOrders(3)[0]
 
 
     return (
@@ -216,7 +218,25 @@ const NewOrderPage = () => {
                                             </FormItem>
                                         )}
                                     />
+                                    <FormField
+                                        control={control}
+                                        name="deliveryLocation"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <SelectSingleCombo
+                                                    label="Delivery Location"
+                                                    options={DELIVERY_LOCATION_OPTIONS}
+                                                    {...field}
+                                                    valueKey={"value"}
+                                                    labelKey={"label"}
+                                                    placeholder="Select delivery location"
+                                                    hasError={!!errors.deliveryZone}
+                                                    errorMessage={errors.deliveryZone?.message as string}
+                                                />
 
+                                            </FormItem>
+                                        )}
+                                    />
                                     <FormField
                                         control={control}
                                         name="deliveryZone"
@@ -287,6 +307,7 @@ const NewOrderPage = () => {
                                             </FormItem>
                                         )}
                                     />
+
                                     <FormField
                                         control={control}
                                         name="dispatchTime"
@@ -685,22 +706,19 @@ const NewOrderPage = () => {
                         {/* /////////////                  ORDER INSTRUCTION                  ///////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
-                        <AccordionItem value='order-Instruction'>
+                        <AccordionItem value='order-discussion'>
                             <AccordionTrigger className='py-4'>
                                 <div className='flex items-center gap-5'>
                                     <div className='h-10 w-10 flex items-center justify-center bg-custom-white rounded-full'>
                                         <Image src='/img/book.svg' alt='' width={24} height={24} />
                                     </div>
-                                    <p className='text-custom-blue font-medium'>Order Instruction</p>
+                                    <p className='text-custom-blue font-medium'>Discussion</p>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent className='pt-8 pb-14'>
-                                <Input
-                                    label="Message on Order"
-                                    hasError={!!errors.messageOnOrder}
-                                    errorMessage={errors.messageOnOrder?.message as string}
-                                    placeholder='Enter message on order'
-                                    {...register('messageOnOrder')}
+                                <EnquiryDiscussCard
+                                    order={mockDiscussion}
+                                    isExpanded={false}
                                 />
                             </AccordionContent>
                         </AccordionItem>

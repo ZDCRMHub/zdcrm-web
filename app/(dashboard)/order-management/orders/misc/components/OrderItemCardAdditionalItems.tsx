@@ -28,7 +28,7 @@ function OrderItemCardAdditionalItems({
 
   return (
     <div className="space-y-2 max-w-3xl mt-4">
-      <Label>
+      <Label className="block">
         Miscellaneous
       </Label>
       {fields.map((field, k) => {
@@ -70,7 +70,7 @@ function OrderItemCardAdditionalItems({
       >
         <Plus className="h-4 w-4 mr-2" />
         {
-          fields.length === 0 ? "Add Item" : "Add More"
+          fields.length === 0 ? "Add Miscellaneous Item" : "Add More"
         }
       </Button>
     </div>

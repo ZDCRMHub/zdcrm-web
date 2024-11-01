@@ -12,7 +12,7 @@ import {
     FormField, FormItem, FormMessage, Form, TimePicker,
     SelectMultipleSpecialCombo
 } from '@/components/ui'
-import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
+import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DELIVERY_LOCATION_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -250,16 +250,12 @@ const NewOrderPage = () => {
 
                                     <FormField
                                         control={control}
-                                        name="deliveryZone"
+                                        name="deliveryLocation"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <SelectSingleCombo
                                                     label="Delivery Location"
-                                                    options={[
-                                                        { value: "YABA", label: "Yaba N5,000" },
-                                                        { value: "SHOMOLU_BARIGA", label: "Shomolu/Bariga N5,000" },
-                                                        { value: "IYANA-IPAJA", label: "Iyana Ipaja (N8,500)" },
-                                                    ]}
+                                                    options={DELIVERY_LOCATION_OPTIONS}
                                                     {...field}
                                                     valueKey={"value"}
                                                     labelKey={"label"}
