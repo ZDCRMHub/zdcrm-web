@@ -12,6 +12,7 @@ import {
     SelectContent,
 } from "@/components/ui";
 import { paymentOptions } from "@/constants";
+import { useBooleanStateControl } from "@/hooks";
 import { OrderManagement, OrderTimeLine } from "@/icons/sidebar";
 import { X } from "@phosphor-icons/react";
 import React from "react";
@@ -37,8 +38,47 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
     nextStep,
 }) => {
 
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<string | undefined>(undefined);
+    // export const paymentOptions = [
+    //     { label: "Not Paid (But Go Ahead)", value: "not_paid_go_ahead" },
+    //     { label: "Paid (Website Card)", value: "paid_website_card" },
+    //     { label: "Paid (Naira Transfer)", value: "paid_naira_transfer" },
+    //     { label: "Paid (POS)", value: "paid_pos" },
+    //     { label: "Paid (USD Transfer)", value: "paid_usd_transfer" },
+    //     { label: "Paid (Paypal)", value: "paid_paypal" },
+    //     { label: "Cash Paid", value: "cash_paid" },
+    //     { label: "Part Payment", value: "part_payment" },
+    //     { label: "Paid (Bitcoin)", value: "paid_bitcoin" },
+    //     { label: "Not Received (Paid)", value: "not_received_paid" }
+    //   ];
 
+    ////TODO
+    //create modal for the three payment options
+    //if selected oayment option is not bitcoin/usd/paypal etc, just call nextStep() which opens the success modal
+    ///else open the respective modals
+
+    const {
+        state: isConfirmBitcoinModalOpen,
+        setTrue: openConfirmBitcoinModal,
+        setFalse: closeConfirmBitcoinModal,
+
+    } = useBooleanStateControl()
+    const {
+        state: isConfirmPartPaymentModalOpen,
+        setTrue: openConfirmPartPaymentModal,
+        setFalse: closeConfirmPartPaymentModal,
+
+    } = useBooleanStateControl()
+
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<string | undefined>(undefined);
+    const submit = () => {
+        if (selectedPaymentMethod == "paid_bitcoin") {
+            openConfirmBitcoinModal()
+        }
+        else if (selectedPaymentMethod == "part_payment") {
+            openConfirmPartPaymentModal()
+        }
+
+    }
 
     return (
         <Dialog open={isModalOpen}>

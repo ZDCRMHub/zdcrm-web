@@ -14,14 +14,16 @@ const baseItemSchema = z.object({
         // quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
         cost: z.string().min(1, { message: "Price is required" }),
     })).optional(),
+    instruction: z.string().optional(),
 });
 
 const cakeSchema = baseItemSchema.extend({
     category: z.literal("C"),
     layers: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.layers.map(layer => layer.value) as [string, ...string[]], { message: "Please select no of layers" }),
-    flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" }),
+    flavours: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" })),
+    // flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" }),
     toppings: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.toppings.map(topping => topping.value) as [string, ...string[]], { message: "Topping is required" }),
-    size: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.sizes.map(size => size.value) as [string, ...string[]], { message: "Size is required" }),
+    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
     whippedCreamUpgrade: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade.map(whippedCream => whippedCream.value) as [string, ...string[]], { message: "Whipped cream upgrade is required" }),
 });
 
@@ -33,7 +35,7 @@ const flowerSchema = baseItemSchema.extend({
 
 const teddyBearSchema = baseItemSchema.extend({
     category: z.literal("TB"),
-    size: z.enum(PRODUCT_TYPES_OPTIONS.Teddies.sizes.map(size => size.value) as [string, ...string[]]),
+    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Teddies.sizes.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
     bouquet: z.enum(PRODUCT_TYPES_OPTIONS.Teddies.bouquets.map(bouquet => bouquet.value) as [string, ...string[]]),
 });
 

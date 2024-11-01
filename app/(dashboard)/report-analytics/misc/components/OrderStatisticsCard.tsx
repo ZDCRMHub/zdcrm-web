@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardDescription, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 interface OrderStatisticsCardProps {
   header: string;
@@ -32,12 +33,14 @@ const OrderStatisticsCard: React.FC<OrderStatisticsCardProps> = ({
           <div className='p-2 rounded-[6px]' style={{ backgroundColor: iconBg }}>
             {icon}
           </div>
-          <span className='text-[1.5rem] text-dark-grey font-semibold'>{value}</span>
+          <span className={cn('text-[1.5rem] text-dark-grey font-semibold',
+            isPositive ? `text-green-800` : '!text-red-500'
+          )}>{value}</span>
         </div>
         <div className='flex items-center gap-1'>
           <p className='border-border-grey border rounded-[6px] px-2.5 flex gap-1 text-sm'>
             <span
-              className={`${isPositive ? `text-green-500` : `text-red-500`}`}>
+              className={`${isPositive ? `text-green-500` : `!text-red-500`}`}>
               {isPositive ? '↑' : '↓'}
             </span>
             <span>{Math.abs(percentage)}%</span>

@@ -33,7 +33,6 @@ export default function Component() {
     state: isConfirmModalOpen,
     setTrue: openConfirmModal,
     setFalse: closeConfirmModal,
-
   } = useBooleanStateControl()
 
   const nextStep = () => {

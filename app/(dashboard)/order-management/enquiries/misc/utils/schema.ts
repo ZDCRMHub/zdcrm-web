@@ -9,6 +9,7 @@ const baseItemSchema = z.object({
     isCustomOrder: z.boolean().optional(),
     itemImage: z.instanceof(File).optional(),
     isEditing: z.boolean().optional(),
+    instruction: z.string().optional(),
     additionalItems: z.array(z.object({
         name: z.string().min(1, { message: "Name is required" }),
         // quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
@@ -19,9 +20,9 @@ const baseItemSchema = z.object({
 const cakeSchema = baseItemSchema.extend({
     category: z.literal("C"),
     layers: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.layers.map(layer => layer.value) as [string, ...string[]], { message: "Please select no of layers" }),
-    flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" }),
     toppings: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.toppings.map(topping => topping.value) as [string, ...string[]], { message: "Topping is required" }),
-    size: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.sizes.map(size => size.value) as [string, ...string[]], { message: "Size is required" }),
+    flavours: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" })),
+    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
     whippedCreamUpgrade: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade.map(whippedCream => whippedCream.value) as [string, ...string[]], { message: "Whipped cream upgrade is required" }),
 });
 
