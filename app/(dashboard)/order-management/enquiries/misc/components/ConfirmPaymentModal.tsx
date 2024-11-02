@@ -17,6 +17,7 @@ import { OrderManagement, OrderTimeLine } from "@/icons/sidebar";
 import { X } from "@phosphor-icons/react";
 import React from "react";
 import ConfirmBitcoinModal from "./ConfirmBitcoinModal";
+import ConfirmPartPaymentModal from "./ConfirmPartPaymentModal";
 
 interface ModalProps {
   isModalOpen: boolean;
@@ -61,6 +62,7 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
     setTrue: openConfirmBitcoinModal,
     setFalse: closeConfirmBitcoinModal,
   } = useBooleanStateControl();
+
   const {
     state: isConfirmPartPaymentModalOpen,
     setTrue: openConfirmPartPaymentModal,
@@ -72,26 +74,27 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
   >(undefined);
 
   const submit = () => {
-    console.log(selectedPaymentMethod);
     if (
       selectedPaymentMethod == "paid_bitcoin" ||
-      "paid_paypal" ||
-      "paid_usd_transfer"
+      selectedPaymentMethod == "paid_paypal" ||
+      selectedPaymentMethod == "paid_usd_transfer"
     ) {
       openConfirmBitcoinModal();
       closeModal();
       console.log(selectedPaymentMethod);
     } else if (selectedPaymentMethod == "part_payment") {
       openConfirmPartPaymentModal();
+      closeModal();
     } else if (
       selectedPaymentMethod == "not_paid_go_ahead" ||
-      "paid_website_card" ||
-      "paid_naira_transfer" ||
-      "paid_pos" ||
-      "cash_paid" ||
-      "not_received_paid"
+      selectedPaymentMethod == "paid_website_card" ||
+      selectedPaymentMethod == "paid_naira_transfer" ||
+      selectedPaymentMethod == "paid_pos" ||
+      selectedPaymentMethod == "cash_paid" ||
+      selectedPaymentMethod == "not_received_paid"
     ) {
       nextStep();
+      console.log(selectedPaymentMethod);
     }
   };
 
@@ -126,7 +129,10 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
           </p>
         </div>
 
-        <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} >
+        <Select
+          value={selectedPaymentMethod}
+          onValueChange={setSelectedPaymentMethod}
+        >
           <SelectTrigger className="w-[90%] max-w-[350px] h-14 mx-auto mb-4">
             <SelectValue placeholder="Select payment Method" />
           </SelectTrigger>
@@ -157,6 +163,14 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
       <ConfirmBitcoinModal
         isModalOpen={isConfirmBitcoinModalOpen}
         closeBitcoinModal={closeConfirmBitcoinModal}
+        nextStep={nextStep}
+        value={selectedPaymentMethod}
+        heading="Client made payment"
+        subheading="This action converts Enquiries to Order"
+      />
+      <ConfirmPartPaymentModal
+        isModalOpen={isConfirmPartPaymentModalOpen}
+        closePartPaymentModal={closeConfirmPartPaymentModal}
         nextStep={nextStep}
         value={selectedPaymentMethod}
         heading="Client made payment"
