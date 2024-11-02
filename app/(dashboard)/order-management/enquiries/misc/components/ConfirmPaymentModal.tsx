@@ -126,7 +126,7 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
           </p>
         </div>
 
-        <Select value={selectedPaymentMethod}>
+        <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} >
           <SelectTrigger className="w-[90%] max-w-[350px] h-14 mx-auto mb-4">
             <SelectValue placeholder="Select payment Method" />
           </SelectTrigger>
@@ -135,7 +135,7 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
               <SelectItem
                 key={option.value}
                 value={option.value}
-                onClick={() => setSelectedPaymentMethod(option.value)}
+                // onClick={() => setSelectedPaymentMethod(option.value)}
                 className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
               >
                 {option.label}

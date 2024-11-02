@@ -345,3 +345,4 @@ const DeliveriesTable = () => {
 }
 
 export default DeliveriesTable;
+
