@@ -12,18 +12,13 @@ import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import OrderDetailSheet from './OrderHistoryDetailSheet';
 import { format } from 'date-fns';
+import { convertNumberToNaira } from '@/utils/currency';
 
-type StatusColor =
-    | 'bg-green-100 hover:bg-green-100 text-green-800'
-    | 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800'
-    | 'bg-purple-100 hover:bg-purple-100 text-purple-800'
-    | 'bg-gray-100 hover:bg-gray-100 text-gray-800'
-    | 'bg-red-100 hover:bg-red-100 text-red-800'
-    | 'bg-blue-100 hover:bg-blue-100 text-blue-800';
 
-const statusColors: Record<string, StatusColor> = {
-    DELIVERED: 'bg-gray-100 hover:bg-gray-100 text-gray-800',
-    CANCELED: 'bg-red-100 hover:bg-red-100 text-red-800',
+
+const statusColors: Record<OrderStatus, string> = {
+    DELIVERED: 'bg-[#47D44726] hover:bg-[#47D44726]  text-[#28C72D]',
+    CANCELED: 'bg-[#F7E7E7] hover:bg-[#F7E7E7] text-[#AF160C]',
 };
 
 type Category = 'C' | 'W' | 'TB';
@@ -52,6 +47,8 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, isActive }) => 
     );
 };
 
+type OrderStatus = 'DELIVERED' | 'CANCELED';
+
 interface Order {
     orderId: string;
     customerName: string;
@@ -63,7 +60,7 @@ interface Order {
     }[];
     messageOnOrder: string;
     totalAmount: number;
-    status: string;
+    status: OrderStatus;
     deliveryNotes: string;
 }
 
@@ -79,7 +76,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div>{order.customerName}</div>
                 <div className='text-sm text-gray-500'>{order.customerPhone}</div>
             </TableCell>
-            <TableCell>{format(new Date(order.deliveryDate), 'dd/MMM/yyyy')}</TableCell>
+            <TableCell className='uppercase'>{format(new Date(order.deliveryDate), 'dd/MMM/yyyy')}</TableCell>
             <TableCell>
                 <div className='flex items-center gap-2'>
                     {(['C', 'W', 'TB'] as Category[]).map(cat => (
@@ -92,7 +89,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </div>
             </TableCell>
             <TableCell>{order.messageOnOrder}</TableCell>
-            <TableCell>N {order.totalAmount}0</TableCell>
+            <TableCell>{convertNumberToNaira(order.totalAmount)}</TableCell>
             <TableCell>
                 <Badge
                     className={statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max'}>
@@ -164,7 +161,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Call Adeola',
-            totalAmount: 5500,
+            totalAmount: 55000,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully after calling Adeola.'
         },
@@ -179,7 +176,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: false },
             ],
             messageOnOrder: 'Deliver at door step',
-            totalAmount: 4000,
+            totalAmount: 42000,
             status: 'CANCELED',
             deliveryNotes: 'Order canceled due to customer request.'
         },
@@ -194,7 +191,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Call Simisola',
-            totalAmount: 4800,
+            totalAmount: 14800,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully after calling Simisola.'
         },
@@ -209,7 +206,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Call Amina',
-            totalAmount: 5200,
+            totalAmount: 57200,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully after calling Amina.'
         },
@@ -224,7 +221,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Deliver at door step',
-            totalAmount: 4700,
+            totalAmount: 41000,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully at the doorstep.'
         },
@@ -239,7 +236,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Deliver at door step',
-            totalAmount: 6200,
+            totalAmount: 10000,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully at the doorstep.'
         },
@@ -254,7 +251,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Call Amina',
-            totalAmount: 5700,
+            totalAmount: 50700,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully after calling Amina.'
         },
@@ -269,7 +266,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: false },
             ],
             messageOnOrder: 'Deliver at door step',
-            totalAmount: 4200,
+            totalAmount: 402000,
             status: 'CANCELED',
             deliveryNotes: 'Order canceled due to customer request.'
         },
@@ -284,7 +281,7 @@ const OrdersHistoryTable = () => {
                 { category: 'TB', isActive: true },
             ],
             messageOnOrder: 'Call Amina',
-            totalAmount: 4900,
+            totalAmount: 40900,
             status: 'DELIVERED',
             deliveryNotes: 'Delivered successfully after calling Amina.'
         },
