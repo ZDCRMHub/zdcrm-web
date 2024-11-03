@@ -6,13 +6,18 @@ import {
   DialogClose,
   DialogTitle,
   Input,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  SelectContent,
 } from "@/components/ui";
 import { OrderTimeLine } from "@/icons/sidebar";
 import { X } from "@phosphor-icons/react";
 
 interface ModalProps {
   isModalOpen: boolean;
-  closeBitcoinModal: () => void;
+  closePartPaymentModal: () => void;
   nextStep: () => void;
   customConfirmText?: string;
   customTitleText?: string;
@@ -22,9 +27,9 @@ interface ModalProps {
   value?: string;
 }
 
-const ConfirmBitcoinModal: React.FC<ModalProps> = ({
+const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
   isModalOpen,
-  closeBitcoinModal,
+  closePartPaymentModal,
   customConfirmText,
   customTitleText,
   icon,
@@ -36,7 +41,7 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
   return (
     <Dialog open={isModalOpen}>
       <DialogContent
-        onPointerDownOutside={closeBitcoinModal}
+        onPointerDownOutside={closePartPaymentModal}
         className="p-0 !rounded-2xl"
       >
         <div className="border-b  border-[#E6E6E6] p-6 xl:p-8 !pb-4 xl:pb-5">
@@ -44,7 +49,7 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
             {customTitleText ? customTitleText : "Confirm Action"}
           </DialogTitle>
           <DialogClose
-            onClick={closeBitcoinModal}
+            onClick={closePartPaymentModal}
             className="absolute right-4 top-6 rounded-full p-1 opacity-70 transition-opacity hover:opacity-100 bg-[#F2F2F2] focus:outline-none focus:ring-0 focus:ring-ring focus:ring-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
           >
             <X className="h-5 w-5" />
@@ -64,31 +69,51 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
           </p>
         </div>
 
-        <div className="w-full max-w-[350px] mx-auto">
+        <div className="w-full max-w-[400px] mx-auto flex flex-col gap-4">
           <Input
-            className="w-full h-14 mx-auto mb-5 border border-solid border-[#31A5F980] bg-[#E3F2FD]"
-            value={
-              value == "paid_bitcoin"
-                ? "Bitcoin"
-                : value == "paid_usd_transfer"
-                ? "USD Transfer"
-                : "Paypal"
-            }
+            className="w-full h-14 mx-auto border border-solid border-[#31A5F980] bg-[#E3F2FD]"
+            value="Part Payment"
             disabled
           />
           <div>
-            <p className="pl-4 mb-3 text-sm">
-              Amount Paid{" "}
-              {value == "paid_bitcoin"
-                ? "(Bitcoin)"
-                : value == "paid_usd_transfer"
-                ? "(USD Transfer)"
-                : "(Paypal)"}
-            </p>
+            <p className="mb-3 text-sm">Total Amount Due</p>
             <Input
-              className="w-[90%] max-w-[350px] h-14 mx-auto"
+              className="h-14 mx-auto"
               type="number"
+              placeholder="Enter Amount Due"
             />
+          </div>
+          <div className="flex justify-between gap-4">
+            <div className="w-full">
+              <p className="mb-3 text-sm">Initial Amount Paid</p>
+              <Input
+                className="h-14 mx-auto"
+                type="number"
+                placeholder="Enter Amount Paid"
+              />
+            </div>
+            <div className="w-full">
+              <p className="mb-3 text-sm">Payment Mode</p>
+              <Select>
+                <SelectTrigger className="h-14">
+                  <SelectValue placeholder="Select mode of payment" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="transfer">Transfer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+          <div className="w-full">
+              <p className="mb-3 text-sm">Balance</p>
+              <Input
+                className="h-14 mx-auto"
+                type="number"
+                placeholder="Enter Balance"
+              />
+            </div>
           </div>
         </div>
 
@@ -99,7 +124,7 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
           <Button
             className="h-14"
             variant="outline"
-            onClick={closeBitcoinModal}
+            onClick={closePartPaymentModal}
           >
             No, Cancel
           </Button>
@@ -109,4 +134,4 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
   );
 };
 
-export default ConfirmBitcoinModal;
+export default ConfirmPartPaymentModal;
