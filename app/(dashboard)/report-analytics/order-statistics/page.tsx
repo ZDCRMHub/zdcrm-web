@@ -51,7 +51,7 @@ const page = () => {
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12 px-8 xl:px-10'>
+    <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8 xl:px-10'>
       <Header
         title='Order Statistics'
         branchOptions={branchOptions}
@@ -70,22 +70,7 @@ const page = () => {
           additionalText='From last month'
           iconBg='#22292F'
         />
-        <OrderStatisticsCard
-          header='Total Revenue'
-          icon={<Money className="text-white" />}
-          value='₦2,000,000.00'
-          percentage={27}
-          isPositive={true}
-          iconBg='#131253'
-        />
-        <OrderStatisticsCard
-          header='Net Profit'
-          icon={<Money className="text-white" />}
-          value='₦1,600,600.00'
-          percentage={15}
-          isPositive={false}
-          iconBg='#5B1850'
-        />
+       
         <OrderStatisticsCard
           header='Processed Orders'
           icon={<Box />}

@@ -40,7 +40,7 @@ const FinancialReportPage = () => {
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12 px-8'>
+    <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8'>
       <Header
         title='Financial Report'
         branchOptions={branchOptions}
@@ -51,16 +51,16 @@ const FinancialReportPage = () => {
 
       <div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
         <OrderStatisticsCard
-          header='Total Orders'
-          icon={<OrderTimeLine className="text-white" />}
-          value='430'
-          percentage={34}
-          isPositive={true}
-          additionalText='From last month'
-          iconBg='#22292F'
-        />
-        <OrderStatisticsCard
           header='Total Revenue'
+          icon={<Money className="text-white" />}
+          value='₦2,000,000.00'
+          percentage={27}
+          isPositive={true}
+          iconBg='#131253'
+        />
+
+        <OrderStatisticsCard
+          header='Total Expenses'
           icon={<Money className="text-white" />}
           value='₦2,000,000.00'
           percentage={27}
@@ -76,32 +76,32 @@ const FinancialReportPage = () => {
           iconBg='#5B1850'
         />
         <OrderStatisticsCard
-          header='Processed Orders'
+          header='Expenses'
+          icon={<Money className="text-white" />}
+          value='₦1,600,600.00'
+          percentage={15}
+          isPositive={false}
+          iconBg='#5B1850'
+        />
+        <OrderStatisticsCard
+          header='Production Expenses'
           icon={<Box />}
-          value='430'
+          value='₦2,000,000.00'
           percentage={34}
-          isPositive={true}
+          isPositive={false}
           additionalText='From last month'
           iconBg='#FFC600'
         />
         <OrderStatisticsCard
-          header='Completed Orders'
+          header='Miscellaneous Expenses'
           icon={<I3DCubeScan className="text-white" />}
-          value='430'
+          value='₦2,000,000.00'
           percentage={45}
-          isPositive={true}
+          isPositive={false}
           additionalText='From last month'
           iconBg='#33860C'
         />
-        <OrderStatisticsCard
-          header='Canceled Orders'
-          icon={<BoxRemove />}
-          value='430'
-          percentage={15}
-          isPositive={false}
-          additionalText='From last month'
-          iconBg='#FFE7E7'
-        />
+
       </div>
 
       <div className='flex justify-end my-14'>

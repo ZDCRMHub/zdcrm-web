@@ -1,4 +1,4 @@
-import { CATEGORIES_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS } from "@/constants";
+import { CATEGORIES_OPTIONS, DELIVERY_LOCATION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS } from "@/constants";
 import { z } from "zod";
 
 const baseItemSchema = z.object({
@@ -14,14 +14,16 @@ const baseItemSchema = z.object({
         // quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
         cost: z.string().min(1, { message: "Price is required" }),
     })).optional(),
+    instruction: z.string().optional(),
 });
 
 const cakeSchema = baseItemSchema.extend({
     category: z.literal("C"),
     layers: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.layers.map(layer => layer.value) as [string, ...string[]], { message: "Please select no of layers" }),
-    flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" }),
+    flavours: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" })),
+    // flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" }),
     toppings: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.toppings.map(topping => topping.value) as [string, ...string[]], { message: "Topping is required" }),
-    size: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.sizes.map(size => size.value) as [string, ...string[]], { message: "Size is required" }),
+    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
     whippedCreamUpgrade: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade.map(whippedCream => whippedCream.value) as [string, ...string[]], { message: "Whipped cream upgrade is required" }),
 });
 
@@ -33,7 +35,7 @@ const flowerSchema = baseItemSchema.extend({
 
 const teddyBearSchema = baseItemSchema.extend({
     category: z.literal("TB"),
-    size: z.enum(PRODUCT_TYPES_OPTIONS.Teddies.sizes.map(size => size.value) as [string, ...string[]]),
+    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Teddies.sizes.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
     bouquet: z.enum(PRODUCT_TYPES_OPTIONS.Teddies.bouquets.map(bouquet => bouquet.value) as [string, ...string[]]),
 });
 
@@ -61,6 +63,7 @@ export const NewOrderSchema = z.object({
     deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
     deliveryAddress: z.string().min(1, { message: "Delivery address is required" }),
     deliveryZone: z.enum(["Lagos Mainland (LM)", "Lagos Central (LC)", "Lagos Island (LI)"], { message: "Delivery zone is required" }),
+    deliveryLocation: z.enum([...(DELIVERY_LOCATION_OPTIONS.map(method => method.value) as [string, ...string[]])]).optional(),
     paymentMode: z.enum([...(PAYMENT_METHODS.map(method => method.value) as [string, ...string[]])], { message: "Payment status is required" }),
     paymentStatus: z.enum([...(PAYMENT_STATUS_OPTIONS.map(method => method.value) as [string, ...string[]])], { message: "Payment mode is required" }),
     proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
@@ -86,6 +89,11 @@ export const NewOrderSchema = z.object({
             errors.push({
                 path: ["deliveryMethod"],
                 message: "Delivery method is required when not using custom delivery",
+                code: "custom" as const
+            });
+            errors.push({
+                path: ["deliveryLocation"],
+                message: "Delivery location is required when not using custom delivery",
                 code: "custom" as const
             });
         }

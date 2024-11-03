@@ -35,7 +35,7 @@ const page = () => {
   };
 
   return (
-    <div className='w-full max-w-7xl mx-auto pt-12 px-8'>
+    <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8'>
       <Header
         title='Conversion Statistics'
         branchOptions={branchOptions}

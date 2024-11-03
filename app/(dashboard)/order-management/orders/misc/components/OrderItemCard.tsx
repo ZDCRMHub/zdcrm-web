@@ -9,6 +9,11 @@ interface Props {
     editFn: () => void
     deleteFn: () => void
 }
+////TODO
+///this will have a prop with the data from the form passed to it
+///the data will be displayed in the card
+
+
 const OrderItemCard: React.FC<Props> = ({ editFn, deleteFn}) => {
     return (
         <Card className='py-6 px-10 rounded-xl max-w-3xl'>
@@ -54,6 +59,14 @@ const OrderItemCard: React.FC<Props> = ({ editFn, deleteFn}) => {
                     <p className="text-[#111827] font-medium">
                         <span className='text-[#687588]'>Message on cake:</span> Love Me
                         Like You Always Do
+                    </p>
+                    <p className="text-[#111827] font-medium">
+                        <span className='text-[#687588]'>Branch:</span> 
+                        Zuzu Delights
+                    </p>
+                    <p className="text-[#111827] font-medium max-w-xl">
+                        <span className='text-[#687588]'>Instructions:</span> 
+                        Allergic to Nuts, Please make your whipped cream low. Please ensure that the recipient knows its an anonymous order
                     </p>
                 </div>
                 <div className="flex items-center gap-4 self-start">

@@ -9,9 +9,10 @@ import Link from 'next/link'
 
 import {
     Accordion, AccordionContent, AccordionTrigger, AccordionItem, Input, SingleDatePicker, LinkButton, SelectSingleCombo, Button, Checkbox, ProductsDropdown, FilePicker, FormControl,
-    FormField, FormItem, FormMessage, Form, TimePicker
+    FormField, FormItem, FormMessage, Form, TimePicker,
+    SelectMultipleSpecialCombo
 } from '@/components/ui'
-import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
+import { AllProducts, BRANCH_OPTIONS, CATEGORIES_OPTIONS, DELIVERY_LOCATION_OPTIONS, DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS, } from '@/constants'
 import { cn } from '@/lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -55,13 +56,13 @@ const NewOrderPage = () => {
     const addNewItem = () => {
         append({
             category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
-            flavour: 'Vanilla', layers: '2', size: '6 inches', toppings: 'none', isCustomOrder: false
+            flavours: ['Vanilla'], layers: '2', sizes: ['6 inches'], toppings: 'none', isCustomOrder: false
         });
     }
     const addNewCustomItem = () => {
         append({
             category: 'C', productType: '', quantity: 1, message: '', isEditing: true, whippedCreamUpgrade: '0',
-            flavour: 'Vanilla', layers: '2', size: '6 inches', toppings: 'none', isCustomOrder: true
+            flavours: ['Vanilla'], layers: '2', sizes: ['6 inches'], toppings: 'none', isCustomOrder: true
         });
     }
     const getFieldError = (errors: FieldErrors<NewOrderFormValues>, index: number, field: string) => {
@@ -136,7 +137,7 @@ const NewOrderPage = () => {
                                             <FormItem>
                                                 <SelectSingleCombo
                                                     options={ENQUIRY_OCCASION_OPTIONS}
-                                                    valueKey="value"
+                                                    valueKey={"value" as const}
                                                     label="Enquiry Occasion"
                                                     labelKey="label"
                                                     placeholder="Select enquiry occasion"
@@ -239,6 +240,26 @@ const NewOrderPage = () => {
                                                     valueKey={"value"}
                                                     labelKey={"label"}
                                                     placeholder="Select delivery zone"
+                                                    hasError={!!errors.deliveryZone}
+                                                    errorMessage={errors.deliveryZone?.message as string}
+                                                />
+
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={control}
+                                        name="deliveryLocation"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <SelectSingleCombo
+                                                    label="Delivery Location"
+                                                    options={DELIVERY_LOCATION_OPTIONS}
+                                                    {...field}
+                                                    valueKey={"value"}
+                                                    labelKey={"label"}
+                                                    placeholder="Select delivery location"
                                                     hasError={!!errors.deliveryZone}
                                                     errorMessage={errors.deliveryZone?.message as string}
                                                 />
@@ -422,18 +443,20 @@ const NewOrderPage = () => {
                                                                                 )}
                                                                             />
                                                                             <Controller
-                                                                                name={`items.${index}.flavour`}
+                                                                                name={`items.${index}.flavours`}
                                                                                 control={control}
                                                                                 render={({ field }) => (
-                                                                                    <SelectSingleCombo
+
+                                                                                    <SelectMultipleSpecialCombo
+                                                                                        maxSelections={3}
                                                                                         options={PRODUCT_TYPES_OPTIONS.Cakes.flavours}
-                                                                                        label="Flavour"
-                                                                                        valueKey="value"
                                                                                         labelKey="label"
+                                                                                        valueKey="value"
+                                                                                        label="Flavour"
                                                                                         placeholder="Select Flavour"
                                                                                         {...field}
-                                                                                        hasError={!!getFieldError(errors, index, 'flavour')}
-                                                                                        errorMessage={getFieldError(errors, index, 'flavour')?.message}
+                                                                                        hasError={!!getFieldError(errors, index, 'flavours')}
+                                                                                        errorMessage={getFieldError(errors, index, 'flavours')?.message}
                                                                                     />
                                                                                 )}
                                                                             />
@@ -454,18 +477,19 @@ const NewOrderPage = () => {
                                                                                 )}
                                                                             />
                                                                             <Controller
-                                                                                name={`items.${index}.size`}
+                                                                                name={`items.${index}.sizes`}
                                                                                 control={control}
                                                                                 render={({ field }) => (
-                                                                                    <SelectSingleCombo
+                                                                                    <SelectMultipleSpecialCombo
+                                                                                        maxSelections={3}
                                                                                         options={PRODUCT_TYPES_OPTIONS.Cakes.sizes}
-                                                                                        label="Size"
+                                                                                        label="Sizes"
                                                                                         valueKey="value"
                                                                                         labelKey="label"
-                                                                                        placeholder="Select Size"
+                                                                                        placeholder="Select Sizes"
                                                                                         {...field}
-                                                                                        hasError={!!getFieldError(errors, index, 'size')}
-                                                                                        errorMessage={getFieldError(errors, index, 'size')?.message}
+                                                                                        hasError={!!getFieldError(errors, index, 'sizes')}
+                                                                                        errorMessage={getFieldError(errors, index, 'sizes')?.message}
                                                                                     />
                                                                                 )}
                                                                             />
@@ -512,18 +536,19 @@ const NewOrderPage = () => {
                                                                     field.category === "TB" && (
                                                                         <>
                                                                             <Controller
-                                                                                name={`items.${index}.size`}
+                                                                                name={`items.${index}.sizes`}
                                                                                 control={control}
                                                                                 render={({ field }) => (
-                                                                                    <SelectSingleCombo
+                                                                                    <SelectMultipleSpecialCombo
+                                                                                        maxSelections={3}
                                                                                         options={PRODUCT_TYPES_OPTIONS.Teddies.sizes}
-                                                                                        label="Size"
+                                                                                        label="Sizes"
                                                                                         valueKey="value"
                                                                                         labelKey="label"
-                                                                                        placeholder="Select Size"
+                                                                                        placeholder="Select Sizes"
                                                                                         {...field}
-                                                                                        hasError={!!getFieldError(errors, index, 'size')}
-                                                                                        errorMessage={getFieldError(errors, index, 'size')?.message}
+                                                                                        hasError={!!getFieldError(errors, index, 'sizes')}
+                                                                                        errorMessage={getFieldError(errors, index, 'sizes')?.message}
                                                                                     />
                                                                                 )}
                                                                             />
@@ -555,7 +580,7 @@ const NewOrderPage = () => {
                                                                 />
 
 
-                                                                <div className="flex items-start">
+                                                                <div className="flex items-start ">
                                                                     {
                                                                         watch(`items.${index}.isCustomOrder`) &&
                                                                         <FilePicker
@@ -580,7 +605,7 @@ const NewOrderPage = () => {
                                                                                         setValue(`items.${index}.quantity`, newQuantity);
                                                                                     }
                                                                                 }}
-                                                                                className="flex items-center justify-center size-7 border border-[#0F172B] text-lg"
+                                                                                className="flex items-center justify-center sizes-7 border border-[#0F172B] text-lg"
                                                                             >
                                                                                 -
                                                                             </button>
@@ -593,7 +618,7 @@ const NewOrderPage = () => {
                                                                                     updatedFields[index].quantity = newQuantity;
                                                                                     setValue(`items.${index}.quantity`, newQuantity);
                                                                                 }}
-                                                                                className="flex items-center justify-center size-7 border border-[#0F172B] text-lg text-center"
+                                                                                className="flex items-center justify-center sizes-7 border border-[#0F172B] text-lg text-center"
                                                                             >
                                                                                 +
                                                                             </button>
@@ -603,16 +628,36 @@ const NewOrderPage = () => {
 
                                                             </div>
 
-                                                            <footer className="flex items-center justify-end gap-4">
-                                                                <Button type="button" onClick={addNewItem}
-                                                                    className="h-12" variant="outline" size="lg"
-                                                                >
-                                                                    <Plus className="mr-1.5" size={16} />
-                                                                    Add Item
-                                                                </Button>
-                                                                <Button type="button" onClick={() => { setValue(`items.${index}.isEditing`, false) }} className="h-12" size="lg">
-                                                                    Confirm
-                                                                </Button>
+                                                            <Input
+                                                                label="Instructions"
+                                                                className="w-full col-span-3"
+                                                                {...register(`items.${index}.instruction`)}
+                                                                placeholder='Enter instruction'
+                                                            />
+
+                                                            <OrderItemCardAdditionalItems
+                                                                index={index}
+                                                                control={control}
+                                                                register={register}
+                                                                errors={errors}
+                                                            />
+
+                                                            <footer className="flex items-center  gap-4 mt-4">
+                                                                <p className="font-semibold text-2xl text-custom-blue ">
+                                                                    Amount: ₦60,000.00
+                                                                </p>
+                                                                <section className='flex items-center gap-4 ml-auto'>
+
+                                                                    <Button type="button" onClick={addNewItem}
+                                                                        className="h-12" variant="outline" size="lg"
+                                                                    >
+                                                                        <Plus className="mr-1.5" size={16} />
+                                                                        Add Item
+                                                                    </Button>
+                                                                    <Button type="button" onClick={() => { setValue(`items.${index}.isEditing`, false) }} className="h-12" size="lg">
+                                                                        Confirm
+                                                                    </Button>
+                                                                </section>
                                                             </footer>
                                                         </section>
                                                     )
@@ -624,12 +669,6 @@ const NewOrderPage = () => {
                                                                     <OrderItemCard
                                                                         editFn={() => setValue(`items.${index}.isEditing`, true)}
                                                                         deleteFn={() => remove(index)}
-                                                                    />
-                                                                    <OrderItemCardAdditionalItems
-                                                                        index={index}
-                                                                        control={control}
-                                                                        register={register}
-                                                                        errors={errors}
                                                                     />
                                                                 </div>
 

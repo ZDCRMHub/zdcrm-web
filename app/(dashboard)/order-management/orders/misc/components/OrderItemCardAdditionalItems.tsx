@@ -8,6 +8,7 @@ import { Plus, Minus } from "lucide-react";
 
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { NewOrderFormValues } from '../utils/schema';
+import { Label } from '@/components/ui/label';
 
 function OrderItemCardAdditionalItems({
   index,
@@ -27,12 +28,15 @@ function OrderItemCardAdditionalItems({
 
   return (
     <div className="space-y-2 max-w-3xl mt-4">
+      <Label className="block">
+        Miscellaneous
+      </Label>
       {fields.map((field, k) => {
         return (
           <div key={field.id} className="grid grid-cols-[1fr,1fr,max-content] items-center space-x-2 w-full">
             <Input
               {...register(`items.${index}.additionalItems.${k}.name`)}
-              placeholder="Name"
+              placeholder="Enter miscellaneous"
               hasError={!!errors.items?.[index]?.additionalItems?.[k]?.name}
               errorMessage={errors.items?.[index]?.additionalItems?.[k]?.name?.message}
             />
@@ -61,9 +65,13 @@ function OrderItemCardAdditionalItems({
         type="button"
         onClick={() => append({ name: "", cost: "" })}
         size="sm"
+        variant="ghost"
+        className="bg-white text-xs"
       >
         <Plus className="h-4 w-4 mr-2" />
-        Add Additional Item
+        {
+          fields.length === 0 ? "Add Miscellaneous Item" : "Add More"
+        }
       </Button>
     </div>
   );

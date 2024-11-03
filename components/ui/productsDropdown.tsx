@@ -123,14 +123,19 @@ const ProductsDropdown = <T extends object>({
                             role="combobox"
                             onClick={() => setOpen(!open)}
                             ref={triggerRef}
+                            disabled={value === "CUSTOM_ORDER"}
                         >
                             <span className={cn(
                                 '!overflow-hidden text-sm w-full font-normal',
                                 (value && options && options?.length) ? '' : '!text-[#A4A4A4]'
                             )}>
-                                {(value && options && options?.length)
-                                    ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                                    : placeholder
+                                {
+                                    value && value === "CUSTOM_ORDER" ?
+                                        "Custom Order"
+                                        :
+                                        (value && options && options?.length)
+                                            ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                                            : placeholder
                                 }
                             </span>
                             <svg
