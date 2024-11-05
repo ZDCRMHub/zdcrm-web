@@ -22,7 +22,7 @@ type StatusColor =
     | 'bg-blue-100 hover:bg-blue-100 text-blue-800';
 
 const statusColors: Record<string, StatusColor> = {
-    DELIVERED: 'bg-gray-100 hover:bg-gray-100 text-gray-800',
+    DELIVERED: 'bg-green-100 hover:bg-green-100 text-green-800',
     CANCELED: 'bg-red-100 hover:bg-red-100 text-red-800',
 };
 
@@ -92,7 +92,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </div>
             </TableCell>
             <TableCell>{order.messageOnOrder}</TableCell>
-            <TableCell>N {order.totalAmount}0</TableCell>
+            <TableCell>₦{order.totalAmount}0</TableCell>
             <TableCell>
                 <Badge
                     className={statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max'}>

@@ -6,11 +6,13 @@ import {
   DialogClose,
   DialogTitle,
   Input,
+  SuccessModal,
 } from "@/components/ui";
 import { OrderTimeLine } from "@/icons/sidebar";
 import { X } from "@phosphor-icons/react";
 
 interface ModalProps {
+  isSuccessModalOpen: boolean;
   isModalOpen: boolean;
   closeBitcoinModal: () => void;
   nextStep: () => void;
@@ -23,6 +25,7 @@ interface ModalProps {
 }
 
 const ConfirmBitcoinModal: React.FC<ModalProps> = ({
+  isSuccessModalOpen,
   isModalOpen,
   closeBitcoinModal,
   customConfirmText,
@@ -33,6 +36,11 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
   nextStep,
   value,
 }) => {
+
+  const handleConfirm = () => {
+    console.log(`Confirmed action`);
+  };
+
   return (
     <Dialog open={isModalOpen}>
       <DialogContent
@@ -66,7 +74,7 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
 
         <div className="w-full max-w-[350px] mx-auto">
           <Input
-            className="w-full h-14 mx-auto mb-5 border border-solid border-[#31A5F980] bg-[#E3F2FD]"
+            className="h-14 mx-auto mb-5 border border-solid border-[#31A5F980] bg-[#E3F2FD]"
             value={
               value == "paid_bitcoin"
                 ? "Bitcoin"
@@ -77,7 +85,7 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
             disabled
           />
           <div>
-            <p className="pl-4 mb-3 text-sm">
+            <p className="mb-3 text-sm">
               Amount Paid{" "}
               {value == "paid_bitcoin"
                 ? "(Bitcoin)"
@@ -86,7 +94,7 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
                 : "(Paypal)"}
             </p>
             <Input
-              className="w-[90%] max-w-[350px] h-14 mx-auto"
+              className="h-14 mx-auto"
               type="number"
             />
           </div>
@@ -105,6 +113,13 @@ const ConfirmBitcoinModal: React.FC<ModalProps> = ({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <SuccessModal
+        closeModal={handleConfirm}
+        isModalOpen={isSuccessModalOpen}
+        heading='Order Approved!'
+        subheading='Enquiry has been approved as an order'
+      />
     </Dialog>
   );
 };

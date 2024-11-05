@@ -18,13 +18,11 @@ const chartData = [
 ]
 
 const chartConfig = {
-  "Total Revenue": {
-    label: "Total Revenue",
-    color: "##34CF56",
+  processed: {
+    label: "Completed Order",
   },
-  "finalized": {
-    label: "finalized",
-    color: "#00E096",
+  finalized: {
+    label: "Finalized Discussion",
   },
 } satisfies ChartConfig
 
@@ -36,7 +34,7 @@ export function EmployeePerformanceChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="max-h-[400px] w-full h-[90%]">
-          <BarChart data={chartData} barSize={20} className="mb-8">
+          <BarChart data={chartData} barSize={15} className="mb-8">
             {/* Grid with a stronger stroke */}
             <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />
 
@@ -61,8 +59,8 @@ export function EmployeePerformanceChart() {
               content={<ChartTooltipContent indicator="dashed" />}
             />
 
-            <Bar dataKey="processed" fill="#34CF56" radius={4} label="Processed" />
-            <Bar dataKey="finalized" fill="#194A7A" radius={4} label="Finalized" />
+            <Bar dataKey="finalized" fill="#3B54E3" radius={4} label="Finalized Discussion" />
+            <Bar dataKey="processed" fill="#FFC600" radius={4} label="Completed Order" />
 
             <Legend
               verticalAlign="bottom"
@@ -78,8 +76,8 @@ export function EmployeePerformanceChart() {
                 paddingLeft: '20px',
               }}
               payload={[
-                { value: "Processed", type: "circle", id: "processed", color: "#34CF56" },
-                { value: "Finalized", type: "circle", id: "finalized", color: "#194A7A" },
+                { value: "Finalized Discussion", type: "circle", id: "finalized", color: "#194A7A" },
+                { value: "Completed Order", type: "circle", id: "processed", color: "#34CF56" },
               ]}
             />
           </BarChart>
