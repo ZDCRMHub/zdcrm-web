@@ -12,7 +12,7 @@ import { LinkButton } from "@/components/ui";
 
 interface StoreProduct {
   productName: string;
-  stockQuantity: string;
+  stockQuantity: number;
   costPrice: string;
   lastUpdated: string;
   updatedBy: string;
@@ -69,7 +69,7 @@ const StoreInventory = () => {
   const products: StoreProduct[] = [
     {
       productName: "50 LITERS OF GROUNDNUT OIL",
-      stockQuantity: "9",
+      stockQuantity: 9,
       costPrice: "₦20,450.00",
       lastUpdated: "6:00PM | Feb. 22nd, 2024",
       updatedBy: "Adefola Hanna",
@@ -77,7 +77,7 @@ const StoreInventory = () => {
     },
     {
       productName: "BAG OF FLOUR",
-      stockQuantity: "5",
+      stockQuantity: 5,
       costPrice: "₦115,450.00",
       lastUpdated: "6:00PM | Feb. 22nd, 2024",
       updatedBy: "Adefola Hanna",
@@ -85,7 +85,7 @@ const StoreInventory = () => {
     },
     {
       productName: "BUTTER",
-      stockQuantity: "10",
+      stockQuantity: 10,
       costPrice: "₦115,450.00",
       lastUpdated: "6:00PM | Feb. 22nd, 2024",
       updatedBy: "Adefola Hanna",
@@ -93,7 +93,7 @@ const StoreInventory = () => {
     },
     {
       productName: "BOXES",
-      stockQuantity: "3",
+      stockQuantity: 3,
       costPrice: "₦115,450.00",
       lastUpdated: "6:00PM | Feb. 22nd, 2024",
       updatedBy: "Adefola Hanna",
@@ -101,7 +101,7 @@ const StoreInventory = () => {
     },
     {
       productName: "YEAST",
-      stockQuantity: "15",
+      stockQuantity: 15,
       costPrice: "₦115,450.00",
       lastUpdated: "6:00PM | Feb. 22nd, 2024",
       updatedBy: "Adefola Hanna",
@@ -109,7 +109,7 @@ const StoreInventory = () => {
     },
     {
       productName: "VEGETABLE OIL",
-      stockQuantity: "5",
+      stockQuantity: 5,
       costPrice: "₦15,450.00",
       lastUpdated: "6:00PM | Feb. 22nd, 2024",
       updatedBy: "Adefola Hanna",
