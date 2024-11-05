@@ -378,7 +378,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                 <>
                   <span className="text-[#687588] font-manrope">{label}</span>
                   <span className="text-[#111827]">{value}</span>
-                </React.Fragment>
+                </>
               ))}
             </div>
           </section>
