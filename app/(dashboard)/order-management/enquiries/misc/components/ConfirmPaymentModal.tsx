@@ -20,6 +20,7 @@ import ConfirmBitcoinModal from "./ConfirmBitcoinModal";
 import ConfirmPartPaymentModal from "./ConfirmPartPaymentModal";
 
 interface ModalProps {
+  isSuccessModalOpen: boolean;
   isModalOpen: boolean;
   closeModal: () => void;
   nextStep: () => void;
@@ -30,6 +31,7 @@ interface ModalProps {
   subheading?: string | React.ReactNode;
 }
 const ConfirmPaymentModal: React.FC<ModalProps> = ({
+  isSuccessModalOpen,
   isModalOpen,
   closeModal,
   customConfirmText,
@@ -39,24 +41,6 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
   subheading,
   nextStep,
 }) => {
-  // export const paymentOptions = [
-  //     { label: "Not Paid (But Go Ahead)", value: "not_paid_go_ahead" },
-  //     { label: "Paid (Website Card)", value: "paid_website_card" },
-  //     { label: "Paid (Naira Transfer)", value: "paid_naira_transfer" },
-  //     { label: "Paid (POS)", value: "paid_pos" },
-  //     { label: "Paid (USD Transfer)", value: "paid_usd_transfer" },
-  //     { label: "Paid (Paypal)", value: "paid_paypal" },
-  //     { label: "Cash Paid", value: "cash_paid" },
-  //     { label: "Part Payment", value: "part_payment" },
-  //     { label: "Paid (Bitcoin)", value: "paid_bitcoin" },
-  //     { label: "Not Received (Paid)", value: "not_received_paid" }
-  //   ];
-
-  ////TODO
-  //create modal for the three payment options
-  //if selected payment option is not bitcoin/usd/paypal etc, just call nextStep() which opens the success modal
-  ///else open the respective modals
-
   const {
     state: isConfirmBitcoinModalOpen,
     setTrue: openConfirmBitcoinModal,
@@ -161,6 +145,7 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
       </DialogContent>
 
       <ConfirmBitcoinModal
+        isSuccessModalOpen={isSuccessModalOpen}
         isModalOpen={isConfirmBitcoinModalOpen}
         closeBitcoinModal={closeConfirmBitcoinModal}
         nextStep={nextStep}
@@ -169,6 +154,7 @@ const ConfirmPaymentModal: React.FC<ModalProps> = ({
         subheading="This action converts Enquiries to Order"
       />
       <ConfirmPartPaymentModal
+        isSuccessModalOpen={isSuccessModalOpen}
         isModalOpen={isConfirmPartPaymentModalOpen}
         closePartPaymentModal={closeConfirmPartPaymentModal}
         nextStep={nextStep}

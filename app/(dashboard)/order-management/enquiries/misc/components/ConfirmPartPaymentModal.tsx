@@ -11,11 +11,14 @@ import {
   SelectValue,
   SelectItem,
   SelectContent,
+  SuccessModal,
 } from "@/components/ui";
 import { OrderTimeLine } from "@/icons/sidebar";
 import { X } from "@phosphor-icons/react";
+import { useState } from "react";
 
 interface ModalProps {
+  isSuccessModalOpen: boolean;
   isModalOpen: boolean;
   closePartPaymentModal: () => void;
   nextStep: () => void;
@@ -28,6 +31,7 @@ interface ModalProps {
 }
 
 const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
+  isSuccessModalOpen,
   isModalOpen,
   closePartPaymentModal,
   customConfirmText,
@@ -36,8 +40,21 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
   heading,
   subheading,
   nextStep,
-  value,
 }) => {
+
+  const handleConfirm = () => {
+    console.log(`Confirmed action`);
+  };
+
+  const [total, setTotal] = useState(0);
+  const [paid, setPaid] = useState(0);
+
+  const balance = total - paid;
+
+  // const addAmount = (amount) => {
+  //   setBalance(balance + amount);
+  // };
+
   return (
     <Dialog open={isModalOpen}>
       <DialogContent
@@ -81,6 +98,8 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
               className="h-14 mx-auto"
               type="number"
               placeholder="Enter Amount Due"
+              value={total}
+              onChange={(e) => setTotal(Number(e.target.value))}
             />
           </div>
           <div className="flex justify-between gap-4">
@@ -90,6 +109,8 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
                 className="h-14 mx-auto"
                 type="number"
                 placeholder="Enter Amount Paid"
+                value={paid}
+                onChange={(e) => setPaid(Number(e.target.value))}
               />
             </div>
             <div className="w-full">
@@ -112,6 +133,8 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
                 className="h-14 mx-auto"
                 type="number"
                 placeholder="Enter Balance"
+                // disabled
+                value={balance}
               />
             </div>
           </div>
@@ -130,6 +153,14 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <SuccessModal
+        closeModal={handleConfirm}
+        isModalOpen={isSuccessModalOpen}
+        heading='Order Approved!'
+        subheading='Enquiry has been approved as an order'
+      />
+
     </Dialog>
   );
 };

@@ -10,7 +10,7 @@ import { Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem
 import { LinkButton, Button } from '@/components/ui';
 import ProductsInventoryTable from './ProductsInventoryTable';
 import TabBar from '@/components/TabBar';
-import { BRANCH_OPTIONS, CATEGORIES_OPTIONS } from '@/constants';
+import { BRANCH_OPTIONS, CATEGORIES_OPTIONS, PRODUCT_CATEGORIES_OPTIONS } from '@/constants';
 
 
 
@@ -52,7 +52,7 @@ export default function ProductsInventoryDashboard() {
           />
           <SelectSingleCombo
             name='sortBy'
-            options={CATEGORIES_OPTIONS}
+            options={PRODUCT_CATEGORIES_OPTIONS}
             value={sortBy}
             onChange={(value) => setSortBy(value)}
             valueKey='value'
@@ -65,9 +65,9 @@ export default function ProductsInventoryDashboard() {
           />
         </div>
         <div className='flex items-center gap-2'>
-          <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
+          {/* <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
             <Plus className='mr-2 h-4 w-4' /> Add Order
-          </LinkButton>
+          </LinkButton> */}
           <Button
             variant='outline'
             className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>

@@ -119,7 +119,7 @@ const products = [
 
 const TopProductsTable = () => {
   return (
-    <div className='bg-white shadow-md rounded-lg overflow-hidden'>
+    <div className='bg-white shadow-md rounded-lg overflow-hidden w-[50%]'>
       <div className='px-6 py-4'>
         <h2 className='text-xl font-normal text-gray-800'>Top Products</h2>
       </div>

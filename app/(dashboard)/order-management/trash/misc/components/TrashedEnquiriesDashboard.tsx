@@ -1,122 +1,152 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Search,
   ChevronDown,
   Plus,
   MoreHorizontal,
   RefreshCcw,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSub,
+  MenubarSubContent,
+  MenubarSubTrigger,
+  MenubarTrigger,
+  RangeAndCustomDatePicker,
+  Input,
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  SelectSingleCombo,
+} from "@/components/ui";
 
-import { LinkButton } from '@/components/ui';
-import TabBar from '@/components/TabBar';
-import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
-import TrashedEnquiriesTable from './TrashedEnquiriesTable';
+import { LinkButton } from "@/components/ui";
+import TabBar from "@/components/TabBar";
+import {
+  ArrowDown2,
+  Calendar,
+  Category2,
+  NotificationStatus,
+} from "iconsax-react";
+import TrashedEnquiriesTable from "./TrashedEnquiriesTable";
 
 const enquiries = [
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
+    customerName: "Ife Adebayo",
+    phoneNumber: "08067556644",
     enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
+      "Adeline Faultline Cake",
+      "Moet Chandon",
+      "Large size teddy",
     ],
-    deliveryNotes: 'Call Simisola',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
+    deliveryNotes: "Call Simisola",
+    category: ["C", "F", "TB"],
+    status: "FINALIZED DISCUSSION",
   },
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
-    deliveryNotes: 'Deliver at door step',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
+    customerName: "Ife Adebayo",
+    phoneNumber: "08067556644",
+    enquiryItems: ["A stem of chrys", "Moet Chandon", "Large size teddy"],
+    deliveryNotes: "Deliver at door step",
+    category: ["C", "F", "TB"],
+    status: "FINALIZED DISCUSSION",
   },
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: ['Delectable Choco cake', 'Moet Chandon', 'Large size teddy'],
-    deliveryNotes: 'Deliver at door step',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
+    customerName: "Ife Adebayo",
+    phoneNumber: "08067556644",
+    enquiryItems: ["Delectable Choco cake", "Moet Chandon", "Large size teddy"],
+    deliveryNotes: "Deliver at door step",
+    category: ["C", "F", "TB"],
+    status: "FINALIZED DISCUSSION",
   },
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
-    deliveryNotes: 'Call Adeola',
-    category: ['C', 'F', 'TB'],
-    status: 'STILL DISCUSSING',
+    customerName: "Ife Adebayo",
+    phoneNumber: "08067556644",
+    enquiryItems: ["Choco Drip Drop 104", "Moet Chandon", "Large size teddy"],
+    deliveryNotes: "Call Adeola",
+    category: ["C", "F", "TB"],
+    status: "STILL DISCUSSING",
   },
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
+    customerName: "Ife Adebayo",
+    phoneNumber: "08067556644",
     enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
+      "Adeline Faultline Cake",
+      "Moet Chandon",
+      "Large size teddy",
     ],
-    deliveryNotes: 'Call Simisola',
-    category: ['C', 'F', 'TB'],
-    status: 'STILL DISCUSSING',
+    deliveryNotes: "Call Simisola",
+    category: ["C", "F", "TB"],
+    status: "STILL DISCUSSING",
   },
   {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
+    customerName: "Ife Adebayo",
+    phoneNumber: "08067556644",
     enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
+      "Adeline Faultline Cake",
+      "Moet Chandon",
+      "Large size teddy",
     ],
-    deliveryNotes: 'Deliver at door step',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
+    deliveryNotes: "Deliver at door step",
+    category: ["C", "F", "TB"],
+    status: "FINALIZED DISCUSSION",
   },
 ];
 
 const tabs = [
-  { name: 'All Enquiries', count: 840 },
+  { name: "All Enquiries", count: 840 },
   // { name: 'In Cart', count: 400 },
   // { name: 'Manual Enquiries', count: 450 },
 ];
 
 export default function TrashedEnquiriesDashboard() {
   const [activeTab, setActiveTab] = useState(tabs[0].name);
-  const [searchText, setSearchText] = useState("")
-
-
+  const [searchText, setSearchText] = useState("");
+  const [sortBy, setSortBy] = useState('All Enquiries')
 
   return (
-    <div className='w-full md:w-[95%] max-w-[1792px] mx-auto p-6'>
-      <div className='flex justify-between items-center mb-6 gap-4'>
-        <div className='flex items-center gap-2 w-80 grow'>
+    <div className="w-full md:w-[95%] max-w-[1792px] mx-auto p-6">
+      <div className="flex justify-between items-center mb-6 gap-4">
+        <div className="flex items-center gap-2 w-80 grow">
           <Input
-            type='text'
-            placeholder='Search (client name, customer rep, phone number)'
-            className='w-full focus:border min-w-[350px] text-xs !h-10'
+            type="text"
+            placeholder="Search (client name, customer rep, phone number)"
+            className="w-full focus:border min-w-[350px] text-xs !h-10"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
+            rightIcon={<Search className="h-5 w-5 text-[#8B909A]" />}
           />
           <Menubar>
             <MenubarMenu>
-              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter enquiries by <ArrowDown2 size={16} /></MenubarTrigger>
+              <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">
+                Filter enquiries by <ArrowDown2 size={16} />
+              </MenubarTrigger>
               <MenubarContent>
-
                 <MenubarSub>
-                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Calendar size={18} />Date Range</MenubarSubTrigger>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                    <Calendar size={18} />
+                    Date Range
+                  </MenubarSubTrigger>
                   <MenubarSubContent>
                     <RangeAndCustomDatePicker />
                   </MenubarSubContent>
                 </MenubarSub>
 
                 <MenubarSub>
-                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><Category2 size={18} />Category</MenubarSubTrigger>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                    <Category2 size={18} />
+                    Category
+                  </MenubarSubTrigger>
                   <MenubarSubContent>
                     <MenubarItem>Cake</MenubarItem>
                     <MenubarItem>Flower</MenubarItem>
@@ -128,7 +158,10 @@ export default function TrashedEnquiriesDashboard() {
                 </MenubarSub>
 
                 <MenubarSub>
-                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><NotificationStatus size={18} />Status</MenubarSubTrigger>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                    <NotificationStatus size={18} />
+                    Status
+                  </MenubarSubTrigger>
                   <MenubarSubContent>
                     <MenubarItem>Started Discussion</MenubarItem>
                     <MenubarItem>Still Discussing</MenubarItem>
@@ -138,66 +171,76 @@ export default function TrashedEnquiriesDashboard() {
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
+          <SelectSingleCombo
+            name="sortBy"
+            options={[
+              { label: "All Payments", value: "All Payments" },
+              { label: "Paid(Naira Transfer)", value: "Paid(Naira Transfer)" },
+              { label: "Paid(Card Payment)", value: "Paid(Card Payment)" },
+              { label: "Not Received(Payment Made)", value: "Not Received" },
+            ]}
+            value={sortBy}
+            onChange={(value) => setSortBy(value)}
+            valueKey="value"
+            labelKey="label"
+            placeholder="Sort by"
+            className="w-32 !h-10 text-[#8B909A]"
+            placeHolderClass="text-[#8B909A] text-xs"
+            triggerColor="#8B909A"
+            showSelectedValue={false}
+          />
         </div>
 
-        <div className='flex items-center gap-2'>
-         
+        <div className="flex items-center gap-2">
           <Button
-            variant='outline'
-            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
-            <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+            variant="outline"
+            className="bg-[#28C76F] text-[#1EA566] bg-opacity-25"
+          >
+            <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
           </Button>
         </div>
       </div>
 
-      {
-        searchText.trim() !== "" &&
-        <h3 className="mb-4">Search Results</h3>
-      }
-      {
-        searchText.trim() === "" ?
-          <>
-            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
-            <TrashedEnquiriesTable />
-
-          </>
-
-          :
+      {searchText.trim() !== "" && <h3 className="mb-4">Search Results</h3>}
+      {searchText.trim() === "" ? (
+        <>
+          <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
           <TrashedEnquiriesTable />
-      }
+        </>
+      ) : (
+        <TrashedEnquiriesTable />
+      )}
 
-      <div className='flex items-center justify-between mt-auto'>
+      <div className="flex items-center justify-between mt-auto">
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious href='#' />
+              <PaginationPrevious href="#" />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href='#'>1</PaginationLink>
+              <PaginationLink href="#">1</PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href='#'>2</PaginationLink>
+              <PaginationLink href="#">2</PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href='#'>3</PaginationLink>
+              <PaginationLink href="#">3</PaginationLink>
             </PaginationItem>
             <PaginationItem>
               <PaginationEllipsis />
             </PaginationItem>
             <PaginationItem>
-              <PaginationLink href='#'>10</PaginationLink>
+              <PaginationLink href="#">10</PaginationLink>
             </PaginationItem>
             <PaginationItem>
-              <PaginationNext href='#' />
+              <PaginationNext href="#" />
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-        <div className='text-sm text-gray-500 w-max shrink-0'>
+        <div className="text-sm text-gray-500 w-max shrink-0">
           Showing 1 to 8 of 50 entries
         </div>
       </div>
-
-
     </div>
   );
 }

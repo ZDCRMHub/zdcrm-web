@@ -1,15 +1,43 @@
-'use client'
-
-import React from 'react';
-import { Badge, Checkbox, Button, LinkButton, Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
-import { Mail, MessageCircle, User, X, Phone } from 'lucide-react';
-import { Book, Notepad2, UserOctagon } from 'iconsax-react';
-import { Separator } from '@radix-ui/react-select';
-import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
-import { EditPenIcon } from '@/icons/core';
-import { generateMockOrders } from '@/app/(dashboard)/order-timeline/misc/components/Timeline';
-import EnquiryDiscussCard from '@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard';
+import React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox, Button, LinkButton, CardTitle } from "@/components/ui";
+import { Mail, MessageCircle, User, X } from "lucide-react";
+import {
+  Book,
+  Notepad2,
+  UserOctagon,
+  Printer,
+  EmojiHappy,
+  ProfileCircle,
+  UserEdit,
+} from "iconsax-react";
+import { Separator } from "@radix-ui/react-select";
+import { Phone } from "@phosphor-icons/react";
+import Image from "next/image";
+import {
+  Input,
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+  CardHeader,
+  Card,
+  CardContent,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Accordion,
+  AccordionContent,
+  AccordionTrigger,
+  AccordionItem,
+} from "@/components/ui";
+import { EditPenIcon } from "@/icons/core";
+import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
+import { useBooleanStateControl } from "@/hooks";
+import { paymentOptions } from "@/constants";
 
 interface OrderDetailsPanelProps {
   orderId: string;
@@ -23,13 +51,19 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
       <SheetTrigger asChild>
         <Button variant='ghost' size='sm' aria-label={`Open order details for ${orderId}`}>
           {'>>'}
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-label={`Open order details for ${orderId}`}
+        >
+          {">>"}
         </Button>
       </SheetTrigger>
       <SheetContent className='!w-[90vw] !max-w-[800px] h-screen overflow-y-scroll xl:px-12'>
         <SheetTitle>
-          <h2 className='text-xl font-semibold flex items-center gap-4'>
-            <span className='bg-[#E8EEFD] p-2 rounded-full'>
-              <Book size={25} variant='Bold' color='#194A7A' />
+          <h2 className="text-xl font-semibold flex items-center gap-4">
+            <span className="bg-[#E8EEFD] p-2 rounded-full">
+              <Book size={25} variant="Bold" color="#194A7A" />
             </span>
             <span>Order Details</span>
           </h2>
@@ -42,42 +76,155 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <div className='flex items-center gap-5'>
             <div className='flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0'>
               <span className='text-sm'>Order ID: {orderId}</span>
+
+        <div className="flex justify-between pt-8">
+          <div className="flex items-center gap-5">
+            <div className="flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0">
+              <span className="text-sm">Order ID: {orderId}</span>
             </div>
+
+            <Select>
+              <SelectTrigger className="w-[150px] bg-transparent">
+                <SelectValue placeholder="SOA" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="SOA">SOA</SelectItem>
+                <SelectItem value="SORTED">SORTED</SelectItem>
+                <SelectItem value="DIS CL">DIS CL</SelectItem>
+                <SelectItem value="DELIVERED">DELIVERED</SelectItem>
+                <SelectItem value="CANCELLED">CANCELLED</SelectItem>
+                <SelectItem value="SENT TO DISPATCH">
+                  SENT TO DISPATCH
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className='flex items-center space-x-2'>
-            <Badge variant='outline' className='bg-[#367917] bg-opacity-15 border-green-300 px-3 py-3 rounded-[7px] text-[#2D7D08] min-w-max'>
-              Payment Confirmed
-            </Badge>
-            <Button variant='outline' className='px flex gap-1 bg-[#1118271C]'>
-              Delivered
+
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              className="px flex gap-1 border-[#B9B9B9]"
+            >
+              <EditPenIcon className="h-4 w-4" />
+
+              <span>Edit</span>
             </Button>
+            {/* <Badge
+              variant='outline'
+              className='bg-[#367917] bg-opacity-15 border-green-300 px-3 py-3 rounded-[10px] text-[#2D7D08] min-w-max'>
+              Payment Confirmed
+            </Badge> */}
+            <Select>
+              <SelectTrigger className="w-[150px] bg-[#3679171F]">
+                <SelectValue placeholder="Select Payment Method" />
+              </SelectTrigger>
+              <SelectContent>
+                {paymentOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    // onClick={() => setSelectedPaymentMethod(option.value)}
+                    className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
-        <div className='py-4 space-y-12'>
-          {/* Customer and Recipient Info */}
-          <div className='grid grid-cols-2 gap-4 mt-8'>
-            {['Customers', 'Recipient'].map((type, index) => (
-              <article key={index} className='flex flex-col bg-[#194A7A] text-center text-white rounded-lg shadow-md'>
-                <h3 className='font-semibold mb-2 flex items-center justify-center gap-2 text-lg py-3 px-4 border-b border-[#FFC600]'>
-                  <span>
-                    {type === 'Customers' ? <UserOctagon size={25} variant='Linear' color='#FFC600' /> : <User size={25} color='#FFC600' />}
-                  </span>
-                  <span>{type} Info</span>
-                </h3>
-                <section className="flex flex-col items-center p-4 space-y-3 text-left">
-                  <p>Name: {type === 'Customers' ? 'Ife Adebayo' : 'Paul Adeola'}</p>
-                  <p className='text-sm flex gap-2 items-center justify-start'>
-                    <Mail size={20} className="text-[#FFC600]" />
-                    {type === 'Customers' ? 'adebayo@gmail.com' : 'onikhalidayo@gmail.com'}
-                  </p>
-                  <p className='text-sm flex gap-2 items-center justify-start'>
-                    <Phone size={20} className="text-[#FFC600]" />
-                    08031823849
-                  </p>
-                </section>
-              </article>
-            ))}
+
+        <div className="py-4 space-y-10">
+          <div className="grid grid-cols-2 gap-2.5 mt-8">
+            <Card className="flex-1 bg-[#194A7A] text-white rounded-lg">
+              <CardHeader className="border-b border-[#FFC600] pb-4">
+                <CardTitle className="flex items-center justify-center gap-2 text-lg">
+                  <UserOctagon size={25} color="#FFC600" />
+                  <span>Customer&apos;s Info</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 flex justify-center">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="flex items-center gap-2 text-sm">
+                      <UserEdit
+                        size={20}
+                        className="text-[#FFC600] flex-shrink-0"
+                      />
+                      <span>Ife Adebayo</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Mail
+                        size={20}
+                        className="text-[#FFC600] flex-shrink-0"
+                      />
+                      <span>adebayo@gmail.com</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Phone
+                        size={20}
+                        className="text-[#FFC600] flex-shrink-0"
+                      />
+                      <span>08031823849</span>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="flex-1 bg-[#194A7A] text-white rounded-lg">
+              <CardHeader className="border-b border-[#FFC600] pb-4">
+                <CardTitle className="flex items-center justify-center gap-2 text-lg">
+                  <ProfileCircle size={25} color="#FFC600" />
+                  <span>Recipient Info</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 flex justify-center">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <p className="flex items-center gap-2 text-sm">
+                      <UserEdit
+                        size={20}
+                        className="text-[#FFC600] flex-shrink-0"
+                      />
+                      <span>Paul Adeola</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Mail
+                        size={20}
+                        className="text-[#FFC600] flex-shrink-0"
+                      />
+                      <span>oniayo@gmail.com</span>
+                    </p>
+                    <p className="flex items-center gap-2 text-sm">
+                      <Phone
+                        size={20}
+                        className="text-[#FFC600] flex-shrink-0"
+                      />
+                      <span>08031823849</span>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
+
+          <section className="flex items-center gap-8 mb-16 mt-3">
+            <div className="flex items-center gap-1 text-sm text-[#111827]">
+              <span className="flex items-center text-sm text-[#687588]">
+                <EmojiHappy size={18} className="mr-2" />
+                Order Occasion:{" "}
+              </span>
+              <p>Happy Anniversary</p>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-[#111827]">
+              <span className="text-sm text-[#687588]">Order Channel: </span>
+              <p>Website</p>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-[#111827]">
+              <span className="text-sm text-[#687588]">Payment Mode: </span>
+              <p>Bank Transfer</p>
+            </div>
           {/* Order Details */}
           <section className='flex items-center gap-8 mb-16 mt-3'>
             {[
@@ -102,15 +249,27 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             </header>
             <EnquiryDiscussCard order={mockOrder} />
           </section>
+
+          <section className="mt-16 mb-8">
           {/* Order Notes */}
           <section className='mt-16 mb-8'>
             <header className="border-b border-b-[#00000021]">
+              <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                <Notepad2 size={19} />
+                Delivery Note
               <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
                 <MessageCircle size={19} />
                 Order Notes
                 <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
               </p>
             </header>
+            <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
+              <Input
+                value="Happy Anniversary"
+                readOnly
+                containerClassName="w-full"
+                rightIcon={<EditPenIcon width={20} height={20} />}
+              />
             <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full'>
               <Input value="Happy Anniversary" readOnly containerClassName='w-full' />
             </div>

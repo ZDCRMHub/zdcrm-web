@@ -46,15 +46,15 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
   const [minute, setMinute] = React.useState("00")
   const [period, setPeriod] = React.useState("AM")
 
-  React.useEffect(() => {
-    if (value) {
-      const [time, ampm] = value.split(" ")
-      const [h, m] = time.split(":")
-      setHour(h)
-      setMinute(m)
-      setPeriod(ampm)
-    }
-  }, [value])
+  // React.useEffect(() => {
+  //   if (value) {
+  //     const [time, ampm] = value.split(" ")
+  //     const [h, m] = time.split(":")
+  //     setHour(h)
+  //     setMinute(m)
+  //     setPeriod(ampm)
+  //   }
+  // }, [value])
 
   const handleTimeChange = () => {
     const time = `${hour}:${minute} ${period}`
