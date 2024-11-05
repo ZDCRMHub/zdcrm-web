@@ -104,8 +104,7 @@ const page = () => {
         <ComparisonModal />
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4 xl:gap-y-16 mt-20 mb-10'>
-        <OrderStatusChart />
+      <div className='flex gap-12 flex-col'>
         <OrderDeliveryZoneChart />
         <TopProductsTable />
       </div>

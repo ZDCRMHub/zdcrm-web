@@ -1,7 +1,7 @@
 'use client';
 
 import { TrendingUp } from 'lucide-react';
-import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, XAxis } from 'recharts';
 
 import {
   Card,
@@ -83,6 +83,38 @@ export function ClientTrackingChart() {
               stroke='#A700FF'
               strokeWidth={2}
               dot={false}
+            />
+
+<Legend
+              verticalAlign="bottom"
+              align="center"
+              layout="horizontal"
+              wrapperStyle={{
+                position: "relative",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                bottom: "-10px",
+                // right: '0',
+                // top: '',
+                // transform: 'translateY(50%)',
+                paddingLeft: "20px",
+              }}
+              payload={[
+                {
+                  value: "Returning Clients",
+                  type: "circle",
+                  id: "enquiries",
+                  color: "#EF4444",
+                },
+                {
+                  value: "New Clients",
+                  type: "circle",
+                  id: "orders",
+                  color: "#A700FF",
+                },
+              ]}
             />
           </LineChart>
         </ChartContainer>

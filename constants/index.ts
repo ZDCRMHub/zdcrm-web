@@ -473,6 +473,23 @@ export const CATEGORIES_OPTIONS = [
   { value: 'HB', label: 'Hand Bag' },
 ]
 
+export const STOCK_CATEGORIES_OPTIONS = [
+  { value: 'C', label: 'Cake' },
+  { value: 'F', label: 'Flower' },
+  { value: 'CC', label: 'Cup Cake' },
+]
+
+export const PRODUCT_CATEGORIES_OPTIONS = [
+  { value: 'W', label: 'Wine' },
+  { value: 'TB', label: 'Teddy Bear' },
+  { value: 'GC', label: 'Gift Card' },
+  { value: 'V', label: 'Vase' },
+  { value: 'CH', label: 'Chocolate' },
+  { value: 'B', label: 'Baloon' },
+  { value: 'P', label: 'Perfume' },
+  { value: 'HB', label: 'Hand Bag' },
+]
+
 export const PAYMENT_STATUS_OPTIONS = [
   { label: "Not Paid", value: "not_paid" },
   { label: "Paid", value: "paid" },

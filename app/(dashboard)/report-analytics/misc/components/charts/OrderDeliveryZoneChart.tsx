@@ -1,6 +1,4 @@
-"use client"
-
-import { Legend, Pie, PieChart } from "recharts"
+"use client";
 
 import {
   Card,
@@ -9,7 +7,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
@@ -17,102 +15,156 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import { TrendUp } from "iconsax-react"
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue, RangeAndCustomDatePicker } from "@/components/ui"
-import { TrendingUp } from "lucide-react"
+} from "@/components/ui/chart";
+import { TrendUp } from "iconsax-react";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  RangeAndCustomDatePicker,
+} from "@/components/ui";
+import { TrendingUp } from "lucide-react";
 
-export const description = "A donut chart"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
+
+export const description = "A donut chart";
 
 const chartData = [
-  { location: "Other places", no_of_orders: 6, fill: "#FFC600" },
-  { location: "Lagos Central", no_of_orders: 15, fill: "#E51B3F" },
-  { location: "Lagos Island", no_of_orders: 28, fill: "#1C1C1C99" },
-  { location: "Lagos Mainland", no_of_orders: 10, fill: "#34CF5699" },
-]
+  { location: "Lagos Island", no_of_orders: 25, enquiries: 16 },
+  { location: "Lagos Central", no_of_orders: 15, enquiries: 8 },
+  { location: "Lagos Mainland", no_of_orders: 10, enquiries: 15 },
+  { location: "Other places", no_of_orders: 6, enquiries: 14 },
+];
 
 const chartConfig = {
   no_of_orders: {
-    label: "no_of_orders",
+    label: "No. of Orders",
   },
-  "Lagos Island": {
-    label: "Lagos Island",
-    color: "#1C1C1C99",
+  enquiries: {
+    label: "Enquiries",
   },
-  "Lagos Central": {
-    label: "Lagos Central",
-    color: "#E51B3F",
-  },
-  "Lagos Mainland": {
-    label: "Lagos Mainland",
-    color: "#34CF5699",
-  },
-  "Other places": {
-    label: "Other places",
-    color: "#FFC600",
-  },
-} satisfies ChartConfig
+  // "Lagos Island": {
+  //   label: "Lagos Island",
+  //   color: "#1C1C1C99",
+  // },
+  // "Lagos Central": {
+  //   label: "Lagos Central",
+  //   color: "#E51B3F",
+  // },
+  // "Lagos Mainland": {
+  //   label: "Lagos Mainland",
+  //   color: "#34CF5699",
+  // },
+  // "Other places": {
+  //   label: "Other places",
+  //   color: "#FFC600",
+  // },
+} satisfies ChartConfig;
 
 export function OrderDeliveryZoneChart() {
   return (
-    <Card className="flex flex-col">
+    <Card className="">
       <CardHeader className="flex !flex-row items-center justify-between pb-0">
-        <CardTitle>
-          Order Delivery Zone
-        </CardTitle>
-        <RangeAndCustomDatePicker className="w-max" />
-
+        <CardTitle>Order Delivery Zone</CardTitle>
+        <Select>
+          <SelectTrigger className="w-[150px] bg-transparent">
+            <SelectValue placeholder="Today" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="yesterday">Yesterday</SelectItem>
+            <SelectItem value="this_week">This Week</SelectItem>
+            <SelectItem value="30_days">Last 30 Days</SelectItem>
+            <SelectItem value="custom">Custom Date</SelectItem>
+          </SelectContent>
+        </Select>
       </CardHeader>
-      <CardContent className="flex-1 flex pb-0 min-h-[300px]">
+      <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square min-h-[280px] max-h-[350px] w-full"
+          className="max-h-[400px] w-full h-[90%]"
         >
-          <PieChart>
+          <BarChart data={chartData} barSize={20} className="mb-8">
+            {/* Grid with a stronger stroke */}
+            <CartesianGrid
+              strokeDasharray="3 3"
+              strokeOpacity={0.5}
+              stroke="#ccc"
+            />
+
+            {/* Y-Axis to display tick levels */}
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
+            />
+
+            <XAxis
+              dataKey="location"
+              tickLine={false}
+              tickMargin={20}
+              axisLine={false}
+              tickFormatter={(value) => value.slice(0, 15)}
+              tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
+            />
+
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Pie
-              data={chartData}
+
+            <Bar
+              dataKey="enquiries"
+              fill="#0095FF"
+              radius={4}
+              label="Enquiries"
+            />
+            <Bar
               dataKey="no_of_orders"
-              nameKey="location"
-              innerRadius={60}
-              outerRadius={120}
-              paddingAngle={2}
-              cornerRadius={10}
-              stroke="white"
-              strokeWidth={2}
+              fill="#00E096"
+              radius={4}
+              label="Orders"
             />
+
             <Legend
-              verticalAlign="top"
-              align="right"
-              layout="vertical"
+              verticalAlign="bottom"
+              align="center"
+              layout="horizontal"
               wrapperStyle={{
-                position: 'absolute',
-                right: '0',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                paddingLeft: '20px',
-                lineHeight: '2',
-                fontSize: '14px',
-                color: '#6B7280',
+                position: "relative",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                bottom: "-10px",
+                // right: '0',
+                // top: '',
+                // transform: 'translateY(50%)',
+                paddingLeft: "20px",
               }}
               payload={[
-                { value: "Lagos Island", type: "circle", id: "lagos_island", color: "#1C1C1C99" },
-                { value: "Lagos Central", type: "circle", id: "lagos_central", color: "#E51B3F" },
-                { value: "Lagos Mainland", type: "circle", id: "lagos_mainland", color: "#34CF5699" },
-                { value: "Others", type: "circle", id: "others", color: "#FFC600" },
+                {
+                  value: "Enquiries",
+                  type: "circle",
+                  id: "enquiries",
+                  color: "#0095FF",
+                },
+                {
+                  value: "Orders",
+                  type: "circle",
+                  id: "orders",
+                  color: "#00E096",
+                },
               ]}
             />
-          </PieChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-
-      </CardFooter>
+      <CardFooter className="py-4"></CardFooter>
     </Card>
-  )
+  );
 }
 
 export default OrderDeliveryZoneChart;
