@@ -156,7 +156,7 @@ const SelectMultiCombo = <T extends Record<string, any>>({
                 {value.slice(1).map((value) => (
                   <span
                     key={value}
-                    className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full"
+                    className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-custom-blue text-white rounded-md"
                   >
                     {getOptionLabel(value)}
                     <button

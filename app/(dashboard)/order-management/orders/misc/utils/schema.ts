@@ -1,4 +1,4 @@
-import { CATEGORIES_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS } from "@/constants";
+import { CATEGORIES_OPTIONS, DELIVERY_LOCATION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS } from "@/constants";
 import { z } from "zod";
 
 const baseItemSchema = z.object({
@@ -63,6 +63,7 @@ export const NewOrderSchema = z.object({
     deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
     deliveryAddress: z.string().min(1, { message: "Delivery address is required" }),
     deliveryZone: z.enum(["Lagos Mainland (LM)", "Lagos Central (LC)", "Lagos Island (LI)"], { message: "Delivery zone is required" }),
+    deliveryLocation: z.enum([...(DELIVERY_LOCATION_OPTIONS.map(method => method.value) as [string, ...string[]])]).optional(),
     paymentMode: z.enum([...(PAYMENT_METHODS.map(method => method.value) as [string, ...string[]])], { message: "Payment status is required" }),
     paymentStatus: z.enum([...(PAYMENT_STATUS_OPTIONS.map(method => method.value) as [string, ...string[]])], { message: "Payment mode is required" }),
     proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
@@ -88,6 +89,11 @@ export const NewOrderSchema = z.object({
             errors.push({
                 path: ["deliveryMethod"],
                 message: "Delivery method is required when not using custom delivery",
+                code: "custom" as const
+            });
+            errors.push({
+                path: ["deliveryLocation"],
+                message: "Delivery location is required when not using custom delivery",
                 code: "custom" as const
             });
         }

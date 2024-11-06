@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button, Sheet, SheetTrigger } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import DeliveryDetailSheet from './DeliveryDetailSheet';
+import { convertNumberToNaira } from '@/utils/currency';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -32,6 +33,8 @@ interface DeliveryOrder {
     customerName: string;
     customerPhone: string;
     deliveryDate: string;
+    deliveryNotes: string;
+    deliveryExpenses: number;
     recipientName: string;
     recipientPhone: string;
     riderName: string;
@@ -63,12 +66,14 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div className='text-sm text-gray-500'>{order.riderPhone}</div>
             </TableCell>
             <TableCell>{order.deliveryAddress}</TableCell>
+            <TableCell>{order.deliveryNotes}</TableCell>
             <TableCell>
                 <Badge
                     className={statusColors[order.status] || 'bg-gray-100 text-gray-800 text-center min-w-max w-max'}>
                     {order.status}
                 </Badge>
             </TableCell>
+            <TableCell>{convertNumberToNaira(order.deliveryExpenses)}</TableCell>
             <TableCell>
                 <DeliveryDetailSheet orderId={order.orderId} />
             </TableCell>
@@ -90,6 +95,8 @@ const DeliveriesTable = () => {
             riderPhone: '09013578651',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'DELIVERED',
+            deliveryNotes: 'Go unde bla bla upstream funk',
+            deliveryExpenses: 3500
         },
         {
             orderId: 'ZD/LM6765',
@@ -103,6 +110,8 @@ const DeliveriesTable = () => {
             riderPhone: '09013578651',
             deliveryAddress: '456 Agege Motor Road, Lagos Mainland',
             status: 'IN DISPATCH',
+            deliveryNotes: 'When we all fall asleep, where do we go?',
+            deliveryExpenses: 3500
         },
         {
             orderId: 'ZD/LI6765',
@@ -116,6 +125,8 @@ const DeliveriesTable = () => {
             riderPhone: '09013578651',
             deliveryAddress: '789 Victoria Island, Lagos Island',
             status: 'DELIVERED',
+            deliveryNotes: 'Do not block the road, drop it at the reception',
+            deliveryExpenses: 11200
         },
         {
             orderId: 'PF/LC6765',
@@ -129,6 +140,8 @@ const DeliveriesTable = () => {
             riderCompany: 'Chowdeck',
             deliveryAddress: '101 Ikoyi, Lagos Central',
             status: 'DELIVERED',
+            deliveryNotes: 'When we all fall asleep, where do we go?',
+            deliveryExpenses: 11200
         },
         {
             orderId: 'PF/LM6765',
@@ -142,6 +155,8 @@ const DeliveriesTable = () => {
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             riderPhone: '09013578651',
             status: 'CANCELED',
+            deliveryNotes: 'When we all fall asleep, where do we go?',
+            deliveryExpenses: 3500
         },
         {
             orderId: 'ZD/LC6765',
@@ -155,6 +170,8 @@ const DeliveriesTable = () => {
             riderCompany: 'GIG',
             deliveryAddress: '456 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
+            deliveryNotes: 'Do not block the road, drop it at the reception',
+            deliveryExpenses: 23000
         },
         {
             orderId: 'PF/LM6765',
@@ -168,6 +185,8 @@ const DeliveriesTable = () => {
             riderPhone: '09013578651',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'DELIVERED',
+            deliveryNotes: 'When we all fall asleep, where do we go?',
+            deliveryExpenses: 23000
         },
         {
             orderId: 'ZD/LM6765',
@@ -181,6 +200,8 @@ const DeliveriesTable = () => {
             riderCompany: 'DHL',
             deliveryAddress: '456 Agege Motor Road, Lagos Mainland',
             status: 'IN DISPATCH',
+            deliveryNotes: 'Do not block the road, drop it at the reception',
+            deliveryExpenses: 23000
         },
         {
             orderId: 'ZD/LI6765',
@@ -194,6 +215,8 @@ const DeliveriesTable = () => {
             riderCompany: '08078901234',
             deliveryAddress: '789 Victoria Island, Lagos Island',
             status: 'DELIVERED',
+            deliveryNotes: 'When we all fall asleep, where do we go?',
+            deliveryExpenses: 27000
         },
         {
             orderId: 'PF/LC6765',
@@ -207,6 +230,8 @@ const DeliveriesTable = () => {
             riderCompany: 'DHL',
             deliveryAddress: '101 Ikoyi, Lagos Central',
             status: 'DELIVERED',
+            deliveryNotes: 'Delicate cake choice',
+            deliveryExpenses: 250000
         },
         {
             orderId: 'PF/LM6765',
@@ -220,6 +245,8 @@ const DeliveriesTable = () => {
             riderCompany: 'DHL',
             deliveryAddress: '123 Ikorodu Road, Lagos Mainland',
             status: 'CANCELED',
+            deliveryNotes: 'Delicate cake choice',
+            deliveryExpenses: 27000
         },
         {
             orderId: 'ZD/LC6765',
@@ -233,6 +260,8 @@ const DeliveriesTable = () => {
             riderCompany: 'Chowdeck Logistics',
             deliveryAddress: '456 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
+            deliveryNotes: 'Delicate cake choice',
+            deliveryExpenses: 20500
         },
         {
             orderId: 'PF/LM6766',
@@ -246,6 +275,8 @@ const DeliveriesTable = () => {
             riderCompany: 'DHL',
             deliveryAddress: '234 Surulere, Lagos Mainland',
             status: 'DELIVERED',
+            deliveryNotes: 'Extremely careful dispatch ',
+            deliveryExpenses: 20500
         },
         {
             orderId: 'ZD/LM6766',
@@ -259,6 +290,8 @@ const DeliveriesTable = () => {
             riderCompany: 'GIG',
             deliveryAddress: '345 Ikeja, Lagos Mainland',
             status: 'IN DISPATCH',
+            deliveryNotes: 'Extremely careful dispatch ',
+            deliveryExpenses: 20500
         },
         {
             orderId: 'ZD/LI6766',
@@ -272,6 +305,8 @@ const DeliveriesTable = () => {
             riderCompany: 'DHL',
             deliveryAddress: '456 Lekki, Lagos Island',
             status: 'DELIVERED',
+            deliveryNotes: 'Extremely careful dispatch ',
+            deliveryExpenses: 109000
         },
         {
             orderId: 'PF/LC6766',
@@ -285,6 +320,8 @@ const DeliveriesTable = () => {
             riderCompany: 'Glovo',
             deliveryAddress: '567 Yaba, Lagos Central',
             status: 'DELIVERED',
+            deliveryNotes: 'Extremely careful dispatch ',
+            deliveryExpenses: 109000
         },
         {
             orderId: 'PF/LM6767',
@@ -298,6 +335,8 @@ const DeliveriesTable = () => {
             riderCompany: 'Glovo',
             deliveryAddress: '678 Ikorodu Road, Lagos Mainland',
             status: 'CANCELED',
+            deliveryNotes: 'Extremely careful dispatch ',
+            deliveryExpenses: 109000
         },
         {
             orderId: 'ZD/LC6767',
@@ -311,6 +350,8 @@ const DeliveriesTable = () => {
             riderCompany: 'DHL',
             deliveryAddress: '789 Agege Motor Road, Lagos Central',
             status: 'DISPATCH',
+            deliveryNotes: 'Extremely careful dispatch ',
+            deliveryExpenses: 109000
         },
     ];
 
@@ -326,7 +367,9 @@ const DeliveriesTable = () => {
                     <TableHead>Recipient Details</TableHead>
                     <TableHead>Rider Details</TableHead>
                     <TableHead className='min-w-[150px]'>Delivery Address</TableHead>
+                    <TableHead className='min-w-[150px]'>Delivery Notes</TableHead>
                     <TableHead className='min-w-[150px] max-w-max'>Status</TableHead>
+                    <TableHead className='min-w-[150px]'>Delivery Expenses</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>

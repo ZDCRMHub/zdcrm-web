@@ -60,7 +60,6 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
         <SheetClose className="absolute top-1/2 left-[-100%]">
           <X className="h-4 w-4" />
         </SheetClose>
-
         <Separator />
 
         <div className="flex justify-between pt-8">
@@ -390,7 +389,20 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
               <span className="text-[#111827] font-bold">N130,000.00</span>
             </p>
           </section>
-
+          {/* Customer Feedback */}
+          <section className='mt-16 mb-8'>
+            <header className="border-b border-b-[#00000021]">
+              <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                <Notepad2 size={19} />
+                Customer&apos; Feedback
+                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+              </p>
+            </header>
+            <div className='mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full'>
+              <Input value="Order was delivered promptly, Thank you" readOnly containerClassName='w-full' />
+            </div>
+          </section>
+          {/* Close Button */}
           <section className="flex justify-end my-12">
             <SheetClose>
               <Button className="h-12 px-12">Close</Button>

@@ -497,6 +497,12 @@ export const PAYMENT_STATUS_OPTIONS = [
   { label: "Not Received(Paid)", value: "not_received" }
 ]
 
+export const DELIVERY_LOCATION_OPTIONS = [
+  { value: "YABA", label: "Yaba N5,000" },
+  { value: "SHOMOLU_BARIGA", label: "Shomolu/Bariga N5,000" },
+  { value: "IYANA-IPAJA", label: "Iyana Ipaja (N8,500)" },
+]
+
 export const PAYMENT_METHODS = [
   { label: "Website Card", value: "website_card" },
   { label: "Naira Transfer", value: "naira_transfer" },
@@ -534,7 +540,7 @@ export const DISPATCH_METHOD_OPTIONS = [
 
 
 export const MOCK_FORM_DEFAULT_VALUE = {
-  branch: "Zuzu Delights", 
+  branch: "Zuzu Delights",
   customerName: "Oni Khalid",
   customerPhone: "09008998899",
   enquiryChannel: "website",
@@ -550,45 +556,45 @@ export const MOCK_FORM_DEFAULT_VALUE = {
   deliveryZone: "Lagos Mainland (LM)",
   paymentMode: PAYMENT_METHODS[0].value,
   paymentStatus: PAYMENT_STATUS_OPTIONS[0].value,
-  proofOfPayment: undefined, 
+  proofOfPayment: undefined,
   deliveryFee: "30000",
   dispatchTime: "",
   items: [
     {
       category: "C",
       productType: "cake-1",
-      quantity: 5, 
+      quantity: 5,
       message: "",
       isCustomOrder: false,
       itemImage: undefined,
       isEditing: false,
       additionalItems: [],
-      layers: PRODUCT_TYPES_OPTIONS.Cakes.layers[0].value, 
-      flavour: PRODUCT_TYPES_OPTIONS.Cakes.flavours[0].value, 
+      layers: PRODUCT_TYPES_OPTIONS.Cakes.layers[0].value,
+      flavour: PRODUCT_TYPES_OPTIONS.Cakes.flavours[0].value,
       toppings: PRODUCT_TYPES_OPTIONS.Cakes.toppings[0].value,
-      size: PRODUCT_TYPES_OPTIONS.Cakes.sizes[0].value, 
-      whippedCreamUpgrade: PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade[0].value, 
-    }, 
+      size: PRODUCT_TYPES_OPTIONS.Cakes.sizes[0].value,
+      whippedCreamUpgrade: PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade[0].value,
+    },
     {
       category: "F",
       productType: "flower-1",
-      quantity: 5, 
+      quantity: 5,
       message: "",
       isCustomOrder: false,
       itemImage: undefined,
       isEditing: false,
-      vase: PRODUCT_TYPES_OPTIONS.Flowers.vaseOptions[0].value, 
+      vase: PRODUCT_TYPES_OPTIONS.Flowers.vaseOptions[0].value,
     },
-     {
+    {
       category: "TB",
       productType: "teddy-1",
-      quantity: 5, 
+      quantity: 5,
       message: "",
       isCustomOrder: false,
       itemImage: undefined,
       isEditing: false,
-      size: PRODUCT_TYPES_OPTIONS.Teddies.sizes[0].value, 
-      bouquet: PRODUCT_TYPES_OPTIONS.Teddies.bouquets[0].value, 
+      size: PRODUCT_TYPES_OPTIONS.Teddies.sizes[0].value,
+      bouquet: PRODUCT_TYPES_OPTIONS.Teddies.bouquets[0].value,
     }
   ]
 };
