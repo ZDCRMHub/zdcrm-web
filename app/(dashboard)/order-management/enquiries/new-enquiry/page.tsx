@@ -334,9 +334,11 @@ const NewOrderPage = () => {
                           hasError={!!errors.deliveryZone}
                           errorMessage={errors.deliveryZone?.message as string}
                         />
-                                                <Button
+                        <Button
                           type="button"
-                          className={`rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200 ${isCustomDelivery ? "bg-[#FFC600]" : ""}`}
+                          className={`rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200 ${
+                            isCustomDelivery ? "bg-[#FFC600]" : ""
+                          }`}
                           variant="unstyled"
                           onClick={() =>
                             setValue(
@@ -910,7 +912,7 @@ const NewOrderPage = () => {
                     <Image src="/img/book.svg" alt="" width={24} height={24} />
                   </div>
                   <p className="text-custom-blue font-medium">
-                    Order Instruction
+                    Message on Order
                   </p>
                 </div>
               </AccordionTrigger>

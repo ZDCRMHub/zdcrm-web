@@ -11,13 +11,6 @@ import {
   UserEdit,
 } from "iconsax-react";
 import { Separator } from "@radix-ui/react-select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../../../components/ui/select";
 import { Phone } from "@phosphor-icons/react";
 import Image from "next/image";
 import {
@@ -35,6 +28,11 @@ import {
   SheetContent,
   SheetTitle,
   SheetTrigger,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  SelectContent,
   Accordion,
   AccordionContent,
   AccordionTrigger,
@@ -43,7 +41,7 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EnquiryDiscussCard from "@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard";
 import { generateMockOrders } from "@/app/(dashboard)/order-timeline/misc/components/Timeline";
-import { PAYMENT_STATUS_OPTIONS } from "@/constants";
+import { PAYMENT_STATUS_OPTIONS, paymentOptions } from "@/constants";
 
 interface PaymentsDetailSheetDetailsPanelProps {
   orderId: string;
@@ -54,6 +52,14 @@ export default function PaymentsDetailSheet({
 }: PaymentsDetailSheetDetailsPanelProps) {
   const mockDiscussion = generateMockOrders(1)[0];
   const [paymentStatus, setPaymentStatus] = React.useState("not_paid");
+
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<
+    string | undefined
+  >(undefined);
+
+  // const handleConfirm = () => {
+    
+  // }
 
   return (
     <Sheet>
@@ -201,49 +207,123 @@ export default function PaymentsDetailSheet({
             </div>
           </section>
 
-          <section className="mt-16 mb-8">
-            <header className="border-b border-b-[#00000021]">
-              <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
-                <Messages2 size={19} />
-                Discussion
-                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
-              </p>
-            </header>
-            <div className="py-4">
-              <EnquiryDiscussCard
-                isExpanded
-                hideOtherDetails
-                order={mockDiscussion}
-              />
-            </div>
-          </section>
-
-          <section className="mt-16 mb-8">
-            <header className="border-b border-b-[#00000021]">
-              <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
-                <Notepad2 size={19} />
-                Delivery Note
-                <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
-              </p>
-            </header>
-            <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full">
-              <Input
-                value="Happy Anniversary"
-                readOnly
-                containerClassName="w-full"
-              />
-            </div>
-          </section>
-
           <Accordion type="multiple">
+            {/* <section className="mt-16 mb-8">
+              <header className="border-b border-b-[#00000021]">
+                <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                  <Messages2 size={19} />
+                  Discussion
+                  <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+                </p>
+              </header>
+              <div className="py-4">
+                <EnquiryDiscussCard
+                  isExpanded
+                  hideOtherDetails
+                  order={mockDiscussion}
+                />
+              </div>
+            </section> */}
+
+            <section className="mt-16 mb-8">
+              <AccordionItem value="payment-details">
+                <AccordionTrigger className="">
+                  <header className="relative w-full">
+                    <p className="relative flex items-center gap-2 text-base text-[#111827] w-max">
+                      {/* <Notepad2 size={19} /> */}
+                      Payment Details
+                      <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+                    </p>
+                    <span className="absolute h-[1px] w-full bottom-[-2px] left-0 bg-[#00000021]" />
+                  </header>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="pl-4 mt-6 text-sm flex flex-col gap-5">
+                    <div className="flex gap-4">
+                      <p className="text-[#687588] w-36">Payment Status:</p>
+                      <p className="text-[#111827] font-bold">Part Payment</p>
+                    </div>
+                    <div className="flex gap-6">
+                      <p className="text-[#687588] w-36">Total Amount Due:</p>
+                      <p className="text-[#111827] font-bold">₦120,000.00</p>
+                    </div>
+                    <div className="flex gap-6 items-center">
+                      <p className="text-[#687588] w-36">Initial Payment:</p>
+                      <p className="text-[#111827] font-bold">₦60,000.00</p>
+                      <p className="text-[10px] bg-[#194A7A] px-5 py-1 text-white rounded-full">
+                        cash
+                      </p>
+                    </div>
+                    <div className="flex gap-6 items-center">
+                      <p className="text-[#687588] w-36">
+                        Outstanding Balance :
+                      </p>
+                      <p className="font-bold text-red-500">₦60,000.00</p>
+                      {selectedPaymentMethod ? <p className="text-[10px] bg-[#194A7A] px-5 py-1 text-white rounded-full">
+                        {selectedPaymentMethod}
+                      </p> : ""}
+                    </div>
+                    <div className="flex gap-7">
+                    <Select
+                      value={selectedPaymentMethod}
+                      onValueChange={setSelectedPaymentMethod}
+                    >
+                      <SelectTrigger className="w-[90%] max-w-[230px] h-12 mb-4">
+                        <SelectValue placeholder="Select payment Method" />
+                      </SelectTrigger>
+                      <SelectContent className="px-8">
+                        {paymentOptions.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            // onClick={() => setSelectedPaymentMethod(option.value)}
+                            className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+                          >
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                        {/* <Button className="h-12 bg-[#3679171C] text-[#45971F] hover:bg-gray-300" onClick={handleConfirm}>Confirm Payment</Button> */}
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </section>
+
+            <section className="mt-16 mb-8">
+              <AccordionItem value="delivery-note">
+                <AccordionTrigger className="">
+                  <header className="relative w-full">
+                    <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                      <Notepad2 size={19} />
+                      Delivery Note
+                      <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+                    </p>
+                    <span className="absolute h-[1px] w-full bottom-[-2px] left-0 bg-[#00000021]" />
+                  </header>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-center w-full">
+                    <Input
+                      value="Happy Anniversary"
+                      readOnly
+                      containerClassName="w-full"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </section>
+
             <section className="mb-8">
               <AccordionItem value="product-item">
-                <AccordionTrigger>
-                  <header className="border-b border-b-[#00000021] mb-6">
+                <AccordionTrigger className="">
+                  <header className="relative w-full">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5">
                       Product Items
                       <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                     </p>
+                    <span className="absolute h-[1px] w-full bottom-[-2px] left-0 bg-[#00000021]" />
                   </header>
                 </AccordionTrigger>
                 <AccordionContent>
