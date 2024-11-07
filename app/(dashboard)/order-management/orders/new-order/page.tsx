@@ -113,7 +113,11 @@ const NewOrderPage = () => {
     });
   };
 
-  const getFieldError = (errors: FieldErrors<NewOrderFormValues>,index: number,field: string) => {
+  const getFieldError = (
+    errors: FieldErrors<NewOrderFormValues>,
+    index: number,
+    field: string
+  ) => {
     const itemErrors = errors.items?.[index] as
       | FieldErrors<NewOrderFormValues["items"][number]>
       | undefined;
@@ -126,7 +130,13 @@ const NewOrderPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={["customer-information","order-information","delivery-information","order-Instruction","payment-information",]}
+            defaultValue={[
+              "customer-information",
+              "order-information",
+              "delivery-information",
+              "order-Instruction",
+              "payment-information",
+            ]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -267,7 +277,9 @@ const NewOrderPage = () => {
                             labelKey={"label"}
                             placeholder="Select delivery method"
                             hasError={!!errors.deliveryMethod}
-                            errorMessage={errors.deliveryMethod?.message as string}
+                            errorMessage={
+                              errors.deliveryMethod?.message as string
+                            }
                           />
                         </FormItem>
                       )}
@@ -342,6 +354,22 @@ const NewOrderPage = () => {
                           hasError={!!errors.deliveryZone}
                           errorMessage={errors.deliveryZone?.message as string}
                         />
+                        <Button
+                          type="button"
+                          className={`rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200 ${
+                            isCustomDelivery ? "bg-[#FFC600]" : ""
+                          }`}
+                          variant="unstyled"
+                          onClick={() =>
+                            setValue(
+                              "isCustomDelivery",
+                              !watch("isCustomDelivery")
+                            )
+                          }
+                        >
+                          +{isCustomDelivery ? " Default " : " Custom "}
+                          Delivery
+                        </Button>
                       </FormItem>
                     )}
                   />
@@ -407,7 +435,6 @@ const NewOrderPage = () => {
               </AccordionContent>
             </AccordionItem>
 
-
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                  ORDER INFORMATION                  ///////////// */}
@@ -440,7 +467,6 @@ const NewOrderPage = () => {
                       />
                     )}
                   />
-
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {controlledFields.map((field, index) => (
@@ -451,17 +477,17 @@ const NewOrderPage = () => {
                         </h3>
                         <Button
                           variant="outline"
-                          onClick={()=> {
-                            setValue(`items.${index}.isCustomOrder`, !watch(`items.${index}.isCustomOrder`))
+                          onClick={() => {
+                            setValue(
+                              `items.${index}.isCustomOrder`,
+                              !watch(`items.${index}.isCustomOrder`)
+                            );
                           }}
                           type="button"
                         >
-                          {
-                            watch(`items.${index}.isCustomOrder`) ? 
-                            "+ Default Order"
-                            :
-                            "+ Custom Order"
-                          }
+                          {watch(`items.${index}.isCustomOrder`)
+                            ? "+ Default Order"
+                            : "+ Custom Order"}
                         </Button>
                       </header>
                       {field?.isEditing ? (
@@ -859,7 +885,7 @@ const NewOrderPage = () => {
                               className={cn(
                                 "h-12 ml-auto",
                                 controlledFields.length !== index + 1 &&
-                                "hidden",
+                                  "hidden",
                                 controlledFields.length == 0 && "!visible"
                               )}
                               variant="outline"
