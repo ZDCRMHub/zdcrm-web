@@ -243,6 +243,74 @@ const NewOrderPage = () => {
                     />
                   )}
 
+                  <FormField
+                    control={control}
+                    name="deliveryAddress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            className=""
+                            label="Delivery Address"
+                            {...field}
+                            hasError={!!errors.deliveryAddress}
+                            errorMessage={
+                              errors.deliveryAddress?.message as string
+                            }
+                            placeholder="Enter delivery address"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="deliveryZone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Delivery Zone"
+                          options={[
+                            {
+                              value: "Lagos Mainland (LM)",
+                              label: "Lagos Mainland (LM)",
+                            },
+                            {
+                              value: "Lagos Central (LC)",
+                              label: "Lagos Central (LC)",
+                            },
+                            {
+                              value: "Lagos Island (LI)",
+                              label: "Lagos Island (LI)",
+                            },
+                          ]}
+                          {...field}
+                          valueKey={"value"}
+                          labelKey={"label"}
+                          placeholder="Select delivery zone"
+                          hasError={!!errors.deliveryZone}
+                          errorMessage={errors.deliveryZone?.message as string}
+                        />
+                        <Button
+                          type="button"
+                          className={`rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200 ${
+                            isCustomDelivery ? "bg-[#FFC600]" : ""
+                          }`}
+                          variant="unstyled"
+                          onClick={() =>
+                            setValue(
+                              "isCustomDelivery",
+                              !watch("isCustomDelivery")
+                            )
+                          }
+                        >
+                          +{isCustomDelivery ? " Default " : " Custom "}
+                          Delivery
+                        </Button>
+                      </FormItem>
+                    )}
+                  />
                                     <FormField
                                         control={control}
                                         name="deliveryAddress"
@@ -846,6 +914,32 @@ const NewOrderPage = () => {
               </AccordionContent>
             </AccordionItem>
 
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////                  ORDER INSTRUCTION                  ///////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            <AccordionItem value="order-Instruction">
+              <AccordionTrigger className="py-4">
+                <div className="flex items-center gap-5">
+                  <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
+                    <Image src="/img/book.svg" alt="" width={24} height={24} />
+                  </div>
+                  <p className="text-custom-blue font-medium">
+                    Message on Order
+                  </p>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-8 pb-14">
+                <Input
+                  label="Message on Order"
+                  hasError={!!errors.messageOnOrder}
+                  errorMessage={errors.messageOnOrder?.message as string}
+                  placeholder="Enter message on order"
+                  {...register("messageOnOrder")}
+                />
+              </AccordionContent>
+            </AccordionItem>
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////////////////////////////////////////////////////////////////////// */}
                         {/* /////////////                  ORDER INSTRUCTION                  ///////////// */}

@@ -407,20 +407,6 @@ const NewOrderPage = () => {
                           placeholder="Select delivery date"
                         />
                         <FormMessage />
-                        <Button
-                          type="button"
-                          className="rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200"
-                          variant="unstyled"
-                          onClick={() =>
-                            setValue(
-                              "isCustomDelivery",
-                              !watch("isCustomDelivery")
-                            )
-                          }
-                        >
-                          +{isCustomDelivery ? " Default " : " Custom "}
-                          Delivery
-                        </Button>
                       </FormItem>
                     )}
                   />
@@ -822,7 +808,7 @@ const NewOrderPage = () => {
                                         newQuantity
                                       );
                                     }}
-                                    className="flex items-center justify-center sizes-7 border border-[#0F172B] text-lg text-center text-center p-2 leading-3"
+                                    className="flex items-center justify-center sizes-7 border border-[#0F172B] text-lg text-center p-2 leading-3"
                                   >
                                     +
                                   </button>

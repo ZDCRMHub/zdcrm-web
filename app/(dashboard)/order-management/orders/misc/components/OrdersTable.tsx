@@ -73,6 +73,7 @@ interface Order {
     deliveryNote: string;
     deliveryDate: Date;
     amount?: number;
+    amountUSD?: number;
     paymentStatus: string;
     tag?: string;
 }
@@ -137,8 +138,12 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </Badge>
             </TableCell>
             <TableCell className='min-w-max'>
-                <div>{convertNumberToNaira(order.amount || 0)}</div>
-                <div>{order.paymentStatus}</div>
+                <div className='font-bold'>{convertNumberToNaira(order.amount || 0)}</div>
+                <div className='text-sm text-[#494949]'>{order.paymentStatus}</div>
+            </TableCell>
+            <TableCell className='min-w-max'>
+                <div>{order.amountUSD ? "$"+order.amountUSD : "-"}</div>
+                {/* <div>{order.paymentStatus}</div> */}
             </TableCell>
             <TableCell>
                 <OrderDetailSheet orderId={order.orderId} />
@@ -168,6 +173,7 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 5 PM',
             deliveryDate: new Date(),
             amount: 5000,
+            amountUSD: 200,
             paymentStatus: 'Paid(USD Transfer)',
             tag: '123456'
         },
@@ -187,6 +193,7 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 6 PM',
             deliveryDate: new Date(),
             amount: 60000,
+            amountUSD: 300,
             paymentStatus: 'Paid(USD Transfer)'
         },
         {
@@ -205,6 +212,7 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 6 PM',
             deliveryDate: new Date(),
             amount: 70000,
+            amountUSD: 400,
             paymentStatus: 'Paid(Website Card)',
             tag: '123456'
         },
@@ -229,7 +237,7 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 7 PM',
             deliveryDate: new Date(),
             amount: 80000,
-            paymentStatus: 'Paid(Bitcoin)',
+            paymentStatus: 'Paid(Naira Transfer)',
             tag: '123456'
         },
         {
@@ -249,6 +257,7 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 8 PM',
             deliveryDate: new Date(),
             amount: 90000,
+            amountUSD: 600,
             paymentStatus: 'Paid(USD Transfer)'
         },
         {
@@ -295,6 +304,7 @@ const OrdersTable = () => {
             deliveryNote: 'Deliver by 10 PM',
             deliveryDate: new Date(),
             amount: 11000,
+            amountUSD: 800,
             paymentStatus: 'Paid(USD Transfer)',
             tag: '123456'
         },
@@ -305,14 +315,15 @@ const OrdersTable = () => {
             <TableHeader>
                 <TableRow>
                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
-                    <TableHead>Customers Details</TableHead>
-                    <TableHead>Order Items</TableHead>
-                    <TableHead>Recipient Details</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Order Notes</TableHead>
+                    <TableHead className='min-w-[210px]'>Customers Details</TableHead>
+                    <TableHead className='min-w-[230px]'>Order Items</TableHead>
+                    <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
+                    <TableHead className='min-w-[150px]'>Category</TableHead>
+                    <TableHead className='w-[170px]'>Order Notes</TableHead>
                     <TableHead>Delivery Date</TableHead>
                     <TableHead className='min-w-[150px]'>Status</TableHead>
-                    <TableHead>Payment</TableHead>
+                    <TableHead className='min-w-[180px]'>Payment</TableHead>
+                    <TableHead>Payment(USD)</TableHead>
                     <TableHead></TableHead>
                 </TableRow>
             </TableHeader>
