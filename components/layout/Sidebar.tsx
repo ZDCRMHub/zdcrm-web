@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { ChevronLeft, ChevronRight, IndentDecrease } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Logo } from '@/icons/core'
-import { SidebarLink } from './SidebarLink'
-import { SidebarCollapsible } from './SidebarCollapsible'
+import { useState } from "react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, IndentDecrease } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Logo } from "@/icons/core";
+import { SidebarLink } from "./SidebarLink";
+import { SidebarCollapsible } from "./SidebarCollapsible";
 import {
   ClientHistoryIcon,
   ConversionStatisticsIcon,
@@ -20,100 +20,109 @@ import {
   OrderStatistics,
   OrderTimeLine,
   ReportAndAnalytics,
-} from '@/icons/sidebar'
-import { Gear } from '@phosphor-icons/react'
-import { Bag2, BagTick2, DiscountShape, Graph, I3Dcube, Setting2, ShopRemove, Trash } from 'iconsax-react'
-import { UserCircle } from 'lucide-react'
+} from "@/icons/sidebar";
+import { Gear } from "@phosphor-icons/react";
+import {
+  Bag2,
+  BagTick2,
+  DiscountShape,
+  Graph,
+  I3Dcube,
+  Setting2,
+  ShopRemove,
+  Trash,
+} from "iconsax-react";
+import { UserCircle } from "lucide-react";
 
 export const linkGroups = [
   {
-    key: 'top',
-    heading: 'MAIN MENU',
+    key: "top",
+    heading: "MAIN MENU",
     links: [
       {
-        link: '/order-timeline',
-        text: 'Order Timeline',
+        link: "/order-timeline",
+        text: "Order Timeline",
         icon: <OrderTimeLine />,
       },
       {
-        text: 'Order Management',
+        text: "Order Management",
         icon: <OrderManagement />,
         nestedLinks: [
           {
-            link: '/order-management/enquiries',
-            text: 'Enquiries',
+            link: "/order-management/enquiries",
+            text: "Enquiries",
             icon: <EnquiriesIcon />,
           },
           {
-            link: '/order-management/orders',
-            text: 'Orders',
+            link: "/order-management/orders",
+            text: "Orders",
             icon: <OrdersIcon />,
           },
           {
-            link: '/order-management/delivery',
-            text: 'Delivery',
+            link: "/order-management/delivery",
+            text: "Delivery",
             icon: <OrderTimeLine />,
           },
           {
-            link: '/order-management/payments',
-            text: 'Payment',
+            link: "/order-management/payments",
+            text: "Payment",
             icon: <DiscountShape />,
           },
           {
-            link: '/order-management/order-history',
-            text: 'Order History',
+            link: "/order-management/order-history",
+            text: "Order History",
             icon: <OrderManagement />,
           },
           {
-            link: '/order-management/client-history',
-            text: 'Client History',
+            link: "/order-management/client-history",
+            text: "Client History",
             icon: <ClientHistoryIcon />,
           },
           {
-            link: '/order-management/trash',
-            text: 'Trash',
+            link: "/order-management/trash",
+            text: "Trash",
             icon: <Trash />,
           },
         ],
       },
       {
-        text: 'Report & Analytics',
+        text: "Report & Analytics",
         icon: <ReportAndAnalytics />,
         nestedLinks: [
           {
-            link: '/report-analytics/order-statistics',
-            text: 'Order Statistics',
+            link: "/report-analytics/order-statistics",
+            text: "Order Statistics",
             icon: <OrderStatistics />,
           },
           {
-            link: '/report-analytics/financial-report',
-            text: 'Financial Report',
+            link: "/report-analytics/financial-report",
+            text: "Financial Report",
             icon: <Graph size={20} />,
           },
           {
-            link: '/report-analytics/conversion-statistics',
-            text: 'Conversion Statistics',
+            link: "/report-analytics/conversion-statistics",
+            text: "Conversion Statistics",
             icon: <ConversionStatisticsIcon />,
           },
         ],
       },
       {
-        text: 'Inventory',
+        text: "Inventory",
         icon: <Inventory />,
         nestedLinks: [
           {
-            link: '/inventory/product-inventory',
-            text: 'Product Inventory',
+            link: "/inventory/product-inventory",
+            text: "Product Inventory",
             icon: <I3Dcube />,
           },
           {
-            link: '/inventory/stock-inventory',
-            text: 'Stock Inventory',
+            link: "/inventory/stock-inventory",
+            text: "Stock Inventory",
             icon: <BagTick2 />,
           },
           {
-            link: '/inventory/store-inventory',
-            text: 'Store Inventory',
+            link: "/inventory/store-inventory",
+            text: "Store Inventory",
             icon: <OrderManagement />,
           },
         ],
@@ -121,41 +130,41 @@ export const linkGroups = [
     ],
   },
   {
-    key: 'bottom',
-    heading: 'ADMIN',
+    key: "bottom",
+    heading: "ADMIN",
     links: [
       {
-        text: 'Manage Admin',
+        text: "Manage Admin",
         icon: <UserCircle size={20} strokeWidth={1.5} />,
         nestedLinks: [
           {
-            link: '/admin/branches',
-            text: 'Branches',
+            link: "/admin/branches",
+            text: "Branches",
             icon: <Bag2 size={20} />,
           },
           {
-            link: '/admin/employees-role',
-            text: 'Employees Role',
+            link: "/admin/employees-role",
+            text: "Employees Role",
             icon: <EnquiriesIcon />,
           },
           {
-            link: '/admin/invite-employee',
-            text: 'Invite Employee',
+            link: "/admin/invite-employee",
+            text: "Invite Employee",
             icon: <ShopRemove size={20} />,
           },
           {
-            link: '/admin/admin-roles',
-            text: 'Admin Roles',
+            link: "/admin/admin-roles",
+            text: "Admin Roles",
             icon: <Setting2 />,
           },
         ],
       },
     ],
   },
-]
+];
 
 export function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <div
@@ -178,10 +187,12 @@ export function Sidebar() {
           </Button>
         </div>
 
-        <ul className='grow flex flex-col overflow-y-auto pl-4 pr-5 pt-8'>
+        <ul className="grow flex flex-col overflow-y-auto px-4 pt-8">
           {linkGroups.map(({ heading, key, links }) => (
             <li className="py-6 first-of-type:mb-8" key={key}>
-              <h2 className="mb-5 px-3 uppercase text-xs text-[#8B909A]">{heading}</h2>
+              <h2 className={!isCollapsed ? "mb-5 px-3 uppercase text-xs text-[#8B909A]" : "mb-5 px-3 uppercase text-[10px] text-[#8B909A]"}>
+                {heading}
+              </h2>
 
               <ul className="space-y-6">
                 {links.map(({ icon, link, text, nestedLinks }) => (
@@ -194,7 +205,12 @@ export function Sidebar() {
                         isCollapsed={isCollapsed}
                       />
                     ) : (
-                      <SidebarLink icon={icon} link={link} text={text} isCollapsed={isCollapsed} />
+                      <SidebarLink
+                        icon={icon}
+                        link={link}
+                        text={text}
+                        isCollapsed={isCollapsed}
+                      />
                     )}
                   </li>
                 ))}
@@ -204,5 +220,5 @@ export function Sidebar() {
         </ul>
       </nav>
     </div>
-  )
+  );
 }

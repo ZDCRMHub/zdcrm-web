@@ -161,8 +161,11 @@ export default function OrderSummary() {
 
             <section className='grid grid-cols-[1fr,0.5fr] gap-8 mb-10 '>
               <div>
+                <div className=' flex flex-col gap-9 mb-10'>
                 <OrderItemSummaryCard />
-                <Form {...form}>
+                <OrderItemSummaryCard />
+                </div>
+                {/* <Form {...form}>
                   <form onSubmit={handleSubmit(onSubmit)} className='mt-16'>
                     <section>
                       <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4">
@@ -258,11 +261,11 @@ export default function OrderSummary() {
                       </p>
                     </div>
                   </form>
-                </Form>
+                </Form> */}
 
 
 
-                <section>
+                <section className='flex flex-col'>
                   <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4 p-1.5">
                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                       <Book className='text-custom-blue' stroke="#194a7a" fill="#194a7a" size={18} />
@@ -273,10 +276,9 @@ export default function OrderSummary() {
                       </span>
                     </h3>
                   </header>
-                  <div>
                     <SelectSingleCombo
                       name='discountType'
-                      className='max-w-[520px]'
+                      className='max-w-[350px]'
                       value={form.watch('discountType')}
                       onChange={(value) => form.setValue('discountType', value)}
                       label='Discount Type'
@@ -290,10 +292,13 @@ export default function OrderSummary() {
                         { label: 'Birthday Discount', value: 'birthday' },
                       ]}
                     />
+                  <div className='mt-16 w-[300px] self-end'>
+                    <p className='font-medium mt-6 text-[#8B909A]'>Delivery Fee</p>
+                    <p className='text-xl font-bold mt-6'>Total (NGN)</p>
                   </div>
                 </section>
 
-                <section className="mt-10">
+                {/* <section className="mt-10">
                   <header className="flex items-center gap-5 text-[#194A7A] border-b mb-4 p-1.5">
                     <div className='flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]'>
                       <Money className='text-custom-blue' stroke="#194a7a" fill="#194a7a" size={18} />
@@ -321,7 +326,7 @@ export default function OrderSummary() {
                       </div>
                     </div>
                   </div>
-                </section>
+                </section> */}
               </div>
 
 
@@ -331,10 +336,16 @@ export default function OrderSummary() {
                     <div className='flex justify-between items-center mb-4 border-b py-3 px-6'>
                       <h2 className='font-semibold'>Delivery Details</h2>
                       <LinkButton href="./new-order" variant='unstyled' size='sm'>
-                        <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
+                        {/* <Edit2 className='w-5 h-5 text-[#A0AEC0]' /> */}
                       </LinkButton>
                     </div>
                     <div className='grid grid-cols-[max-content,1fr] gap-4 text-[0.75rem] px-4 pb-4 font-manrope'>
+                      <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
+                        Delivery Method:{' '}
+                        <span className='font-semibold text-[#111827] font-manrope'>
+                          Dispatch
+                        </span>
+                      </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
                         Primary address:{' '}
                         <span className='font-semibold text-[#111827] font-manrope'>
@@ -342,13 +353,22 @@ export default function OrderSummary() {
                         </span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
-                        Country: <span className='font-semibold text-[#111827] font-manrope'>Nigeria</span>
+                        Delivery Fee:{' '}
+                        <span className='font-semibold text-[#111827] font-manrope'>
+                          Yaba (₦5,000.00)
+                        </span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
-                        Delivey Date: <span className='font-semibold text-[#111827] font-manrope'>12-SEP-2024</span>
+                        Delivery Zone:{' '}
+                        <span className='font-semibold text-[#111827] font-manrope'>
+                        LI-Lagos Island
+                        </span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
                         Dispatch Time: <span className='font-semibold text-[#111827] font-manrope'>12:00PM</span>
+                      </p>
+                      <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
+                        Delivey Date: <span className='font-semibold text-[#111827] font-manrope'>12-SEP-2024</span>
                       </p>
                     </div>
                   </CardContent>

@@ -46,10 +46,10 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
     console.log(`Confirmed action`);
   };
 
-  const [total, setTotal] = useState(0);
-  const [paid, setPaid] = useState(0);
+  const [total, setTotal] = useState("");
+  const [paid, setPaid] = useState("");
 
-  const balance = total - paid;
+  const balance = (Number(total)) - (Number(paid));
 
   // const addAmount = (amount) => {
   //   setBalance(balance + amount);
@@ -99,7 +99,7 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
               type="number"
               placeholder="Enter Amount Due"
               value={total}
-              onChange={(e) => setTotal(Number(e.target.value))}
+              onChange={(e) => setTotal(e.target.value)}
             />
           </div>
           <div className="flex justify-between gap-4">
@@ -110,7 +110,7 @@ const ConfirmPartPaymentModal: React.FC<ModalProps> = ({
                 type="number"
                 placeholder="Enter Amount Paid"
                 value={paid}
-                onChange={(e) => setPaid(Number(e.target.value))}
+                onChange={(e) => setPaid(e.target.value)}
               />
             </div>
             <div className="w-full">
