@@ -112,26 +112,8 @@ const NewOrderPage = () => {
       isCustomOrder: false,
     });
   };
-  const addNewCustomItem = () => {
-    append({
-      category: "C",
-      productType: "",
-      quantity: 1,
-      message: "",
-      isEditing: true,
-      whippedCreamUpgrade: "0",
-      flavours: ["Vanilla"],
-      layers: "2",
-      sizes: ["6 inches"],
-      toppings: "none",
-      isCustomOrder: true,
-    });
-  };
-  const getFieldError = (
-    errors: FieldErrors<NewOrderFormValues>,
-    index: number,
-    field: string
-  ) => {
+
+  const getFieldError = (errors: FieldErrors<NewOrderFormValues>,index: number,field: string) => {
     const itemErrors = errors.items?.[index] as
       | FieldErrors<NewOrderFormValues["items"][number]>
       | undefined;
@@ -144,13 +126,7 @@ const NewOrderPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={[
-              "customer-information",
-              "order-information",
-              "delivery-information",
-              "order-Instruction",
-              "payment-information",
-            ]}
+            defaultValue={["customer-information","order-information","delivery-information","order-Instruction","payment-information",]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -212,9 +188,9 @@ const NewOrderPage = () => {
                   <Input
                     label="Recipient's Phone Number"
                     {...register("recipientPhone")}
+                    placeholder="Enter recipient name"
                     hasError={!!errors.recipientPhone}
                     errorMessage={errors.recipientPhone?.message as string}
-                    placeholder="Enter recipient name"
                   />
                   <FormField
                     control={control}
@@ -291,9 +267,7 @@ const NewOrderPage = () => {
                             labelKey={"label"}
                             placeholder="Select delivery method"
                             hasError={!!errors.deliveryMethod}
-                            errorMessage={
-                              errors.deliveryMethod?.message as string
-                            }
+                            errorMessage={errors.deliveryMethod?.message as string}
                           />
                         </FormItem>
                       )}
@@ -466,13 +440,7 @@ const NewOrderPage = () => {
                       />
                     )}
                   />
-                  <Button
-                    variant="outline"
-                    onClick={addNewCustomItem}
-                    type="button"
-                  >
-                    + Custom Order
-                  </Button>
+
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {controlledFields.map((field, index) => (
@@ -481,6 +449,15 @@ const NewOrderPage = () => {
                         <h3 className="font-semibold text-base bg-[#F3C948] px-4 py-1.5 w-max">
                           Item {index + 1}
                         </h3>
+                        <Button
+                          variant="outline"
+                          onClick={()=> {
+                            setValue(`items.${index}.isEditing`, true)
+                          }}
+                          type="button"
+                        >
+                          + Custom Order
+                        </Button>
                       </header>
                       {field?.isEditing ? (
                         <section>
