@@ -276,11 +276,11 @@ export default function PaymentsDetailSheet({
                           <SelectValue placeholder="Select payment Method" />
                         </SelectTrigger>
                         <SelectContent className="px-8">
-                          <SelectItem value="cash">Cash</SelectItem>
-                          <SelectItem value="transfer">
+                          <SelectItem value="Cash">Cash</SelectItem>
+                          <SelectItem value="Bank Transfer">
                             Bank Transfer
                           </SelectItem>
-                          <SelectItem value="deposit">Bank Deposit</SelectItem>
+                          <SelectItem value="Bank Deposit">Bank Deposit</SelectItem>
                         </SelectContent>
                       </Select>
                       {/* <Button className="h-12 bg-[#3679171C] text-[#45971F] hover:bg-gray-300" onClick={handleConfirm}>Confirm Payment</Button> */}
