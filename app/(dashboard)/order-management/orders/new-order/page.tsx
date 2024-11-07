@@ -353,25 +353,24 @@ const NewOrderPage = () => {
                     )}
                   />
 
-                                    <FormField
-                                        control={control}
-                                        name="deliveryLocation"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <SelectSingleCombo
-                                                    label="Delivery Location"
-                                                    options={DELIVERY_LOCATION_OPTIONS}
-                                                    {...field}
-                                                    valueKey={"value"}
-                                                    labelKey={"label"}
-                                                    placeholder="Select delivery location"
-                                                    hasError={!!errors.deliveryZone}
-                                                    errorMessage={errors.deliveryZone?.message as string}
-                                                />
-
-                                            </FormItem>
-                                        )}
-                                    />
+                  <FormField
+                    control={control}
+                    name="deliveryLocation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Delivery Location"
+                          options={DELIVERY_LOCATION_OPTIONS}
+                          {...field}
+                          valueKey={"value"}
+                          labelKey={"label"}
+                          placeholder="Select delivery location"
+                          hasError={!!errors.deliveryZone}
+                          errorMessage={errors.deliveryZone?.message as string}
+                        />
+                      </FormItem>
+                    )}
+                  />
 
                   {isCustomDelivery && (
                     <FormField
@@ -892,7 +891,7 @@ const NewOrderPage = () => {
                               className={cn(
                                 "h-12 ml-auto",
                                 controlledFields.length !== index + 1 &&
-                                  "hidden",
+                                "hidden",
                                 controlledFields.length == 0 && "!visible"
                               )}
                               variant="outline"
