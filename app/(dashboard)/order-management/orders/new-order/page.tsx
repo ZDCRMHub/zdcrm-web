@@ -355,7 +355,7 @@ const NewOrderPage = () => {
 
                   <FormField
                     control={control}
-                    name="deliveryZone"
+                    name="deliveryLocation"
                     render={({ field }) => (
                       <FormItem>
                         <SelectSingleCombo
@@ -397,26 +397,6 @@ const NewOrderPage = () => {
                       </FormItem>
                     )}
                   />
-                                    <FormField
-                                        control={control}
-                                        name="deliveryLocation"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <SelectSingleCombo
-                                                    label="Delivery Location"
-                                                    options={DELIVERY_LOCATION_OPTIONS}
-                                                    {...field}
-                                                    valueKey={"value"}
-                                                    labelKey={"label"}
-                                                    placeholder="Select delivery location"
-                                                    hasError={!!errors.deliveryZone}
-                                                    errorMessage={errors.deliveryZone?.message as string}
-                                                />
-
-                                            </FormItem>
-                                        )}
-                                    />
-
                   {isCustomDelivery && (
                     <FormField
                       control={control}
