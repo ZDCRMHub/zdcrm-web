@@ -263,6 +263,42 @@ const NewOrderPage = () => {
                   placeholder="Enter delivery note"
                 />
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
+                  <FormField
+                    control={control}
+                    name="deliveryDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <SingleDatePicker
+                          label="Delivery Date"
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select delivery date"
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="dispatchTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <TimePicker
+                            className=""
+                            control={control}
+                            label="Dispatch Time"
+                            {...field}
+                            hasError={!!errors.dispatchTime}
+                            errorMessage={
+                              errors.dispatchTime?.message as string
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                   {!isCustomDelivery && (
                     <FormField
                       control={control}
@@ -286,26 +322,28 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  <FormField
-                    control={control}
-                    name="deliveryAddress"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            className=""
-                            label="Delivery Address"
-                            {...field}
-                            hasError={!!errors.deliveryAddress}
-                            errorMessage={
-                              errors.deliveryAddress?.message as string
-                            }
-                            placeholder="Enter delivery address"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  {isCustomDelivery && (
+                    <FormField
+                      control={control}
+                      name="deliveryFee"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              className=""
+                              label="Delivery Fee"
+                              {...field}
+                              hasError={!!errors.deliveryFee}
+                              errorMessage={
+                                errors.deliveryFee?.message as string
+                              }
+                              placeholder="Enter delivery fee"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={control}
@@ -335,25 +373,6 @@ const NewOrderPage = () => {
                           hasError={!!errors.deliveryZone}
                           errorMessage={errors.deliveryZone?.message as string}
                         />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name="deliveryLocation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <SelectSingleCombo
-                          label="Delivery Location"
-                          options={DELIVERY_LOCATION_OPTIONS}
-                          {...field}
-                          valueKey={"value"}
-                          labelKey={"label"}
-                          placeholder="Select delivery location"
-                          hasError={!!errors.deliveryZone}
-                          errorMessage={errors.deliveryZone?.message as string}
-                        />
                         <Button
                           type="button"
                           className={`rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200 ${
@@ -373,59 +392,41 @@ const NewOrderPage = () => {
                       </FormItem>
                     )}
                   />
-                  {isCustomDelivery && (
-                    <FormField
-                      control={control}
-                      name="deliveryFee"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className=""
-                              label="Delivery Fee"
-                              {...field}
-                              hasError={!!errors.deliveryFee}
-                              errorMessage={
-                                errors.deliveryFee?.message as string
-                              }
-                              placeholder="Enter delivery fee"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  )}
 
                   <FormField
                     control={control}
-                    name="deliveryDate"
+                    name="deliveryLocation"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <SingleDatePicker
-                          label="Delivery Date"
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder="Select delivery date"
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Delivery Location"
+                          options={DELIVERY_LOCATION_OPTIONS}
+                          {...field}
+                          valueKey={"value"}
+                          labelKey={"label"}
+                          placeholder="Select delivery location"
+                          hasError={!!errors.deliveryZone}
+                          errorMessage={errors.deliveryZone?.message as string}
                         />
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={control}
-                    name="dispatchTime"
+                    name="deliveryAddress"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <TimePicker
+                          <Input
                             className=""
-                            control={control}
-                            label="Dispatch Time"
+                            label="Delivery Address"
                             {...field}
-                            hasError={!!errors.dispatchTime}
+                            hasError={!!errors.deliveryAddress}
                             errorMessage={
-                              errors.dispatchTime?.message as string
+                              errors.deliveryAddress?.message as string
                             }
+                            placeholder="Enter delivery address"
                           />
                         </FormControl>
                       </FormItem>
