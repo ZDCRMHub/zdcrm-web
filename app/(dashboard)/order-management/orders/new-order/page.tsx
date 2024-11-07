@@ -408,6 +408,7 @@ const NewOrderPage = () => {
               </AccordionContent>
             </AccordionItem>
 
+
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                  ORDER INFORMATION                  ///////////// */}
@@ -452,11 +453,16 @@ const NewOrderPage = () => {
                         <Button
                           variant="outline"
                           onClick={()=> {
-                            setValue(`items.${index}.isEditing`, true)
+                            setValue(`items.${index}.isCustomOrder`, !watch(`items.${index}.isCustomOrder`))
                           }}
                           type="button"
                         >
-                          + Custom Order
+                          {
+                            watch(`items.${index}.isCustomOrder`) ? 
+                            "+ Default Order"
+                            :
+                            "+ Custom Order"
+                          }
                         </Button>
                       </header>
                       {field?.isEditing ? (
