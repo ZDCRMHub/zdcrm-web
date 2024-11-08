@@ -113,7 +113,11 @@ const NewOrderPage = () => {
     });
   };
 
-  const getFieldError = (errors: FieldErrors<NewOrderFormValues>,index: number,field: string) => {
+  const getFieldError = (
+    errors: FieldErrors<NewOrderFormValues>,
+    index: number,
+    field: string
+  ) => {
     const itemErrors = errors.items?.[index] as
       | FieldErrors<NewOrderFormValues["items"][number]>
       | undefined;
@@ -126,7 +130,13 @@ const NewOrderPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={["customer-information","order-information","delivery-information","order-Instruction","payment-information",]}
+            defaultValue={[
+              "customer-information",
+              "order-information",
+              "delivery-information",
+              "order-Instruction",
+              "payment-information",
+            ]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -253,6 +263,42 @@ const NewOrderPage = () => {
                   placeholder="Enter delivery note"
                 />
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
+                  <FormField
+                    control={control}
+                    name="deliveryDate"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <SingleDatePicker
+                          label="Delivery Date"
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Select delivery date"
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="dispatchTime"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <TimePicker
+                            className=""
+                            control={control}
+                            label="Dispatch Time"
+                            {...field}
+                            hasError={!!errors.dispatchTime}
+                            errorMessage={
+                              errors.dispatchTime?.message as string
+                            }
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
                   {!isCustomDelivery && (
                     <FormField
                       control={control}
@@ -267,33 +313,37 @@ const NewOrderPage = () => {
                             labelKey={"label"}
                             placeholder="Select delivery method"
                             hasError={!!errors.deliveryMethod}
-                            errorMessage={errors.deliveryMethod?.message as string}
+                            errorMessage={
+                              errors.deliveryMethod?.message as string
+                            }
                           />
                         </FormItem>
                       )}
                     />
                   )}
 
-                  <FormField
-                    control={control}
-                    name="deliveryAddress"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            className=""
-                            label="Delivery Address"
-                            {...field}
-                            hasError={!!errors.deliveryAddress}
-                            errorMessage={
-                              errors.deliveryAddress?.message as string
-                            }
-                            placeholder="Enter delivery address"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  {isCustomDelivery && (
+                    <FormField
+                      control={control}
+                      name="deliveryFee"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              className=""
+                              label="Delivery Fee"
+                              {...field}
+                              hasError={!!errors.deliveryFee}
+                              errorMessage={
+                                errors.deliveryFee?.message as string
+                              }
+                              placeholder="Enter delivery fee"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  )}
 
                   <FormField
                     control={control}
@@ -323,6 +373,22 @@ const NewOrderPage = () => {
                           hasError={!!errors.deliveryZone}
                           errorMessage={errors.deliveryZone?.message as string}
                         />
+                        <Button
+                          type="button"
+                          className={`rounded-none text-xs px-4 py-1.5 h-8 w-max bg-gray-200 ${
+                            isCustomDelivery ? "bg-[#FFC600]" : ""
+                          }`}
+                          variant="unstyled"
+                          onClick={() =>
+                            setValue(
+                              "isCustomDelivery",
+                              !watch("isCustomDelivery")
+                            )
+                          }
+                        >
+                          +{isCustomDelivery ? " Default " : " Custom "}
+                          Delivery
+                        </Button>
                       </FormItem>
                     )}
                   />
@@ -346,59 +412,21 @@ const NewOrderPage = () => {
                     )}
                   />
 
-                  {isCustomDelivery && (
-                    <FormField
-                      control={control}
-                      name="deliveryFee"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className=""
-                              label="Delivery Fee"
-                              {...field}
-                              hasError={!!errors.deliveryFee}
-                              errorMessage={
-                                errors.deliveryFee?.message as string
-                              }
-                              placeholder="Enter delivery fee"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
                   <FormField
                     control={control}
-                    name="deliveryDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <SingleDatePicker
-                          label="Delivery Date"
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder="Select delivery date"
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="dispatchTime"
+                    name="deliveryAddress"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <TimePicker
+                          <Input
                             className=""
-                            control={control}
-                            label="Dispatch Time"
+                            label="Delivery Address"
                             {...field}
-                            hasError={!!errors.dispatchTime}
+                            hasError={!!errors.deliveryAddress}
                             errorMessage={
-                              errors.dispatchTime?.message as string
+                              errors.deliveryAddress?.message as string
                             }
+                            placeholder="Enter delivery address"
                           />
                         </FormControl>
                       </FormItem>
@@ -407,7 +435,6 @@ const NewOrderPage = () => {
                 </div>
               </AccordionContent>
             </AccordionItem>
-
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -441,7 +468,6 @@ const NewOrderPage = () => {
                       />
                     )}
                   />
-
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {controlledFields.map((field, index) => (
@@ -452,17 +478,17 @@ const NewOrderPage = () => {
                         </h3>
                         <Button
                           variant="outline"
-                          onClick={()=> {
-                            setValue(`items.${index}.isCustomOrder`, !watch(`items.${index}.isCustomOrder`))
+                          onClick={() => {
+                            setValue(
+                              `items.${index}.isCustomOrder`,
+                              !watch(`items.${index}.isCustomOrder`)
+                            );
                           }}
                           type="button"
                         >
-                          {
-                            watch(`items.${index}.isCustomOrder`) ? 
-                            "+ Default Order"
-                            :
-                            "+ Custom Order"
-                          }
+                          {watch(`items.${index}.isCustomOrder`)
+                            ? "+ Default Order"
+                            : "+ Custom Order"}
                         </Button>
                       </header>
                       {field?.isEditing ? (
@@ -860,7 +886,7 @@ const NewOrderPage = () => {
                               className={cn(
                                 "h-12 ml-auto",
                                 controlledFields.length !== index + 1 &&
-                                "hidden",
+                                  "hidden",
                                 controlledFields.length == 0 && "!visible"
                               )}
                               variant="outline"

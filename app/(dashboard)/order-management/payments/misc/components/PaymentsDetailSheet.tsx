@@ -58,7 +58,7 @@ export default function PaymentsDetailSheet({
   >(undefined);
 
   // const handleConfirm = () => {
-    
+
   // }
 
   return (
@@ -259,32 +259,31 @@ export default function PaymentsDetailSheet({
                         Outstanding Balance :
                       </p>
                       <p className="font-bold text-red-500">₦60,000.00</p>
-                      {selectedPaymentMethod ? <p className="text-[10px] bg-[#194A7A] px-5 py-1 text-white rounded-full">
-                        {selectedPaymentMethod}
-                      </p> : ""}
+                      {selectedPaymentMethod ? (
+                        <p className="text-[10px] bg-[#194A7A] px-5 py-1 text-white rounded-full">
+                          {selectedPaymentMethod}
+                        </p>
+                      ) : (
+                        ""
+                      )}
                     </div>
                     <div className="flex gap-7">
-                    <Select
-                      value={selectedPaymentMethod}
-                      onValueChange={setSelectedPaymentMethod}
-                    >
-                      <SelectTrigger className="w-[90%] max-w-[230px] h-12 mb-4">
-                        <SelectValue placeholder="Select payment Method" />
-                      </SelectTrigger>
-                      <SelectContent className="px-8">
-                        {paymentOptions.map((option) => (
-                          <SelectItem
-                            key={option.value}
-                            value={option.value}
-                            // onClick={() => setSelectedPaymentMethod(option.value)}
-                            className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
-                          >
-                            {option.label}
+                      <Select
+                        value={selectedPaymentMethod}
+                        onValueChange={setSelectedPaymentMethod}
+                      >
+                        <SelectTrigger className="w-[90%] max-w-[230px] h-12 mb-4">
+                          <SelectValue placeholder="Select payment Method" />
+                        </SelectTrigger>
+                        <SelectContent className="px-8">
+                          <SelectItem value="Cash">Cash</SelectItem>
+                          <SelectItem value="Bank Transfer">
+                            Bank Transfer
                           </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                        {/* <Button className="h-12 bg-[#3679171C] text-[#45971F] hover:bg-gray-300" onClick={handleConfirm}>Confirm Payment</Button> */}
+                          <SelectItem value="Bank Deposit">Bank Deposit</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {/* <Button className="h-12 bg-[#3679171C] text-[#45971F] hover:bg-gray-300" onClick={handleConfirm}>Confirm Payment</Button> */}
                     </div>
                   </div>
                 </AccordionContent>
