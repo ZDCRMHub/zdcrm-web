@@ -127,3 +127,6 @@ export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tool
 export { Textarea } from './textarea'
 
 export { default as TimePicker } from './timepicker'
+
+
+export { default as Spinner } from './spinner'

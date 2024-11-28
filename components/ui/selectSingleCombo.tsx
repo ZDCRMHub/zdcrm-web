@@ -64,7 +64,7 @@ const SelectSingleCombo = <T extends object>({
   const [searchText, setSearchText] = React.useState<string>("")
 
   React.useEffect(() => {
-    if (searchText) {
+    if (searchText && searchText.trim() !== "") {
       const filteredOptions = options?.filter(option => {
         const optionLabel = String(option[labelKey]).toLowerCase();
         return optionLabel.includes(searchText.toLowerCase());
@@ -94,6 +94,8 @@ const SelectSingleCombo = <T extends object>({
     }
   }, [triggerRef?.current?.clientWidth])
 
+
+  
   return (
     <div className={cn("inputdiv", withIcon && "withicon", containerClass)}>
 
