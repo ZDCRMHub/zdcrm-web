@@ -1,10 +1,10 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
 import { CiSearch, CiShop } from "react-icons/ci";
-import Image from "next/image";
-import { FaChevronRight } from "react-icons/fa6";
 import { GoPlus } from "react-icons/go";
 import {
   Dialog,
@@ -16,46 +16,24 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
-import { SuccessModal } from "@/components/ui";
+import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
 import { useBooleanStateControl } from "@/hooks";
+import { useCreateNewBranch, useGetAllBranches } from "./misc/api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { BranchFormData, branchSchema } from "./misc/utils/schemas";
+import { BranchCard } from "./misc/components";
 
-type BranchCardProp = {
-  name: string;
-  country: string;
-};
 
-const BranchCard = ({ name, country }: BranchCardProp) => {
-  return (
-    <div className="w-[264px] border border-solid rounded-[4px] p-4">
-      <div className="flex gap-3 items-center">
-        <div className="p-2 bg-[#F4F4F4] rounded-[4px]">
-          <CiShop size={24} />
-        </div>
-        <p>{name}</p>
-      </div>
-      <div className="h-[1px] w-full bg-[#E1E1E1CC] my-[18px]" />
-      <div>
-        <p className="text-xs text-[#AAAEB0] italic font-extralight">Country</p>
-        <div className="flex justify-between">
-          <div className="flex gap-2 items-center">
-            <Image
-              src="/img/Nigeria - NG.svg"
-              alt="Nigeria"
-              width={30}
-              height={20}
-            />
-            <p className="italic font-extralight">{country}</p>
-          </div>
-          <FaChevronRight color="#8D8080" />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const BranchPage = () => {
   const {
@@ -69,6 +47,51 @@ const BranchPage = () => {
     setTrue: openAddBranchModal,
     setFalse: closeAddBranchModal,
   } = useBooleanStateControl();
+
+  const { data, isLoading, error, refetch: refetchBranches } = useGetAllBranches();
+
+  console.log(data, "BRANCHES")
+  const {
+    control,
+    setValue,
+    handleSubmit,
+    formState: { errors }, watch,
+    reset,
+  } = useForm<BranchFormData>({
+    resolver: zodResolver(branchSchema),
+    defaultValues: {
+      name: "",
+      country: "",
+    },
+  });
+
+  const { mutate: createBranch, isPending: isCreatingBranch } = useCreateNewBranch();
+  const onSubmit = (data: BranchFormData) => {
+    console.log(data);
+    createBranch(data, {
+      onSuccess: () => {
+        closeAddBranchModal();
+        openSuccessModal();
+        refetchBranches()
+        reset();
+      },
+
+    })
+  };
+
+  // This is a mock list of countries. In a real application, you'd fetch this from an API or use a comprehensive list.
+  const countries = [
+    "Nigeria",
+    "Ghana",
+    "Kenya",
+    "South Africa",
+    "Egypt",
+    "Morocco",
+    "Ethiopia",
+    "Tanzania",
+    "Uganda",
+    "Algeria",
+  ];
 
   return (
     <section className="w-[910px] h-auto mx-auto mt-32 flex flex-col gap-16">
@@ -89,16 +112,39 @@ const BranchPage = () => {
             className="absolute top-[35%] right-[24px]"
           />
         </div>
-        <div className="flex gap-6">
-          <BranchCard name="Prestige Flowers" country="Nigeria" />
-          <BranchCard name="Zuzu Delights" country="Nigeria" />
+        <div className="flex gap-6 flex-wrap">
+          {
+            isLoading ? (
+              <div className="w-full h-full flex items-center justify-center">
+                <Spinner size={20} />
+              </div>
+            ) : error ? (
+              <p>Error loading branches: {error.message}</p>
+            ) :
+              !isLoading && data?.data?.length === 0 ? (
+                <p>No branches found</p>
+              ) :
+                (
+                  data?.data?.map((branch: any) => (
+                    <BranchCard
+                      key={branch.id}
+                      name={branch.name}
+                      country={branch.country}
+                    />
+                  ))
+                )}
           <div
-            className="bg-[#DFDFDF] w-[264px] rounded-lg flex justify-center items-center cursor-pointer"
+            className="bg-[#DFDFDF] w-[264px] h-[180px] rounded-lg flex justify-center items-center cursor-pointer"
             onClick={openAddBranchModal}
           >
-            <GoPlus size={24} />
+            <GoPlus size={30} />
           </div>
-          <Dialog open={isAddBranchModalOpen}>
+
+
+
+
+
+          <Dialog open={isAddBranchModalOpen} onOpenChange={closeAddBranchModal}>
             <DialogContent className="flex flex-col gap-8 w-[520px] px-[75px] py-8">
               <DialogClose
                 onClick={closeAddBranchModal}
@@ -113,32 +159,56 @@ const BranchPage = () => {
               <DialogHeader className="">
                 <DialogTitle className="text-2xl">Add a New Branch</DialogTitle>
               </DialogHeader>
-              <div className="flex flex-col gap-8">
-                <div className="">
-                  <Label htmlFor="name" className="text-sm">
-                    Name
-                  </Label>
-                  <Input id="name" className="" />
-                </div>
-                <div className="">
-                  <Label htmlFor="country" className="text-sm">
-                    Select Country
-                  </Label>
-                  <Input id="country" className="" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
-                  onClick={() => {
-                    closeAddBranchModal();
-                    openSuccessModal();
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
+
+                <Controller
+                  name="name"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      label="Name"
+                      placeholder="Enter Branch Name"
+                      id="name"
+                      {...field}
+                      className="mt-2"
+                      hasError={!!errors.name}
+                      errorMessage={errors?.name?.message}
+                    />
+                  )}
+                />
+
+                <SelectSingleCombo
+                  name="country"
+                  options={countries.map((country) => ({
+                    label: country,
+                    value: country,
+                  }))}
+                  placeholder="Select Country"
+                  label="Select Country"
+                  labelKey="label"
+                  valueKey="value"
+                  value={watch('country')}
+                  onChange={(selectedOption) => {
+                    setValue("country", selectedOption);
                   }}
-                >
-                  Add New Branch
-                </Button>
-              </DialogFooter>
+                  hasError={!!errors.country}
+                  errorMessage={errors?.country?.message}
+
+                />
+
+                <DialogFooter>
+                  <Button
+                    type="submit"
+                    className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
+                  >
+                    Add New Branch
+
+                    {
+                      isCreatingBranch  && <Spinner className="ml-2" />
+                    }
+                  </Button>
+                </DialogFooter>
+              </form>
             </DialogContent>
           </Dialog>
         </div>
@@ -148,10 +218,11 @@ const BranchPage = () => {
         isModalOpen={isSuccessModalOpen}
         closeModal={closeSuccessModal}
         heading="Branch Added Successfully"
-        subheading= "New Branch Added"
+        subheading="New Branch Added"
       />
     </section>
   );
 };
 
 export default BranchPage;
+

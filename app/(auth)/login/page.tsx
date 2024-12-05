@@ -1,16 +1,20 @@
 'use client';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSignIn } from '../misc/api';
-import { useAuth } from '@/contexts/auth';
 
-// Zod Schema for Login Validation
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/auth';
+import { Spinner } from '@/components/ui';
+import useErrorModalState from '@/hooks/useErrorModalState';
+import ErrorModal from '@/components/ui/modal-error';
+import { formatAxiosErrorMessage } from '@/utils/errors';
+
+
 const LoginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters')
@@ -21,9 +25,9 @@ type LoginFormData = z.infer<typeof LoginSchema>;
 const LoginPage = () => {
   const router = useRouter();
   const { useSignIn: useLogin } = useAuth();
-  const { mutate: handleLogin } = useLogin();
+  const { mutate: handleLogin, isPending: isLoggingIn } = useLogin();
 
-  
+
   const {
     register,
     handleSubmit,
@@ -38,11 +42,24 @@ const LoginPage = () => {
       password: data.password
     }, {
       onSuccess: (data) => {
-        console.log(data)
         router.push('/order-timeline');
+      },
+      onError: (error: unknown) => {
+        const errorMessage = formatAxiosErrorMessage(error as any)
+        openErrorModalWithMessage(errorMessage)
       }
     })
   };
+
+
+  const {
+    isErrorModalOpen,
+    errorModalMessage,
+    openErrorModalWithMessage,
+    closeErrorModal,
+    setErrorModalState
+  } = useErrorModalState()
+
 
 
   return (
@@ -52,36 +69,49 @@ const LoginPage = () => {
         <p className='text-gray-500 text-center mb-6'>
           Kindly login with necessary credentials and access to your dashboard
         </p>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
+        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-y-6'>
           <p className='font-medium'>LOGIN</p>
-          <div>
-            <Input
-              type='email'
-              placeholder='Enter Email'
-              {...register('email')}
-            />
-            {errors.email && (
-              <p className='text-red-500 mt-1'>{errors.email.message}</p>
-            )}
-          </div>
+          <Input
+            type='email'
+            placeholder='Enter Email'
+            {...register('email')}
+            hasError={!!errors.email}
+            errorMessage={errors?.email?.message}
+          />
           <div>
             <Input
               type="password"
               placeholder='Enter Password'
               {...register('password')}
+              hasError={!!errors.password}
+              errorMessage={errors?.password?.message}
             />
-            {errors.password && (
-              <p className='text-red-500 mt-1'>{errors.password.message}</p>
-            )}
+            <Link href='/reset-password' className='mt-4 text-sm p-2 mt-6 hover:underline'>
+              Forgot Password? <span className='text-red-500'> Reset</span>
+            </Link>
           </div>
-          <Link href='/reset-password' className='mt-4'>
-            Forgot Password? <span className='text-red-500'> Reset</span>
-          </Link>
           <Button type='submit' className='w-full h-[70px]'>
             Continue
+            {
+              isLoggingIn && <Spinner className='ml-2' />
+            }
           </Button>
         </form>
       </div>
+
+
+      <ErrorModal
+        heading='An error Occured'
+        subheading={errorModalMessage || "Check your inputs"}
+        isErrorModalOpen={isErrorModalOpen}
+        setErrorModalState={setErrorModalState}
+      >
+        <div className="p-5 rounded-t-2xl rounded-b-3xl bg-red-200">
+          <Button variant="destructive" className='w-full' onClick={closeErrorModal}>
+            Okay
+          </Button>
+        </div>
+      </ErrorModal>
     </div>
   );
 };

@@ -17,3 +17,22 @@ export const deleteAxiosDefaultToken = () => {
   delete APIAxios.defaults.headers.common.Authorization;
 };
 
+
+export const handleInactiveAccountRedirect = () => {
+  if (typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+};
+
+APIAxios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (
+      error.response && 
+      error.response.data?.error?.summary === 'inactive account'
+    ) {
+      handleInactiveAccountRedirect();
+    }
+    return Promise.reject(error);
+  }
+);

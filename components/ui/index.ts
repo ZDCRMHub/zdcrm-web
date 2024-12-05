@@ -71,6 +71,7 @@ export {
 
 export { Popover, PopoverTrigger, PopoverContent } from './popover'
 export { default as ProductsDropdown } from './productsDropdown'
+export { default as AvatarComponent } from './avatar-main'
 
 
 export {

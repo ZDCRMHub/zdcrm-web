@@ -3,30 +3,27 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
+import { FaDotCircle } from "react-icons/fa";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { FaDotCircle } from "react-icons/fa";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { SelectSingleCombo, SuccessModal } from "@/components/ui";
+import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
 import { useBooleanStateControl } from "@/hooks";
+import useErrorModalState from "@/hooks/useErrorModalState";
+
 import { useGetRoles, UseSendInviteToEmployee } from "./misc/api";
+import ErrorModal from "@/components/ui/modal-error";
+import { extractErrorMessage } from "@/utils/errors";
+import { cn } from "@/lib/utils";
 
 
 const inviteEmployeeSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   role: z.string({
-    message: "Role is required",
-  }),
+    message: "Enter role",
+  }).min(1, "Role is required"),
 });
 
 type InviteEmployeeFormData = z.infer<typeof inviteEmployeeSchema>;
@@ -39,12 +36,9 @@ const InviteEmployeePage = () => {
   } = useBooleanStateControl();
 
   const {
-    handleSubmit,
-    control,
-    reset,
-    setValue,
-    register,
-    watch,
+    handleSubmit, control,
+    reset, setValue,
+    register, watch,
     formState: { errors },
   } = useForm<InviteEmployeeFormData>({
     resolver: zodResolver(inviteEmployeeSchema),
@@ -55,7 +49,14 @@ const InviteEmployeePage = () => {
     },
   });
   const { data, isLoading: isLoadingRoles } = useGetRoles()
-  const { mutate } = UseSendInviteToEmployee()
+  const { mutate, isPending } = UseSendInviteToEmployee()
+  const {
+    isErrorModalOpen,
+    errorModalMessage,
+    openErrorModalWithMessage,
+    closeErrorModal,
+    setErrorModalState
+  } = useErrorModalState()
 
   const onSubmit = (data: InviteEmployeeFormData) => {
     mutate({
@@ -63,9 +64,12 @@ const InviteEmployeePage = () => {
       email: data.email
     }, {
       onSuccess(data, variables, context) {
-        console.log("Form Submitted:", data);
         openSuccessModal();
         reset();
+      },
+      onError(error: unknown) {
+        const errorMessage = extractErrorMessage(error as any)
+        openErrorModalWithMessage(errorMessage)
       },
     })
   };
@@ -95,12 +99,11 @@ const InviteEmployeePage = () => {
                 type="text"
                 className="h-16"
                 placeholder="Enter employee's name"
+                hasError={!!errors.name}
+                errorMessage={errors?.name?.message}
               />
             )}
           />
-          {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
-          )}
 
           <Controller
             name="email"
@@ -111,56 +114,62 @@ const InviteEmployeePage = () => {
                 type="email"
                 className="h-16"
                 placeholder="Enter email address"
+                hasError={!!errors.email}
+                errorMessage={errors?.email?.message}
               />
             )}
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
 
           <Controller
             name="role"
             control={control}
             render={({ field }) => (
-              // <Select
-              //   onValueChange={field.onChange}
-              //   value={field.value}
-              // >
-              //   <SelectTrigger className="h-16">
-              //     <SelectValue placeholder="Select Role" />
-              //   </SelectTrigger>
-              //   <SelectContent>
-              //     <SelectGroup>
-              //       <SelectLabel className="text-[#194A7A]">
-              //         Select Role
-              //       </SelectLabel>
-              //       <SelectItem value="branch-manager">
-              //         Branch Manager
-              //       </SelectItem>
-              //       <SelectItem value="admin">Admin</SelectItem>
-              //       <SelectItem value="digital-marketer">
-              //         Digital Marketer
-              //       </SelectItem>
-              //     </SelectGroup>
-              //   </SelectContent>
-              // </Select>
-
-              <SelectSingleCombo
-                isLoadingOptions={isLoadingRoles}
-                valueKey="name"
-                labelKey="name"
-                options={data!}
-                onChange={(e) => setValue('role', e)}
-                name="role"
-                placeholder="Select role"
-                value={watch('role')}
-
-              />
+              <>
+                {
+                  (isLoadingRoles || !data) ?
+                    <Button
+                      variant="inputButton"
+                      size="inputButton"
+                      className={cn('flex w-full items-center justify-between gap-2 text-left text-sm transition duration-300')}
+                      type="button"
+                    >
+                      <span>
+                        Loading roles...
+                      </span>
+                      <svg
+                        className={"ml-2  shrink-0 opacity-70 transition-transform duration-300"}
+                        fill="none"
+                        height={7}
+                        viewBox="0 0 12 7"
+                        width={12}
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          className={'fill-label-text'}
+                          clipRule="evenodd"
+                          d="M8.357 5.522a3.333 3.333 0 0 1-4.581.126l-.133-.126L.41 2.089A.833.833 0 0 1 1.51.84l.078.07L4.82 4.342c.617.617 1.597.65 2.251.098l.106-.098L10.411.91a.833.833 0 0 1 1.248 1.1l-.07.079-3.232 3.433Z"
+                          fill={"#032282"}
+                          fillRule="evenodd"
+                        />
+                      </svg>
+                    </Button>
+                    :
+                    <SelectSingleCombo
+                      isLoadingOptions={isLoadingRoles}
+                      valueKey="name"
+                      labelKey="name"
+                      options={data!}
+                      onChange={(e) => setValue('role', e)}
+                      name="role"
+                      placeholder="Select role"
+                      value={watch('role')}
+                      hasError={!!errors.role}
+                      errorMessage={errors?.role?.message}
+                    />
+                }
+              </>
             )}
           />
-          {errors.role && (
-            <p className="text-red-500 text-sm">{errors.role.message}</p>
-          )}
 
           <div className="flex flex-col gap-6">
             <p className="text-sm text-center mt-14">
@@ -172,6 +181,9 @@ const InviteEmployeePage = () => {
               className="h-14 flex gap-4 bg-[#090909] rounded-xl text-[18px] px-7"
             >
               Invite
+              {
+                isPending && <Spinner size={18} />
+              }
             </Button>
           </div>
         </form>
@@ -182,6 +194,18 @@ const InviteEmployeePage = () => {
         closeModal={closeSuccessModal}
         heading="New Invitation Sent Successfully"
       />
+      <ErrorModal
+        heading='An error Occured'
+        subheading={errorModalMessage || "Check your inputs"}
+        isErrorModalOpen={isErrorModalOpen}
+        setErrorModalState={setErrorModalState}
+      >
+        <div className="p-5 rounded-t-2xl rounded-b-3xl bg-red-200">
+          <Button variant="destructive" className='w-full' onClick={closeErrorModal}>
+            Okay
+          </Button>
+        </div>
+      </ErrorModal>
     </section>
   );
 };

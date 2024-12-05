@@ -9,9 +9,7 @@ const AllProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-          {/* <UserProvider> */}
-              {children}
-          {/* </UserProvider> */}
+        {children}
       </AuthProvider>
     </QueryClientProvider>
   )

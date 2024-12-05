@@ -57,9 +57,9 @@ const SelectSingleCombo = <T extends object>({
   valueKey,
   labelKey,
   triggerColor,
-  showSelectedValue=true,
+  showSelectedValue = true,
 }: SelectProps<T>) => {
-  const [open, setOpen] = React.useState(false)
+  const [isOpen, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
   const [searchText, setSearchText] = React.useState<string>("")
 
@@ -95,11 +95,11 @@ const SelectSingleCombo = <T extends object>({
   }, [triggerRef?.current?.clientWidth])
 
 
-  
+
   return (
     <div className={cn("inputdiv", withIcon && "withicon", containerClass)}>
 
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={isOpen} onOpenChange={setOpen}>
         <div className="flex flex-col gap-2">
           {
             label && (
@@ -118,7 +118,7 @@ const SelectSingleCombo = <T extends object>({
               )}
               type="button"
               role="combobox"
-              onClick={() => setOpen(!open)}
+              onClick={() => setOpen(!isOpen)}
               ref={triggerRef}
             >
               <span className={cn(
@@ -136,7 +136,7 @@ const SelectSingleCombo = <T extends object>({
                 } */}
               </span>
               <svg
-                className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", open && "rotate-180")}
+                className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", isOpen && "rotate-180")}
                 fill="none"
                 height={7}
                 viewBox="0 0 12 7"
@@ -162,17 +162,17 @@ const SelectSingleCombo = <T extends object>({
               <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
               <input
                 className="focus:!ring-0 !ring-0 bg-transparent pl-5 p-3 !outline-none text-sm placeholder:text-[#86898ec7] border-b border-[#E6E6E6] w-full rounded-none"
-                placeholder={ placeholder || "Search"}
+                placeholder={placeholder || "Search"}
                 type="text"
                 onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
+            {isLoadingOptions && (
+              <CommandItem className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
+                <SmallSpinner color='#000000' /> Loading options...
+              </CommandItem>
+            )}
             <CommandGroup className="flex flex-col gap-3 px-5">
-              {isLoadingOptions && (
-                <CommandItem className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
-                  <SmallSpinner color='#000000' /> Loading options...
-                </CommandItem>
-              )}
               {!isLoadingOptions && options && options?.length > 0 ? (
                 optionsToDisplay?.map((option, index) => (
                   <button

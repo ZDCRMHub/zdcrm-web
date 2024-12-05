@@ -1,11 +1,17 @@
 'use client'
-import { convertPathToTitle } from '@/utils/strings';
-import {Search, RefreshCw, User, Dot} from 'lucide-react';
-import Image from 'next/image';
+
+import { Dot } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
+import { useAuth } from '@/contexts/auth';
+import { convertPathToTitle, getInitials } from '@/utils/strings';
+
+import { AvatarComponent } from '../ui';
+
+
 export function Navbar() {
-const pathName = usePathname()
+  const pathName = usePathname()
+  const { user } = useAuth()
 
 
   return (
@@ -20,14 +26,13 @@ const pathName = usePathname()
           </div>
           <div className='flex items-center'>
             <div className='ml-4 relative'>
-              <button className='flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition duration-150 ease-in-out'>
-                <Image
-                  src='/img/ProfileIcon.svg'
-                  alt='profile-icon'
-                  width={50}
-                  height={50}
-                />
-              </button>
+              <AvatarComponent
+                fallback={user?.name || "Khabab Baba"}
+                src={undefined}
+                size='large'
+                alt='profile' 
+
+              />
             </div>
           </div>
         </div>

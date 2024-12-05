@@ -1,16 +1,17 @@
 'use client';
 import { Reducer } from 'react';
-import React, { 
-  createContext, 
-  useContext, 
-  useReducer, 
+import React, {
+  createContext,
+  useContext,
+  useReducer,
   useEffect,
-  ReactNode 
+  ReactNode
 } from 'react';
 import { APIAxios, setAxiosDefaultToken } from "@/utils/axios";
 import { authTokenStorage } from '@/utils/auth';
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { LoginAPIResponse } from '@/app/(auth)/misc/api/postLogin';
+import { useRouter } from 'next/navigation';
 
 // Existing interfaces
 export interface UserData {
@@ -46,7 +47,7 @@ export const initialAuthState: AuthState = {
 
 // Action Types and Reducer remain the same as in your previous implementation
 
-export type AuthActionType = 
+export type AuthActionType =
   | { type: 'SET_AUTHENTICATING'; payload: boolean }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'LOGIN_SUCCESS'; payload: UserData }
@@ -125,15 +126,16 @@ interface AuthContextType extends AuthState {
 // Create Context
 const AuthContext = createContext<AuthContextType>({
   ...initialAuthState,
-  dispatch: () => {},
+  dispatch: () => { },
   useSignIn: () => ({} as ReturnType<typeof useMutation<LoginAPIResponse, Error, SignInData>>),
-  logout: () => {},
-  checkAuthStatus: async () => {},
+  logout: () => { },
+  checkAuthStatus: async () => { },
 });
 
 // Provider Component
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialAuthState);
+  const router = useRouter();
 
   // React Query Mutation Hook
   const useSignIn = () => {
@@ -146,15 +148,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setAxiosDefaultToken(data.data?.access_token)
 
         // Dispatch login success
-        dispatch({ 
-          type: 'LOGIN_SUCCESS', 
-          payload: data.data 
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: data.data
         });
       },
       onError: (error: Error) => {
-        dispatch({ 
-          type: 'LOGIN_FAILURE', 
-          payload: error.message || 'Login failed' 
+        dispatch({
+          type: 'LOGIN_FAILURE',
+          payload: error.message || 'Login failed'
         });
         authTokenStorage.clearToken();
       }
@@ -167,25 +169,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     dispatch({ type: 'LOGOUT' });
   };
 
-  // Check Authentication Status
   const checkAuthStatus = async () => {
     const token = authTokenStorage.getToken();
-    
-    // If no token, stop authenticating
+
     if (!token) {
+      dispatch({ type: 'SET_AUTHENTICATING', payload: false });
+      router.push('/login');
+      return;
+    }
+    // Decode token and check expiry
+    const decodedToken: { exp: number } = JSON.parse(atob(token.split('.')[1]));
+    console.log(token, decodedToken);
+    const isTokenExpired = decodedToken.exp * 1000 < Date.now();
+
+    if (isTokenExpired) {
+      authTokenStorage.clearToken();
       dispatch({ type: 'SET_AUTHENTICATING', payload: false });
       return;
     }
-
     try {
       // // TODO: Replace with your actual user info endpoint
-      // const response = await APIAxios.get<UserData>('/auth/me', {
-      //   headers: { Authorization: `Bearer ${token}` }
-      // });
       setAxiosDefaultToken(token)
-      dispatch({ 
-        type: 'LOGIN_SUCCESS', 
-        payload: {} as UserData
+      const response = await APIAxios.get('/auth/get-user', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: response.data?.data as UserData
       });
     } catch (error) {
       // Token might be expired or invalid
@@ -200,7 +210,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   return (
-    <AuthContext.Provider 
+    <AuthContext.Provider
       value={{
         ...state,
         dispatch,
@@ -217,10 +227,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 // Custom hook for using auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  
+
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  
+
   return context;
 };
