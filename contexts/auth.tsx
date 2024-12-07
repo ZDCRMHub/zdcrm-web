@@ -179,7 +179,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     // Decode token and check expiry
     const decodedToken: { exp: number } = JSON.parse(atob(token.split('.')[1]));
-    console.log(token, decodedToken);
     const isTokenExpired = decodedToken.exp * 1000 < Date.now();
 
     if (isTokenExpired) {
