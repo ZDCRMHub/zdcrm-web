@@ -22,8 +22,6 @@ export {
 } from './command'
 export {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
   DialogTrigger,
   DialogContent,
