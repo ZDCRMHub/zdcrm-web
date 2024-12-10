@@ -1,5 +1,5 @@
 import React from 'react';
-import { StockInventoryDashboard } from '../misc';
+import { StockInventoryDashboard } from '../misc/components';
 // import StockInventoryDashboard from './misc/components/StockInventoryDashboard';
 
 const page = () => {

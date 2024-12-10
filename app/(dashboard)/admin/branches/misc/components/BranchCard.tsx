@@ -1,6 +1,5 @@
 
-import { Input } from "@/components/ui/input";
-import { CiSearch, CiShop } from "react-icons/ci";
+import { CiShop } from "react-icons/ci";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa6";
 

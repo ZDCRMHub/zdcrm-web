@@ -36,6 +36,7 @@ import { IoIosClose } from "react-icons/io";
 import { PiHashStraightFill } from "react-icons/pi";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 import { SelectSingleCombo } from "@/components/ui";
+import { useGetStockInventoryDetails } from "../misc/api";
 
 const stockHistory = [
   {
@@ -109,7 +110,7 @@ const InventoryDetailsPage = () => {
 
 
 
-
+  const { data } = useGetStockInventoryDetails(2)
 
 
   const [selectedVariant, setSelectedVariant] = useState<string | undefined>(undefined);
@@ -124,7 +125,7 @@ const InventoryDetailsPage = () => {
       </div>
 
       {
-        
+
         <SelectSingleCombo
           placeholder='Variations'
           options={[

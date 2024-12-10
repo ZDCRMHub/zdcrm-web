@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/pagination";
 import { IoChevronUp } from "react-icons/io5";
 import { useBooleanStateControl } from "@/hooks";
-import { ConfirmDeleteModal } from "@/components/ui";
+import { ConfirmDeleteModal, Spinner } from "@/components/ui";
 import {
   Sheet,
   SheetClose,
@@ -92,7 +92,11 @@ const Page = () => {
     editUsers(usersToUpdate);
   };
 
-  if (isLoadingUsers || isLoadingRoles) return <div>Loading...</div>;
+  if (isLoadingUsers || isLoadingRoles) return (
+    <div className="flex items-center justify-center h-full w-full py-[30vh]">
+      <Spinner size={18} className='' />
+    </div>
+  )
   if (usersError || rolesError) return <div>Error: {(usersError || rolesError)?.message}</div>;
 
   return (

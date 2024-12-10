@@ -12,7 +12,7 @@ import { useCreateRole } from '../api/postCreateNewRole'
 
 
 const schema = z.object({
-  name: z.string().min(1, 'Role name is required').max(50, 'Role name must be 50 characters or less'),
+    role_name	: z.string().min(1, 'Role name is required').max(50, 'Role name must be 50 characters or less'),
 })
 
 type FormData = z.infer<typeof schema>
@@ -23,7 +23,6 @@ const CreateNewRole = () => {
     })
 
     const createRole = useCreateRole()
-
     const onSubmit = (data: FormData) => {
         createRole.mutate(data, {
             onSuccess: () => {
@@ -47,16 +46,16 @@ const CreateNewRole = () => {
                             Add New Role
                         </SheetTitle>
                         <SheetDescription className="flex flex-col gap-3">
-                            <Label htmlFor="name" className="text-[#111827]">
+                            <Label htmlFor="role_name" className="text-[#111827]">
                                 Role Name <span className="text-red-500">*</span>
                             </Label>
                             <Input 
-                                id="name" 
-                                {...register('name')} 
+                                id="role_name" 
+                                {...register('role_name')} 
                                 className="h-14" 
                             />
-                            {errors.name && (
-                                <p className="text-red-500 text-sm">{errors.name.message}</p>
+                            {errors.role_name && (
+                                <p className="text-red-500 text-sm">{errors.role_name.message}</p>
                             )}
                         </SheetDescription>
                     </SheetHeader>
