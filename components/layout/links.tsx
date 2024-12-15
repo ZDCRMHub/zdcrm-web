@@ -113,19 +113,19 @@ export const linkGroups = [
         requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
         nestedLinks: [
           {
-            link: "/inventory/product-inventory",
+            link: "/inventory/products",
             text: "Product Inventory",
             icon: <I3Dcube />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
-            link: "/inventory/stock-inventory",
+            link: "/inventory/stock",
             text: "Stock Inventory",
             icon: <BagTick2 />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
-            link: "/inventory/store-inventory",
+            link: "/inventory/store",
             text: "Store Inventory",
             icon: <OrderManagement />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],

@@ -1,10 +1,11 @@
 import React from 'react';
 import { ProductsInventoryDashboard } from '../misc/components';
 
-const page = () => {
+const ProductsInventoryPage = () => {
+
   return (
-    <ProductsInventoryDashboard/>
+    <ProductsInventoryDashboard />
   )
 };
 
-export default page;
+export default ProductsInventoryPage;

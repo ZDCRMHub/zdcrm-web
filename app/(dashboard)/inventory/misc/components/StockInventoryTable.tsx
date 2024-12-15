@@ -9,8 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LinkButton } from "@/components/ui";
+import { LinkButton, Spinner } from "@/components/ui";
 import { TStockInventoryItem } from "../types/stock";
+import { cn } from "@/lib/utils";
 
 interface StockRowProps {
   item: TStockInventoryItem;
@@ -33,8 +34,8 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
                 <div className="flex items-center space-x-2">
                   <img
                     src={item.image_one || "/img/cake.png"}
-                    alt={item.name}
-                    className="h-10 w-10 rounded object-cover text-xs bg-gray-300 lowercase"
+                    alt={"product image"}
+                    className="h-10 w-10 rounded object-cover text-[0.65rem] leading-tight bg-gray-300 lowercase"
                   />
                   <span>{item.name}</span>
                 </div>
@@ -75,16 +76,29 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
 interface StockInventoryTableProps {
   data?: TStockInventoryItem[];
   isLoading: boolean;
+  isFetching: boolean;
   error: unknown;
 }
 
-const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoading, error }) => {
-  if (isLoading) return <div>Loading...</div>;
+const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoading, isFetching, error }) => {
+  if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner/></div>;
   if (error) return <div>Error fetching data</div>;
   if (!data) return null;
 
   return (
     <div className="w-full md:w-[95%] max-w-[1792px] px-8">
+        <div
+                className={cn(
+                    'overflow-hidden rounded-full mb-1',
+                )}
+            >
+                <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden",
+                    isFetching && !isLoading && 'bg-blue-200'
+                )}>
+
+                    <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+                </div>
+            </div>
       <Table>
         <TableHeader>
           <TableRow>

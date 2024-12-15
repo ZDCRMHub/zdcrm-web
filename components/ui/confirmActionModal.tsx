@@ -37,7 +37,7 @@ const ConfirmActionModal: React.FC<ModalProps> = ({
     <Dialog open={isModalOpen}>
       <DialogContent
         onPointerDownOutside={closeModal}
-        className="p-0 !rounded-2xl"
+        className="p-0 !rounded-2xl max-w-[500px]"
       >
         <div className="border-b  border-[#E6E6E6] p-6 xl:p-8 !pb-4 xl:pb-5">
           <DialogTitle className="text-black text-base font-medium">
@@ -64,7 +64,7 @@ const ConfirmActionModal: React.FC<ModalProps> = ({
           </p>
         </div>
 
-        <DialogFooter className="grid grid-cols-2 pt-0 p-6 xl:p-8 xl:pt-2">
+        <DialogFooter className="grid grid-cols-2 pt-0 p-6 pt-2 xl:p-8 xl:pt-2">
           <Button className="h-14 bg-black" onClick={confirmFn}>
             {customConfirmText ?? "Confirm"}
           </Button>

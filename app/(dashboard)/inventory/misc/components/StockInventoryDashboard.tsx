@@ -30,13 +30,12 @@ import {
 } from "@/constants";
 import { ArrowDown2 } from "iconsax-react";
 import { useGetStockInventory } from "../api";
-import NewInventorySheet from "./NewInventorySheet";
+import NewInventorySheet from "./StockInventoryNew";
 import { useDebounce } from "@/hooks";
 
 export default function StockInventoryDashboard() {
   const [activeTab, setActiveTab] = useState("All Stock Inventory");
   const [searchText, setSearchText] = useState("");
-  const [sortBy, setSortBy] = useState("All Orders");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
@@ -44,7 +43,7 @@ export default function StockInventoryDashboard() {
 
   const debouncedSearchText = useDebounce(searchText, 300);
 
-  const { data, isLoading, error, refetch } = useGetStockInventory({
+  const { data, isLoading, isFetching, error, refetch } = useGetStockInventory({
     page: currentPage,
     size: pageSize,
     search: debouncedSearchText,
@@ -142,7 +141,7 @@ export default function StockInventoryDashboard() {
           onTabClick={setActiveTab}
           activeTab={activeTab}
         />
-        <StockInventoryTable data={data?.data} isLoading={isLoading} error={error} />
+        <StockInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} />
       </section>
 
       <footer className="sticky bottom-0">

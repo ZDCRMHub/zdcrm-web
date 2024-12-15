@@ -17,13 +17,53 @@ import { LinkButton, Button } from "@/components/ui";
 import StoreInventoryTable from "./StoreInventoryTable";
 import TabBar from "@/components/TabBar";
 import { BRANCH_OPTIONS, CATEGORIES_OPTIONS } from "@/constants";
+import { useGetCategories, useGetStoreInventory } from "../api";
+import { useDebounce } from "@/hooks";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
+import NewStoreInventorySheet from "./StoreInventoryNew";
 
 export default function StoreInventoryDashboard() {
-  const tabs = [{ name: "All Inventory", count: 450 }];
 
+  const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+
+
+  const [searchText, setSearchText] = useState("")
+  const [sortBy, setSortBy] = useState('All Orders');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+
+  const debouncedSearchText = useDebounce(searchText, 300);
+
+  const { data, isLoading, isFetching, error, refetch } = useGetStoreInventory({
+    page: currentPage,
+    size: pageSize,
+    search: debouncedSearchText,
+    category: selectedCategory,
+  });
+  const tabs = [{ name: "All Inventory", count: data?.count || 0 }];
   const [activeTab, setActiveTab] = useState(tabs[0].name);
-  const [searchText, setSearchText] = useState("");
-  const [sortBy, setSortBy] = useState("All Orders");
+  const handleRefresh = () => {
+    refetch();
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (categoryId: number) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+
+  const clearFilters = () => {
+    setSelectedCategory(undefined);
+    setSearchText("");
+    setCurrentPage(1);
+  }
+
+
 
   return (
     <div className="relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full">
@@ -34,99 +74,88 @@ export default function StoreInventoryDashboard() {
             placeholder="Search (client name, customer rep, phone number)"
             className="w-full focus:border min-w-[350px] text-xs !h-10"
             value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={handleSearch}
             rightIcon={<Search className="h-5 w-5 text-[#8B909A]" />}
           />
-
+{/* 
           <SelectSingleCombo
             name="filterBy"
-            options={BRANCH_OPTIONS}
-            value={sortBy}
-            onChange={(value) => setSortBy(value)}
+            options={categories?.map((category) => ({ value: category.id.toString(), label: category.name })) || []}
+            isLoadingOptions={categoriesLoading}
+            value={selectedCategory?.toString() || ""}
+            onChange={(value) => handleCategoryChange(Number(value))}
             valueKey="value"
             labelKey="label"
             placeholder="Filter by branch"
             className="w-32 !h-10 text-[#8B909A] text-xs"
             placeHolderClass="text-[#8B909A] text-xs"
             triggerColor="#8B909A"
-            showSelectedValue={false}
-          />
-          <SelectSingleCombo
-            name="sortBy"
-            options={CATEGORIES_OPTIONS}
-            value={sortBy}
-            onChange={(value) => setSortBy(value)}
-            valueKey="value"
-            labelKey="label"
-            placeholder="Sort by"
-            className="w-32 !h-10 text-[#8B909A] text-xs"
-            placeHolderClass="text-[#8B909A] text-xs"
-            triggerColor="#8B909A"
-            showSelectedValue={false}
-          />
+          /> */}
+
         </div>
-        <div className="flex items-center gap-2">
-          <LinkButton
-            href="./orders/new-order"
-            variant="default"
-            className="bg-black text-white"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add Order
-          </LinkButton>
+        <div className='flex items-center gap-2'>
+          <NewStoreInventorySheet />
+
+          {
+            (selectedCategory || debouncedSearchText) && (
+              <Button
+                variant='outline'
+                className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </Button>
+            )
+          }
+
           <Button
-            variant="outline"
-            className="bg-[#28C76F] text-[#1EA566] bg-opacity-25"
+            variant='outline'
+            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
+            onClick={handleRefresh}
           >
-            <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
+            <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
           </Button>
         </div>
+
       </div>
 
       <section>
-        {searchText.trim() !== "" && <h3 className="mb-4">Search Results</h3>}
-        {searchText.trim() === "" ? (
-          <>
-            <TabBar
-              tabs={tabs}
-              onTabClick={setActiveTab}
-              activeTab={activeTab}
-            />
-            <StoreInventoryTable />
-          </>
-        ) : (
-          <StoreInventoryTable />
-        )}
+        {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
+        <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+        <StoreInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} />
       </section>
+
 
       <footer className="sticky bottom-0">
         <div className="flex items-center justify-between mt-auto bg-background py-1.5">
           <Pagination className="justify-start bg-background">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  className={currentPage === 1 ? 'disabled' : ''}
+                />
               </PaginationItem>
+              {[...Array(data?.number_of_pages || 0)].map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(index + 1)}
+                    isActive={currentPage === index + 1}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
               <PaginationItem>
-                <PaginationLink href="#">1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">10</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, data?.number_of_pages || 1))}
+                // disabled={currentPage === data?.number_of_pages}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
           <div className="text-sm text-gray-500 w-max shrink-0">
-            Showing 1 to 8 of 50 entries
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, data?.count || 0)} of {data?.count || 0} entries
           </div>
         </div>
       </footer>

@@ -8,19 +8,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { LinkButton } from "@/components/ui";
-
-interface StoreProduct {
-  productName: string;
-  stockQuantity: number;
-  costPrice: string;
-  lastUpdated: string;
-  updatedBy: string;
-  image: string;
-}
+import { LinkButton, Spinner } from "@/components/ui";
+import { TStoreInventoryItem } from "../types/store";
+import { format } from "date-fns";
 
 interface StoreRowProps {
-  product: StoreProduct;
+  product: TStoreInventoryItem;
 }
 
 const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
@@ -29,17 +22,17 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
       <TableCell>
         <div className="flex items-center space-x-2">
           <img
-            src={"/img/product.png"}
-            alt={product.productName}
-            className="h-10 w-10 rounded object-cover text-xs bg-gray-300 lowercase"
+            src={product.image_one || "/img/product.png"}
+            alt={"product image"}
+            className="h-10 w-10 rounded object-cover text-[0.65rem] leading-tight bg-gray-300 lowercase"
           />
-          <span>{product.productName}</span>
+          <span>{product.name}</span>
         </div>
       </TableCell>
       <TableCell>
         <div className="grid grid-cols-[1fr,max-content] items-center space-x-2">
-          <span>{product.stockQuantity}</span>
-          {product.stockQuantity <= 5 ? (
+          <span>{product.quantity}</span>
+          {product.quantity <= 5 ? (
             <div className="relative h-full min-h-6 max-h-16 w-1.5 rounded-full bg-red-100">
               <div className="absolute h-1/2 bottom-0 min-h-2 max-h-12 w-1.5 rounded-full bg-red-500"></div>
             </div>
@@ -48,9 +41,9 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
           )}
         </div>
       </TableCell>
-      <TableCell>{product.costPrice}</TableCell>
-      <TableCell>{product.lastUpdated}</TableCell>
-      <TableCell>{product.updatedBy}</TableCell>
+      <TableCell>{product.cost_price}</TableCell>
+      <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
+      <TableCell>{product.created_by}</TableCell>
       <TableCell>
         <LinkButton
           href="/inventory/details"
@@ -65,76 +58,64 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
   );
 };
 
-const StoreInventory = () => {
-  const products: StoreProduct[] = [
-    {
-      productName: "50 LITERS OF GROUNDNUT OIL",
-      stockQuantity: 9,
-      costPrice: "₦20,450.00",
-      lastUpdated: "6:00PM | Feb. 22nd, 2024",
-      updatedBy: "Adefola Hanna",
-      image: "/img/oil.png",
-    },
-    {
-      productName: "BAG OF FLOUR",
-      stockQuantity: 5,
-      costPrice: "₦115,450.00",
-      lastUpdated: "6:00PM | Feb. 22nd, 2024",
-      updatedBy: "Adefola Hanna",
-      image: "/img/flour.png",
-    },
-    {
-      productName: "BUTTER",
-      stockQuantity: 10,
-      costPrice: "₦115,450.00",
-      lastUpdated: "6:00PM | Feb. 22nd, 2024",
-      updatedBy: "Adefola Hanna",
-      image: "/img/butter.png",
-    },
-    {
-      productName: "BOXES",
-      stockQuantity: 3,
-      costPrice: "₦115,450.00",
-      lastUpdated: "6:00PM | Feb. 22nd, 2024",
-      updatedBy: "Adefola Hanna",
-      image: "/img/boxes.png",
-    },
-    {
-      productName: "YEAST",
-      stockQuantity: 15,
-      costPrice: "₦115,450.00",
-      lastUpdated: "6:00PM | Feb. 22nd, 2024",
-      updatedBy: "Adefola Hanna",
-      image: "/img/yeast.png",
-    },
-    {
-      productName: "VEGETABLE OIL",
-      stockQuantity: 5,
-      costPrice: "₦15,450.00",
-      lastUpdated: "6:00PM | Feb. 22nd, 2024",
-      updatedBy: "Adefola Hanna",
-      image: "/img/vegetable-oil.png",
-    },
-  ];
+
+interface ProductsInventoryTableProps {
+  data?: TStoreInventoryItem[];
+  isLoading: boolean;
+  isFetching: boolean
+  error: unknown;
+}
+const StoreInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoading, isFetching, error }) => {
+  if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner /></div>;
+  if (error) return <div>Error fetching data</div>;
+  if (!data) return null;
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Product Name</TableHead>
-          <TableHead>Stock Quantity</TableHead>
-          <TableHead>Cost Price/Unit</TableHead>
-          <TableHead>Last Updated</TableHead>
-          <TableHead>Updated By</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {products.map((product, index) => (
-          <StoreRow key={index} product={product} />
-        ))}
-      </TableBody>
-    </Table>
+    <div className="w-full md:w-[95%] max-w-[1792px] px-8">
+      <div
+        className={cn(
+          'overflow-hidden rounded-full mt-3 mb-1',
+        )}
+      >
+        <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden",
+          isFetching && !isLoading && 'bg-primary/20'
+        )}>
+
+          <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+        </div>
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Product Name</TableHead>
+            <TableHead>Stock Quantity</TableHead>
+            <TableHead>Cost Price/Unit</TableHead>
+            <TableHead>Last Updated</TableHead>
+            <TableHead>Updated By</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {
+            data?.map((product) => (
+              <StoreRow
+                key={product.id}
+                product={product}
+              />
+            ))
+          }
+          {
+            !isLoading && data?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center">
+                  No products found
+                </TableCell>
+              </TableRow>
+            )
+          }
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

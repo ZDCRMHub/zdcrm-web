@@ -1,40 +1,41 @@
 import { APIAxios } from "@/utils/axios"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { TStockInventoryItem } from "../types/stock";
+import { TStoreInventoryItem } from "../types/store";
 
-interface StockInventoryResponse {
+
+interface StoreInventoryResponse {
   count: number;
   next_page: number;
   previous_page: number;
   number_of_pages: number;
-  data: TStockInventoryItem[];
+  data: TStoreInventoryItem[];
 }
+
+
 
 interface FetchOptions {
   page?: number;
   size?: number;
   search?: string;
   category?: number;
-  variation?: string;
 }
 
-const fetchStockInventory = async (options: FetchOptions = {}): Promise<StockInventoryResponse> => {
+const fetchStoreInventory = async (options: FetchOptions = {}): Promise<StoreInventoryResponse> => {
   const params = new URLSearchParams();
   if (options.page) params.append('page', options.page.toString());
   if (options.size) params.append('size', options.size.toString());
   if (options.search) params.append('search', options.search);
   if (options.category) params.append('category', options.category.toString());
-  if (options.variation) params.append('variation', options.variation);
 
-  const res = await APIAxios.get('/inventory/stock-inventories/', { params });
+  const res = await APIAxios.get('/inventory/store-inventories/', { params });
   return res.data;
 }
 
-export const useGetStockInventory = (options: FetchOptions = {}) => {
+export const useGetStoreInventory = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['stockInventory', options],
+    queryKey: ['storeInventory', options],
     placeholderData: keepPreviousData,
-    queryFn: () => fetchStockInventory(options),
+    queryFn: () => fetchStoreInventory(options),
   });
 }
 

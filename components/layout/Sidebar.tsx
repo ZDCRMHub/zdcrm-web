@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { IndentDecrease } from 'lucide-react';
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/icons/core";
-import { SidebarLink } from "./SidebarLink";
 import { SidebarCollapsible } from "./SidebarCollapsible";
 import { useAuth } from "@/contexts/auth";
+
+import { SidebarLink } from "./SidebarLink";
 import { linkGroups } from "./links";
 
 export function Sidebar() {

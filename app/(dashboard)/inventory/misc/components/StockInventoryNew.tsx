@@ -35,20 +35,6 @@ const schema = z.object({
 type FormType = z.infer<typeof schema>;
 
 const createStockInventory = async (data: FormType) => {
-    // const formData = new FormData();
-    // formData.append('name', data.name);
-    // formData.append('category', data.category.toString());
-    // // if (data.description) formData.append('description', data.description);
-    // // formData.append('variations', JSON.stringify(data.variations));
-    // data.variations.forEach((variation, index) => {
-    //     formData.append(`variations[${index}][size]`, variation.size ?? '');
-    //     formData.append(`variations[${index}][color]`, variation.color ?? '');
-    //     formData.append(`variations[${index}][flavour]`, variation.flavour ?? '');
-    //     formData.append(`variations[${index}][selling_price]`, variation.selling_price ?? '');
-    //     formData.append(`variations[${index}][cost_price]`, variation.cost_price);
-    //     formData.append(`variations[${index}][quantity]`, variation.quantity.toString());
-    // });
-    // formData.append('image', data.image_one);
     console.log(data)
     const res = await APIAxios.post('/inventory/create-stock-inventory/', data, {
         // headers: { 'Content-Type': 'multipart/form-data' },
