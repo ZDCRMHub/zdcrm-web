@@ -12,6 +12,7 @@ import {
 import { LinkButton, Spinner } from "@/components/ui";
 import { TStockInventoryItem } from "../types/stock";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface StockRowProps {
   item: TStockInventoryItem;
@@ -56,7 +57,7 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
             </div>
           </TableCell>
           <TableCell>{variation.cost_price}</TableCell>
-          <TableCell>{new Date(variation.update_date).toLocaleDateString()}</TableCell>
+          <TableCell>{format(item.update_date, 'dd-MMM-yyyy')}</TableCell>
           <TableCell>
             <LinkButton
               href={`/inventory/details?stock=${item.id}`}
@@ -81,24 +82,24 @@ interface StockInventoryTableProps {
 }
 
 const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoading, isFetching, error }) => {
-  if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner/></div>;
+  if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner /></div>;
   if (error) return <div>Error fetching data</div>;
   if (!data) return null;
 
   return (
     <div className="w-full md:w-[95%] max-w-[1792px] px-8">
-        <div
-                className={cn(
-                    'overflow-hidden rounded-full mb-1',
-                )}
-            >
-                <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden",
-                    isFetching && !isLoading && 'bg-blue-200'
-                )}>
+      <div
+        className={cn(
+          'overflow-hidden rounded-full mb-1',
+        )}
+      >
+        <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden",
+          isFetching && !isLoading && 'bg-blue-200'
+        )}>
 
-                    <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
-                </div>
-            </div>
+          <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+        </div>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>

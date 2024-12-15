@@ -10,6 +10,7 @@ import {
 import { cn } from '@/lib/utils';
 import { LinkButton, Spinner } from '@/components/ui';
 import { TProductInventoryItem } from '../types/products';
+import { format } from 'date-fns';
 
 
 
@@ -20,7 +21,7 @@ interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ product }) => {
     return (
         <TableRow>
-            <TableCell>{product.id}</TableCell>
+            <TableCell>{product.inventory_number}</TableCell>
             <TableCell className="uppercase">{product.category.name}</TableCell>
             <TableCell>
                 <div className="flex items-center space-x-2">
@@ -34,14 +35,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ product }) => {
             </TableCell>
             <TableCell>
                 <div className="grid grid-cols-[1fr,max-content] items-center space-x-2">
-                    <span>{product.inventory_number}</span>
-                    <div className="relative h-full min-h-6 max-h-16 w-1.5 rounded-full bg-red-100">
-                        <div className="absolute h-1/2 bottom-0 min-h-2 max-h-12 w-1.5 rounded-full bg-red-500"></div>
-                    </div>
+                    <span>{product.quantity}</span>
+                    {
+                        product.quantity <= 5 && (
+                            <div className="relative h-full min-h-6 max-h-16 w-1.5 rounded-full bg-red-100">
+                                <div className="absolute h-1/2 bottom-0 min-h-2 max-h-12 w-1.5 rounded-full bg-red-500"></div>
+                            </div>
+                        )
+                    }
                 </div>
             </TableCell>
             <TableCell>{product.cost_price}</TableCell>
-            <TableCell>{new Date(product.update_date).toLocaleDateString()}</TableCell>
+            <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
 
             <TableCell>
                 <LinkButton href="/inventory/details" variant="unstyled" className="" size="sm">
@@ -60,7 +65,7 @@ interface ProductsInventoryTableProps {
     error: unknown;
 }
 const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoading, isFetching, error }) => {
-    if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner/></div>;
+    if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner /></div>;
     if (error) return <div>Error fetching data</div>;
     if (!data) return null;
 

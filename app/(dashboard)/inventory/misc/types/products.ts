@@ -13,3 +13,4 @@ export interface TProductInventoryItem {
   create_date: string;
   update_date: string;
 }
+

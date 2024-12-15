@@ -3,33 +3,33 @@
 import React, { useState } from 'react';
 import {
   Search,
-  Plus,
   RefreshCcw,
 } from 'lucide-react';
-import { Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationEllipsis, PaginationNext } from "@/components/ui"
+
+import { Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "@/components/ui"
 import { Button } from '@/components/ui';
-import ProductsInventoryTable from './ProductsInventoryTable';
 import TabBar from '@/components/TabBar';
-import { BRANCH_OPTIONS, PRODUCT_CATEGORIES_OPTIONS } from '@/constants';
-import { useGetCategories, useGetProductsInventory } from '../api';
 import { useDebounce } from '@/hooks';
 import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
+
+import ProductsInventoryTable from './ProductsInventoryTable';
+import { useGetProductCategories, useGetProductsInventory } from '../api';
+import NewProductInventorySheet from './ProductsInventoryNew';
 
 
 
 export default function ProductsInventoryDashboard() {
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
-  const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+  const { data: categories, isLoading: categoriesLoading } = useGetProductCategories();
 
 
   const [searchText, setSearchText] = useState("")
-  const [sortBy, setSortBy] = useState('All Orders');
+  const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedBranch, setSelectedBranch] = useState<number | undefined>();
 
-  const debouncedSearchText = useDebounce(searchText, 300);
 
   const { data, isLoading, isFetching, error, refetch } = useGetProductsInventory({
     page: currentPage,
@@ -38,10 +38,8 @@ export default function ProductsInventoryDashboard() {
     category: selectedCategory,
     branch: selectedBranch,
   });
-  const tabs = [
-    { name: 'All Inventory', count: data?.count || 0 },
-  ];
-  const [activeTab, setActiveTab] = useState(tabs[0].name);
+
+
 
 
   const handleRefresh = () => {
@@ -112,9 +110,7 @@ export default function ProductsInventoryDashboard() {
           />
         </div>
         <div className='flex items-center gap-2'>
-          {/* <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-            <Plus className='mr-2 h-4 w-4' /> Add Order
-          </LinkButton> */}
+          <NewProductInventorySheet />
           {
             (selectedBranch || selectedCategory || debouncedSearchText) && (
               <Button
@@ -139,7 +135,7 @@ export default function ProductsInventoryDashboard() {
 
       <section>
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
-        <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
+        <TabBar tabs={[{ name: 'All Inventory', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Inventory'} />
         <ProductsInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} />
       </section>
 
