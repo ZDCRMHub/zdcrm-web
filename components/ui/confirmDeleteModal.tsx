@@ -38,7 +38,7 @@ const confirmDeleteModal: React.FC<ModalProps> = ({
     <Dialog open={isModalOpen}>
       <DialogContent
         onPointerDownOutside={closeModal}
-        className="p-0 !rounded-2xl"
+        className="p-0 !rounded-2xl max-w-[500px]"
       >
         <div className="border-b  border-[#E6E6E6] p-6 xl:p-8 !pb-4 xl:pb-5">
           <DialogTitle className="text-black text-base font-medium">
@@ -65,7 +65,7 @@ const confirmDeleteModal: React.FC<ModalProps> = ({
           </p>
         </div>
 
-        <DialogFooter className="grid grid-cols-2 p-6 xl:p-8">
+        <DialogFooter className="grid grid-cols-2 gap-5 p-6 xl:p-8 !pt-2">
           <Button className="h-14" variant="outline" onClick={closeModal}>
             No, Cancel
           </Button>

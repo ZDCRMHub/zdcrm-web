@@ -22,8 +22,6 @@ export {
 } from './command'
 export {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
   DialogTrigger,
   DialogContent,
@@ -71,6 +69,7 @@ export {
 
 export { Popover, PopoverTrigger, PopoverContent } from './popover'
 export { default as ProductsDropdown } from './productsDropdown'
+export { default as AvatarComponent } from './avatar-main'
 
 
 export {
@@ -127,3 +126,6 @@ export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tool
 export { Textarea } from './textarea'
 
 export { default as TimePicker } from './timepicker'
+
+
+export { default as Spinner } from './spinner'
