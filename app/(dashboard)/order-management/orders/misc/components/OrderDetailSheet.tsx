@@ -1,6 +1,6 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox, Button, LinkButton, CardTitle } from "@/components/ui";
+import { Checkbox, Button, LinkButton, CardTitle, Spinner } from "@/components/ui";
 import { Mail, MessageCircle, User, X } from "lucide-react";
 import {
   Book,
@@ -37,18 +37,65 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
-import { paymentOptions } from "@/constants";
+import { ORDER_STATUS_OPTIONS, paymentOptions } from "@/constants";
+import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
+import { TOrder } from "../types";
+import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
+import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
+import toast from "react-hot-toast";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface OrderDetailsPanelProps {
-  orderId: string;
+  order: TOrder;
 }
 
-export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
+export default function OrderDetailSheet({  order: default_order}: OrderDetailsPanelProps) {
+
+  const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
+  const { mutate: updatePaymentMethod, isPending: isUpdatingPaymentMethod } = useUpdateOrderPaymentMethod()
+  const { data:order, isLoading } = useGetOrderDetail(default_order?.id);
   const {
     state: isEditDeliveryDetailsModalOpen,
     setTrue: openEditDeliveryDetailsModal,
     setFalse: closeEditDeliveryDetailsModal,
   } = useBooleanStateControl();
+
+  const [defaultStatus, setDefaultStatus] = React.useState(order?.status);
+  const [defaultPaymentMethod, setDefaultPaymentMethod] = React.useState(order?.payment_options);
+  const handleStatusUpdate = (new_status: string) => {
+    mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
+
+      {
+        onSuccess: (data) => {
+          toast.success("Order status updated successfully");
+        },
+        onError: (error) => {
+          setDefaultStatus(order?.status);
+          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+          toast.error(errorMessage), {
+            duration: 5000,
+          };
+        }
+      }
+    );
+  }
+  const handleUpdatePaymentMethod = (new_payment_method: string) => {
+    updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
+      {
+        onSuccess: (data) => {
+          toast.success("Payment method updated successfully");
+        },
+        onError: (error) => {
+          setDefaultPaymentMethod(order?.payment_options);
+          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+          toast.error(errorMessage), {
+            duration: 5000,
+          };
+        }
+      }
+    );
+  }
 
   return (
     <Sheet>
@@ -56,7 +103,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
         <Button
           variant="ghost"
           size="sm"
-          aria-label={`Open order details for ${orderId}`}
+          aria-label={`Open order details for ${order?.id}`}
         >
           {">>"}
         </Button>
@@ -80,22 +127,28 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
         <div className="flex justify-between pt-8">
           <div className="flex items-center gap-5">
             <div className="flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0">
-              <span className="text-sm">Order ID: {orderId}</span>
+              <span className="text-sm">Order ID: {order?.order_number}</span>
             </div>
 
-            <Select>
+            <Select value={order?.status} defaultValue={order?.status} onValueChange={(new_value) => handleStatusUpdate(new_value)}>
               <SelectTrigger className="w-[150px] bg-transparent">
-                <SelectValue placeholder="SOA" />
+                <SelectValue placeholder={order?.status} />
+                {
+                  isUpdatingStatus && <Spinner size={18} />
+                }
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="SOA">SOA</SelectItem>
-                <SelectItem value="SORTED">SORTED</SelectItem>
-                <SelectItem value="DIS CL">DIS CL</SelectItem>
-                <SelectItem value="DELIVERED">DELIVERED</SelectItem>
-                <SelectItem value="CANCELLED">CANCELLED</SelectItem>
-                <SelectItem value="SENT TO DISPATCH">
-                  SENT TO DISPATCH
-                </SelectItem>
+                {
+                  ORDER_STATUS_OPTIONS.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))
+                }
               </SelectContent>
             </Select>
           </div>
@@ -106,17 +159,14 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
               className="px flex gap-1 border-[#B9B9B9]"
             >
               <EditPenIcon className="h-4 w-4" />
-
               <span>Edit</span>
             </Button>
-            {/* <Badge
-              variant='outline'
-              className='bg-[#367917] bg-opacity-15 border-green-300 px-3 py-3 rounded-[10px] text-[#2D7D08] min-w-max'>
-              Payment Confirmed
-            </Badge> */}
-            <Select>
+            <Select value={defaultPaymentMethod} defaultValue={defaultPaymentMethod} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
               <SelectTrigger className="w-[150px] bg-[#3679171F]">
                 <SelectValue placeholder="Select Payment Method" />
+                {
+                  isUpdatingPaymentMethod && <Spinner size={18} />
+                }
               </SelectTrigger>
               <SelectContent>
                 {paymentOptions.map((option) => (
@@ -151,21 +201,21 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />
-                      <span>Ife Adebayo</span>
+                      <span>{order?.customer.name}</span>
                     </p>
                     <p className="flex items-center gap-2 text-sm">
                       <Mail
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />
-                      <span>adebayo@gmail.com</span>
+                      <span>{order?.customer.email}</span>
                     </p>
                     <p className="flex items-center gap-2 text-sm">
                       <Phone
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />
-                      <span>08031823849</span>
+                      <span>{order?.customer.phone}</span>
                     </p>
                   </div>
                 </div>
@@ -187,21 +237,21 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />
-                      <span>Paul Adeola</span>
+                      <span>{order?.customer?.name}</span>
                     </p>
                     <p className="flex items-center gap-2 text-sm">
                       <Mail
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />
-                      <span>oniayo@gmail.com</span>
+                      <span>{order?.customer?.email}</span>
                     </p>
                     <p className="flex items-center gap-2 text-sm">
                       <Phone
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />
-                      <span>08031823849</span>
+                      <span>{order?.customer?.phone}</span>
                     </p>
                   </div>
                 </div>
@@ -215,15 +265,15 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                 <EmojiHappy size={18} className="mr-2" />
                 Order Occasion:{" "}
               </span>
-              <p>Happy Anniversary</p>
+              <p>{order?.enquiry_occasion}</p>
             </div>
             <div className="flex items-center gap-1 text-sm text-[#111827]">
               <span className="text-sm text-[#687588]">Order Channel: </span>
-              <p>Website</p>
+              <p>{order?.enquiry_channel}</p>
             </div>
             <div className="flex items-center gap-1 text-sm text-[#111827]">
               <span className="text-sm text-[#687588]">Payment Mode: </span>
-              <p>Bank Transfer</p>
+              <p>{convertKebabAndSnakeToTitleCase(order?.payment_options)}</p>
             </div>
           </section>
 
@@ -237,15 +287,15 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             </header>
             <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
               <Input
-                value="Happy Anniversary"
+                value={order?.delivery.note || "No note"}
                 readOnly
-                containerClassName="w-full"
+                containerClassName={cn("w-full", !order?.delivery.note && "text-[#687588] italic")}
                 rightIcon={<EditPenIcon width={20} height={20} />}
               />
             </div>
           </section>
 
-          <Accordion type="multiple">
+          <Accordion type="single" value="product-item">
             <section className="mb-8">
               <AccordionItem value="product-item">
                 <AccordionTrigger>
@@ -412,7 +462,7 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
                           </p>
                           <p className="text-[#111827] font-medium">
                             <span className="text-[#687588] font-light text-sm">
-                            Miscellaneous:{"  "}
+                              Miscellaneous:{"  "}
                             </span>
                             ₦5,000
                           </p>
@@ -451,12 +501,12 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
             </div>
             <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
               {[
-                ["Delivery Method", "Dispatch"],
-                ["Primary address", "No. 8, Adeniran close, Lekki Phase 1"],
+                ["Delivery Method", order?.delivery.method],
+                ["Primary address", order?.delivery.address],
                 ["Delivery Location", "Yaba(N5000)"],
-                ["Delivery Zone", "L1-Lagos Island"],
-                ["Dispatch Time", "8:00AM"],
-                ["Delivery Date", "21/July/2024"],
+                ["Delivery Zone", order?.delivery.zone],
+                ["Dispatch Time", order?.delivery.delivery_time],
+                ["Delivery Date", order?.delivery.delivery_date],
               ].map(([label, value]) => (
                 <>
                   <span className="text-[#687588] font-manrope">{label}</span>
@@ -469,17 +519,17 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
           <section>
             <p className="flex items-center gap-3">
               <span className="text-[#8B909A] font-dm-sans text-sm">
-                Total(NGN)
+                Total({order?.payment_status})
               </span>
               <span className="text-[#111827] font-semibold text-lg font-poppins">
-                N130,000.00
+                {order?.total_amount}
               </span>
             </p>
           </section>
 
           <section className="flex justify-end my-12">
             <LinkButton
-              href="/order-management/orders/confirm-delivery"
+              href={`/order-management/orders/${order?.id}/confirm-delivery`}
               className="h-12 px-8"
             >
               Proceed to Dispatch
@@ -488,18 +538,21 @@ export default function OrderDetailSheet({ orderId }: OrderDetailsPanelProps) {
 
           <section className="flex flex-col gap-1.5">
             <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
-              <span className="text-[#000]">Enquiry Logged by: Adeayo</span>
+              <span className="text-[#000]">Enquiry Logged by: {order?.created_by.name}</span>
               <span className="text-[#E01E1F] font-manrope text-sm">
-                15th June, 2024 | 6:00pm
+                {format(new Date(order?.create_date || 0), "do MMMM, yyyy | h:mmaaa")}
               </span>
             </p>
 
-            <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
-              <span className="text-[#000] ">Order Approved by: Adeayo</span>
-              <span className="text-[#E01E1F] font-manrope text-sm">
-                15th June, 2024 | 6:00pm
-              </span>
-            </p>
+            {
+              order?.approved_by &&
+              <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
+                <span className="text-[#000] ">Order Approved by: {order?.approved_by.name}</span>
+                <span className="text-[#E01E1F] font-manrope text-sm">
+                  {format(new Date(order?.update_date || 0), "do MMMM, yyyy | h:mmaaa")}
+                </span>
+              </p>
+            }
           </section>
         </div>
 

@@ -1,12 +1,10 @@
-import React from 'react';
-import TrashedEnquiriesDashboard from './misc/components/TrashedEnquiriesDashboard';
+'use client'
+import { TrashedEnquiriesDashboard } from "../enquiries/misc/components";
 
-const page = () => {
+const TrashedEnquiriesPage = () => {
   return (
-    <>
-      <TrashedEnquiriesDashboard />
-    </>
+    <TrashedEnquiriesDashboard />
   );
 };
 
-export default page;
+export default TrashedEnquiriesPage;

@@ -43,7 +43,13 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
               </TableCell>
             </>
           )}
-          <TableCell>{variation.size || variation.color || variation.flavour}</TableCell>
+          <TableCell>
+            {
+              (variation.size ? variation.size  + "inches" :  variation.size)
+              || variation.color
+              || variation.flavour
+            }
+          </TableCell>
           <TableCell>
             <div className="grid grid-cols-[1fr,max-content] items-center space-x-2">
               <span>{variation.quantity} In Stock</span>

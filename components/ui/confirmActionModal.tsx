@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogClose,
   DialogTitle,
+  Spinner,
 } from "@/components/ui";
 import { OrderManagement, OrderTimeLine } from "@/icons/sidebar";
 import { X } from "@phosphor-icons/react";
@@ -17,7 +18,10 @@ interface ModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
   confirmFn: () => void;
+  cancelAction?: () => void;
+  isConfirming?: boolean;
   customConfirmText?: string;
+  customCancelText?: string;
   customTitleText?: string;
   icon?: React.ReactNode;
   heading?: string;
@@ -27,7 +31,10 @@ const ConfirmActionModal: React.FC<ModalProps> = ({
   isModalOpen,
   closeModal,
   customConfirmText,
+  customCancelText,
   customTitleText,
+  cancelAction,
+  isConfirming,
   icon,
   heading,
   subheading,
@@ -64,12 +71,22 @@ const ConfirmActionModal: React.FC<ModalProps> = ({
           </p>
         </div>
 
-        <DialogFooter className="grid grid-cols-2 pt-0 p-6 pt-2 xl:p-8 xl:pt-2">
-          <Button className="h-14 bg-black" onClick={confirmFn}>
+        <DialogFooter className="grid grid-cols-2 gap-5 p-6 pt-2 xl:p-8 xl:pt-2">
+          <Button className="flex items-center h-14 bg-black" onClick={confirmFn}>
             {customConfirmText ?? "Confirm"}
+            {
+              isConfirming && <Spinner className="ml-2" size={20} />
+            }
           </Button>
-          <Button className="h-14" variant="outline" onClick={closeModal}>
-            No, Cancel
+          <Button className="h-14" variant="outline"
+            onClick={
+              () => {
+                cancelAction && cancelAction();
+                closeModal();
+              }
+            }
+          >
+            {customCancelText ?? "No, Cancel"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from "react"
-import { FieldErrors, FieldValues } from "react-hook-form"
 import { CheckIcon, SearchIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -18,6 +17,7 @@ interface SelectProps<T> {
   value: string | boolean | undefined;
   onChange: (value: string) => void;
   options: T[] | undefined;
+  disabled?: boolean;
   name: string;
   hasError?: boolean;
   errorMessage?: string;
@@ -41,6 +41,7 @@ const SelectSingleCombo = <T extends object>({
   value,
   onChange,
   options,
+  disabled,
   hasError,
   errorMessage,
   label,
@@ -64,6 +65,10 @@ const SelectSingleCombo = <T extends object>({
   const [searchText, setSearchText] = React.useState<string>("")
 
   React.useEffect(() => {
+    if(!isOpen) {
+      setSearchText("")
+      setOptionsToDisplay(options)
+    }
     if (searchText && searchText.trim() !== "") {
       const filteredOptions = options?.filter(option => {
         const optionLabel = String(option[labelKey]).toLowerCase();
@@ -73,7 +78,7 @@ const SelectSingleCombo = <T extends object>({
     } else {
       setOptionsToDisplay(options);
     }
-  }, [searchText, options, labelKey])
+  }, [searchText, options, labelKey, isOpen])
 
   const getOptionLabel = (option: T) => {
     return option ? String(option[labelKey]) : `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
@@ -120,20 +125,21 @@ const SelectSingleCombo = <T extends object>({
               role="combobox"
               onClick={() => setOpen(!isOpen)}
               ref={triggerRef}
+              disabled={isLoadingOptions || disabled}
             >
               <span className={cn(
                 '!overflow-hidden text-sm w-full font-normal',
                 (value && options && options?.length) ? '' : '!text-[#A4A4A4]', placeHolderClass
               )}>
                 {
-                  (showSelectedValue && value && options && options?.length)
-                    ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                    : placeholder
+                  isLoadingOptions ?
+                    "Loading options..."
+                    :
+                    (showSelectedValue && value && options && options?.length)
+                      ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                      : placeholder
                 }
-                {/* {(value && options && options?.length)
-                  ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                  : placeholder
-                } */}
+             
               </span>
               <svg
                 className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", isOpen && "rotate-180")}
@@ -156,8 +162,8 @@ const SelectSingleCombo = <T extends object>({
         </div>
 
 
-        <PopoverContent className={cn("p-0", triggerRef?.current && `min-w-max`)} style={{ width }}>
-          <Command>
+        <PopoverContent className={cn("p-0 overflow-hidden", triggerRef?.current && `min-w-max`, isLoadingOptions && "hidden")} style={{ width }}>
+          <div className="">
             <div className="relative px-6">
               <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
               <input
@@ -167,38 +173,41 @@ const SelectSingleCombo = <T extends object>({
                 onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
-            {isLoadingOptions && (
-              <CommandItem className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
+            {
+              isLoadingOptions &&
+              <button className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" disabled>
                 <SmallSpinner color='#000000' /> Loading options...
-              </CommandItem>
-            )}
-            <CommandGroup className="flex flex-col gap-3 px-5">
-              {!isLoadingOptions && options && options?.length > 0 ? (
-                optionsToDisplay?.map((option, index) => (
-                  <button
-                    className={cn("grid grid-cols-[max-content_1fr] text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                      itemClass, "hover:bg-blue-100 w-full text-sm",
-                      "py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
-                    )}
-                    key={index}
-                    onClick={() => handleSelect(option[valueKey] as string)}
-                  >
-                    <CheckIcon
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        option[valueKey] === value ? "opacity-100" : "opacity-0"
+              </button>
+            }
+            <div className="flex flex-col gap-1.5 px-5 py-3 max-h-[450px] overflow-y-auto">
+              {
+                !isLoadingOptions && options && options?.length > 0 ? (
+                  optionsToDisplay?.map((option, index) => (
+                    <button
+                      className={cn("text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                        itemClass, "hover:bg-blue-100 w-full text-sm",
+                        "py-2 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
                       )}
-                    />
-                    {option[labelKey] as string}
+                      key={index}
+                      onClick={() => handleSelect(option[valueKey] as string)}
+                    >
+                      <CheckIcon
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          option[valueKey] === value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {option[labelKey] as string}
+                    </button>
+                  ))
+                ) :
+                  <button className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} disabled>
+                    There&apos;s no option to select from
                   </button>
-                ))
-              ) : (
-                <CommandItem className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} value={""} disabled>
-                  There&apos;s no option to select from
-                </CommandItem>
-              )}
-            </CommandGroup>
-          </Command>
+
+              }
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
 

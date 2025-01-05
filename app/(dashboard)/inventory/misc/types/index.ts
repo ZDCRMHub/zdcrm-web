@@ -4,6 +4,13 @@ export interface TCategory {
   create_date: string;
   update_date: string;
 }
+export interface TProductCategory {
+  id: number;
+  name: string;
+  type: string;
+  create_date: string;
+  update_date: string;
+}
 export interface TBranch {
   id: number;
   name: string;

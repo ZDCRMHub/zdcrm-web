@@ -27,7 +27,7 @@ export function Navbar() {
           <div className='flex items-center'>
             <div className='ml-4 relative'>
               <AvatarComponent
-                fallback={user?.name || "Khabab Baba"}
+                fallback={user?.name || "0kay 0kay"}
                 src={undefined}
                 size='large'
                 alt='profile' 

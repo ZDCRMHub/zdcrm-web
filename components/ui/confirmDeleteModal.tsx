@@ -10,6 +10,7 @@ import {
   DialogHeader,
   DialogClose,
   DialogTitle,
+  Spinner,
 } from "@/components/ui";
 import { WarningIcon } from "@/icons/core";
 import { X } from "@phosphor-icons/react";
@@ -18,6 +19,7 @@ interface ModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
   deleteFn: () => void;
+  isDeleting?: boolean;
   customDeleteText?: string;
   customTitleText?: string;
   icon?: React.ReactNode;
@@ -33,6 +35,7 @@ const confirmDeleteModal: React.FC<ModalProps> = ({
   heading,
   subheading,
   deleteFn,
+  isDeleting,
 }) => {
   return (
     <Dialog open={isModalOpen}>
@@ -71,6 +74,11 @@ const confirmDeleteModal: React.FC<ModalProps> = ({
           </Button>
           <Button className="h-14 bg-black" onClick={deleteFn}>
             {customDeleteText ?? "Yes, Delete"}
+            {
+              isDeleting && (
+                <Spinner className="ml-2" size={20} />
+              )
+            }
           </Button>
         </DialogFooter>
       </DialogContent>

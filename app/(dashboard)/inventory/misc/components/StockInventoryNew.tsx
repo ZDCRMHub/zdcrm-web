@@ -2,7 +2,6 @@ import React from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Badge } from '@/components/ui/badge';
 import { Button, SelectSingleCombo } from '@/components/ui';
 import { Plus, User, X } from 'lucide-react';
 import { Add, Book } from 'iconsax-react';
@@ -10,14 +9,15 @@ import { Separator } from '@radix-ui/react-select';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIAxios } from "@/utils/axios";
-import CustomImagePicker from './CustomImagePicker';
-import { useGetCategories } from '../api/getCategories';
 import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
+import toast from 'react-hot-toast';
+import { useGetStockCategories } from '../api';
+import { PRODUCT_TYPES_OPTIONS } from '@/constants';
 
 const variationSchema = z.object({
-    size: z.string().nullable(),
-    color: z.string().nullable(),
-    flavour: z.string().nullable(),
+    size: z.string().optional(),
+    color: z.string().optional(),
+    flavour: z.string().optional(),
     selling_price: z.string().nullable(),
     cost_price: z.string().min(1, { message: 'Cost price is required' }),
     quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
@@ -27,10 +27,24 @@ const schema = z.object({
     name: z.string().min(1, { message: 'Item name is required' }).max(255),
     category: z.number(),
     branch: z.number(),
-    // description: z.string().optional(),
-    variations: z.array(variationSchema).min(1, { message: 'At least one variation is required' }),
-    // image_one: z.instanceof(File, { message: 'Image is required' }).refine(file => file.size > 0, { message: 'Image is required' }),
+    variations: z.array(variationSchema).min(1, { message: 'At least one variation is required' })
+
+}).refine((data) => {
+    const category = data.category;
+    return data.variations.every((variation) => {
+        if (category === 8) {
+            return !!variation.size;
+        } else if (category === 9) {
+            return !!variation.color;
+        } else if (category === 10) {
+            return !!variation.flavour;
+        }
+        return true;
+    });
+}, {
+    message: "Variations must include the correct fields based on the selected category",
 });
+
 
 type FormType = z.infer<typeof schema>;
 
@@ -43,10 +57,10 @@ const createStockInventory = async (data: FormType) => {
 };
 
 export default function NewInventorySheet() {
-    const { control, handleSubmit, formState: { errors, isDirty }, setValue } = useForm<FormType>({
+    const { control, handleSubmit, formState: { errors, isDirty }, watch, reset } = useForm<FormType>({
         resolver: zodResolver(schema),
         defaultValues: {
-            variations: [{ size: null, color: null, flavour: null, selling_price: null, cost_price: '', quantity: 0 }],
+            variations: [{ selling_price: null, cost_price: '', quantity: 0 }],
         },
     });
 
@@ -55,7 +69,7 @@ export default function NewInventorySheet() {
         name: "variations",
     });
 
-    const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+    const { data: categories, isLoading: categoriesLoading } = useGetStockCategories();
     const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
 
     const queryClient = useQueryClient();
@@ -63,14 +77,32 @@ export default function NewInventorySheet() {
         mutationFn: createStockInventory,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['stockInventory'] });
+            toast.success('Stock inventory created successfully');
+            reset();
         },
     });
 
     const onSubmit = (data: FormType) => {
+        if (data.category === 8) {
+            data.variations.forEach(variation => {
+                delete variation.color;
+                delete variation.flavour;
+            });
+        } else if (data.category === 9) {
+            data.variations.forEach(variation => {
+                delete variation.size;
+                delete variation.flavour;
+            });
+        } else if (data.category === 10) {
+            data.variations.forEach(variation => {
+                delete variation.size;
+                delete variation.color;
+            });
+        }
         createStockInvetory(data);
     };
     console.log(errors)
-
+    const selectedCategoryName = categories?.find(cat => cat.id === watch('category'))?.name;
 
     return (
         <Sheet>
@@ -129,7 +161,7 @@ export default function NewInventorySheet() {
                                 labelKey="label"
                                 placeholder='Select Branch'
                                 onChange={(value) => field.onChange(Number(value))}
-                                isLoadingOptions={branchesLoading}  
+                                isLoadingOptions={branchesLoading}
                                 hasError={!!errors.branch}
                                 errorMessage={errors.branch?.message}
                             />
@@ -155,61 +187,62 @@ export default function NewInventorySheet() {
                         )}
                     />
 
-                    {/* <Controller
-                        name="description"
-                        control={control}
-                        render={({ field }) => (
-                            <Input
-                                {...field}
-                                placeholder='Description'
-                                hasError={!!errors.description}
-                                errorMessage={errors.description?.message}
-                            />
-                        )}
-                    /> */}
+
 
                     {fields.map((field, index) => (
                         <div key={field.id} className="space-y-4">
                             <h3 className="font-semibold">Variation {index + 1}</h3>
-                            <Controller
-                                name={`variations.${index}.size`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        value={field.value || ''}
-                                        placeholder='Size'
-                                        hasError={!!errors.variations?.[index]?.size}
-                                        errorMessage={errors.variations?.[index]?.size?.message}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name={`variations.${index}.color`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        value={field.value || ''}
-                                        placeholder='Color'
-                                        hasError={!!errors.variations?.[index]?.color}
-                                        errorMessage={errors.variations?.[index]?.color?.message}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name={`variations.${index}.flavour`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        value={field.value || ''}
-                                        placeholder='Flavour'
-                                        hasError={!!errors.variations?.[index]?.flavour}
-                                        errorMessage={errors.variations?.[index]?.flavour?.message}
-                                    />
-                                )}
-                            />
+                            {watch('category') === 8 && (
+                                <Controller
+                                    name={`variations.${index}.size`}
+                                    control={control}
+                                    render={({ field }) => (
+                                       
+                                        <SelectSingleCombo
+                                            options={
+                                                PRODUCT_TYPES_OPTIONS.Cakes.sizes
+                                            }
+                                            label="Size"
+                                            valueKey="value"
+                                            labelKey="label"
+                                            placeholder="Select Size"
+                                            {...field}
+                                            hasError={!!errors.variations?.[index]?.size}
+                                            errorMessage={errors.variations?.[index]?.size?.message as string}
+                                        />
+                                    )}
+                                />
+                            )}
+                            {watch('category') === 9 && (
+                                <Controller
+                                    name={`variations.${index}.color`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            value={field.value || ''}
+                                            placeholder='Colour'
+                                            hasError={!!errors.variations?.[index]?.color}
+                                            errorMessage={errors.variations?.[index]?.color?.message}
+                                        />
+                                    )}
+                                />
+                            )}
+                            {watch('category') === 10 && (
+                                <Controller
+                                    name={`variations.${index}.flavour`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            value={field.value || ''}
+                                            placeholder='Flavour'
+                                            hasError={!!errors.variations?.[index]?.flavour}
+                                            errorMessage={errors.variations?.[index]?.flavour?.message}
+                                        />
+                                    )}
+                                />
+                            )}
                             <Controller
                                 name={`variations.${index}.selling_price`}
                                 control={control}
@@ -259,7 +292,7 @@ export default function NewInventorySheet() {
 
                     <Button
                         type="button"
-                        onClick={() => append({ size: null, color: null, flavour: null, selling_price: null, cost_price: '', quantity: 0 })}
+                        onClick={() => append({ selling_price: null, cost_price: '', quantity: 0 })}
                         variant="outline"
                     >
                         Add Variation

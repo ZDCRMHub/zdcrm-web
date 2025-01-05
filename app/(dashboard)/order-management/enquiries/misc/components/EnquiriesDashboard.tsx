@@ -1,99 +1,96 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  Search,
-  ChevronDown,
-  Plus,
-  MoreHorizontal,
-  RefreshCcw,
-} from 'lucide-react';
+import { Search, Plus, RefreshCcw, Check, } from 'lucide-react';
+import { format, subMonths } from 'date-fns';
+import { DateRange } from 'react-day-picker';
+import { Controller, useForm } from 'react-hook-form';
+import { ArrowDown2, Calendar, Category2, NotificationStatus, TickCircle } from 'iconsax-react';
+
 import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, SelectSingleCombo } from "@/components/ui"
-
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, LinkButton } from '@/components/ui';
-import EnquiriesTable from './EnquiriesTable';
+import { LinkButton } from '@/components/ui';
 import TabBar from '@/components/TabBar';
-import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarSub, MenubarSubContent, MenubarSubTrigger, MenubarTrigger, RangeAndCustomDatePicker, Input, Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, SelectSingleCombo, RangeDatePicker } from "@/components/ui"
+import { useDebounce } from '@/hooks';
+import { useGetCategories } from '@/app/(dashboard)/inventory/misc/api';
 
-const enquiries = [
-  {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
-    ],
-    deliveryNotes: 'Call Simisola',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
-  },
-  {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
-    deliveryNotes: 'Deliver at door step',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
-  },
-  {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: ['Delectable Choco cake', 'Moet Chandon', 'Large size teddy'],
-    deliveryNotes: 'Deliver at door step',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
-  },
-  {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
-    deliveryNotes: 'Call Adeola',
-    category: ['C', 'F', 'TB'],
-    status: 'STILL DISCUSSING',
-  },
-  {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
-    ],
-    deliveryNotes: 'Call Simisola',
-    category: ['C', 'F', 'TB'],
-    status: 'STILL DISCUSSING',
-  },
-  {
-    customerName: 'Ife Adebayo',
-    phoneNumber: '08067556644',
-    enquiryItems: [
-      'Adeline Faultline Cake',
-      'Moet Chandon',
-      'Large size teddy',
-    ],
-    deliveryNotes: 'Deliver at door step',
-    category: ['C', 'F', 'TB'],
-    status: 'FINALIZED DISCUSSION',
-  },
-];
+import EnquiriesTable from './EnquiriesTable';
+import { useGetEnquiries } from '../api';
 
-const tabs = [
-  { name: 'All Enquiries', count: 840 },
-  // { name: 'In Cart', count: 400 },
-  // { name: 'Manual Enquiries', count: 450 },
-];
+
+const today = new Date();
+const tomorrow =  new Date(today.getTime() + 24 * 60 * 60 * 1000);
+const monthsAgo = subMonths(new Date(), 20);
 
 export default function EnquiriesDashboard() {
-  const [activeTab, setActiveTab] = useState(tabs[0].name);
   const [searchText, setSearchText] = useState("")
-  const [sortBy, setSortBy] = useState('All Enquiries')
+  const debouncedSearchText = useDebounce(searchText, 300);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>('STD,FND');
+  const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+
+  // const handleDateRangeChange = (range: { from: Date | null, to: Date | null }) => {
+  //   setStartDate(range.from);
+  //   setEndDate(range.to);
+  //   setCurrentPage(1);
+  // };
+  const { control, register, setValue, watch } = useForm<{
+    date: DateRange;
+  }>({
+    defaultValues: {
+      date: {
+        from: monthsAgo,
+        to: tomorrow,
+      },
+    },
+  });
+
+
+  const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+  const { data, refetch, isLoading, isFetching, error } = useGetEnquiries({
+    page: currentPage,
+    size: pageSize,
+    search: searchText,
+    status: selectedStatuses,
+    category: selectedCategory,
+    start_date: watch('date').from?.toISOString().split('T')[0],
+    end_date: watch('date').to ? new Date((watch('date').to as Date).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
+    // end_date: watch('date').to?.toISOString().split('T')[0],
+
+  })
+
+  const handleRefresh = () => {
+    refetch();
+  };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+    setCurrentPage(1);
+  };
+  const handleCategoryChange = (categoryId: number) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+  const handleStatusChange = (status: string) => {
+    setSelectedStatuses(status);
+    setCurrentPage(1);
+  }
+
+  const clearFilters = () => {
+    setSelectedCategory(undefined);
+    setSelectedStatuses('STD,FND');
+    setSearchText("");
+    setCurrentPage(1);
+    setValue('date', {
+      from: monthsAgo,
+      to: tomorrow,
+    });
+  }
+
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 min-h-full max-h-full'>
       <div className='flex justify-between items-center mb-6 gap-4 pt-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -101,124 +98,148 @@ export default function EnquiriesDashboard() {
             placeholder='Search (client name, customer rep, phone number)'
             className='w-full focus:border min-w-[350px] text-xs !h-10'
             value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={handleSearch}
             rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
           />
           <Menubar>
             <MenubarMenu>
               <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">Filter enquiries by <ArrowDown2 size={16} /></MenubarTrigger>
               <MenubarContent>
-
                 <MenubarSub>
                   <MenubarSubTrigger className="py-3 flex items-center gap-2"><Calendar size={18} />Date Range</MenubarSubTrigger>
                   <MenubarSubContent>
-                    <RangeAndCustomDatePicker />
+                    <Controller
+                      control={control}
+                      name="date"
+                      render={({ field: { onChange, value } }) => (
+                        <RangeDatePicker
+                          className="max-w-[17.1875rem] border border-[#d6d6d6]/50 bg-white px-4 py-3 text-sm"
+                          id="dateFilter"
+                          placeholder="Select a date range"
+                          placeholderClassName="text-[#556575]"
+                          value={value}
+                          onChange={onChange}
+                        />
+                      )}
+                    />
                   </MenubarSubContent>
                 </MenubarSub>
 
                 <MenubarSub>
                   <MenubarSubTrigger className="py-3 flex items-center gap-2"><Category2 size={18} />Category</MenubarSubTrigger>
                   <MenubarSubContent>
-                    <MenubarItem>Cake</MenubarItem>
-                    <MenubarItem>Flower</MenubarItem>
-                    <MenubarItem>Teddy Bear</MenubarItem>
-                    <MenubarItem>Cup Cake</MenubarItem>
-                    <MenubarItem>Vase</MenubarItem>
-                    <MenubarItem>Wine</MenubarItem>
+                    {
+                      categories?.map((category) => (
+                        <MenubarItem key={category.id} onClick={() => handleCategoryChange(category.id)}>
+                          {category.name}
+                        </MenubarItem>
+                      ))
+                    }
                   </MenubarSubContent>
                 </MenubarSub>
 
                 <MenubarSub>
-                  <MenubarSubTrigger className="py-3 flex items-center gap-2"><NotificationStatus size={18} />Status</MenubarSubTrigger>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                    <NotificationStatus size={18} />
+                    Status
+                  </MenubarSubTrigger>
                   <MenubarSubContent>
-                    <MenubarItem>Started Discussion</MenubarItem>
-                    <MenubarItem>Still Discussing</MenubarItem>
-                    <MenubarItem>Finalized Discussion</MenubarItem>
+                    <MenubarItem onClick={() => handleStatusChange('STD')}>
+                      {
+                        selectedStatuses == "STD" && <Check className="mr-2 size-4" />
+                      }
+                      Started Discussion</MenubarItem>
+                    <MenubarItem onClick={() => handleStatusChange('FND')}>
+                      {
+                        selectedStatuses == "FND" && <Check className="mr-2 size-4" />
+                      }
+                      Finalized Discussion</MenubarItem>
                   </MenubarSubContent>
                 </MenubarSub>
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
-          <SelectSingleCombo
-            name='sortBy'
-            options={[
-              { value: 'All Enquiries', label: 'All Enquiries' },
-              { value: 'Started Discussion', label: 'Started Discussion' },
-              { value: 'Still Discussing', label: 'Still Discussing' },
-              { value: 'Finalized Discussion', label: 'Finalized Discussion' },
-            ]}
-            value={sortBy}
-            onChange={(value) => setSortBy(value)}
-            valueKey='value'
-            labelKey='label'
-            placeholder='Sort by'
-            className='w-32 !h-10 text-[#8B909A]'
-            placeHolderClass='text-[#8B909A] text-xs'
-            triggerColor='#8B909A'
-            showSelectedValue={false}
-          />
+
         </div>
 
         <div className='flex items-center gap-2'>
+          {
+            (debouncedSearchText || (selectedStatuses && selectedStatuses !== 'STD,FND')) && (
+              <Button
+                variant='outline'
+                className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </Button>
+            )
+          }
           <LinkButton href="./enquiries/new-enquiry" variant='default' className='bg-black text-white'>
             <Plus className='mr-2 h-4 w-4' /> Add Enquiry
           </LinkButton>
+
           <Button
             variant='outline'
-            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'>
+            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
+            onClick={handleRefresh}
+          >
             <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
           </Button>
         </div>
       </div>
 
-      {
-        searchText.trim() !== "" &&
-        <h3 className="mb-4">Search Results</h3>
-      }
-      {
-        searchText.trim() === "" ?
-          <>
-            <TabBar tabs={tabs} onTabClick={setActiveTab} activeTab={activeTab} />
-            <EnquiriesTable />
+      <section>
+        {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
+        <TabBar tabs={[{ name: 'All Enquiries', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Enquiries'} />
+        <EnquiriesTable
+          data={data?.data}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          error={error}
+        />
+      </section>
 
-          </>
 
-          :
-          <EnquiriesTable />
-      }
+      <footer className="sticky bottom-0">
+        <div className="flex items-center justify-between mt-auto py-1.5">
+          <Pagination className="justify-start ">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  className={currentPage === 1 ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}
+                />
+              </PaginationItem>
+              {[...Array(data?.number_of_pages || 0)].map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(index + 1)}
+                    isActive={currentPage === index + 1}
+                  >
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  className={currentPage === data?.number_of_pages ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, data?.number_of_pages || 1))}
+                // disabled={currentPage === data?.number_of_pages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+          <section>
+            <div>
 
-      <div className='flex items-center justify-between mt-auto'>
-        <Pagination className='justify-start'>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href='#' />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href='#'>1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href='#'>2</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href='#'>3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href='#'>10</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href='#' />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-        <div className='text-sm text-gray-500 w-max shrink-0'>
-          Showing 1 to 8 of 50 entries
+            </div>
+
+          <div className="text-sm text-gray-500 w-max shrink-0">
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, data?.count || 0)} of {data?.count || 0} entries
+          </div>
+          </section>
         </div>
-      </div>
-
-
+      </footer>
     </div>
   );
 }

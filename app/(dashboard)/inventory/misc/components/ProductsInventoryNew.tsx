@@ -51,7 +51,7 @@ export default function NewProductInventorySheet() {
         onSuccess: () => {
             reset()
             toast.success('Product Inventory created successfully');
-            queryClient.invalidateQueries({ queryKey: ['ProductInventory'] });
+            queryClient.invalidateQueries({ queryKey: ['productsInventory'] });
         },
     });
 

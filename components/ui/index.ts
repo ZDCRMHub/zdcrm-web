@@ -108,6 +108,7 @@ export {
   SheetDescription,
 } from './sheet'
 export { default as SelectSingleCombo } from './selectSingleCombo'
+export { default as selectSingleSimple } from './selectSingleSimple'
 export { default as SelectMultipleSpecialCombo } from './selectMultipleSpecialCombo'
 export { default as SuccessModal } from './successModal'
 export {

@@ -12,7 +12,10 @@ import { cn } from '@/lib/utils';
 import OrderDetailSheet from './OrderDetailSheet';
 import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
-import { Tag } from 'iconsax-react';
+import { FilterSearch, Tag } from 'iconsax-react';
+import { TOrder } from '../types';
+import { LinkButton, Spinner } from '@/components/ui';
+import { Inbox } from 'lucide-react';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -57,37 +60,17 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, isActive }) => 
     );
 };
 
-interface Order {
-    orderId: string;
-    customerName: string;
-    phoneNumber: string;
-    orderItems: string[];
-    recipientName: string;
-    recipientPhone: string;
-    category: {
-        category: Category;
-        isActive: boolean;
-    }[];
-    orderNotes: string;
-    status: string;
-    deliveryNote: string;
-    deliveryDate: Date;
-    amount?: number;
-    amountUSD?: number;
-    paymentStatus: string;
-    tag?: string;
-}
 
 interface OrderRowProps {
-    order: Order;
+    order: TOrder;
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     return (
         <TableRow>
             <TableCell className='min-w-[150px]'>
-                <div>{order.orderId}</div>
-                {
+                <div>{order.order_number}</div>
+                {/* {
                     order.tag &&
                     <div className="flex items-center gap-1.5 text-[#494949] text-xs">
                         <span>
@@ -97,247 +80,140 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             {order.tag}
                         </span>
                     </div>
-                }
+                } */}
 
             </TableCell>
-            <TableCell className='min-w-max max-w-[500px]'>
-                <div>{order.customerName}</div>
-                <div className='text-sm text-gray-500'>{order.phoneNumber}</div>
+            <TableCell className=''>
+                <div>{order.customer?.name}</div>
+                <div className='text-sm text-gray-500'>{order.customer.phone}</div>
             </TableCell>
             <TableCell>
-                {order.orderItems.map((item, idx) => (
-                    <div key={idx} className='!min-w-max'>{item}</div>
+                {order.items.map((item, idx) => (
+                    <div key={idx} className='!min-w-max'>{item.product.name}</div>
                 ))}
             </TableCell>
-            <TableCell>
+            {/* <TableCell>
                 <div>{order.recipientName}</div>
                 <div className='text-sm text-gray-500'>{order.recipientPhone}</div>
-            </TableCell>
+            </TableCell> */}
 
             <TableCell>
                 <div className='flex items-center gap-2 min-w-max'>
-                    {(['C', 'W', 'F', 'TB'] as Category[]).map(cat => (
-                        <CategoryBadge
-                            key={cat}
-                            category={cat}
-                            isActive={order.category.find(c => c.category === cat)?.isActive || false}
-                        />
+                    {order.items.map((item) => (
+                        <Badge
+                            key={item.id}
+                            variant="outline"
+                            className="flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                        >
+                            {item.product.category.name.charAt(0)}
+                        </Badge>
                     ))}
                 </div>
             </TableCell>
 
-            <TableCell className='min-w-[180px] max-w-[500px]'>{order.orderNotes}</TableCell>
-            <TableCell className='min-w-[150px] max-w-[500px] uppercase'>{format(order.deliveryDate, 'dd/MMM/yyyy')}</TableCell>
+            <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
+            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Badge
                     className={cn(
                         statusColors[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
                         'rounded-md w-max'
-                    )}>
+                    )}
+                >
                     {order.status}
                 </Badge>
             </TableCell>
             <TableCell className='min-w-max'>
-                <div className='font-bold'>{convertNumberToNaira(order.amount || 0)}</div>
-                <div className='text-sm text-[#494949]'>{order.paymentStatus}</div>
+                <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
+                <div className='text-sm text-[#494949]'>{order.payment_status}</div>
             </TableCell>
-            <TableCell className='min-w-max'>
-                <div>{order.amountUSD ? "$"+order.amountUSD : "-"}</div>
+            <TableCell className='min-w-max font-bold'>
+                {/* <div>{order.amountUSD ? "$" + order.amountUSD : "-"}</div> */}
                 {/* <div>{order.paymentStatus}</div> */}
+                -
             </TableCell>
             <TableCell>
-                <OrderDetailSheet orderId={order.orderId} />
+                <OrderDetailSheet
+                    order={order}
+                />
             </TableCell>
         </TableRow>
     );
 };
 
-const OrdersTable = () => {
-    const orders: Order[] = [
-        {
-            orderId: 'PF/LM6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: [
-                'Adeline Faultline Cake',
-                'Moet Chandon',
-                'Large size teddy',
-            ],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'C', isActive: true },
-            ],
-            orderNotes: 'Call Simisola',
-            status: 'PAYMENT MADE',
-            deliveryNote: 'Deliver by 5 PM',
-            deliveryDate: new Date(),
-            amount: 5000,
-            amountUSD: 200,
-            paymentStatus: 'Paid(USD Transfer)',
-            tag: '123456'
-        },
-        {
-            orderId: 'ZD/LM6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
-            ],
-            orderNotes: 'This is a very very long Order note. Deliver at door step',
-            status: 'SORTED',
-            deliveryNote: 'Deliver by 6 PM',
-            deliveryDate: new Date(),
-            amount: 60000,
-            amountUSD: 300,
-            paymentStatus: 'Paid(USD Transfer)'
-        },
-        {
-            orderId: 'ZD/LM6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: ['A stem of chrys', 'Moet Chandon', 'Large size teddy'],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
-            ],
-            orderNotes: 'Deliver at door step',
-            status: 'SORTED',
-            deliveryNote: 'Deliver by 6 PM',
-            deliveryDate: new Date(),
-            amount: 70000,
-            amountUSD: 400,
-            paymentStatus: 'Paid(Website Card)',
-            tag: '123456'
-        },
-        {
-            orderId: 'ZD/LI6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: [
-                'Delectable Choco cake',
-                'Moet Chandon',
-                'Large size teddy',
-            ],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
-            ],
-            orderNotes: 'Deliver at door step',
-            status: 'DIS CL',
-            deliveryNote: 'Deliver by 7 PM',
-            deliveryDate: new Date(),
-            amount: 80000,
-            paymentStatus: 'Paid(Naira Transfer)',
-            tag: '123456'
-        },
-        {
-            orderId: 'PF/LC6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: ['Choco Drip Drop 104', 'Moet Chandon', 'Large size teddy'],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
-            ],
-            orderNotes: 'Call Adeola',
-            status: 'DELIVERED',
-            deliveryNote: 'Deliver by 8 PM',
-            deliveryDate: new Date(),
-            amount: 90000,
-            amountUSD: 600,
-            paymentStatus: 'Paid(USD Transfer)'
-        },
-        {
-            orderId: 'PF/LM6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: [
-                'Adeline Faultline Cake',
-                'Moet Chandon',
-                'Large size teddy',
-            ],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
-            ],
-            orderNotes: 'Deliver at door step',
-            status: 'CANCELED',
-            deliveryNote: 'Deliver by 9 PM',
-            deliveryDate: new Date(),
-            amount: 10000,
-            paymentStatus: 'Not Received(Paid)'
-        },
-        {
-            orderId: 'ZD/LC6765',
-            customerName: 'Ife Adebayo',
-            phoneNumber: '08067556644',
-            orderItems: [
-                'Adeline Faultline Cake',
-                'Moet Chandon',
-                'Large size teddy',
-            ],
-            recipientName: 'Simisola',
-            recipientPhone: '07023544455',
-            category: [
-                { category: 'C', isActive: true },
-                { category: 'W', isActive: true },
-                { category: 'TB', isActive: true },
-            ],
-            orderNotes: 'Call Simisola',
-            status: 'SENT TO DISPATCH',
-            deliveryNote: 'Deliver by 10 PM',
-            deliveryDate: new Date(),
-            amount: 11000,
-            amountUSD: 800,
-            paymentStatus: 'Paid(USD Transfer)',
-            tag: '123456'
-        },
-    ];
+interface OrdersTableProps {
+    data?: TOrder[]
+    isLoading: boolean;
+    isFetching: boolean;
+    error: unknown;
+    type?: string;
+    isFiltered?: boolean;
+}
+const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersTableProps) => {
+    const [selectedOrder, setSelectedOrder] = React.useState<TOrder | null>(null);
+
+
+    if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner /></div>;
+    if (error) return <div>Error fetching data</div>;
+    if (!data) return null;
+
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className='min-w-[150px]'>Order ID</TableHead>
-                    <TableHead className='min-w-[210px]'>Customers Details</TableHead>
-                    <TableHead className='min-w-[230px]'>Order Items</TableHead>
-                    <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
-                    <TableHead className='min-w-[150px]'>Category</TableHead>
-                    <TableHead className='w-[170px]'>Order Notes</TableHead>
-                    <TableHead>Delivery Date</TableHead>
-                    <TableHead className='min-w-[150px]'>Status</TableHead>
-                    <TableHead className='min-w-[180px]'>Payment</TableHead>
-                    <TableHead>Payment(USD)</TableHead>
-                    <TableHead></TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {
-                    orders.map((order, index) => (
-                        <OrderRow
-                            key={index}
-                            order={order}
-                        />
-                    ))
-                }
-            </TableBody>
-        </Table>
+        <div className="w-full md:w-[95%] max-w-[1792px] max-md:px-8">
+            <div className={cn('overflow-hidden rounded-full mb-1')}>
+                <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
+                    <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+                </div>
+            </div>
+
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                        <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
+                        <TableHead className='min-w-[230px]'>Order Items</TableHead>
+                        {/* <TableHead className='min-w-[200px]'>Recipient Details</TableHead> */}
+                        <TableHead className='min-w-[150px]'>Category</TableHead>
+                        <TableHead className='w-[170px]'>Order Notes</TableHead>
+                        <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
+                        <TableHead className='min-w-[150px]'>Status</TableHead>
+                        <TableHead className='min-w-[180px]'>Payment</TableHead>
+                        <TableHead>Payment(USD)</TableHead>
+                        <TableHead></TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {
+                        data.map((order, index) => (
+                            <OrderRow
+                                key={index}
+                                order={order}
+                            />
+                        ))
+                    }
+                </TableBody>
+            </Table>
+
+            {
+                data.length === 0 && isFiltered && (
+                    <div className='flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'>
+                        <Inbox size={60}/>
+                        <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No Orders Found</div>
+                        <LinkButton href="./orders/new-order">
+                        </LinkButton>
+
+                    </div>
+                )
+            }
+            {
+                data.length === 0 && !isFiltered && (
+                    <div className='flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'>
+                        <FilterSearch size={60}/>
+                        <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No orders match your filters. Clear filters and try again</div>
+                    </div>
+                )
+            }
+        </div>
     )
 }
 

@@ -1,115 +1,140 @@
-import { CATEGORIES_OPTIONS, DELIVERY_LOCATION_OPTIONS, PAYMENT_METHODS, PAYMENT_STATUS_OPTIONS, PRODUCT_TYPES_OPTIONS } from "@/constants";
 import { z } from "zod";
 
-const baseItemSchema = z.object({
-    category: z.enum(CATEGORIES_OPTIONS.map(category => category.value) as [string, ...string[]], { message: "Category is required" }),
-    productType: z.string().min(1),
-    quantity: z.number().min(1),
+const propertiesSchema = z.object({
+    layers: z.string().optional(),
+    toppings: z.string().optional(),
+    bouquet: z.string().optional(),
+    glass_vase: z.string().optional(),
+    whipped_cream_upgrade: z.boolean().optional()
+}).optional();
+
+const variationSchema = z.object({
+    stock_variation_id: z.number(),
+    quantity: z.number().min(1)
+});
+
+const inventorySchema = z.object({
+    stock_inventory_id: z.number().optional(),
+    product_inventory_id: z.number().optional(),
     message: z.string().optional(),
-    isCustomOrder: z.boolean().optional(),
-    itemImage: z.instanceof(File).optional(),
-    isEditing: z.boolean().optional(),
-    additionalItems: z.array(z.object({
-        name: z.string().min(1, { message: "Name is required" }),
-        // quantity: z.number().min(1, { message: "Quantity must be at least 1" }),
-        cost: z.string().min(1, { message: "Price is required" }),
-    })).optional(),
     instruction: z.string().optional(),
+    quantity_used: z.number().optional(),
+    variations: z.array(variationSchema).optional(),
+    custom_image: z.string().url().optional(),
+    properties: propertiesSchema
+}).nullable();
+
+const itemSchema = z.object({
+    category: z.number({ message: "Category is required" }),
+    product_id: z.number({ message: "Product type is required" }),
+    quantity: z.number().min(1),
+    inventories: z.array(inventorySchema),
+    miscellaneous: z.array(z.object({
+        description: z.string().min(1, { message: "Description is required" }),
+        cost: z.string().min(1, { message: "Miscellaneous cost is required" })
+    })).optional()
+}).superRefine((data, ctx) => {
+    data.inventories.forEach((inventory, index) => {
+        if (inventory === null) return; // Skip validation for null inventories
+
+        if ([8, 9, 10].includes(data.category)) {
+            if (inventory.stock_inventory_id == null) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Stock inventory ID is required for this category",
+                    path: [`inventories.${index}.stock_inventory_id`]
+                });
+            }
+        } else {
+            if (inventory.product_inventory_id == null) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Product inventory ID is required for this category",
+                    path: [`inventories.${index}.product_inventory_id`]
+                });
+            }
+        }
+
+        if (data.category === 8 && inventory.properties) {
+            if (!inventory.properties.toppings) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Toppings must be provided for Cakes",
+                    path: [`inventories.${index}.properties.toppings`]
+                });
+            }
+            if (!inventory.properties.layers) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Layers must be provided for Cakes",
+                    path: [`inventories.${index}.properties.layers`]
+                });
+            }
+        }
+    });
 });
 
-const cakeSchema = baseItemSchema.extend({
-    category: z.literal("C"),
-    layers: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.layers.map(layer => layer.value) as [string, ...string[]], { message: "Please select no of layers" }),
-    flavours: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" })),
-    // flavour: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(flavour => flavour.value) as [string, ...string[]], { message: "Select preferred flavour" }),
-    toppings: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.toppings.map(topping => topping.value) as [string, ...string[]], { message: "Topping is required" }),
-    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Cakes.flavours.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
-    whippedCreamUpgrade: z.enum(PRODUCT_TYPES_OPTIONS.Cakes.whippedCreamUpgrade.map(whippedCream => whippedCream.value) as [string, ...string[]], { message: "Whipped cream upgrade is required" }),
+export const NewOrderSchema = z.object({
+    customer: z.object({
+        name: z.string().min(1, { message: "Customer's name is required" }),
+        phone: z.string().min(1, { message: "Customer's phone number is required" }),
+        email: z.string().email().optional()
+    }),
+    delivery: z.object({
+        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        note: z.string().optional(),
+        delivery_time: z.string(),
+        delivery_date: z.string({ message: "Delivery date is required" }),
+        method: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
+        dispatch: z.number().optional(),
+        address: z.string().min(1, { message: "Delivery address is required" }),
+        recipient_name: z.string().min(1, { message: "Recipient's name is required" }),
+        recipient_phone: z.string().min(1, { message: "Recipient's phone number is required" })
+    }),
+    enquiry_channel: z.string().min(1, { message: "Enquiry channel is required" }),
+    social_media_details: z.string().optional(),
+    enquiry_occasion: z.string().min(1, { message: "Enquiry occasion is required" }),
+    branch: z.number({ message: "Select a branch" }),
+    message: z.string().optional(),
+    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),
+    payment_status: z.enum(["UP", "FP", "PP"]),
+    payment_options: z.enum([
+        "not_paid_go_ahead",
+        "paid_website_card",
+        "paid_naira_transfer",
+        "paid_pos",
+        "paid_usd_transfer",
+        "paid_paypal",
+        "cash_paid",
+        "part_payment",
+        "paid_bitcoin",
+        "not_received_paid"
+    ]),
+    payment_proof: z.string().url().optional().nullable(),
+    payment_currency: z.enum(["NGN", "USD"]),
+    amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
+    initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
+}).superRefine((data, ctx) => {
+    if (data.payment_options === "part_payment" && !data.initial_amount_paid) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Enter initial amount paid",
+            path: ["initial_amount_paid"]
+        });
+    }
+    if (
+        (data.payment_options === "paid_usd_transfer" ||
+            data.payment_options === "paid_paypal" ||
+            data.payment_options === "paid_bitcoin") &&
+        !data.amount_paid_in_usd
+    ) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Enter amount paid in USD",
+            path: ["amount_paid_in_usd"]
+        });
+    }
 });
-
-const flowerSchema = baseItemSchema.extend({
-    category: z.literal("F"),
-    vase: z.enum(["none", "25cm", "50cm"]),
-});
-
-
-const teddyBearSchema = baseItemSchema.extend({
-    category: z.literal("TB"),
-    sizes: z.array(z.enum(PRODUCT_TYPES_OPTIONS.Teddies.sizes.map(size => size.value) as [string, ...string[]], { message: "Select at least one size" })),
-    bouquet: z.enum(PRODUCT_TYPES_OPTIONS.Teddies.bouquets.map(bouquet => bouquet.value) as [string, ...string[]]),
-});
-
-const itemSchema = z.discriminatedUnion("category", [
-    cakeSchema,
-    flowerSchema,
-    teddyBearSchema
-]);
-
 
 export type NewOrderFormValues = z.infer<typeof NewOrderSchema>;
 
-export const NewOrderSchema = z.object({
-    branch: z.enum(["Zuzu Delights", "Prestige Flowers"], { message: "Branch is required" }),
-    customerName: z.string().min(1, { message: "Customer's name is required" }),
-    customerPhone: z.string().min(1, { message: "Customer's phone number is required" }),
-    enquiryChannel: z.string({ message: "Invalid enquiry channel" }),
-    recipientName: z.string().min(1, { message: "Recipient's name is required" }),
-    recipientPhone: z.string().min(1, { message: "Recipient's phone number is required" }),
-    enquiryOccasion: z.string().min(1, { message: "Enquiry occasion is required" }),
-    isCustomDelivery: z.boolean(),
-    deliveryNote: z.string().optional(),
-    messageOnOrder: z.string().optional(),
-    deliveryDate: z.date(),
-    deliveryMethod: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
-    deliveryAddress: z.string().min(1, { message: "Delivery address is required" }),
-    deliveryZone: z.enum(["Lagos Mainland (LM)", "Lagos Central (LC)", "Lagos Island (LI)"], { message: "Delivery zone is required" }),
-    deliveryLocation: z.enum([...(DELIVERY_LOCATION_OPTIONS.map(method => method.value) as [string, ...string[]])]).optional(),
-    paymentMode: z.enum([...(PAYMENT_METHODS.map(method => method.value) as [string, ...string[]])], { message: "Payment status is required" }),
-    paymentStatus: z.enum([...(PAYMENT_STATUS_OPTIONS.map(method => method.value) as [string, ...string[]])], { message: "Payment mode is required" }),
-    proofOfPayment: z.instanceof(File).refine(file => file.size <= 5 * 1024 * 1024, { message: "File size should be less than 5MB" }),
-    deliveryFee: z.string().optional(),
-    dispatchTime: z.string().optional(),
-    items: z.array(itemSchema),
-
-}).refine((data) => {
-    const errors = [];
-
-    if (data.isCustomDelivery) {
-        if (!data.deliveryFee) {
-            errors.push({
-                path: ["deliveryFee"],
-                message: "Delivery fee is required for custom delivery",
-                code: "custom" as const
-            });
-        }
-    }
-
-    if (!data.isCustomDelivery) {
-        if (!data.deliveryMethod) {
-            errors.push({
-                path: ["deliveryMethod"],
-                message: "Delivery method is required when not using custom delivery",
-                code: "custom" as const
-            });
-            errors.push({
-                path: ["deliveryLocation"],
-                message: "Delivery location is required when not using custom delivery",
-                code: "custom" as const
-            });
-        }
-    }
-
-    if (data.items.length === 0) {
-        errors.push({
-            path: ["items"],
-            message: "At least one item is required",
-            code: "custom" as const
-        });
-    }
-
-    if (errors.length > 0) {
-        throw new z.ZodError(errors);
-    }
-
-    return true;
-});
