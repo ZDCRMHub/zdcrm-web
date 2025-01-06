@@ -68,7 +68,7 @@ const StockInventorySelector: React.FC<StockInventorySelectorProps> = ({
                             disabled={isLoadingOptions || isFetchingOptions || disabled}
                         >
                             {
-                                (isLoadingOptions || isFetchingOptions) ?
+                                (isLoadingOptions || (isFetchingOptions && !selectedInventory)) ?
                                     "Loading options..."
                                     :
                                     options.length === 0 ?

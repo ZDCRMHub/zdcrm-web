@@ -1,30 +1,28 @@
 import { z } from "zod";
 
+const propertiesSchema = z.object({
+    layers: z.string().optional(),
+    toppings: z.string().optional(),
+    bouquet: z.string().optional(),
+    glass_vase: z.string().optional(),
+    whipped_cream_upgrade: z.boolean().optional()
+}).optional();
+
+const variationSchema = z.object({
+    stock_variation_id: z.number(),
+    quantity: z.number().min(1)
+});
+
 const inventorySchema = z.object({
     stock_inventory_id: z.number().optional(),
     product_inventory_id: z.number().optional(),
     message: z.string().optional(),
     instruction: z.string().optional(),
     quantity_used: z.number().optional(),
-    variations: z.array(z.object({
-        stock_variation_id: z.number(),
-        quantity: z.number().min(1)
-    })),
+    variations: z.array(variationSchema).optional(),
     custom_image: z.string().url().optional(),
-    properties: z.object({
-        layers: z.string().optional(),
-        toppings: z.string().optional(),
-        bouquet: z.string().optional(),
-        glass_vase: z.string().optional(),
-        whipped_cream_upgrade: z.boolean().optional()
-    })
-}).refine(
-    (data) => data.stock_inventory_id != null || data.stock_inventory_id != undefined || data.product_inventory_id != null || data.product_inventory_id != undefined,
-    {
-        message: "Either stock_inventory_id or product_inventory_id must be provided",
-        path: ["stock_inventory_id", "product_inventory_id"],
-    }
-)
+    properties: propertiesSchema
+}).nullable();
 
 const itemSchema = z.object({
     category: z.number({ message: "Category is required" }),
@@ -35,23 +33,46 @@ const itemSchema = z.object({
         description: z.string().min(1, { message: "Description is required" }),
         cost: z.string().min(1, { message: "Miscellaneous cost is required" })
     })).optional()
-}).refine(
-    (data) => {
-        if (data.category == 8) {
-            return data.inventories.every((inventory) => {
-                if (inventory.properties.toppings && inventory.properties.layers) {
-                    return true;
-                }
-                return false;
-            });
+}).superRefine((data, ctx) => {
+    data.inventories.forEach((inventory, index) => {
+        if (inventory === null) return; // Skip validation for null inventories
+
+        if ([8, 9, 10].includes(data.category)) {
+            if (inventory.stock_inventory_id == null) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Stock inventory ID is required for this category",
+                    path: [`inventories.${index}.stock_inventory_id`]
+                });
+            }
+        } else {
+            if (inventory.product_inventory_id == null) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Product inventory ID is required for this category",
+                    path: [`inventories.${index}.product_inventory_id`]
+                });
+            }
         }
-        return true
-    },
-    {
-        message: "Toppings and layers must be provided for Cakes",
-        path: ['inventories']
-    }
-);
+
+        if (data.category === 8 && inventory.properties) {
+            if (!inventory.properties.toppings) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Toppings must be provided for Cakes",
+                    path: [`inventories.${index}.properties.toppings`]
+                });
+            }
+            if (!inventory.properties.layers) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Layers must be provided for Cakes",
+                    path: [`inventories.${index}.properties.layers`]
+                });
+            }
+        }
+    });
+});
 
 export const NewEnquirySchema = z.object({
     customer: z.object({

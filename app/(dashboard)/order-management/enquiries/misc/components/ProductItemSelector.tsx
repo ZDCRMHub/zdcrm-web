@@ -5,16 +5,20 @@ import ProductInventorySelector from './ProductInventorySelector';
 
 interface ProductItemSelectorProps {
     options: TProductInventoryItem[];
+    inventoryId?: number
     setInventoryId: (inventoryId: number) => void;
     isLoadingOptions?: boolean;
+    isFetchingOptions: boolean;
     disabled?: boolean;
 }
 
 const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
     options,
     isLoadingOptions,
+    isFetchingOptions,
     disabled,
     setInventoryId,
+    inventoryId
 }) => {
     const [selectedInventory, setSelectedInventory] = useState<TProductInventoryItem | null>(null);
 
@@ -32,6 +36,7 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
                 onChange={handleInventoryChange}
                 label="Select Inventory"
                 placeholder="Choose a product"
+                isFetchingOptions={isFetchingOptions && !!inventoryId}
                 isLoadingOptions={isLoadingOptions}
                 disabled={disabled}
             />

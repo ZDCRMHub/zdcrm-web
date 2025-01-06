@@ -106,3 +106,21 @@ export function convertPathToTitle(path: string): string {
   return titleSegments.join(' / ');
 }
 
+
+
+
+import { parse, format } from 'date-fns'
+
+export function formatTimeString(timeString: string, formatString?:string): string {
+  try {
+    // Parse the time string into a Date object
+    const date = parse(timeString, 'HH:mm:ss', new Date())
+    
+    // Format the Date object into "hh:mmaa" format
+    return format(date, formatString || 'hh:mmaa').toLowerCase()
+  } catch (error) {
+    console.error('Error formatting time:', error)
+    return 'Invalid time'
+  }
+}
+

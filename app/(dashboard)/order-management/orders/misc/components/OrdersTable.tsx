@@ -14,8 +14,9 @@ import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
-import { LinkButton, Spinner } from '@/components/ui';
+import { Button, LinkButton, Spinner } from '@/components/ui';
 import { Inbox } from 'lucide-react';
+import { useBooleanStateControl } from '@/hooks';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -66,6 +67,14 @@ interface OrderRowProps {
 }
 
 const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
+     const{
+        state: isSheetOpen,
+        toggle: toggleSheet,
+        setFalse: closeSheet,
+        setTrue: openSheet,
+      } = useBooleanStateControl()
+
+
     return (
         <TableRow>
             <TableCell className='min-w-[150px]'>
@@ -92,10 +101,10 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     <div key={idx} className='!min-w-max'>{item.product.name}</div>
                 ))}
             </TableCell>
-            {/* <TableCell>
-                <div>{order.recipientName}</div>
-                <div className='text-sm text-gray-500'>{order.recipientPhone}</div>
-            </TableCell> */}
+            <TableCell>
+                <div>{order.delivery.recipient_name}</div>
+                <div className='text-sm text-gray-500'>{order.delivery.recipient_phone}</div>
+            </TableCell>
 
             <TableCell>
                 <div className='flex items-center gap-2 min-w-max'>
@@ -133,8 +142,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 -
             </TableCell>
             <TableCell>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={`Open order details for ${order?.id}`}
+                    onClick={openSheet}
+                >
+                    {">>"}
+                </Button>
                 <OrderDetailSheet
                     order={order}
+                    isSheetOpen={isSheetOpen}
+                    closeSheet={closeSheet}
                 />
             </TableCell>
         </TableRow>
@@ -150,7 +169,6 @@ interface OrdersTableProps {
     isFiltered?: boolean;
 }
 const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersTableProps) => {
-    const [selectedOrder, setSelectedOrder] = React.useState<TOrder | null>(null);
 
 
     if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner /></div>;
@@ -172,7 +190,7 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
                         <TableHead className='min-w-[150px]'>Order ID</TableHead>
                         <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
                         <TableHead className='min-w-[230px]'>Order Items</TableHead>
-                        {/* <TableHead className='min-w-[200px]'>Recipient Details</TableHead> */}
+                        <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
                         <TableHead className='min-w-[150px]'>Category</TableHead>
                         <TableHead className='w-[170px]'>Order Notes</TableHead>
                         <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
@@ -197,7 +215,7 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
             {
                 data.length === 0 && isFiltered && (
                     <div className='flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'>
-                        <Inbox size={60}/>
+                        <Inbox size={60} />
                         <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No Orders Found</div>
                         <LinkButton href="./orders/new-order">
                         </LinkButton>
@@ -208,7 +226,7 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
             {
                 data.length === 0 && !isFiltered && (
                     <div className='flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'>
-                        <FilterSearch size={60}/>
+                        <FilterSearch size={60} />
                         <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No orders match your filters. Clear filters and try again</div>
                     </div>
                 )

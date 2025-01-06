@@ -19,6 +19,7 @@ export function Sidebar() {
   return (
     <div
       className={cn(
+        "max-md:hidden ",
         "relative h-full pb-8 transition-all duration-300 ease-in-out",
         isCollapsed ? "w-28" : "w-72"
       )}

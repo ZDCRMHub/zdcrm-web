@@ -5,6 +5,7 @@ import StockVariationSelector from './StockVariationSelector';
 
 interface StockItemSelectorProps {
     options: TStockInventoryItem[];
+    inventoryId?: number
     setInventoryId: (inventoryId: number) => void;
     setVariations: (variations: {
         stock_variation_id: number;
@@ -21,6 +22,7 @@ const StockItemSelector: React.FC<StockItemSelectorProps> = ({
     isFetchingOptions,
     disabled,
     setInventoryId,
+    inventoryId,
     setVariations
 }) => {
     const [selectedInventory, setSelectedInventory] = useState<TStockInventoryItem | null>(null);
@@ -49,7 +51,7 @@ const StockItemSelector: React.FC<StockItemSelectorProps> = ({
                 label="Select Inventory"
                 placeholder="Choose a product"
                 isLoadingOptions={isLoadingOptions}
-                isFetchingOptions={isFetchingOptions}
+                isFetchingOptions={isFetchingOptions && !!inventoryId}
                 disabled={disabled}
             />
             <StockVariationSelector

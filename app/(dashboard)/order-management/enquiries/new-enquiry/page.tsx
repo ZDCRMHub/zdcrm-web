@@ -451,6 +451,7 @@ const NewOrderPage = () => {
               variant="default"
               size="lg"
               className="flex items-center justify-center gap-1.5 ml-auto"
+              disabled={isPending}
             >
               Proceed
               {

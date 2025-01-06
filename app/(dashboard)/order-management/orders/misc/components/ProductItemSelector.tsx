@@ -5,6 +5,7 @@ import ProductInventorySelector from './ProductInventorySelector';
 
 interface ProductItemSelectorProps {
     options: TProductInventoryItem[];
+    inventoryId?: number
     setInventoryId: (inventoryId: number) => void;
     isLoadingOptions?: boolean;
     isFetchingOptions: boolean;
@@ -16,6 +17,7 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
     isLoadingOptions,
     isFetchingOptions,
     disabled,
+    inventoryId,
     setInventoryId,
 }) => {
     const [selectedInventory, setSelectedInventory] = useState<TProductInventoryItem | null>(null);
@@ -35,7 +37,7 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
                 label="Select Inventory"
                 placeholder="Choose a product"
                 isLoadingOptions={isLoadingOptions}
-                isFetchingOptions={isFetchingOptions}
+                isFetchingOptions={isFetchingOptions && !!inventoryId}
                 disabled={disabled}
             />
            

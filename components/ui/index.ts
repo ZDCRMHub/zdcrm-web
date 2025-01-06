@@ -107,6 +107,7 @@ export {
   SheetTitle,
   SheetDescription,
 } from './sheet'
+export { Skeleton } from './skeleton'
 export { default as SelectSingleCombo } from './selectSingleCombo'
 export { default as selectSingleSimple } from './selectSingleSimple'
 export { default as SelectMultipleSpecialCombo } from './selectMultipleSpecialCombo'

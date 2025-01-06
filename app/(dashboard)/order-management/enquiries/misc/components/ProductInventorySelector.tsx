@@ -14,6 +14,7 @@ interface ProductInventorySelectorProps {
     label?: string;
     placeholder?: string;
     isLoadingOptions?: boolean;
+    isFetchingOptions: boolean
     disabled?: boolean;
 }
 
@@ -22,6 +23,7 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
     onChange,
     label,
     placeholder = "Select a product",
+    isFetchingOptions,
     isLoadingOptions,
     disabled,
 }) => {
@@ -59,19 +61,19 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
                             size="inputButton"
                             className={cn(
                                 'flex w-full items-center justify-between gap-2 text-left text-sm transition duration-300',
-                                isLoadingOptions || disabled && "!text-[#A4A4A4]"
+                                isFetchingOptions || isLoadingOptions || disabled && "!text-[#A4A4A4]"
                             )}
                             type='button'
                             role="combobox"
                             aria-expanded={open}
-                            disabled={isLoadingOptions || disabled}
+                            disabled={isLoadingOptions || isFetchingOptions || disabled}
                         >
                             <span className="!overflow-hidden text-sm w-full truncate">
                                 {
-                                    isLoadingOptions ?
+                                    (isLoadingOptions || isFetchingOptions) ?
                                         "Loading options..."
                                         :
-                                        options.length === 0 ?
+                                        options?.length === 0 ?
                                             "No inventory found" :
                                             selectedInventory ?
                                                 selectedInventory.name
@@ -107,7 +109,6 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
                                 No inventory found
                             </p>
                             :
-
                             <div className="grid grid-cols-2 xl:grid-cols-3 min-w-max h-max min-h-[16rem] max-h-[30rem] overflow-scroll overflow-y-auto">
                                 {
                                     filteredOptions?.map((option) => (
@@ -116,7 +117,6 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
                                                 "text-sm min-w-[150px] aspect-square w-max"
                                             )}
                                             key={option.id}
-
                                             onClick={() => handleSelect(option)}
 
                                         >

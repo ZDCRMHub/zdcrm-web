@@ -1,5 +1,5 @@
 'use client';
-import { Reducer } from 'react';
+import { Reducer, useLayoutEffect } from 'react';
 import React, {
   createContext,
   useContext,
@@ -173,10 +173,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = authTokenStorage.getToken();
 
     if (!token) {
-      dispatch({ type: 'SET_AUTHENTICATING', payload: false });
       router.push('/login');
+      dispatch({ type: 'SET_AUTHENTICATING', payload: false });
       return;
     }
+    setAxiosDefaultToken(token)
     // Decode token and check expiry
     const decodedToken: { exp: number } = JSON.parse(atob(token.split('.')[1]));
     const isTokenExpired = decodedToken.exp * 1000 < Date.now();
@@ -186,8 +187,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       dispatch({ type: 'SET_AUTHENTICATING', payload: false });
       return;
     }
-    try {
-      // // TODO: Replace with your actual user info endpoint
+    try {    
       setAxiosDefaultToken(token)
       const response = await APIAxios.get('/auth/get-user', {
         headers: { Authorization: `Bearer ${token}` }
@@ -197,14 +197,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         payload: response.data?.data as UserData
       });
     } catch (error) {
-      // Token might be expired or invalid
+      
       authTokenStorage.clearToken();
       dispatch({ type: 'SET_AUTHENTICATING', payload: false });
     }
   };
 
   // Check auth status on mount
-  useEffect(() => {
+  useLayoutEffect(() => {
     checkAuthStatus();
   }, []);
 

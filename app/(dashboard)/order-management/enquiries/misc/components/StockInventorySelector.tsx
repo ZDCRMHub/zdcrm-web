@@ -13,6 +13,7 @@ interface StockInventorySelectorProps {
     label?: string;
     placeholder?: string;
     isLoadingOptions?: boolean;
+    isFetchingOptions: boolean;
     disabled?: boolean;
 }
 
@@ -22,6 +23,7 @@ const StockInventorySelector: React.FC<StockInventorySelectorProps> = ({
     label,
     placeholder = "Select a product",
     isLoadingOptions,
+    isFetchingOptions,
     disabled,
 }) => {
     const [open, setOpen] = useState(false);
@@ -63,10 +65,10 @@ const StockInventorySelector: React.FC<StockInventorySelectorProps> = ({
                             type='button'
                             role="combobox"
                             aria-expanded={open}
-                            disabled={isLoadingOptions || disabled}
+                            disabled={isLoadingOptions || isFetchingOptions || disabled}
                         >
                             {
-                                isLoadingOptions ?
+                                (isLoadingOptions || (isFetchingOptions && !selectedInventory)) ?
                                     "Loading options..."
                                     :
                                     options.length === 0 ?
@@ -98,7 +100,7 @@ const StockInventorySelector: React.FC<StockInventorySelectorProps> = ({
                             onChange={(e) => setSearchText(e.target.value)}
                         />
                     </div>
-                    <div className="grid grid-cols-2 xl:grid-cols-3 min-w-max h-max max-h-[30rem] overflow-scroll overflow-y-auto">
+                    <div className="grid grid-cols-2 xl:grid-cols-3 min-w-max h-max min-h-[16rem] max-h-[30rem] overflow-scroll overflow-y-auto">
                         {filteredOptions?.map((option) => (
                             <button
                                 className={cn("text-xs relative flex !flex-col select-none items-center rounded-md p-4 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",

@@ -45,24 +45,24 @@ import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { formatCurrency } from "@/utils/currency";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
+  isSheetOpen: boolean;
+  closeSheet: () => void;
 }
 
-export default function OrderDetailSheet({  order: default_order}: OrderDetailsPanelProps) {
-
+export default function OrderDetailSheet({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
   const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
   const { mutate: updatePaymentMethod, isPending: isUpdatingPaymentMethod } = useUpdateOrderPaymentMethod()
-  const { data:order, isLoading } = useGetOrderDetail(default_order?.id);
+  const { data: order, isLoading } = useGetOrderDetail(default_order?.id, isSheetOpen);
   const {
     state: isEditDeliveryDetailsModalOpen,
     setTrue: openEditDeliveryDetailsModal,
     setFalse: closeEditDeliveryDetailsModal,
   } = useBooleanStateControl();
 
-  const [defaultStatus, setDefaultStatus] = React.useState(order?.status);
-  const [defaultPaymentMethod, setDefaultPaymentMethod] = React.useState(order?.payment_options);
   const handleStatusUpdate = (new_status: string) => {
     mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
@@ -71,7 +71,6 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
           toast.success("Order status updated successfully");
         },
         onError: (error) => {
-          setDefaultStatus(order?.status);
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
           toast.error(errorMessage), {
             duration: 5000,
@@ -87,7 +86,6 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
           toast.success("Payment method updated successfully");
         },
         onError: (error) => {
-          setDefaultPaymentMethod(order?.payment_options);
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
           toast.error(errorMessage), {
             duration: 5000,
@@ -97,18 +95,13 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
     );
   }
 
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          aria-label={`Open order details for ${order?.id}`}
-        >
-          {">>"}
-        </Button>
-      </SheetTrigger>
 
+
+
+
+
+  return (
+    <Sheet open={isSheetOpen} onOpenChange={closeSheet}>
       <SheetContent className="!w-[90vw] !max-w-[800px] h-screen overflow-y-scroll xl:px-10">
         <SheetTitle>
           <h2 className="text-xl font-semibold flex items-center gap-4">
@@ -161,7 +154,7 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
               <EditPenIcon className="h-4 w-4" />
               <span>Edit</span>
             </Button>
-            <Select value={defaultPaymentMethod} defaultValue={defaultPaymentMethod} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
+            <Select value={order?.payment_options} defaultValue={order?.payment_options} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
               <SelectTrigger className="w-[150px] bg-[#3679171F]">
                 <SelectValue placeholder="Select Payment Method" />
                 {
@@ -294,10 +287,9 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
               />
             </div>
           </section>
-
-          <Accordion type="single" value="product-item">
+          <Accordion type="single" defaultValue="product-items">
             <section className="mb-8">
-              <AccordionItem value="product-item">
+              <AccordionItem value="product-items">
                 <AccordionTrigger>
                   <header className="border-b border-b-[#00000021] mb-6">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5">
@@ -308,178 +300,88 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
                 </AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 mt-1">
-                    <article className="flex border rounded-2xl p-6">
-                      <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
-                        <header className="flex items-start justify-between">
-                          <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
-                            <Image
-                              src="/img/cake.png"
-                              alt="cake"
-                              fill
-                              className="object-cover rounded-md"
-                            />
-                          </div>
-                          <div className="flex items-center gap-4 self-start">
-                            <Checkbox checked />
-                          </div>
-                        </header>
-
-                        <section className="flex flex-col justify-between">
-                          <h5 className="text-[#194A7A] text-lg font-medium mb-5">
-                            Adeline Fautline Cake
-                          </h5>
-                          <div className="xl:flex ">
-                            <div className="space-y-2.5 text-[0.8rem] ">
-                              <div className="flex items-center gap-x-5 gap-y-2">
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">
-                                    Quantity:
-                                  </span>{" "}
-                                  1 pcs
-                                </p>
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">
-                                    Category:
-                                  </span>{" "}
-                                  Cake
-                                </p>
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">Size:</span>{" "}
-                                  6 inches
-                                </p>
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">
-                                    Layers:
-                                  </span>{" "}
-                                  3 layers
-                                </p>
+                    {
+                      order?.items.map((item: any, index: number) => (
+                        <article key={item.id} className="flex border rounded-2xl p-6">
+                          <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
+                            <header className="flex items-start justify-between">
+                              <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
+                                <Image
+                                  src="/placeholder.svg"
+                                  alt={item.product.name}
+                                  fill
+                                  className="object-cover rounded-md"
+                                />
                               </div>
-                              <p className="text-[#111827] font-medium">
-                                <span className="text-[#687588]">Flavour:</span>{" "}
-                                Chocolate, Vanilla, Strawberry
-                              </p>
-                              <p className="text-[#111827] font-medium">
-                                <span className="text-[#687588]">
-                                  Cake toppings:
-                                </span>{" "}
-                                Fruits, chocolate & cookies
-                              </p>
-                              <p className="text-[#111827] font-medium">
-                                <span className="text-[#687588]">
-                                  Instructions:
-                                </span>{" "}
-                                Allergic to Nuts, Please make your whipped cream
-                                low.
-                              </p>
-                            </div>
-
-                            <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
-                              <p className="flex flex-col text-[#111827] font-medium text-right">
-                                <span className="text-[#687588]">
-                                  Message on cake:
-                                </span>{" "}
-                                Love Me Like You Always Do
-                              </p>
-                            </div>
-                          </div>
-                        </section>
-
-                        <section className="flex items-center justify-between pt-1 border-t">
-                          <p className="text-[#111827] font-medium text-sm">
-                            <span className="text-[#687588] italic font-light text-[0.8rem]">
-                              Production Cost:{"  "}
-                            </span>
-                            ₦35,000
-                          </p>
-                          <p className="font-medium text-[#194A7A]">
-                            Amount: <span className="font-bold">₦50,000</span>{" "}
-                          </p>
-                        </section>
-                      </div>
-                    </article>
-
-                    <article className="flex border rounded-2xl p-6">
-                      <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
-                        <header className="flex items-start justify-between">
-                          <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
-                            <Image
-                              src="https://www.zuzudelights.com/wp-content/uploads/2022/04/fleur-luxe.jpg"
-                              alt="Adelya - Red Roses Bouquet"
-                              fill
-                              className="object-cover rounded-md"
-                            />
-                          </div>
-                          <div className="flex items-center gap-4 self-start">
-                            <Checkbox checked />
-                          </div>
-                        </header>
-
-                        <section className="flex flex-col justify-between">
-                          <h5 className="text-[#194A7A] text-lg font-medium mb-5">
-                            Adelya Red Roses Bouquet
-                          </h5>
-                          <div className=" ">
-                            <div className="space-y-2.5 text-[0.8rem]">
-                              <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">
-                                    Quantity:
-                                  </span>{" "}
-                                  1 pcs
-                                </p>
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">
-                                    Category:
-                                  </span>{" "}
-                                  Flower
-                                </p>
-                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                  <span className="text-[#687588]">
-                                    Colour:
-                                  </span>{" "}
-                                  6 Red
-                                </p>
+                              <div className="flex items-center gap-4 self-start">
+                                <Checkbox checked />
                               </div>
-                              <p className="text-[#111827] font-medium">
-                                <span className="text-[#687588]">Type:</span>{" "}
-                                Red Rose
+                            </header>
+
+                            <section className="flex flex-col justify-between">
+                              <h5 className="text-[#194A7A] text-lg font-medium mb-5">
+                                {item.product.name}
+                              </h5>
+                              <div className="xl:flex">
+                                <div className="space-y-2.5 text-[0.8rem]">
+                                  <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
+                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                      <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
+                                    </p>
+                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                      <span className="text-[#687588]">Category:</span> {item.product.category.name}
+                                    </p>
+                                    {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                                      <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                        <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                      </p>
+                                    )}
+                                  </div>
+                                  {item.inventories[0]?.properties[0] && Object.entries(item.inventories[0].properties[0]).map(([key, value]) => (
+                                    key !== 'id' && value && (
+                                      <p key={key} className="text-[#111827] font-medium">
+                                        <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
+                                        {value as string}
+                                      </p>
+                                    )
+                                  ))}
+                                  {item.inventories[0]?.instruction && (
+                                    <p className="text-[#111827] font-medium">
+                                      <span className="text-[#687588]">Instructions:</span>{" "}
+                                      {item.inventories[0].instruction}
+                                    </p>
+                                  )}
+                                </div>
+
+                                <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
+                                  {item.inventories[0]?.message && (
+                                    <p className="flex flex-col text-[#111827] font-medium text-right">
+                                      <span className="text-[#687588]">Message:</span>{" "}
+                                      {item.inventories[0].message}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </section>
+
+                            <section className="flex items-center justify-between pt-1 border-t">
+                              <p className="text-[#111827] font-medium text-sm">
+                                <span className="text-[#687588] italic font-light text-[0.8rem]">
+                                  Production Cost:{" "}
+                                </span>
+                                {formatCurrency(item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0, 'NGN')}
                               </p>
-                              <p className="text-[#111827] font-medium">
-                                <span className="text-[#687588]">
-                                  Instructions:
-                                </span>{" "}
-                                Tie with a red ribbon
+                              <p className="font-medium text-[#194A7A]">
+                                Amount:{" "}
+                                <span className="font-bold">
+                                  {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                </span>
                               </p>
-                            </div>
+                            </section>
                           </div>
-                        </section>
-                        <section className="flex flex-col items-end gap-1 justify-end border-t py-2">
-                          <p className="text-[#111827] font-medium">
-                            <span className="text-[#687588] font-light text-sm">
-                              Cost of Item:{"  "}
-                            </span>
-                            ₦45,000
-                          </p>
-                          <p className="text-[#111827] font-medium">
-                            <span className="text-[#687588] font-light text-sm">
-                              Miscellaneous:{"  "}
-                            </span>
-                            ₦5,000
-                          </p>
-                        </section>
-                        <section className="flex items-center justify-between pt-1 border-t">
-                          <p className="text-[#111827] font-medium text-sm">
-                            <span className="text-[#687588] italic font-light text-[0.8rem]">
-                              Production Cost:{"  "}
-                            </span>
-                            ₦35,000
-                          </p>
-                          <p className="font-medium text-[#194A7A]">
-                            Amount: <span className="font-bold">₦50,000</span>{" "}
-                          </p>
-                        </section>
-                      </div>
-                    </article>
+                        </article>
+                      ))
+                    }
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -519,10 +421,10 @@ export default function OrderDetailSheet({  order: default_order}: OrderDetailsP
           <section>
             <p className="flex items-center gap-3">
               <span className="text-[#8B909A] font-dm-sans text-sm">
-                Total({order?.payment_status})
+                Total(NGN)
               </span>
               <span className="text-[#111827] font-semibold text-lg font-poppins">
-                {order?.total_amount}
+                {formatCurrency(parseInt(order?.total_amount || '0') , 'NGN')}
               </span>
             </p>
           </section>

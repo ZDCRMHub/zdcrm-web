@@ -2,7 +2,7 @@ import React from 'react'
 
 
 import { Control, FieldErrors, useFieldArray, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
-import {  FormControl, FormField, FormItem, Input, ProductsDropdown, SelectSingleCombo } from '@/components/ui';
+import { FormControl, FormField, FormItem, Input, ProductsDropdown, SelectSingleCombo } from '@/components/ui';
 import { useGetProductsInventory, useGetStockInventory } from '@/app/(dashboard)/inventory/misc/api';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +29,7 @@ const ProductItemFormEnquiry = ({
 
 
   const watchedItems = watch("items");
+  const watchedInventories = watch(`items.${index}.inventories`)
 
 
   const { data: productsInvetories, isLoading: productsLoading, isFetching: productsFetching, error: productsError, refetch: refetchProductsInventory } = useGetProductsInventory({
@@ -42,55 +43,61 @@ const ProductItemFormEnquiry = ({
   return (
 
     <div key={index} className="mt-4 border-t pt-4">
-      <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8">
-        <ProductItemSelector
-          setInventoryId={(inventoryId) => {
-            setValue(`items.${index}.inventories.${index}.product_inventory_id`, inventoryId);
-          }}
-         
-          options={productsInvetories?.data!}
-          disabled={productsLoading || (!productsLoading && !productsInvetories?.data.length)}
-          isLoadingOptions={productsLoading}
+      {
+        watchedInventories.map((_, invIndex) =>
 
-        />
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8">
+            <ProductItemSelector
+              inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
+              setInventoryId={(inventoryId) => {
+                setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
+              }}
+              options={productsInvetories?.data!}
+              disabled={productsLoading || (!productsLoading && !productsInvetories?.data.length)}
+              isLoadingOptions={productsLoading}
+              isFetchingOptions={productsFetching}
+
+            />
 
 
-        <FormField
-          control={control}
-          name={`items.${index}.inventories.${index}.instruction`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  label="Instruction"
-                  placeholder='Enter instruction'
-                  {...field}
-                  hasError={!!errors.items?.[index]?.inventories?.[index]?.instruction}
-                  errorMessage={errors.items?.[index]?.inventories?.[index]?.instruction?.message}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={control}
-          name={`items.${index}.inventories.${index}.message`}
-          render={({ field }) => (
-            <FormItem className='col-span-2 xl:col-span-3'>
-              <FormControl>
-                <Input
-                  label="Message"
-                  placeholder='Enter message'
-                  {...field}
-                  hasError={!!errors.items?.[index]?.inventories?.[index]?.message}
-                  errorMessage={errors.items?.[index]?.inventories?.[index]?.message as string}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={control}
+              name={`items.${index}.inventories.${0}.instruction`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      label="Instruction"
+                      placeholder='Enter instruction'
+                      {...field}
+                      hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.instruction}
+                      errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.instruction?.message}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={control}
+              name={`items.${index}.inventories.${invIndex}.message`}
+              render={({ field }) => (
+                <FormItem className='col-span-2 xl:col-span-3'>
+                  <FormControl>
+                    <Input
+                      label="Message"
+                      placeholder='Enter message'
+                      {...field}
+                      hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.message}
+                      errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.message as string}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-      </div>
+          </div>
+        )
+      }
     </div>
 
   )

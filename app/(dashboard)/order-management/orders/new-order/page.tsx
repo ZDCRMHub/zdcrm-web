@@ -634,6 +634,7 @@ console.log(getValues('items'))
               variant="default"
               size="lg"
               className="flex items-center gap-2 ml-auto"
+              disabled={isPending}
             >
               Proceed
               {
