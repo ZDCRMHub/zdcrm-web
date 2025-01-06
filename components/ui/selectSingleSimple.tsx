@@ -37,7 +37,7 @@ interface SelectProps<T> {
   placeHolderClass?: string;
 }
 
-const selectSingleSimple = <T extends object>({
+const SelectSingleSimple = <T extends object>({
   value,
   onChange,
   options,
@@ -195,4 +195,4 @@ const selectSingleSimple = <T extends object>({
   )
 }
 
-export default selectSingleSimple
+export default SelectSingleSimple

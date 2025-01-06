@@ -28,7 +28,7 @@ const deliveryFormSchema = z.object({
 export type DeliveryDriverFormType = z.infer<typeof deliveryFormSchema>;
 
 const OrdeManagementDelivery = () => {
-  const order_id = useParams().id as string;
+  const order_id = useParams()?.id as string;
   const { data: order, isLoading } = useGetOrderDetail(order_id);
   const { user } = useAuth();
   const router = useRouter();

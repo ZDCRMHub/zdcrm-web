@@ -24,8 +24,6 @@ import {
 import StockInventoryTable from "./StockInventoryTable";
 import TabBar from "@/components/TabBar";
 import {
-  BRANCH_OPTIONS,
-  CATEGORIES_OPTIONS,
   STOCK_CATEGORIES_OPTIONS,
 } from "@/constants";
 import { ArrowDown2 } from "iconsax-react";
@@ -85,23 +83,11 @@ export default function StockInventoryDashboard() {
             rightIcon={<Search className="h-5 w-5 text-[#8B909A]" />}
           />
 
-          <SelectSingleCombo
-            name="filterBy"
-            options={CATEGORIES_OPTIONS}
-            value={selectedCategory?.toString() || ""}
-            onChange={(value) => handleCategoryChange(Number(value))}
-            valueKey="value"
-            labelKey="label"
-            placeholder="Filter by category"
-            className="w-32 !h-10 text-[#8B909A] text-xs"
-            placeHolderClass="text-[#8B909A] text-xs"
-            triggerColor="#8B909A"
-            showSelectedValue={false}
-          />
+         
           <Menubar>
             <MenubarMenu>
               <MenubarTrigger className="flex items-center gap-4 text-xs cursor-pointer text-[#8B909A]">
-                Filter by Variation <ArrowDown2 size={16} />
+                Filter by Category <ArrowDown2 size={16} />
               </MenubarTrigger>
               <MenubarContent>
                 {STOCK_CATEGORIES_OPTIONS.map((category) => (

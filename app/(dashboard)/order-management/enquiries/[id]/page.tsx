@@ -187,7 +187,7 @@ const EnquiryDetailsPage = () => {
                     <AccordionContent>
                         {
                             data?.items.map((item, index) => (
-                                <Card className="py-6 px-10 rounded-xl max-w-2xl">
+                                <Card className="py-6 px-10 rounded-xl max-w-2xl" key={index}>
                                     <div className="flex items-center justify-between">
                                         <h2 className="font-semibold mb-4 text-sm font-manrope">
                                             Item {index + 1}

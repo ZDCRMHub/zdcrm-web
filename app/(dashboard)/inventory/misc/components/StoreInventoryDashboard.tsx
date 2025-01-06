@@ -16,7 +16,6 @@ import {
 import { LinkButton, Button } from "@/components/ui";
 import StoreInventoryTable from "./StoreInventoryTable";
 import TabBar from "@/components/TabBar";
-import { BRANCH_OPTIONS, CATEGORIES_OPTIONS } from "@/constants";
 import { useGetCategories, useGetStoreInventory } from "../api";
 import { useDebounce } from "@/hooks";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";

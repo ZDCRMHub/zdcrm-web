@@ -51,7 +51,7 @@ const StockItemSelector: React.FC<StockItemSelectorProps> = ({
                 label="Select Inventory"
                 placeholder="Choose a product"
                 isLoadingOptions={isLoadingOptions}
-                isFetchingOptions={isFetchingOptions && !!inventoryId}
+                isFetchingOptions={isFetchingOptions}
                 disabled={disabled}
             />
             <StockVariationSelector

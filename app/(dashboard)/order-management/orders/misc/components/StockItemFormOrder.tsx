@@ -41,7 +41,7 @@ const OrderDetailsInventoriesForm = ({
     <div key={index} className="mt-4 border-t pt-4">
       {
         watchedInventories.map((_, invIndex) =>
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8">
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8" key={invIndex}>
             <StockItemSelector
               inventoryId={watch(`items.${index}.inventories.${invIndex}.stock_inventory_id`)}
               setInventoryId={(inventoryId) => {

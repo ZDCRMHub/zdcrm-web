@@ -37,7 +37,7 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
                 label="Select Inventory"
                 placeholder="Choose a product"
                 isLoadingOptions={isLoadingOptions}
-                isFetchingOptions={isFetchingOptions && !!inventoryId}
+                isFetchingOptions={isFetchingOptions}
                 disabled={disabled}
             />
            
