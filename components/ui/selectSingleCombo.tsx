@@ -7,11 +7,23 @@ import { cn } from "@/lib/utils"
 import { convertKebabAndSnakeToTitleCase } from "@/utils/strings"
 import { SmallSpinner } from "@/icons/core"
 
-import { Button, Command, CommandGroup, CommandItem } from "."
-import { Popover, PopoverContent, PopoverTrigger } from "."
+import { Button, Popover, PopoverContent, PopoverTrigger } from "."
 import { Label } from "./label"
 import FormError from "./formError"
-// import { SearchIcon } from "@/app/(dashboard)/instant-web/misc/icons"
+
+
+type CustomLabelFormat = string | ((item: any) => string);
+
+export function generateCustomLabel(item: any, format: CustomLabelFormat): string {
+  if (typeof format === 'function') {
+    return format(item);
+  }
+
+  return format.replace(/\{(\w+)\}/g, (match, key) => {
+    return item[key] !== undefined ? String(item[key]) : match;
+  });
+}
+
 
 interface SelectProps<T> {
   value: string | boolean | undefined;
@@ -32,7 +44,8 @@ interface SelectProps<T> {
   isLoadingOptions?: boolean;
   triggerColor?: string;
   valueKey: keyof T;
-  labelKey: keyof T;
+  labelKey: keyof T | CustomLabelFormat;
+  searchKey?: keyof T
   showSelectedValue?: boolean;
   placeHolderClass?: string;
 }
@@ -57,6 +70,7 @@ const SelectSingleCombo = <T extends object>({
   isLoadingOptions,
   valueKey,
   labelKey,
+  searchKey,
   triggerColor,
   showSelectedValue = true,
 }: SelectProps<T>) => {
@@ -65,13 +79,16 @@ const SelectSingleCombo = <T extends object>({
   const [searchText, setSearchText] = React.useState<string>("")
 
   React.useEffect(() => {
-    if(!isOpen) {
+    if (!isOpen) {
       setSearchText("")
       setOptionsToDisplay(options)
     }
     if (searchText && searchText.trim() !== "") {
       const filteredOptions = options?.filter(option => {
-        const optionLabel = String(option[labelKey]).toLowerCase();
+        const searchT = searchKey ? String(option[searchKey as keyof T]) :
+          typeof labelKey === 'string' ?
+            String(option[labelKey as keyof T]) : '' as keyof T;
+        const optionLabel = String(searchT).toLowerCase();
         return optionLabel.includes(searchText.toLowerCase());
       });
       setOptionsToDisplay(filteredOptions);
@@ -81,7 +98,13 @@ const SelectSingleCombo = <T extends object>({
   }, [searchText, options, labelKey, isOpen])
 
   const getOptionLabel = (option: T) => {
-    return option ? String(option[labelKey]) : `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
+    if (!option) return `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
+
+    if (typeof labelKey === 'string') {
+      return String(option[labelKey as keyof T]);
+    }
+
+    return generateCustomLabel(option, labelKey as CustomLabelFormat);
   }
 
   const handleSelect = (currentValue: string | boolean) => {
@@ -139,7 +162,7 @@ const SelectSingleCombo = <T extends object>({
                       ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
                       : placeholder
                 }
-             
+
               </span>
               <svg
                 className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", isOpen && "rotate-180")}
@@ -197,7 +220,7 @@ const SelectSingleCombo = <T extends object>({
                           option[valueKey] === value ? "opacity-100" : "opacity-0"
                         )}
                       />
-                      {option[labelKey] as string}
+                      {getOptionLabel(option)}
                     </button>
                   ))
                 ) :

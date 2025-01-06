@@ -88,139 +88,146 @@ export default function OrdersDashboard() {
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full'>
-      <div className='sticky top-0 flex justify-between items-center gap-4 pt-6 z-[2] bg-[#FAFAFA]'>
-        <div className='flex items-center gap-2 w-80 grow'>
-          <Input
-            type='text'
-            placeholder='Search (client name, customer rep, phone number)'
-            className='w-full focus:border min-w-[350px] text-xs !h-10'
-            value={searchText}
-            onChange={handleSearch}
-            rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
-          />
-          <Menubar className='!p-0'>
-            <MenubarMenu >
-              <MenubarTrigger className="relative flex items-center gap-4 text-xs cursor-pointer text-[#8B909A] !h-10">
-                Filter orders by <ArrowDown2 size={16} />
-                {
-                  (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) &&
-                  <Circle size={10} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                }
-              </MenubarTrigger>
-              <MenubarContent>
+    <div className='relative grid grid-rows-[max-content,1fr,max-content] gap-4 w-full md:w-[95%] xl:w-[92.5%] max-w-[1792px] mx-auto pb-4 h-full overflow-hidden'>
+      <header className='sticky top-0  pt-6 z-[2] bg-[#FAFAFA]'>
+        <div className="flex justify-between items-center gap-4">
+          <div className='flex items-center gap-2 w-80 grow'>
+            <Input
+              type='text'
+              placeholder='Search (client name, customer rep, phone number)'
+              className='w-full focus:border min-w-[350px] text-xs !h-10'
+              value={searchText}
+              onChange={handleSearch}
+              rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
+            />
+            <Menubar className='!p-0'>
+              <MenubarMenu >
+                <MenubarTrigger className="relative flex items-center gap-4 text-xs cursor-pointer text-[#8B909A] !h-10">
+                  Filter orders by <ArrowDown2 size={16} />
+                  {
+                    (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) &&
+                    <Circle size={10} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                  }
+                </MenubarTrigger>
+                <MenubarContent>
 
-                <MenubarSub>
-                  <MenubarSubTrigger className="py-3 flex items-center gap-2">
-                    <Calendar size={18} />Date Range
-                    {
-                      watch('date.from') && watch('date.to') && (watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) &&
-                      <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                    }
-                  </MenubarSubTrigger>
-                  <MenubarSubContent>
-                    <Controller
-                      control={control}
-                      name="date"
-                      render={({ field: { onChange, value } }) => (
-                        <RangeDatePicker
-                          className="max-w-[17.1875rem] border border-[#d6d6d6]/50 bg-white px-4 py-3 text-sm"
-                          id="dateFilter"
-                          placeholder="Select a date range"
-                          placeholderClassName="text-[#556575]"
-                          value={value}
-                          onChange={onChange}
-                        />
-                      )}
-                    />
-                  </MenubarSubContent>
-                </MenubarSub>
+                  <MenubarSub>
+                    <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                      <Calendar size={18} />Date Range
+                      {
+                        watch('date.from') && watch('date.to') && (watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) &&
+                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <Controller
+                        control={control}
+                        name="date"
+                        render={({ field: { onChange, value } }) => (
+                          <RangeDatePicker
+                            className="max-w-[17.1875rem] border border-[#d6d6d6]/50 bg-white px-4 py-3 text-sm"
+                            id="dateFilter"
+                            placeholder="Select a date range"
+                            placeholderClassName="text-[#556575]"
+                            value={value}
+                            onChange={onChange}
+                          />
+                        )}
+                      />
+                    </MenubarSubContent>
+                  </MenubarSub>
 
-                <MenubarSub>
-                  <MenubarSubTrigger className="relative py-3 flex items-center gap-2"><Category2 size={18} />
-                    Category
-                    {
-                      selectedCategory && <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                    }
-                  </MenubarSubTrigger>
-                  <MenubarSubContent>
-                    {
-                      categories?.map((category) => (
-                        <MenubarItem key={category.id} onClick={() => handleCategoryChange(category.id)}>
-                          {
-                            selectedCategory === category.id && <Check className='mr-2 h-4 w-4' />
-                          }
-                          {category.name}
-                        </MenubarItem>
-                      ))
-                    }
-                  </MenubarSubContent>
-                </MenubarSub>
-
-                <MenubarSub>
-                  <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
-                    <NotificationStatus size={18} />Status
-                    {
-                      ((selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) &&
-                      <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                    }
-                  </MenubarSubTrigger>
-                  <MenubarSubContent>
-                    {
-                      ORDER_STATUS_OPTIONS.map((status, index) => {
-                        return (
-                          <MenubarItem
-                            onClick={() => handleStatusChange(status.value)}
-                          >
+                  <MenubarSub>
+                    <MenubarSubTrigger className="relative py-3 flex items-center gap-2"><Category2 size={18} />
+                      Category
+                      {
+                        selectedCategory && <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      {
+                        categories?.map((category) => (
+                          <MenubarItem key={category.id} onClick={() => handleCategoryChange(category.id)}>
                             {
-                              selectedStatuses === status.value && <Check className='mr-2 h-4 w-4' />
+                              selectedCategory === category.id && <Check className='mr-2 h-4 w-4' />
                             }
-                            {status.label}
+                            {category.name}
                           </MenubarItem>
-                        )
-                      })
-                    }
-                  </MenubarSubContent>
-                </MenubarSub>
-              </MenubarContent>
-            </MenubarMenu>
-          </Menubar>
-        </div>
-        <div className='flex items-center gap-2'>
-          {
-            (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) && (
-              <Button
-                variant='outline'
-                className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </Button>
-            )
-          }
-          <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-            <Plus className='mr-2 h-4 w-4' /> Add Order
-          </LinkButton>
-          <Button
-            variant='outline'
-            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
-            onClick={handleRefresh}
-          >
-            <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
-          </Button>
-        </div>
-      </div>
+                        ))
+                      }
+                    </MenubarSubContent>
+                  </MenubarSub>
 
-      <div className="text-sm text-gray-600 mb-4">
-        Showing orders {" "}
-        <p className='inline-block font-medium text-black'>
-          {selectedStatuses && selectedStatuses !== 'PND,SOA,SOR' && ` with statuses: ${selectedStatuses.split(',').map(s => ORDER_STATUS_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
-          {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
-          {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
-        </p>
-      </div>
+                  <MenubarSub>
+                    <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
+                      <NotificationStatus size={18} />Status
+                      {
+                        ((selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) &&
+                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      {
+                        ORDER_STATUS_OPTIONS.map((status, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              {
+                                (status.value == "PND" || status.value == "SOA" || status.value == "SOR") &&
+                                <MenubarItem
+                                  onClick={() => handleStatusChange(status.value)}
+                                >
+                                  {
+                                    selectedStatuses === status.value && <Check className='mr-2 h-4 w-4' />
+                                  }
+                                  {status.label}
+                                </MenubarItem>
+                              }
+                            </React.Fragment>
+                          )
+                        })
+                      }
+                    </MenubarSubContent>
+                  </MenubarSub>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
+          </div>
+          <div className='flex items-center gap-2'>
+            {
+              (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) && (
+                <Button
+                  variant='outline'
+                  className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )
+            }
+            <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
+              <Plus className='mr-2 h-4 w-4' /> Add Order
+            </LinkButton>
+            <Button
+              variant='outline'
+              className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
+              onClick={handleRefresh}
+            >
+              <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+            </Button>
+          </div>
+        </div>
+        <div className="text-sm text-gray-600 p-2">
+          Showing orders {" "}
+          <p className='inline-block font-medium text-black'>
+            {selectedStatuses && selectedStatuses !== 'PND,SOA,SOR' && ` with statuses: ${selectedStatuses.split(',').map(s => ORDER_STATUS_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
+            {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
+            {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
+          </p>
+        </div>
 
-      <section>
+      </header>
+
+      <section className="w-full overflow-hidden">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Orders', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Orders'} />
         <OrdersTable

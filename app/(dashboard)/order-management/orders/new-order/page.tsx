@@ -45,10 +45,11 @@ import FormError from "@/components/ui/formError";
 
 import { NewOrderFormValues, NewOrderSchema } from "../misc/utils/schema";
 import OrderFormItemsSection from "../misc/components/OrderFormItemsSection";
-import { useCreateOrder } from "../misc/api";
+import { useCreateOrder, useGetOrderDeliveryLocations } from "../misc/api";
 import { useBooleanStateControl } from "@/hooks";
 import { TOrder } from "../misc/types";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/utils/currency";
 
 
 const NewOrderPage = () => {
@@ -56,6 +57,7 @@ const NewOrderPage = () => {
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
+  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(NewOrderSchema),
@@ -150,7 +152,7 @@ const NewOrderPage = () => {
   const resetForm = () => {
     reset();
   }
-console.log(getValues('items'))
+  console.log(getValues('items'))
 
 
 
@@ -286,6 +288,9 @@ console.log(getValues('items'))
             </AccordionItem>
 
 
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////                 DELIVERY INFORMATION                ///////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
             <AccordionItem value="delivery-information">
               <AccordionTrigger className="py-4 flex">
                 <div className="flex items-center gap-5 text-[#194A7A]">
@@ -395,6 +400,27 @@ console.log(getValues('items'))
                           placeholder="Select delivery zone"
                           hasError={!!errors.delivery?.zone}
                           errorMessage={errors.delivery?.zone?.message}
+                        />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.dispatch"
+                    render={({ field }) => (
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Delivery Method"
+                          {...field}
+                          value={field.value?.toString() || ''}
+                          isLoadingOptions={dispatchLocationsLoading}
+                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                          valueKey={"value"}
+                          // labelKey={"label"}
+                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                          placeholder="Select dispatch location"
+                          hasError={!!errors.delivery?.dispatch}
+                          errorMessage={errors.delivery?.dispatch?.message}
                         />
                       </FormItem>
                     )}

@@ -86,7 +86,7 @@ export const NewOrderSchema = z.object({
         delivery_time: z.string(),
         delivery_date: z.string({ message: "Delivery date is required" }),
         method: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
-        dispatch: z.number().optional(),
+        dispatch: z.string().optional(),
         address: z.string().min(1, { message: "Delivery address is required" }),
         recipient_name: z.string().min(1, { message: "Recipient's name is required" }),
         recipient_phone: z.string().min(1, { message: "Recipient's phone number is required" })

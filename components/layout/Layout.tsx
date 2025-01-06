@@ -4,7 +4,7 @@ import {Sidebar} from '@/components/layout/Sidebar';
 
 const Layout = ({children}: {children: React.ReactNode}) => {
   return (
-    <div className='flex h-screen overflow-hidden'>
+    <div className='grid grid-cols-[max-content,1fr] h-screen w-screen overflow-hidden'>
       <Sidebar />
       <div className='flex flex-col flex-1 overflow-hidden'>
         <Navbar />
