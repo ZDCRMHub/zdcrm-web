@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import OrderDetailSheet from './OrderDetailSheet';
+import OrderDetailSheetPayments from './OrderDetailSheetPayments';
 import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
@@ -110,7 +110,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 >
                     {">>"}
                 </Button>
-                <OrderDetailSheet
+                <OrderDetailSheetPayments
                     order={order}
                     isSheetOpen={isSheetOpen}
                     closeSheet={closeSheet}
