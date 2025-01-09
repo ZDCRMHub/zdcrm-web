@@ -472,6 +472,15 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       </span>
                     </p>
                   }
+                  {
+                    order?.completed_by &&
+                    <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
+                      <span className="text-[#000] ">Order Completed by: {order?.completed_by.name}</span>
+                      <span className="text-[#E01E1F] font-manrope text-sm">
+                        {format(new Date(order?.update_date || 0), "do MMMM, yyyy | h:mmaaa")}
+                      </span>
+                    </p>
+                  }
                 </section>
               </div>
 

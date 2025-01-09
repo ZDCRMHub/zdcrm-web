@@ -257,7 +257,7 @@ const EnquiryDetailsPage = () => {
                                         <p className="font-semibold text-[#194A7A]">Amount: </p>
                                         <p className="font-semibold text-[#194A7A]">
                                             {
-                                                formatCurrency(!!item.inventories[0]?.product_inventory ? item.inventories[0]?.product_inventory?.cost_price : '0', "NGN")
+                                               !!item.inventories[0]?.product_inventory ? formatCurrency(  Number(item.inventories[0]?.product_inventory?.cost_price || "0"), "NGN") : "-"
                                             }
                                         </p>
                                     </div>

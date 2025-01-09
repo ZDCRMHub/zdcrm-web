@@ -98,6 +98,7 @@ const OrderStatsHeaderSection = () => {
                 {
                     Object.entries(order_stats?.data || {}).map(([key, value], index) =>
                         <OrderStatsCard
+                            key={index}
                             key_text={key}
                             value={value}
                         />
