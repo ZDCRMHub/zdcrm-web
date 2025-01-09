@@ -266,3 +266,6 @@ export default function ComparisonModal() {
     </Dialog>
   );
 }
+
+
+
