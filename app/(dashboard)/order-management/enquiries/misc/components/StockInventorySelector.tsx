@@ -15,6 +15,8 @@ interface StockInventorySelectorProps {
     isLoadingOptions?: boolean;
     isFetchingOptions: boolean;
     disabled?: boolean;
+    hasError: boolean;
+    errorMessage?: string;
 }
 
 const StockInventorySelector: React.FC<StockInventorySelectorProps> = ({

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Image from 'next/image';
 import { SearchIcon } from 'lucide-react';
 
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import FormError from '@/components/ui/formError';
 import { TProductInventoryItem } from '@/app/(dashboard)/inventory/misc/types/products';
 
 interface ProductInventorySelectorProps {
@@ -16,6 +17,8 @@ interface ProductInventorySelectorProps {
     isLoadingOptions?: boolean;
     isFetchingOptions: boolean
     disabled?: boolean;
+    hasError: boolean;
+    errorMessage?: string;
 }
 
 const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
@@ -26,6 +29,8 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
     isFetchingOptions,
     isLoadingOptions,
     disabled,
+    hasError,
+    errorMessage
 }) => {
     const [open, setOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
@@ -91,6 +96,9 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
                             </svg>
                         </Button>
                     </PopoverTrigger>
+                    {
+                        hasError && errorMessage && <FormError errorMessage={errorMessage || ""} />
+                    }
                 </div>
                 <PopoverContent className="w-full p-0">
                     <div className="relative px-3 py-2">

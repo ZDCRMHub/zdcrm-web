@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils"
 import { convertKebabAndSnakeToTitleCase } from "@/utils/strings"
 import { SmallSpinner } from "@/icons/core"
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "."
+import { Button, buttonVariants, Popover, PopoverContent, PopoverTrigger } from "."
 import { Label } from "./label"
 import FormError from "./formError"
+import { VariantProps } from "class-variance-authority"
 
 
 type CustomLabelFormat = string | ((item: any) => string);
@@ -25,7 +26,7 @@ export function generateCustomLabel(item: any, format: CustomLabelFormat): strin
 }
 
 
-interface SelectProps<T> {
+interface SelectProps<T> extends VariantProps<typeof buttonVariants>{
   value: string | boolean | undefined;
   onChange: (value: string) => void;
   options: T[] | undefined;
@@ -72,7 +73,9 @@ const SelectSingleCombo = <T extends object>({
   labelKey,
   searchKey,
   triggerColor,
-  showSelectedValue = true,
+  showSelectedValue = true,  
+  variant = "inputButton",
+  size = "inputButton",
 }: SelectProps<T>) => {
   const [isOpen, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
@@ -138,8 +141,8 @@ const SelectSingleCombo = <T extends object>({
           }
           <PopoverTrigger asChild>
             <Button
-              variant="inputButton"
-              size="inputButton"
+             variant={variant}
+             size={size}
               className={cn(
                 'flex w-full items-center justify-between gap-2 text-left text-sm transition duration-300',
                 className

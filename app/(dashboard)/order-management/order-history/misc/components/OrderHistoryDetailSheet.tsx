@@ -26,7 +26,7 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import { generateMockOrders } from "@/app/(dashboard)/order-timeline/misc/components/Timeline";
 import { CaretRightIcon } from "@/icons/sidebar";
-import EnquiryDiscussCard from "@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard";
+import EnquiryDiscussCard from "@/app/(dashboard)/order-timeline/misc/components/OrderTimelineCard";
 import { PAYMENT_STATUS_OPTIONS, paymentOptions } from "@/constants";
 
 interface OrderDetailsPanelProps {

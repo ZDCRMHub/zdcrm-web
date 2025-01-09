@@ -4,17 +4,19 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NewEnquirySchema, NewEnquiryFormValues } from "../misc/utils/schema";
 import { DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS } from "@/constants";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, Form, FormControl, FormField, FormItem, Input, SelectSingleCombo, SingleDatePicker, Spinner, TimePicker } from "@/components/ui";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, ConfirmActionModal, Form, FormControl, FormField, FormItem, Input, SelectSingleCombo, SingleDatePicker, Spinner, TimePicker } from "@/components/ui";
 import { DollarSignIcon as Money, TruckIcon as TruckTime, UserIcon, Plus } from 'lucide-react';
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import FormError from "@/components/ui/formError";
-import { EnquiryItemCardAdditionalItems } from "../misc/components";
 import { useGetCategories, useGetProducts, useGetStockInventory } from "@/app/(dashboard)/inventory/misc/api";
 import Image from "next/image";
-import EnquiryDetailsInventoriesForm from "../misc/components/StockItemFormEnquiry";
 import EnquiryItemsSection from "../misc/components/EnquiryFormItemsSection";
 import { useCreateEnquiry } from "../misc/api";
 import toast from "react-hot-toast";
+import { useBooleanStateControl } from "@/hooks";
+import { TEnquiry } from "../misc/types";
+import { Box } from "iconsax-react";
+import { useRouter } from "next/navigation";
 
 const NewOrderPage = () => {
 
@@ -52,7 +54,7 @@ const NewOrderPage = () => {
     }
   });
 
-  const { control, handleSubmit, formState: { errors }, watch, setValue, getValues, register } = form;
+  const { control, handleSubmit, formState: { errors }, watch, setValue, reset, register } = form;
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items"
@@ -71,15 +73,32 @@ const NewOrderPage = () => {
     });
   };
 
+  const [createdOrder, setCreatedOrder] = React.useState<TEnquiry | null>(null);
+  const router = useRouter();
+  const routeToOrderDetails = () => {
+    router.push(`/order-management/orders/${createdOrder?.id}`);
+  }
+  const resetForm = () => {
+    reset();
+  }
+  const {
+    state: isSuccessModalOpen,
+    setTrue: openSuccessModal,
+    setFalse: closeSuccessModal,
+  } = useBooleanStateControl()
+
   const { mutate, isPending } = useCreateEnquiry()
   const onSubmit = (data: NewEnquiryFormValues) => {
     mutate(data, {
       onSuccess(data, variables, context) {
         toast.success("Created successfully")
+        openSuccessModal();
+        setCreatedOrder(data?.data);
+
       },
     })
   };
-
+  console.log(errors)
 
   return (
     <div className="px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
@@ -461,6 +480,21 @@ const NewOrderPage = () => {
           </footer>
         </form>
       </Form>
+
+
+
+      <ConfirmActionModal
+        isModalOpen={isSuccessModalOpen}
+        icon={<Box className="text-[#37d67a]" size={60} />}
+        customTitleText="Success"
+        heading="Order created successfully"
+        subheading="Order has been created successfully"
+        customConfirmText="View Order"
+        customCancelText="Create New Order"
+        confirmFn={routeToOrderDetails}
+        closeModal={closeSuccessModal}
+        cancelAction={resetForm}
+      />
     </div>
   );
 };

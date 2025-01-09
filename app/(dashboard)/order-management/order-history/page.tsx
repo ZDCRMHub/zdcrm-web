@@ -1,12 +1,11 @@
+'use client'
 import React from 'react';
-import OrderHistoryDashboard from './misc/components/OrderHistoryDashboard';
+import { OrdersDashboardHistory } from '../misc/components';
 
-const page = () => {
+const OrderHistoryPage = () => {
   return (
-    <>
-      <OrderHistoryDashboard />
-    </>
+    <OrdersDashboardHistory />
   );
 };
 
-export default page;
+export default OrderHistoryPage;

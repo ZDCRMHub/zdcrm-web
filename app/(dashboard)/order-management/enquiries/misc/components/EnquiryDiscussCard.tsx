@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { UserCheck, Phone, Calendar } from "lucide-react";
 
-import { Card, CardContent, CardTitle } from "@/components/ui";
+import { Card, CardContent, CardTitle, Spinner } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
@@ -17,7 +17,6 @@ import { TEnquiry, TEnquiryDiscussion } from '../types';
 import { useUpdateEnquiryStatus } from '../api';
 
 
-// 
 interface EnquiryDiscussCardProps {
     discussions: TEnquiryDiscussion[] | undefined
     isExpanded?: boolean;
@@ -119,35 +118,38 @@ const EnquiryDiscussCard = ({ discussions, refetch, isExpanded = false, hideOthe
                                 <div className="flex items-center gap-4">
                                     <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
                                     {
-                                         !!enquiry && enquiry?.status !== 'CON' &&  enquiry?.status !== 'DEL' && (
+                                        !!enquiry && enquiry?.status !== 'CON' && enquiry?.status !== 'DEL' && (
                                             <Select
-                                            defaultValue={enquiry?.status}
-                                            onValueChange={(value) => updateEnquiryStatus(value as "STD" | "DEL" | "FND" | "CON")}
-                                        >
-                                            <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
-                                                <SelectValue placeholder="Status" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {type === 'enquiry' ? (
-                                                    <>
-                                                        <SelectItem value="STD">Still Discussing</SelectItem>
-                                                        <SelectItem value="FND">Finalized Discussion</SelectItem>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <SelectItem value="Payment Made">Payment Made</SelectItem>
-                                                        <SelectItem value="SOA">SOA</SelectItem>
-                                                        <SelectItem value="Sorted">Sorted</SelectItem>
-                                                        <SelectItem value="Sent to Dispatch">Sent to Dispatch</SelectItem>
-                                                        <SelectItem value="DIS CL">DIS CL</SelectItem>
-                                                        <SelectItem value="Delivered">Delivered</SelectItem>
-                                                    </>
-                                                )}
-                                            </SelectContent>
-                                        </Select>
+                                                defaultValue={enquiry?.status}
+                                                onValueChange={(value) => updateEnquiryStatus(value as "STD" | "DEL" | "FND" | "CON")}
+                                            >
+                                                <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
+                                                    <SelectValue placeholder="Status" />
+                                                    {
+                                                        isPending && <Spinner size={17} />
+                                                    }
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {type === 'enquiry' ? (
+                                                        <>
+                                                            <SelectItem value="STD">Still Discussing</SelectItem>
+                                                            <SelectItem value="FND">Finalized Discussion</SelectItem>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <SelectItem value="Payment Made">Payment Made</SelectItem>
+                                                            <SelectItem value="SOA">SOA</SelectItem>
+                                                            <SelectItem value="Sorted">Sorted</SelectItem>
+                                                            <SelectItem value="Sent to Dispatch">Sent to Dispatch</SelectItem>
+                                                            <SelectItem value="DIS CL">DIS CL</SelectItem>
+                                                            <SelectItem value="Delivered">Delivered</SelectItem>
+                                                        </>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
                                         )
                                     }
-                                  
+
                                 </div>
                             }
                         </CardContent>

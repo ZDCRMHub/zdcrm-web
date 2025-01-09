@@ -2,8 +2,7 @@
 
 import React from 'react';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
-import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
+
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -12,103 +11,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { OrderTimeLine } from '@/icons/sidebar';
-import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
-import { FinancialOverview } from '../misc/components/charts/FinancialOverviewChart';
+import { FinancialOverviewSection, FinancialStatsHeaderSection } from '../misc/components/financial-report';
 
 
 
 
 const FinancialReportPage = () => {
-  const branchOptions = ['All Branches', 'Zuzu Delights', 'Prestige Flowers'];
-  const dateOptions = [
-    'Today',
-    'Yesterday',
-    'Last 7 days',
-    'Last 30 days',
-    'Custom',
-  ];
-
-  const handleBranchChange = (value: string) => {
-    console.log('Selected branch:', value);
-    // Add your logic here
-  };
-
-  const handleDateChange = (value: string) => {
-    console.log('Selected date range:', value);
-    // Add your logic here
-  };
-
   return (
     <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8'>
-      <Header
-        title='Financial Report'
-        branchOptions={branchOptions}
-        dateOptions={dateOptions}
-        onBranchChange={handleBranchChange}
-        onDateChange={handleDateChange}
-      />
+      <FinancialStatsHeaderSection />
 
-      <div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
-        <OrderStatisticsCard
-          header='Total Revenue'
-          icon={<Money className="text-white" />}
-          value='₦2,000,000.00'
-          percentage={27}
-          isPositive={true}
-          iconBg='#131253'
-        />
-
-        <OrderStatisticsCard
-          header='Total Expenses'
-          icon={<Money className="text-white" />}
-          value='₦2,000,000.00'
-          percentage={27}
-          isPositive={true}
-          iconBg='#131253'
-        />
-        <OrderStatisticsCard
-          header='Net Profit'
-          icon={<Money className="text-white" />}
-          value='₦1,600,600.00'
-          percentage={15}
-          isPositive={false}
-          iconBg='#5B1850'
-        />
-        <OrderStatisticsCard
-          header='Expenses'
-          icon={<Money className="text-white" />}
-          value='₦1,600,600.00'
-          percentage={15}
-          isPositive={false}
-          iconBg='#5B1850'
-        />
-        <OrderStatisticsCard
-          header='Production Expenses'
-          icon={<Box />}
-          value='₦2,000,000.00'
-          percentage={34}
-          isPositive={false}
-          additionalText='From last month'
-          iconBg='#FFC600'
-        />
-        <OrderStatisticsCard
-          header='Miscellaneous Expenses'
-          icon={<I3DCubeScan className="text-white" />}
-          value='₦2,000,000.00'
-          percentage={45}
-          isPositive={false}
-          additionalText='From last month'
-          iconBg='#33860C'
-        />
-
-      </div>
-
-      <div className='flex justify-end my-14'>
+      <div className='flex justify-end mt-14 mb-8'>
         <ComparisonModal />
       </div>
 
-      <FinancialOverview />
+      <FinancialOverviewSection />
 
       <div className='flex justify-end my-24 gap-6'>
         <Select>

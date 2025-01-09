@@ -7,8 +7,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button, Card, Input, LinkButton, Spinner } from '@/components/ui';
 import { Separator } from '@/components/ui/separator';
 
-import { useGetOrderDetail, useUpdateDriverDetails } from '../../misc/api';
-import { OrderManagementDeliverySkeleton } from '../../misc/components';
+import { useGetOrderDetail, useUpdateDriverDetails } from '../../../misc/api';
+import { OrderManagementDeliverySkeleton } from '../../../misc/components';
 import { useAuth } from '@/contexts/auth';
 import { format } from 'date-fns';
 import { formatTimeString } from '@/utils/strings';
@@ -23,6 +23,7 @@ const deliveryFormSchema = z.object({
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
   delivery_expense: z.string().min(1, 'Delivery Expenses is required'),
+  tracking_link: z.string().min(1, 'Tracking Link is required'),
 });
 
 export type DeliveryDriverFormType = z.infer<typeof deliveryFormSchema>;
@@ -156,6 +157,7 @@ const OrdeManagementDelivery = () => {
             {...register('driver_name')}
             hasError={!!errors.driver_name}
             errorMessage={errors.driver_name?.message}
+            defaultValue={order?.delivery?.driver_name ?? ""}
           />
           <Input
             label='Phone Number *'
@@ -165,6 +167,7 @@ const OrdeManagementDelivery = () => {
             {...register('driver_phone')}
             hasError={!!errors.driver_phone}
             errorMessage={errors.driver_phone?.message}
+            defaultValue={order?.delivery?.driver_phone ?? ""}
           />
 
           <Input
@@ -175,6 +178,7 @@ const OrdeManagementDelivery = () => {
             {...register('delivery_platform')}
             hasError={!!errors.delivery_platform}
             errorMessage={errors.delivery_platform?.message}
+            defaultValue={order?.delivery?.delivery_platform ?? ""}
           />
           <Input
             label='Delivery Expenses *'
@@ -184,6 +188,17 @@ const OrdeManagementDelivery = () => {
             {...register('delivery_expense')}
             hasError={!!errors.delivery_expense}
             errorMessage={errors.delivery_expense?.message}
+            defaultValue={order?.delivery?.delivery_expense ?? ""}
+          />
+          <Input
+            label='Tracking Link *'
+            type='text'
+            placeholder='Enter tracking link'
+            className='w-full focus:border min-w-[350px] text-xs'
+            {...register('tracking_link')}
+            hasError={!!errors.tracking_link}
+            errorMessage={errors.tracking_link?.message}
+            defaultValue={order?.delivery?.tracking_link ?? ""}
           />
           <Button
             type='submit'

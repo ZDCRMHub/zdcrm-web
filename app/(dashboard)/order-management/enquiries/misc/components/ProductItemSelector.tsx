@@ -10,6 +10,8 @@ interface ProductItemSelectorProps {
     isLoadingOptions?: boolean;
     isFetchingOptions: boolean;
     disabled?: boolean;
+    hasError: boolean
+    errorMessage?: string
 }
 
 const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
@@ -18,7 +20,9 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
     isFetchingOptions,
     disabled,
     setInventoryId,
-    inventoryId
+    inventoryId,
+    hasError,
+    errorMessage
 }) => {
     const [selectedInventory, setSelectedInventory] = useState<TProductInventoryItem | null>(null);
 
@@ -27,7 +31,7 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
         setInventoryId(inventory?.id || 0);
     };
 
-   
+
 
     return (
         <>
@@ -39,8 +43,10 @@ const ProductItemSelector: React.FC<ProductItemSelectorProps> = ({
                 isFetchingOptions={isFetchingOptions && !!inventoryId}
                 isLoadingOptions={isLoadingOptions}
                 disabled={disabled}
+                hasError={hasError}
+                errorMessage={errorMessage}
             />
-           
+
         </>
     );
 };

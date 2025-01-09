@@ -1,11 +1,12 @@
+'use client'
+
 import React from 'react'
-import DeliveriesDashboard from './misc/components/DeliveriesDashboard'
+import { OrdersDashboardDelivery } from '../misc/components'
+
 
 const DeliveriesPage = () => {
     return (
-        <>
-            <DeliveriesDashboard />
-        </>
+        <OrdersDashboardDelivery />
     )
 }
 

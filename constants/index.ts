@@ -175,14 +175,14 @@ export const PAYMENT_METHODS = [
 ]
 
 export const ENQUIRY_CHANNEL_OPTIONS = [
-  { value: 'email', label: 'Email' },
-  { value: 'whatsapp', label: 'WhatsApp' },
-  { value: 'website', label: 'Website' },
-  { value: 'walk-in', label: 'Store Walk In' },
-  { value: 'instagram', label: 'Instagram' },
-  { value: 'phone', label: 'Phone Call' },
-  { value: 'facebook', label: 'Facebook' },
-  { value: 'tik-tok', label: 'Tik Tok' },
+  { value: 'Email', label: 'Email' },
+  { value: 'Whatsapp', label: 'WhatsApp' },
+  { value: 'Website', label: 'Website' },
+  { value: 'Walk-in', label: 'Store Walk In' },
+  { value: 'Instagram', label: 'Instagram' },
+  { value: 'Phone', label: 'Phone Call' },
+  { value: 'Facebook', label: 'Facebook' },
+  { value: 'Tik Ttok', label: 'Tik Tok' },
 ]
 
 export const ENQUIRY_OCCASION_OPTIONS = [

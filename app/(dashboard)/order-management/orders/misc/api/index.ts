@@ -1,7 +1,0 @@
-export { useGetOrders } from './getOrders'
-export { useGetOrderDetail } from './getOrderDetails'
-export { useGetOrderDeliveryLocations } from './getOrderDeliveryLocations'
-export { useCreateOrder } from './postCreateOrder'
-export { useUpdateOrderStatus } from './patchUpdateOrderStatus'
-export { useUpdateDriverDetails } from './patchUpdateDriverDetails'
-export { useUpdateOrderPaymentMethod } from './patchUpdateOrderPaymentMethod'

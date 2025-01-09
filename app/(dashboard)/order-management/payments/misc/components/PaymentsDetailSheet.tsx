@@ -39,7 +39,7 @@ import {
   AccordionItem,
 } from "@/components/ui";
 import { EditPenIcon } from "@/icons/core";
-import EnquiryDiscussCard from "@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard";
+import EnquiryDiscussCard from "@/app/(dashboard)/order-timeline/misc/components/OrderTimelineCard";
 import { generateMockOrders } from "@/app/(dashboard)/order-timeline/misc/components/Timeline";
 import { PAYMENT_STATUS_OPTIONS, paymentOptions } from "@/constants";
 

@@ -18,7 +18,7 @@ export const useAddNoteToDiscussion = ({ id, type = "enquiry" }: useAddNoteToDis
     
     return useMutation({
         mutationFn: newNote,
-        mutationKey: ['add-discudd-note'],
+        mutationKey: ['add-discuss-note'],
         onSuccess(data, variables, context) {
             if (id) {
                 queryClient.invalidateQueries({

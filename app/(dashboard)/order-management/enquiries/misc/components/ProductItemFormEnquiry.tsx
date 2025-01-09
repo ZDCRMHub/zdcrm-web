@@ -56,9 +56,9 @@ const ProductItemFormEnquiry = ({
               disabled={productsLoading || (!productsLoading && !productsInvetories?.data.length)}
               isLoadingOptions={productsLoading}
               isFetchingOptions={productsFetching}
-
+              errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
+              hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
             />
-
 
             <FormField
               control={control}

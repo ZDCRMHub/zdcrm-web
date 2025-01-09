@@ -14,6 +14,8 @@ interface StockItemSelectorProps {
     isLoadingOptions?: boolean;
     isFetchingOptions: boolean;
     disabled?: boolean;
+    hasError: boolean
+    errorMessage?:string
 }
 
 const StockItemSelector: React.FC<StockItemSelectorProps> = ({
@@ -23,7 +25,9 @@ const StockItemSelector: React.FC<StockItemSelectorProps> = ({
     disabled,
     setInventoryId,
     inventoryId,
-    setVariations
+    setVariations,
+    hasError,
+    errorMessage
 }) => {
     const [selectedInventory, setSelectedInventory] = useState<TStockInventoryItem | null>(null);
     const [selectedVariations, setSelectedVariations] = useState<TStockVariation[]>([]);
@@ -53,6 +57,8 @@ const StockItemSelector: React.FC<StockItemSelectorProps> = ({
                 isLoadingOptions={isLoadingOptions}
                 isFetchingOptions={isFetchingOptions && !!inventoryId}
                 disabled={disabled}
+                hasError={hasError}
+                errorMessage={errorMessage}
             />
             <StockVariationSelector
                 isLoadingOptions={isLoadingOptions}

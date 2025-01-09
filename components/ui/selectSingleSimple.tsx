@@ -1,19 +1,17 @@
 'use client'
 
 import * as React from "react"
-import { CheckIcon, SearchIcon } from "lucide-react"
-
+import { CheckIcon } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { convertKebabAndSnakeToTitleCase } from "@/utils/strings"
 import { SmallSpinner } from "@/icons/core"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import FormError from "@/components/ui/formError"
+import { VariantProps } from "class-variance-authority"
 
-import { Button, Command, CommandGroup, CommandItem } from "."
-import { Popover, PopoverContent, PopoverTrigger } from "."
-import { Label } from "./label"
-import FormError from "./formError"
-// import { SearchIcon } from "@/app/(dashboard)/instant-web/misc/icons"
-
-interface SelectProps<T> {
+interface SelectProps<T> extends VariantProps<typeof buttonVariants> {
   value: string | boolean | undefined;
   onChange: (value: string) => void;
   options: T[] | undefined;
@@ -59,10 +57,10 @@ const SelectSingleSimple = <T extends object>({
   labelKey,
   triggerColor,
   showSelectedValue = true,
+  variant = "inputButton",
+  size = "inputButton",
 }: SelectProps<T>) => {
   const [isOpen, setOpen] = React.useState(false)
-
-
 
   const getOptionLabel = (option: T) => {
     return option ? String(option[labelKey]) : `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
@@ -83,23 +81,19 @@ const SelectSingleSimple = <T extends object>({
     }
   }, [triggerRef?.current?.clientWidth])
 
-
-
   return (
     <div className={cn("inputdiv", withIcon && "withicon", containerClass)}>
       <Popover open={isOpen} onOpenChange={setOpen}>
         <div className="flex flex-col gap-2">
-          {
-            label && (
-              <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={name || "gbo"}>
-                {label}
-              </Label>
-            )
-          }
+          {label && (
+            <Label className={cn("text-sm text-[#0F172B] font-poppins font-medium", labelClass)} htmlFor={name || "gbo"}>
+              {label}
+            </Label>
+          )}
           <PopoverTrigger asChild>
             <Button
-              variant="inputButton"
-              size="inputButton"
+              variant={variant}
+              size={size}
               className={cn(
                 'flex w-full items-center justify-between gap-2 text-left text-sm transition duration-300',
                 className
@@ -112,20 +106,18 @@ const SelectSingleSimple = <T extends object>({
             >
               <span className={cn(
                 '!overflow-hidden text-sm w-full font-normal',
-                (value && options && options?.length) ? '' : '!text-[#A4A4A4]', placeHolderClass
+                (value && options && options?.length) ? '' : '!text-[#A4A4A4]', 
+                placeHolderClass
               )}>
-                {
-                  isLoadingOptions ?
-                    "Loading options..."
-                    :
-                    (showSelectedValue && value && options && options?.length)
-                      ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                      : placeholder
+                {isLoadingOptions
+                  ? "Loading options..."
+                  : (showSelectedValue && value && options && options?.length)
+                    ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                    : placeholder
                 }
-             
               </span>
               <svg
-                className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", isOpen && "rotate-180")}
+                className={cn("ml-2 shrink-0 opacity-70 transition-transform duration-300", isOpen && "rotate-180")}
                 fill="none"
                 height={7}
                 viewBox="0 0 12 7"
@@ -144,55 +136,51 @@ const SelectSingleSimple = <T extends object>({
           </PopoverTrigger>
         </div>
 
-
         <PopoverContent className={cn("p-0 overflow-hidden", triggerRef?.current && `min-w-max`, isLoadingOptions && "hidden")} style={{ width }}>
           <div className="">
-            
-            {
-              isLoadingOptions &&
+            {isLoadingOptions &&
               <button className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" disabled>
                 <SmallSpinner color='#000000' /> Loading options...
               </button>
             }
             <div className="flex flex-col gap-1.5 px-5 py-3 max-h-[450px] overflow-y-auto">
-              {
-                !isLoadingOptions && options && options?.length > 0 ? (
-                  options?.map((option, index) => (
-                    <button
-                      className={cn("text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                        itemClass, "hover:bg-blue-100 w-full text-sm",
-                        "py-2 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+              {!isLoadingOptions && options && options?.length > 0 ? (
+                options?.map((option, index) => (
+                  <button
+                    className={cn(
+                      "text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                      itemClass, 
+                      "hover:bg-blue-100 w-full text-sm",
+                      "py-2 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+                    )}
+                    key={index}
+                    onClick={() => handleSelect(option[valueKey] as string)}
+                  >
+                    <CheckIcon
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        option[valueKey] === value ? "opacity-100" : "opacity-0"
                       )}
-                      key={index}
-                      onClick={() => handleSelect(option[valueKey] as string)}
-                    >
-                      <CheckIcon
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          option[valueKey] === value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      {option[labelKey] as string}
-                    </button>
-                  ))
-                ) :
-                  <button className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} disabled>
-                    There&apos;s no option to select from
+                    />
+                    {option[labelKey] as string}
                   </button>
-
-              }
+                ))
+              ) : (
+                <button className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} disabled>
+                  There&apos;s no option to select from
+                </button>
+              )}
             </div>
           </div>
         </PopoverContent>
       </Popover>
 
-      {
-        hasError && errorMessage && (
-          <FormError errorMessage={errorMessage} />
-        )
-      }
+      {hasError && errorMessage && (
+        <FormError errorMessage={errorMessage} />
+      )}
     </div>
   )
 }
 
 export default SelectSingleSimple
+

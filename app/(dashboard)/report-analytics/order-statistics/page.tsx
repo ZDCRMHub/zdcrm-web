@@ -1,9 +1,6 @@
 'use client';
 
-import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
-import OrderStatisticsCard from '@/app/(dashboard)/report-analytics/misc/components/OrderStatisticsCard';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
-import TopProductsTable from '@/app/(dashboard)/report-analytics/misc/components/TopProductsTable';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -12,104 +9,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { OrderTimeLine } from '@/icons/sidebar';
-import { Box, BoxRemove, BoxSearch, I3DCubeScan, Money } from 'iconsax-react';
-import { OrderStatusChart } from '../misc/components/charts/OrderStatusChart';
-import { OrderDeliveryZoneChart } from '../misc/components/charts/OrderDeliveryZoneChart';
+import { OrderStatsDeliveryZoneSection, OrderStatsHeaderSection, OrderStatsTopProducts } from '../misc/components/order-stats';
 
-const orderData = [
-  { name: 'Orders Delivered', value: 15 },
-  { name: 'Orders Sorted', value: 8 },
-  { name: 'Sent to Dispatch', value: 8 },
-];
 
-const deliveryData = [
-  { name: 'Lagos Island', value: 12 },
-  { name: 'Lagos Central', value: 15 },
-  { name: 'Lagos Mainland', value: 4 },
-  { name: 'Other places', value: 14 },
-];
 
-const page = () => {
-  const branchOptions = ['All Branches', 'Zuzu Delights', 'Prestige Flowers'];
-  const dateOptions = [
-    'Today',
-    'Yesterday',
-    'Last 7 days',
-    'Last 30 days',
-    'Custom',
-  ];
-
-  const handleBranchChange = (value: string) => {
-    console.log('Selected branch:', value);
-    // Add your logic here
-  };
-
-  const handleDateChange = (value: string) => {
-    console.log('Selected date range:', value);
-    // Add your logic here
-  };
+const OrderStatsPage = () => {
 
   return (
     <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8 xl:px-10'>
-      <Header
-        title='Order Statistics'
-        branchOptions={branchOptions}
-        dateOptions={dateOptions}
-        onBranchChange={handleBranchChange}
-        onDateChange={handleDateChange}
-      />
+     
+     <OrderStatsHeaderSection/>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'>
-        <OrderStatisticsCard
-          header='Total Orders'
-          icon={<OrderTimeLine className="text-white" />}
-          value='430'
-          percentage={34}
-          isPositive={true}
-          additionalText='From last month'
-          iconBg='#22292F'
-        />
-       
-        <OrderStatisticsCard
-          header='Processed Orders'
-          icon={<Box />}
-          value='430'
-          percentage={34}
-          isPositive={true}
-          additionalText='From last month'
-          iconBg='#FFC600'
-        />
-        <OrderStatisticsCard
-          header='Completed Orders'
-          icon={<I3DCubeScan className="text-white" />}
-          value='430'
-          percentage={45}
-          isPositive={true}
-          additionalText='From last month'
-          iconBg='#33860C'
-        />
-        <OrderStatisticsCard
-          header='Canceled Orders'
-          icon={<BoxRemove />}
-          value='430'
-          percentage={15}
-          isPositive={false}
-          additionalText='From last month'
-          iconBg='#FFE7E7'
-        />
-      </div>
-
-      <div className='flex justify-end my-14'>
+      <div className='flex justify-end mt-14 mb-6'>
         <ComparisonModal />
       </div>
 
       <div className='flex gap-12 flex-col'>
-        <OrderDeliveryZoneChart />
-        <TopProductsTable />
+        <OrderStatsDeliveryZoneSection />
+        <OrderStatsTopProducts />
       </div>
 
-      <div className='flex justify-end mb-24 gap-6'>
+      <footer className='flex justify-end mt-24 mb-10 gap-6'>
         <Select>
           <SelectTrigger className='w-[153px]'>
             <SelectValue placeholder='Extract File' />
@@ -124,9 +44,9 @@ const page = () => {
         <Button className='bg-amber-400 text-black border border-black px-11'>
           Download
         </Button>
-      </div>
+      </footer>
     </div>
   );
 };
 
-export default page;
+export default OrderStatsPage;

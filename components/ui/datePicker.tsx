@@ -8,10 +8,11 @@ import { DateRange, Matcher } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 
-import { Button } from '.';
+import { Button, buttonVariants } from '.';
 import { Calendar } from '.';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 import { Label } from './label';
+import { VariantProps } from 'class-variance-authority';
 
 interface SingleDatePickerProps {
     id?: string;
@@ -71,7 +72,7 @@ export function SingleDatePicker({
                         ) : (
                             <span
                                 className={cn(
-                                    'inline-block font-normal !text-[#A4A4A4]' ,
+                                    'inline-block font-normal !text-[#A4A4A4]',
                                     placeholderClassName
                                 )}
                             >
@@ -246,7 +247,7 @@ export function RangeDatePicker({
     );
 }
 
-interface RangeAndCustomDatePickerProps {
+interface RangeAndCustomDatePickerProps extends VariantProps<typeof buttonVariants> {
     allDataFilter?:
     | {
         dateType?: string | undefined;
@@ -270,13 +271,15 @@ export function RangeAndCustomDatePicker({
     placeholder,
     placeholderClassName,
     onChange,
+    variant = "inputButton",
+    size = "inputButton",
 }: RangeAndCustomDatePickerProps) {
     const [date, setDate] = React.useState<
         ({ dateType: string } & DateRange) | undefined
     >({
         from: subMonths(new Date(), 1),
         to: new Date(),
-        dateType: 'CUSTOM',
+        dateType: 'today',
     });
     const [open, setOpen] = React.useState(false);
 
@@ -301,41 +304,45 @@ export function RangeAndCustomDatePicker({
 
     const customDateValues = [
         {
-            name: 'Last week',
-            value: 'LAST_WEEK',
+            name: 'Today',
+            value: 'today',
         },
         {
             name: 'This week',
-            value: 'CURRENT_WEEK',
+            value: 'week',
         },
-        {
-            name: 'Last month',
-            value: 'LAST_MONTH',
-        },
+        // {
+        //     name: 'This week',
+        //     value: 'CURRENT_WEEK',
+        // },
+        // {
+        //     name: 'Last month',
+        //     value: 'LAST_MONTH',
+        // },
         {
             name: 'This month',
-            value: 'THIS_MONTH',
+            value: 'month',
         },
-        {
-            name: 'Last quarter',
-            value: 'LAST_QUARTER',
-        },
-        {
-            name: 'This quarter',
-            value: 'THIS_QUARTER',
-        },
-        {
-            name: 'Last Year',
-            value: 'LAST_YEAR',
-        },
+        // {
+        //     name: 'Last quarter',
+        //     value: 'LAST_QUARTER',
+        // },
+        // {
+        //     name: 'This quarter',
+        //     value: 'THIS_QUARTER',
+        // },
+        // {
+        //     name: 'Last Year',
+        //     value: 'LAST_YEAR',
+        // },
         {
             name: 'This Year',
-            value: 'THIS_YEAR',
+            value: 'year',
         },
     ];
 
     React.useEffect(() => {
-        if (allDataFilter && allDataFilter?.dateType !== 'CUSTOM') {
+        if (allDataFilter && allDataFilter?.dateType !== 'custom') {
             setCustomDateType(allDataFilter?.dateType || '');
         } else {
             if (allDataFilter)
@@ -347,7 +354,7 @@ export function RangeAndCustomDatePicker({
                 }));
 
             onChange?.({
-                dateType: 'CUSTOM',
+                dateType: 'custom',
                 from: allDataFilter?.from,
                 to: allDataFilter?.to,
             });
@@ -360,13 +367,14 @@ export function RangeAndCustomDatePicker({
             <PopoverTrigger asChild>
                 <Button
                     className={cn(
-                        'flex w-full items-center justify-between gap-2 rounded-md bg-input-bg px-5 py-2 text-left text-xs transition duration-300 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-100 disabled:cursor-not-allowed disabled:opacity-50',
+                        'flex w-full items-center justify-between gap-2 rounded-md text-left text-xs transition duration-300 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 active:scale-100 disabled:cursor-not-allowed disabled:opacity-50',
                         !date && 'text-muted-foreground',
                         className
                     )}
                     id={id}
                     type="button"
-                    variant="unstyled"
+                    variant={variant}
+                    size={size}
                 >
                     <span>
                         <svg
@@ -448,7 +456,7 @@ export function RangeAndCustomDatePicker({
 
                             setDate(
                                 currentSelection
-                                    ? { ...currentSelection, dateType: 'CUSTOM' }
+                                    ? { ...currentSelection, dateType: 'custom' }
                                     : undefined
                             );
 
@@ -459,7 +467,7 @@ export function RangeAndCustomDatePicker({
                                 onChange?.(
                                     currentSelection && {
                                         ...currentSelection,
-                                        dateType: 'CUSTOM',
+                                        dateType: 'custom',
                                     }
                                 );
                             }

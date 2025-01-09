@@ -1,5 +1,5 @@
 import React from 'react'
-import { Control, Controller, FieldErrors, useFieldArray, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form';
+import { Control, Controller, FieldErrors, UseFormSetValue, UseFormWatch } from 'react-hook-form';
 
 import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo } from '@/components/ui';
 import { useGetStockInventory } from '@/app/(dashboard)/inventory/misc/api';
@@ -47,6 +47,8 @@ const EnquiryDetailsInventoriesForm = ({
               setInventoryId={(inventoryId) => {
                 setValue(`items.${index}.inventories.${invIndex}.stock_inventory_id`, inventoryId);
               }}
+              hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id}
+              errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id?.message as string}
               setVariations={(variations) => {
                 setValue(`items.${index}.inventories.${invIndex}.variations`, variations);
               }}

@@ -25,6 +25,7 @@ import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import EnquiryDiscussCard from '../misc/components/EnquiryDiscussCard';
 import { ConfirmPaymentModal } from '../misc/components';
 import { useGetEnquiryDetail } from '../misc/api'
+import { formatCurrency } from '@/utils/currency';
 
 
 const EnquiryDetailsPage = () => {
@@ -184,7 +185,7 @@ const EnquiryDetailsPage = () => {
                             <p className="text-custom-blue font-medium">Items</p>
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent>
+                    <AccordionContent className="space-y-8">
                         {
                             data?.items.map((item, index) => (
                                 <Card className="py-6 px-10 rounded-xl max-w-2xl" key={index}>
@@ -254,7 +255,11 @@ const EnquiryDetailsPage = () => {
 
                                     <div className="flex items-end justify-end mb-3 w-full">
                                         <p className="font-semibold text-[#194A7A]">Amount: </p>
-                                        <p className="font-semibold text-[#194A7A]">₦50,000.00</p>
+                                        <p className="font-semibold text-[#194A7A]">
+                                            {
+                                                formatCurrency(!!item.inventories[0]?.product_inventory ? item.inventories[0]?.product_inventory?.cost_price : '0', "NGN")
+                                            }
+                                        </p>
                                     </div>
                                 </Card>
                             ))
