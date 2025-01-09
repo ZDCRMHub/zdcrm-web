@@ -1,8 +1,8 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
 import { CiSearch } from "react-icons/ci";
 import {
   Table,
@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/pagination";
 import { IoChevronUp } from "react-icons/io5";
 import { useBooleanStateControl } from "@/hooks";
-import { ConfirmDeleteModal } from "@/components/ui";
+import { ConfirmDeleteModal, Spinner } from "@/components/ui";
 import {
   Sheet,
   SheetClose,
@@ -43,90 +43,61 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Label } from "@radix-ui/react-label";
-
-const memberDetails = [
-  {
-    memberID: "MEM001",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM002",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM003",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM004",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM005",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM006",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM007",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-  {
-    memberID: "MEM008",
-    name: "Akin Gold",
-    email: "akingold@gmail.com",
-    phoneNumber: "08012345678",
-    dateCreated: "01 Mar 2023",
-    //   role: "Credit Card",
-    action: "Active",
-  },
-];
+import { Label } from "@/components/ui/label";
+import { useGetAllRoles, useGetAllUsers, } from "./misc/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { APIAxios } from "@/utils/axios";
+import { TUser } from "./misc/api/getAllUsers";
 
 const Page = () => {
   const {
     state: isConfirmDeleteModalOpen,
     setTrue: openConfirmDeleteModal,
     setFalse: closeConfirmDeleteModal,
-  } = useBooleanStateControl()
+  } = useBooleanStateControl();
 
+  const { data: rolesData, isLoading: isLoadingRoles, error: rolesError } = useGetAllRoles();
+  const { data: usersData, isLoading: isLoadingUsers, error: usersError } = useGetAllUsers();
+  const [editedUsers, setEditedUsers] = useState<TUser[]>([]);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (usersData) {
+      setEditedUsers(usersData.data);
+    }
+  }, [usersData]);
+
+  const { mutate: editUsers, isPending: isSavingEditedUsers } = useMutation({
+    mutationFn: (users: { id: number; role: string; is_active: boolean }[]) =>
+      APIAxios.put("/auth/bulk-edit-users/", { users }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["getAllUsers"] });
+    },
+  });
+
+  const handleEdit = (userId: number, field: keyof TUser, value: any) => {
+    setEditedUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, [field]: value } : user
+      )
+    );
+  };
+
+  const handleSaveChanges = () => {
+    const usersToUpdate = editedUsers.map((user) => ({
+      id: user.id,
+      role: user.role_name,
+      is_active: user.is_active,
+    }));
+    editUsers(usersToUpdate);
+  };
+
+  if (isLoadingUsers || isLoadingRoles) return (
+    <div className="flex items-center justify-center h-full w-full py-[30vh]">
+      <Spinner size={18} className='' />
+    </div>
+  )
+  if (usersError || rolesError) return <div>Error: {(usersError || rolesError)?.message}</div>;
 
   return (
     <section className="mt-7 pb-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A] px-[118px] pt-[35px]">
@@ -151,15 +122,19 @@ const Page = () => {
       <div className="mt-6 flex justify-between items-start">
         <h2 className="text-2xl font-semibold">Team Members</h2>
         <div className="flex gap-2">
-          <Button className="h-12 flex gap-4 bg-[#111827] rounded-[10px] text-sm px-6">
-            Save Changes
+          <Button
+            className="h-12 flex gap-4 bg-[#111827] rounded-[10px] text-sm px-6"
+            onClick={handleSaveChanges}
+            disabled={isSavingEditedUsers}
+          >
+            {isSavingEditedUsers ? 'Saving...' : 'Save Changes'}
           </Button>
 
           <Sheet>
             <SheetTrigger asChild>
-            <Button className="h-12 flex gap-4 bg-transparent text-sm px-6 text-[#111827] border border-solid rounded-[10px]">
-            Add Employee
-          </Button>
+              <Button className="h-12 flex gap-4 bg-transparent text-sm px-6 text-[#111827] border border-solid rounded-[10px]">
+                Add Employee
+              </Button>
             </SheetTrigger>
             <SheetContent>
               <SheetHeader>
@@ -197,7 +172,6 @@ const Page = () => {
         </div>
       </div>
       <Table>
-        {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
         <TableHeader>
           <TableRow>
             <TableHead className="w-[22.9%]">Name</TableHead>
@@ -208,42 +182,47 @@ const Page = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {memberDetails.map((member) => (
-            <TableRow key={member.memberID}>
+          {editedUsers.map((user) => (
+            <TableRow key={user.id}>
               <TableCell className="font-medium">
                 <div>
-                  <p className="font-medium">{member.name}</p>
-                  <p className="text-sm">{member.email}</p>
+                  <p className="font-medium">{user.name}</p>
+                  <p className="text-sm">{user.email}</p>
                 </div>
               </TableCell>
-              <TableCell>{member.phoneNumber}</TableCell>
-              <TableCell>{member.dateCreated}</TableCell>
+              <TableCell>{user.phone}</TableCell>
+              <TableCell>{new Date(user.create_date).toLocaleDateString()}</TableCell>
               <TableCell className="text-right">
-                <Select>
+                <Select
+                  value={user.role_name}
+                  onValueChange={(value) => handleEdit(user.id, 'role_name', value)}
+                >
                   <SelectTrigger className="border-none">
-                    <SelectValue placeholder="Select Role" className="" />
+                    <SelectValue placeholder="Select Role" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="branch-manager">
-                        Branch Manager
-                      </SelectItem>
-                      <SelectItem value="marketer">Marketer</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="delivery-rep">Delivery rep</SelectItem>
-                      <SelectItem value="prod-team">Production Team</SelectItem>
-                      <SelectItem value="employee">Employee</SelectItem>
+                      {
+                        rolesData?.data.map((role) => (
+                          <SelectItem key={role.id} value={role.name}>
+                            {role.name}
+                          </SelectItem>
+                        ))
+                      }
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </TableCell>
               <TableCell className="text-right flex gap-[10px]">
-                <Select>
+                <Select
+                  value={user.is_active ? "active" : "deactive"}
+                  onValueChange={(value) => handleEdit(user.id, 'is_active', value === "active")}
+                >
                   <SelectTrigger>
                     <SelectValue
                       placeholder="Select Action"
                       className={
-                        member.action === "Active"
+                        user.is_active
                           ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
                           : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none"
                       }
@@ -251,9 +230,7 @@ const Page = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem className="" value="active">
-                        Active
-                      </SelectItem>
+                      <SelectItem className="" value="active">Active</SelectItem>
                       <SelectItem value="deactive">Deactivate</SelectItem>
                     </SelectGroup>
                   </SelectContent>
@@ -288,14 +265,13 @@ const Page = () => {
           </Pagination>
         </div>
         <div className="flex gap-4 items-center">
-          <p className="text-xs text-[#687588] ">Showing 1 to 8 of 8 entries</p>
+          <p className="text-xs text-[#687588] ">Showing 1 to {usersData?.data.length} of {usersData?.data.length} entries</p>
           <Button className="flex gap-4 bg-transparent border border-solid border-[#F1F2F4] text-[#111827] rounded-[10px] text-sm px-[10px]">
-            Show 8
+            Show {usersData?.data.length}
             <IoChevronUp />
           </Button>
         </div>
       </div>
-
 
       <ConfirmDeleteModal
         isModalOpen={isConfirmDeleteModalOpen}
@@ -303,10 +279,11 @@ const Page = () => {
         deleteFn={() => { }}
         heading="Delete Employee Record"
         subheading="This action means employee record will automatically be removed."
-        icon= {<RiDeleteBin6Line className="bg-[#FFD4D6] p-2 rounded-2xl" color="#E03137" size={50} />}
+        icon={<RiDeleteBin6Line className="bg-[#FFD4D6] p-2 rounded-2xl" color="#E03137" size={50} />}
       />
     </section>
   );
 };
 
 export default Page;
+

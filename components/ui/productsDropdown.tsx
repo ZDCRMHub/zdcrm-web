@@ -32,6 +32,8 @@ interface SelectProps<T> {
     fullWidth?: boolean;
     withIcon?: boolean;
     isLoadingOptions?: boolean;
+    disabled?: boolean;
+
     triggerColor?: string;
     valueKey: keyof T;
     labelKey: keyof T;
@@ -52,7 +54,7 @@ const ProductsDropdown = <T extends object>({
     labelClass,
     itemClass,
     errorClass,
-    fullWidth,
+    disabled,
     withIcon,
     isLoadingOptions,
     valueKey,
@@ -65,6 +67,10 @@ const ProductsDropdown = <T extends object>({
     const [searchText, setSearchText] = React.useState<string>("")
 
     React.useEffect(() => {
+        if (!open) {
+            setSearchText("")
+            setOptionsToDisplay(options)
+        }
         if (searchText) {
             const filteredOptions = options?.filter(option => {
                 const optionLabel = String(option[labelKey]).toLowerCase();
@@ -74,7 +80,7 @@ const ProductsDropdown = <T extends object>({
         } else {
             setOptionsToDisplay(options);
         }
-    }, [searchText, options, labelKey])
+    }, [searchText, options, labelKey, open])
 
     const getOptionLabel = (option: T) => {
         return option ? String(option[labelKey]) : `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
@@ -123,19 +129,22 @@ const ProductsDropdown = <T extends object>({
                             role="combobox"
                             onClick={() => setOpen(!open)}
                             ref={triggerRef}
-                            disabled={value === "CUSTOM_ORDER"}
+                            disabled={value === "CUSTOM_ORDER" || isLoadingOptions || disabled}
                         >
                             <span className={cn(
                                 '!overflow-hidden text-sm w-full font-normal',
                                 (value && options && options?.length) ? '' : '!text-[#A4A4A4]'
                             )}>
                                 {
-                                    value && value === "CUSTOM_ORDER" ?
-                                        "Custom Order"
+                                    isLoadingOptions ?
+                                        "Loading options..."
                                         :
-                                        (value && options && options?.length)
-                                            ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                                            : placeholder
+                                        value && value === "CUSTOM_ORDER" ?
+                                            "Custom Order"
+                                            :
+                                            (value && options && options?.length)
+                                                ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                                                : placeholder
                                 }
                             </span>
                             <svg
@@ -159,7 +168,7 @@ const ProductsDropdown = <T extends object>({
                 </div>
 
 
-                <PopoverContent className={cn("p-0")} style={{ minWidth: width, maxWidth: "600px", width: "max-content" }}>
+                <PopoverContent className={cn("p-0", isLoadingOptions && "hidden")} style={{ minWidth: width, maxWidth: "600px", width: "max-content" }}>
                     <Command className="min-w-full w-max">
                         <div className="relative px-6">
                             <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
@@ -170,17 +179,17 @@ const ProductsDropdown = <T extends object>({
                                 onChange={(e) => setSearchText(e.target.value)}
                             />
                         </div>
-                        <CommandGroup className="flex flex-col gap-2 min-w-full w-max">
+                        <div className="flex flex-col gap-2 min-w-full w-max">
                             {isLoadingOptions && (
-                                <CommandItem className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
+                                <button className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
                                     <SmallSpinner color='#000000' /> Loading options...
-                                </CommandItem>
+                                </button>
                             )}
                             <section className="grid grid-cols-2 xl:grid-cols-3 min-w-max max-h-96 overflow-scroll">
                                 {
                                     !isLoadingOptions && options && options?.length > 0 ?
                                         optionsToDisplay?.map((option, index) => (
-                                            <div
+                                            <button
                                                 className={cn("text-xs relative flex !flex-col select-none items-center rounded-md p-4 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
                                                     "text-sm min-w-[150px] aspect-square w-max"
                                                 )}
@@ -203,16 +212,16 @@ const ProductsDropdown = <T extends object>({
                                                 <p className="text-[0.75rem] text-[#194A7A] pt-3 max-w-[130px]">
                                                     {option[labelKey] as string}
                                                 </p>
-                                            </div>
+                                            </button>
                                         ))
                                         :
-                                        <CommandItem className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} value={""} disabled>
+                                        <button className={cn("text-[0.8125rem] min-w-max !max-w-[200px]", isLoadingOptions && "!hidden", itemClass)} value={""} disabled>
                                             There&apos;s no option to select from
-                                        </CommandItem>
+                                        </button>
                                 }
                             </section>
 
-                        </CommandGroup>
+                        </div>
                     </Command>
                 </PopoverContent>
             </Popover>

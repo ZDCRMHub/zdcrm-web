@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import PaymentsDashboard from './misc/components/PaymentsDashboard';
+import { OrdersDashboardPayments } from '../misc/components';
 
 const PaymentsPage = () => {
   return (
     <>
-      <PaymentsDashboard />
+      <OrdersDashboardPayments />
     </>
   );
 };

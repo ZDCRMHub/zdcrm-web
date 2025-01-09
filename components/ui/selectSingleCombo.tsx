@@ -1,23 +1,36 @@
 'use client'
 
 import * as React from "react"
-import { FieldErrors, FieldValues } from "react-hook-form"
 import { CheckIcon, SearchIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { convertKebabAndSnakeToTitleCase } from "@/utils/strings"
 import { SmallSpinner } from "@/icons/core"
 
-import { Button, Command, CommandGroup, CommandItem } from "."
-import { Popover, PopoverContent, PopoverTrigger } from "."
+import { Button, buttonVariants, Popover, PopoverContent, PopoverTrigger } from "."
 import { Label } from "./label"
 import FormError from "./formError"
-// import { SearchIcon } from "@/app/(dashboard)/instant-web/misc/icons"
+import { VariantProps } from "class-variance-authority"
 
-interface SelectProps<T> {
+
+type CustomLabelFormat = string | ((item: any) => string);
+
+export function generateCustomLabel(item: any, format: CustomLabelFormat): string {
+  if (typeof format === 'function') {
+    return format(item);
+  }
+
+  return format.replace(/\{(\w+)\}/g, (match, key) => {
+    return item[key] !== undefined ? String(item[key]) : match;
+  });
+}
+
+
+interface SelectProps<T> extends VariantProps<typeof buttonVariants>{
   value: string | boolean | undefined;
   onChange: (value: string) => void;
   options: T[] | undefined;
+  disabled?: boolean;
   name: string;
   hasError?: boolean;
   errorMessage?: string;
@@ -32,7 +45,8 @@ interface SelectProps<T> {
   isLoadingOptions?: boolean;
   triggerColor?: string;
   valueKey: keyof T;
-  labelKey: keyof T;
+  labelKey: keyof T | CustomLabelFormat;
+  searchKey?: keyof T
   showSelectedValue?: boolean;
   placeHolderClass?: string;
 }
@@ -41,6 +55,7 @@ const SelectSingleCombo = <T extends object>({
   value,
   onChange,
   options,
+  disabled,
   hasError,
   errorMessage,
   label,
@@ -56,27 +71,43 @@ const SelectSingleCombo = <T extends object>({
   isLoadingOptions,
   valueKey,
   labelKey,
+  searchKey,
   triggerColor,
-  showSelectedValue=true,
+  showSelectedValue = true,  
+  variant = "inputButton",
+  size = "inputButton",
 }: SelectProps<T>) => {
-  const [open, setOpen] = React.useState(false)
+  const [isOpen, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
   const [searchText, setSearchText] = React.useState<string>("")
 
   React.useEffect(() => {
-    if (searchText) {
+    if (!isOpen) {
+      setSearchText("")
+      setOptionsToDisplay(options)
+    }
+    if (searchText && searchText.trim() !== "") {
       const filteredOptions = options?.filter(option => {
-        const optionLabel = String(option[labelKey]).toLowerCase();
+        const searchT = searchKey ? String(option[searchKey as keyof T]) :
+          typeof labelKey === 'string' ?
+            String(option[labelKey as keyof T]) : '' as keyof T;
+        const optionLabel = String(searchT).toLowerCase();
         return optionLabel.includes(searchText.toLowerCase());
       });
       setOptionsToDisplay(filteredOptions);
     } else {
       setOptionsToDisplay(options);
     }
-  }, [searchText, options, labelKey])
+  }, [searchText, options, labelKey, isOpen])
 
   const getOptionLabel = (option: T) => {
-    return option ? String(option[labelKey]) : `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
+    if (!option) return `Select ${convertKebabAndSnakeToTitleCase(name).toLowerCase()}`;
+
+    if (typeof labelKey === 'string') {
+      return String(option[labelKey as keyof T]);
+    }
+
+    return generateCustomLabel(option, labelKey as CustomLabelFormat);
   }
 
   const handleSelect = (currentValue: string | boolean) => {
@@ -94,10 +125,12 @@ const SelectSingleCombo = <T extends object>({
     }
   }, [triggerRef?.current?.clientWidth])
 
+
+
   return (
     <div className={cn("inputdiv", withIcon && "withicon", containerClass)}>
 
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={isOpen} onOpenChange={setOpen}>
         <div className="flex flex-col gap-2">
           {
             label && (
@@ -108,33 +141,34 @@ const SelectSingleCombo = <T extends object>({
           }
           <PopoverTrigger asChild>
             <Button
-              variant="inputButton"
-              size="inputButton"
+             variant={variant}
+             size={size}
               className={cn(
                 'flex w-full items-center justify-between gap-2 text-left text-sm transition duration-300',
                 className
               )}
               type="button"
               role="combobox"
-              onClick={() => setOpen(!open)}
+              onClick={() => setOpen(!isOpen)}
               ref={triggerRef}
+              disabled={isLoadingOptions || disabled}
             >
               <span className={cn(
                 '!overflow-hidden text-sm w-full font-normal',
                 (value && options && options?.length) ? '' : '!text-[#A4A4A4]', placeHolderClass
               )}>
                 {
-                  (showSelectedValue && value && options && options?.length)
-                    ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                    : placeholder
+                  isLoadingOptions ?
+                    "Loading options..."
+                    :
+                    (showSelectedValue && value && options && options?.length)
+                      ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                      : placeholder
                 }
-                {/* {(value && options && options?.length)
-                  ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
-                  : placeholder
-                } */}
+
               </span>
               <svg
-                className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", open && "rotate-180")}
+                className={cn("ml-2  shrink-0 opacity-70 transition-transform duration-300", isOpen && "rotate-180")}
                 fill="none"
                 height={7}
                 viewBox="0 0 12 7"
@@ -154,49 +188,52 @@ const SelectSingleCombo = <T extends object>({
         </div>
 
 
-        <PopoverContent className={cn("p-0", triggerRef?.current && `min-w-max`)} style={{ width }}>
-          <Command>
+        <PopoverContent className={cn("p-0 overflow-hidden", triggerRef?.current && `min-w-max`, isLoadingOptions && "hidden")} style={{ width }}>
+          <div className="">
             <div className="relative px-6">
               <SearchIcon className="absolute top-1/2 left-2 -translate-y-1/2 text-[#032282] h-4 w-4" />
               <input
                 className="focus:!ring-0 !ring-0 bg-transparent pl-5 p-3 !outline-none text-sm placeholder:text-[#86898ec7] border-b border-[#E6E6E6] w-full rounded-none"
-                placeholder={ placeholder || "Search"}
+                placeholder={placeholder || "Search"}
                 type="text"
                 onChange={(e) => setSearchText(e.target.value)}
               />
             </div>
-            <CommandGroup className="flex flex-col gap-3 px-5">
-              {isLoadingOptions && (
-                <CommandItem className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" value={"loading"} disabled>
-                  <SmallSpinner color='#000000' /> Loading options...
-                </CommandItem>
-              )}
-              {!isLoadingOptions && options && options?.length > 0 ? (
-                optionsToDisplay?.map((option, index) => (
-                  <button
-                    className={cn("grid grid-cols-[max-content_1fr] text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                      itemClass, "hover:bg-blue-100 w-full text-sm",
-                      "py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
-                    )}
-                    key={index}
-                    onClick={() => handleSelect(option[valueKey] as string)}
-                  >
-                    <CheckIcon
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        option[valueKey] === value ? "opacity-100" : "opacity-0"
+            {
+              isLoadingOptions &&
+              <button className="flex items-center justify-center gap-2 text-main-solid py-2 font-medium" disabled>
+                <SmallSpinner color='#000000' /> Loading options...
+              </button>
+            }
+            <div className="flex flex-col gap-1.5 px-5 py-3 max-h-[450px] overflow-y-auto">
+              {
+                !isLoadingOptions && options && options?.length > 0 ? (
+                  optionsToDisplay?.map((option, index) => (
+                    <button
+                      className={cn("text-xs relative flex select-none items-center rounded-md px-3 py-2 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                        itemClass, "hover:bg-blue-100 w-full text-sm",
+                        "py-2 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
                       )}
-                    />
-                    {option[labelKey] as string}
+                      key={index}
+                      onClick={() => handleSelect(option[valueKey] as string)}
+                    >
+                      <CheckIcon
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          option[valueKey] === value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {getOptionLabel(option)}
+                    </button>
+                  ))
+                ) :
+                  <button className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} disabled>
+                    There&apos;s no option to select from
                   </button>
-                ))
-              ) : (
-                <CommandItem className={cn("text-[0.8125rem]", isLoadingOptions && "!hidden", itemClass)} value={""} disabled>
-                  There&apos;s no option to select from
-                </CommandItem>
-              )}
-            </CommandGroup>
-          </Command>
+
+              }
+            </div>
+          </div>
         </PopoverContent>
       </Popover>
 

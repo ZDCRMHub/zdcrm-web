@@ -39,8 +39,6 @@ import {
   AccordionItem,
 } from "@/components/ui";
 import { EditPenIcon } from "@/icons/core";
-import EnquiryDiscussCard from "@/app/(dashboard)/order-timeline/misc/components/EnquiryDiscussCard";
-import { generateMockOrders } from "@/app/(dashboard)/order-timeline/misc/components/Timeline";
 import { PAYMENT_STATUS_OPTIONS, paymentOptions } from "@/constants";
 
 interface PaymentsDetailSheetDetailsPanelProps {
@@ -50,7 +48,6 @@ interface PaymentsDetailSheetDetailsPanelProps {
 export default function PaymentsDetailSheet({
   orderId,
 }: PaymentsDetailSheetDetailsPanelProps) {
-  const mockDiscussion = generateMockOrders(1)[0];
   const [paymentStatus, setPaymentStatus] = React.useState("not_paid");
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = React.useState<

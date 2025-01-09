@@ -2,11 +2,13 @@ import * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-
+interface CheckboxProps extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
+  iconClass?: string;
+}
 const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  React.ElementRef<typeof CheckboxPrimitive.Root>, CheckboxProps &
   React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
+>(({ className, iconClass, ...props }, ref) => (
   <CheckboxPrimitive.Root
     ref={ref}
     className={cn(
@@ -18,7 +20,7 @@ const Checkbox = React.forwardRef<
     <CheckboxPrimitive.Indicator
       className={cn("flex items-center justify-center text-current !bg-transparent")}
     >
-      <Check className="h-4 w-4 stroke-[3] text-blue-600" />
+      <Check className={cn("h-4 w-4 stroke-[3] text-blue-600", iconClass)} />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))

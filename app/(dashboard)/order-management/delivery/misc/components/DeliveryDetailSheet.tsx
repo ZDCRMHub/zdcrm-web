@@ -37,7 +37,7 @@ import {
   AccordionItem,
 } from "@/components/ui";
 import { EditPenIcon } from "@/icons/core";
-import EditDeliveryDetailsModal from "../../../orders/misc/components/EditDeliveryDetailsModal";
+import EditDeliveryDetailsModal from "../../../misc/components/EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
 import { paymentOptions } from "@/constants";
 

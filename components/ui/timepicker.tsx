@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronDown, ChevronUp, Clock } from "lucide-react"
+import { ChevronDown, ChevronUp, Clock } from 'lucide-react'
 import { useController, Control } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
@@ -46,20 +46,26 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
   const [minute, setMinute] = React.useState("00")
   const [period, setPeriod] = React.useState("AM")
 
-  // React.useEffect(() => {
-  //   if (value) {
-  //     const [time, ampm] = value.split(" ")
-  //     const [h, m] = time.split(":")
-  //     setHour(h)
-  //     setMinute(m)
-  //     setPeriod(ampm)
-  //   }
-  // }, [value])
+  React.useEffect(() => {
+    if (value) {
+      const [h, m] = value.split(":")
+      const hour24 = parseInt(h)
+      const hour12 = hour24 % 12 || 12
+      setHour(hour12.toString().padStart(2, "0"))
+      setMinute(m)
+      setPeriod(hour24 >= 12 ? "PM" : "AM")
+    }
+  }, [value])
 
   const handleTimeChange = () => {
-    const time = `${hour}:${minute} ${period}`
+    let hour24 = parseInt(hour)
+    if (period === "PM" && hour24 !== 12) {
+      hour24 += 12
+    } else if (period === "AM" && hour24 === 12) {
+      hour24 = 0
+    }
+    const time = `${hour24.toString().padStart(2, "0")}:${minute}`
     onChange(time)
-
   }
 
   React.useEffect(() => {
@@ -90,6 +96,15 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
     setPeriod(period === "AM" ? "PM" : "AM")
   }
 
+  const formatDisplayTime = (value: string) => {
+    if (!value) return "Select time"
+    const [h, m] = value.split(":")
+    const hour24 = parseInt(h)
+    const hour12 = hour24 % 12 || 12
+    const period = hour24 >= 12 ? "PM" : "AM"
+    return `${hour12.toString().padStart(2, "0")}:${m} ${period}`
+  }
+
   return (
     <div className={cn("flex flex-col gap-2", containerClassName)}>
       {label && (
@@ -112,7 +127,7 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
             )}
           >
             <Clock className="mr-2 h-5 w-5 absolute right-4 top-[30%]" />
-            {value || "Select time"}
+            {formatDisplayTime(value)}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[300px] p-0" align="start">
@@ -162,3 +177,4 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
 CustomTimePicker.displayName = "CustomTimePicker"
 
 export default CustomTimePicker
+

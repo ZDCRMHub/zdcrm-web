@@ -1,5 +1,5 @@
 export { default as useBooleanStateControl } from './useBooleanStateControl';
-
+export { useDebounce } from './useDebounce';
 // export { default as useRouteChangeEvent } from './useRouteChangeEvent';
 
 // export { default as useErrorModalState } from './useErrorModalState';

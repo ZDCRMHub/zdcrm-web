@@ -36,6 +36,7 @@ const buttonVariants = cva(
         lg: "h-[3.25rem] rounded-md px-12",
         icon: "h-10 w-10",
         inputButton: " h-14",
+        unstyled: "",
 
       },
     },

@@ -23,7 +23,7 @@ function EnquiryItemCardAdditionalItems({
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
-    name: `items.${index}.additionalItems`,
+    name: `items.${index}.miscellaneous`,
   });
 
   return (
@@ -35,25 +35,17 @@ function EnquiryItemCardAdditionalItems({
         return (
           <div key={field.id} className="grid grid-cols-[1fr,1fr,max-content] items-center space-x-2 w-full">
             <Input
-              {...register(`items.${index}.additionalItems.${k}.name`)}
+              {...register(`items.${index}.miscellaneous.${k}.description`)}
               placeholder="Name"
-              hasError={!!errors.items?.[index]?.additionalItems?.[k]?.name}
-              errorMessage={errors.items?.[index]?.additionalItems?.[k]?.name?.message}
+              hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.description}
+              errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.description?.message}
             />
-            {/* <Input
-              {...register(`items.${index}.additionalItems.${k}.quantity`, {
-                valueAsNumber: true,
-              })}
-              type="number"
-              placeholder="Quantity"
-              hasError={!!errors.items?.[index]?.additionalItems?.[k]?.quantity}
-              errorMessage={errors.items?.[index]?.additionalItems?.[k]?.quantity?.message}
-            /> */}
+       
             <Input
-              {...register(`items.${index}.additionalItems.${k}.cost`)}
+              {...register(`items.${index}.miscellaneous.${k}.cost`)}
               placeholder="Cost"
-              hasError={!!errors.items?.[index]?.additionalItems?.[k]?.cost}
-              errorMessage={errors.items?.[index]?.additionalItems?.[k]?.cost?.message}
+              hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
+              errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.cost?.message}
             />
             <Button type="button" onClick={() => remove(k)} size="icon" variant="outline">
               <Minus className="h-4 w-4" />
@@ -63,7 +55,7 @@ function EnquiryItemCardAdditionalItems({
       })}
       <Button
         type="button"
-        onClick={() => append({ name: "", cost: "" })}
+        onClick={() => append({ description: "", cost: "" })}
         size="sm"
         variant="ghost"
         className="bg-white text-xs"

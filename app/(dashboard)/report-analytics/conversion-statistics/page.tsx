@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import Header from '@/app/(dashboard)/report-analytics/misc/components/Header';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -10,45 +9,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { EnquiryChannelsChart } from '@/app/(dashboard)/report-analytics/misc/components/charts/EnquiryChannelsChart';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
-import { ClientTrackingChart } from '@/app/(dashboard)/report-analytics/misc/components/charts/ClientTrackingChart';
-import { TrendsSeasonalitySalesChart } from '@/app/(dashboard)/report-analytics/misc/components/charts/TrendsSeasonalitySalesChart';
-import { EmployeePerformanceChart } from '../misc/components/charts/EmployeePerformanceChart';
+import { EnquiryChannelsChart, ClientTrackingChart, TrendsSeasonalitySalesChart, EmployeePerformanceChart } from '../misc/components/conversion-statistics';
 
 const page = () => {
-  const branchOptions = ['Zuzu Delights', 'Prestige Flowers'];
-  const dateOptions = [
-    'Today',
-    'Yesterday',
-    'Last 7 days',
-    'Last 30 days',
-    'Custom',
-  ];
 
-  const handleBranchChange = (value: string) => {
-    console.log('Selected branch:', value);
-  };
-
-  const handleDateChange = (value: string) => {
-    console.log('Selected date range:', value);
-  };
 
   return (
     <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8'>
-      <Header
+      {/* <Header
         title='Conversion Statistics'
         branchOptions={branchOptions}
         dateOptions={dateOptions}
         onBranchChange={handleBranchChange}
         onDateChange={handleDateChange}
-      />
+      /> */}
 
-      <div className='flex justify-start my-14'>
+      <div className='flex justify-start my-4'>
         <ComparisonModal />
       </div>
 
-      <div className='grid  xl:grid-cols-2 gap-10 mb-10'>
+      <div className='grid  2xl:grid-cols-2 gap-10 mb-10'>
         <EnquiryChannelsChart />
 
         <ClientTrackingChart />

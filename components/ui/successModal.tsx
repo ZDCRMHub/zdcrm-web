@@ -22,13 +22,15 @@ interface ModalProps {
   heading?: string;
   subheading?: string | React.ReactNode;
   headingClass?: string
+  buttonText?: string;
 }
 const SuccessModal: React.FC<ModalProps> = ({
   isModalOpen,
   closeModal,
   heading,
   subheading,
-  headingClass
+  headingClass,
+  buttonText,
 }) => {
   return (
     <Dialog open={isModalOpen}>
@@ -59,7 +61,9 @@ const SuccessModal: React.FC<ModalProps> = ({
         <DialogFooter className="">
           <div className="w-full flex justify-center p-6">
             <Button className="h-14 w-[216px] bg-black" onClick={closeModal}>
-              Okay
+              {
+                buttonText ?? "Okay"
+              }
             </Button>
           </div>
         </DialogFooter>

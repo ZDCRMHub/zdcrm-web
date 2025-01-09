@@ -1,21 +1,26 @@
-'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useAuth } from '@/contexts/auth'
 
 interface SidebarLinkProps {
-  icon: JSX.Element
+  icon: React.ReactNode
   link: string
   text: string
   isCollapsed: boolean
+  requiredPermissions?: string[]
 }
 
-export function SidebarLink({ icon, link, text, isCollapsed }: SidebarLinkProps) {
+export function SidebarLink({ icon, link, text, isCollapsed, requiredPermissions = [] }: SidebarLinkProps) {
   const pathname = usePathname()
   const isSelected = pathname === link || pathname.startsWith(link)
+  const { user } = useAuth()
+
+  const hasPermission = requiredPermissions.length === 0 || requiredPermissions.some(permission => user?.permissions.includes(permission))
+
+  if (!hasPermission) return null
 
   const linkContent = (
     <span className={cn("flex items-center gap-2 text-[#8B909A]", isSelected && 'text-white')}>
@@ -45,3 +50,4 @@ export function SidebarLink({ icon, link, text, isCollapsed }: SidebarLinkProps)
     </TooltipProvider>
   )
 }
+

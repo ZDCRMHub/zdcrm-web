@@ -22,8 +22,6 @@ export {
 } from './command'
 export {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
   DialogTrigger,
   DialogContent,
@@ -71,6 +69,7 @@ export {
 
 export { Popover, PopoverTrigger, PopoverContent } from './popover'
 export { default as ProductsDropdown } from './productsDropdown'
+export { default as AvatarComponent } from './avatar-main'
 
 
 export {
@@ -108,7 +107,9 @@ export {
   SheetTitle,
   SheetDescription,
 } from './sheet'
+export { Skeleton } from './skeleton'
 export { default as SelectSingleCombo } from './selectSingleCombo'
+export { default as selectSingleSimple } from './selectSingleSimple'
 export { default as SelectMultipleSpecialCombo } from './selectMultipleSpecialCombo'
 export { default as SuccessModal } from './successModal'
 export {
@@ -127,3 +128,6 @@ export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tool
 export { Textarea } from './textarea'
 
 export { default as TimePicker } from './timepicker'
+
+
+export { default as Spinner } from './spinner'

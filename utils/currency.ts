@@ -21,3 +21,14 @@ export const convertNumberToNaira = (
     }).format(amount);
   }
 };
+
+
+
+export function formatCurrency(amount: number, currency: 'NGN' | 'USD'): string {
+  const locale = currency === 'NGN' ? 'en-NG' : 'en-US';
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2,
+  }).format(amount);
+}

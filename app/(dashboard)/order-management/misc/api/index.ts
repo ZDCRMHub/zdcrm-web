@@ -1,0 +1,14 @@
+export { useGetOrders } from './getOrders'
+export { useGetOrderDetail } from './getOrderDetails'
+export { useGetOrderDeliveryLocations } from './getOrderDeliveryLocations'
+export { useGetCustomerHistory } from './getClientHistory'
+export { useGDiscounts } from './getDiscounts'
+
+export { useCreateOrder } from './postCreateOrder'
+export { useAddDiscountToOrder } from './postAddDiscountToOrder'
+export { useAddNoteToOrderDiscussion } from './postAddNoteToOrderDiscussion'
+
+export { useUpdateOrderStatus } from './patchUpdateOrderStatus'
+export { useUpdateDriverDetails } from './patchUpdateDriverDetails'
+export { useUpdateOrderPaymentMethod } from './patchUpdateOrderPaymentMethod'
+export { useUpdateDeliveryStatus } from './patchUpdateDeliveryStatus'
