@@ -73,6 +73,7 @@ const itemSchema = z.object({
         }
     });
 });
+const MAX_FILE_SIZE = 1000000;
 
 export const NewOrderSchema = z.object({
     customer: z.object({
@@ -106,16 +107,40 @@ export const NewOrderSchema = z.object({
         "paid_usd_transfer",
         "paid_paypal",
         "cash_paid",
-        "part_payment",
+        "part_payment_cash",
+        "part_payment_transfer",
         "paid_bitcoin",
         "not_received_paid"
     ]),
-    payment_proof: z.string().url().optional().nullable(),
+    // payment_proof: z.string().url().optional().nullable(),
+    payment_proof: z.any().nullable().refine(
+            file => {
+                if (!file) {
+                    throw z.ZodError.create([{
+                        path: ['payment_proof'],
+                        message: 'Please select a file.',
+                        code: 'custom',
+                    }]);
+                }
+                if (!file.type.startsWith('application/pdf')) {
+                    throw z.ZodError.create([{
+                        path: ['payment_proof'],
+                        message: 'Please select a PDF file.',
+                        code: 'custom',
+                    }]);
+                }
+                return file.size <= MAX_FILE_SIZE;
+            },
+    
+            {
+                message: 'Max image size is 10MB.',
+            }
+        ),
     payment_currency: z.enum(["NGN", "USD"]),
     amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
     initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
 }).superRefine((data, ctx) => {
-    if (data.payment_options === "part_payment" && !data.initial_amount_paid) {
+    if ((data.payment_options === "part_payment_cash" || data.payment_options === "part_payment_transfer" ) && !data.initial_amount_paid) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Enter initial amount paid",

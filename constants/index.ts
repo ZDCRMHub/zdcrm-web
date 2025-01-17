@@ -72,7 +72,8 @@ export const ENQUIRY_PAYMENT_OPTIONS = [
   { value: "paid_usd_transfer", label: "Paid (USD Transfer)" },
   { value: "paid_paypal", label: "Paid (PayPal)" },
   { value: "cash_paid", label: "Cash Paid" },
-  { value: "part_payment", label: "Part Payment" },
+  { value: "part_payment_cash", label: "Part Payment(Cash)" },
+  { value: "part_payment_transfer", label: "Part Payment(Transfer)" },
   { value: "paid_bitcoin", label: "Paid (Bitcoin)" },
   { value: "not_received_paid", label: "Not Received (Paid)" },
 ];

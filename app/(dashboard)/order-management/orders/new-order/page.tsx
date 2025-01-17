@@ -11,6 +11,9 @@ import { Money, TruckTime, ShoppingBag } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
+import useCloudinary from '@/hooks/useCloudinary';
+
+
 import {
   Accordion,
   AccordionContent,
@@ -119,13 +122,14 @@ const NewOrderPage = () => {
     if (selectedPaymentOption == "paid_usd_transfer" || selectedPaymentOption == "paid_naira_transfer" || selectedPaymentOption == "cash_paid" || selectedPaymentOption == "paid_website_card"
       || selectedPaymentOption == "paid_pos" || selectedPaymentOption == "paid_paypal" || selectedPaymentOption == "paid_bitcoin") {
       setValue('payment_status', 'FP')
-    } else if (selectedPaymentOption == "part_payment") {
+    } else if (selectedPaymentOption == "part_payment_cash") {
       setValue('payment_status', 'PP')
     } else {
       setValue('payment_status', 'UP')
     }
   }, [selectedPaymentOption])
 
+  const { uploadToCloudinary } = useCloudinary()
 
   const [createdOrder, setCreatedOrder] = React.useState<TOrder | null>(null);
   const {
@@ -134,12 +138,27 @@ const NewOrderPage = () => {
     setFalse: closeSuccessModal,
   } = useBooleanStateControl()
 
+  // const router = useRouter()
   const { mutate, isPending } = useCreateOrder()
-  const onSubmit = (data: NewOrderFormValues) => {
-    mutate(data, {
+  const onSubmit = async (data: NewOrderFormValues) => {
+    let payment_proof: string | undefined
+    const PdfFile = data.payment_proof
+    if (data.payment_proof) {
+      const data = await uploadToCloudinary(PdfFile)
+      payment_proof = data.secure_url
+  }
+  const dataToSubmit = {
+      ...data,
+      payment_proof: PdfFile ? payment_proof : undefined,
+  }
+
+
+
+    mutate(dataToSubmit, {
       onSuccess(data) {
         toast.success("Created successfully");
-        openSuccessModal();
+        // openSuccessModal();
+        router.push(`/order-management/orders/${data.data.id}/order-summary`)
         setCreatedOrder(data?.data);
       },
     })
@@ -617,7 +636,7 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {selectedPaymentOption === "part_payment" && (
+                  {(selectedPaymentOption === "part_payment_cash" || selectedPaymentOption === "part_payment_transfer") && (
                     <Controller
                       name="initial_amount_paid"
                       control={control}
@@ -657,13 +676,13 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {/* <FilePicker
-                    onFileSelect={(file) => setValue("proofOfPayment", file!)}
-                    hasError={!!errors.proofOfPayment}
-                    errorMessage={errors.proofOfPayment?.message as string}
+                 <FilePicker
+                    onFileSelect={(file) => setValue("payment_proof", file!)}
+                    hasError={!!errors.payment_proof}
+                    errorMessage={errors.payment_proof?.message as string}
                     maxSize={10}
                     title="Upload Payment Proof"
-                  /> */}
+                  /> 
                 </div>
               </AccordionContent>
             </AccordionItem>
