@@ -410,7 +410,7 @@ const NewOrderPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <SelectSingleCombo
-                          label="Delivery Method"
+                          label="Dispatch Location"
                           {...field}
                           value={field.value?.toString() || ''}
                           isLoadingOptions={dispatchLocationsLoading}
@@ -454,7 +454,23 @@ const NewOrderPage = () => {
 
                   // placeholder="Select delivery date"
                   />
-
+                  <FormField
+                    control={control}
+                    name="delivery.note"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormControl>
+                          <Input
+                            label="Delivery Note"
+                            {...field}
+                            hasError={!!errors.delivery?.note}
+                            errorMessage={errors.delivery?.note?.message}
+                            placeholder="Enter delivery note"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
                 </div>
               </AccordionContent>
@@ -515,7 +531,6 @@ const NewOrderPage = () => {
                           errors={errors}
                           register={register}
                           setValue={setValue}
-                          removeItem={() => remove(index)}
                         />
                       )
                     })

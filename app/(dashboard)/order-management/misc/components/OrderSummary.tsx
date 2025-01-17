@@ -71,6 +71,8 @@ export default function OrderSummary() {
       handleStatusUpdate()
     }
   }
+
+  const selectedDiscountAmount = discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount || 0;
   const handleStatusUpdate = () => {
     updateStatus({ id: order_id, status: "STD" as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
       {
@@ -285,12 +287,17 @@ export default function OrderSummary() {
                         isLoadingOptions={isLoadingDiscounts}
                       />
                       <div className='mt-16 w-[300px] self-end'>
-                        <p className='font-medium mt-6 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
-                        <p className='text-xl font-bold mt-6'>Total (NGN):
-
+                        <p className='font-medium mt-2 text-[#8B909A]'>
+                          Subtotal (NGN):
+                          {formatCurrency(Number(order?.total_selling_price	),"NGN")}
+                        </p>
+                        <p className='font-medium mt-2 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
+                        <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(selectedDiscountAmount) || 0, "NGN")}</p>
+                        <p className='text-xl font-bold mt-6'>
+                          Total (NGN):
                           {
                             formatCurrency(
-                              Number(order?.total_amount) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
+                              Number(order?.total_selling_price	) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
                               "NGN")
                           }
                         </p>

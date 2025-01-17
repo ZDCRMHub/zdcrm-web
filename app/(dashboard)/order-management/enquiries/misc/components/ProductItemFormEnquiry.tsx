@@ -42,11 +42,11 @@ const ProductItemFormEnquiry = ({
 
   return (
 
-    <div key={index} className="mt-4 border-t pt-4">
+    <>
       {
         watchedInventories.map((_, invIndex) =>
 
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8" key={invIndex}>
+          <>
             <ProductItemSelector
               inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
               setInventoryId={(inventoryId) => {
@@ -95,10 +95,10 @@ const ProductItemFormEnquiry = ({
               )}
             />
 
-          </div>
+          </>
         )
       }
-    </div>
+    </>
 
   )
 }

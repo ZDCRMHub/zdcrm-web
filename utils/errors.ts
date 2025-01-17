@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type AxiosError } from 'axios';
 import { FieldValues, UseFormSetError } from 'react-hook-form';
 

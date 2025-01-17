@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { Control, Controller, FieldErrors } from 'react-hook-form';
 import { Upload } from 'lucide-react';
 import { Gallery } from 'iconsax-react';
+import FormError from '@/components/ui/formError';
 
 interface CustomImagePickerProps {
     control: Control<any>;
     name: string;
     errors: FieldErrors;
+    hasError?: boolean
+    errorMessage?: string
 }
 
-const CustomImagePicker: React.FC<CustomImagePickerProps> = ({ control, name, errors }) => {
+const CustomImagePicker: React.FC<CustomImagePickerProps> = ({ control, name, hasError, errorMessage }) => {
     const [preview, setPreview] = useState<string | null>(null);
 
     return (
@@ -26,7 +29,7 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({ control, name, er
                             </span>
                         </p>
                         <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 bg-[#F8F8F8] transition-colors w-full max-w-[250px] aspect-[5/3]">
-                            {preview ? (
+                            {(!!field.value && preview) ? (
                                 <img src={preview} alt="Preview" className="mx-auto max-h-40 object-contain" />
                             ) : (
                                 <div className="text-gray-500">
@@ -52,7 +55,7 @@ const CustomImagePicker: React.FC<CustomImagePickerProps> = ({ control, name, er
                             }
                         }}
                     />
-                    {errors[name] && <p className="mt-2 text-sm text-red-500">{errors[name]?.message as string}</p>}
+                    {hasError && <FormError errorMessage={errorMessage || "Required"} />}
                 </div>
             )}
         />

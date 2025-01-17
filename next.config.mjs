@@ -19,7 +19,22 @@ const nextConfig = {
                 hostname: 'www.zuzudelights.com',
                 port: '',
                 pathname: '/wp-content/uploads/**'
-            }
+            },
+            {
+                protocol: 'http',
+                hostname: 'res.cloudinary.com',
+                pathname: '/**',
+              },
+              {
+                protocol: 'https',
+                hostname: 'res.cloudinary.com',
+                pathname: '/**',
+              },
+              {
+                protocol: 'https',
+                hostname: 'images.pexels.com',
+                pathname: '/**',
+              },
         ]
     }
 };

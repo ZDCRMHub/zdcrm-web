@@ -46,7 +46,7 @@ const OrdeManagementDelivery = () => {
     updateDriverDetails({ id: order_id, data },
       {
         onSuccess: () => {
-          router.push('/order-management/orders');
+          router.push(`/order-management/orders/${order_id}/complete-order`);
           toast.success('Driver details updated successfully', { duration: 3500 });
 
         },

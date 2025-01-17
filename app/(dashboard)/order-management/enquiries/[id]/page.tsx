@@ -99,18 +99,18 @@ const EnquiryDetailsPage = () => {
                         </div>
                         <div className="flex justify-between items-center gap-1 mt-4">
                             <div className="flex items-center gap-1">
-                                <p className="text-sm text-light-grey font-medium">
+                                <p className="text-sm font-medium text-[#687588]">
                                     Enquiry Occasion:
                                 </p>
-                                <p className="text-xs text-[#111827] font-medium">
+                                <p className="font-medium text-custom-blue">
                                     {data?.enquiry_occasion}
                                 </p>
                             </div>
                             <div className="flex items-center gap-1">
-                                <p className="text-sm text-light-grey font-medium">
+                                <p className="text-sm font-medium text-[#687588]">
                                     Enquiry Channel:
                                 </p>
-                                <p className="text-sm text-[#111827] font-medium">{data?.enquiry_channel}</p>
+                                <p className="font-medium text-custom-blue">{data?.enquiry_channel}</p>
                             </div>
                         </div>
                     </div>
@@ -203,7 +203,7 @@ const EnquiryDetailsPage = () => {
                                             <div className="bg-white-grey rounded-[6px] w-fit">
 
                                                 <Image
-                                                    src="/img/cake.png"
+                                                    src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || "/img/cake.png"}
                                                     alt="Adeline Fautline Cake"
                                                     className="w-24 h-24 object-cover rounded-md p-2"
                                                     width={100}
@@ -245,7 +245,7 @@ const EnquiryDetailsPage = () => {
                                             }
 
                                             <p className="text-[#111827] font-medium">
-                                                <span className="text-[#687588]">Message on cake:</span>{" "}
+                                                <span className="text-[#687588]">Message {item.product.category.name == "Cake" && "on cake"}:</span>{" "}
                                                 {data?.message}
                                             </p>
                                         </div>

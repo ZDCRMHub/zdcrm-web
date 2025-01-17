@@ -27,7 +27,7 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
     if (!order) return null;
 
     const subtotal = order.items.reduce((acc: number, item: any) => acc + (item.quantity * (item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0)), 0);
-    const total = Number(order.total_amount);
+    const total = Number(order.total_production_cost);
     const deliveryFee = Number(order.delivery.dispatch?.delivery_price) || 0;
     // const discount = order.discount?.amount || 0;
     const discount =  0;

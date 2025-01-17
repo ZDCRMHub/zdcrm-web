@@ -33,7 +33,7 @@ export default function OrdersDashboardHistory() {
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const defaultStatuses = 'PND,SOA,SOR,STD,COM,CAN'
+  const defaultStatuses = 'COM,CAN'
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>(defaultStatuses);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const { control, register, setValue, watch } = useForm<{
@@ -174,7 +174,7 @@ export default function OrdersDashboardHistory() {
                           return (
                             <React.Fragment key={index}>
                               {
-                                status.value !== "CAN" &&
+                                (status.value == "CAN" || status.value == "COM") &&
                                 <MenubarItem
                                   onClick={() => handleStatusChange(status.value)}
                                 >

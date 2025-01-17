@@ -47,6 +47,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
+import { useRouter } from "next/navigation";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -70,6 +71,12 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
+          if (new_status == "STD") {
+            router.push("/order-management/delivery")
+          }
+          else if (new_status == "COM" || new_status == "CAN") {
+            router.push("/order-management/order-history")
+          }
         },
         onError: (error) => {
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
@@ -80,11 +87,13 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
       }
     );
   }
+  const router = useRouter();
   const handleUpdatePaymentMethod = (new_payment_method: string) => {
     updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
       {
         onSuccess: (data) => {
           toast.success("Payment method updated successfully");
+         
         },
         onError: (error) => {
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
@@ -426,7 +435,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_amount || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_production_cost || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

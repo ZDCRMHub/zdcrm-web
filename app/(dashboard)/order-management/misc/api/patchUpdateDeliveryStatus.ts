@@ -2,7 +2,7 @@ import { APIAxios } from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface IOrderStatus {
-    id: number;
+    id: number | string;
     status: string;
 }
 
@@ -11,7 +11,7 @@ const updateOrderStatus = async ({ status, id }: IOrderStatus) => {
     return res.data;
 };
 
-export const useUpdateDeliveryStatus = (id?: number) => {
+export const useUpdateDeliveryStatus = (id?: string | number) => {
     const queryClient = useQueryClient();
 
     return useMutation({

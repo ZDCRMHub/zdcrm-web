@@ -131,7 +131,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </Badge>
             </TableCell>
             <TableCell className='min-w-max'>
-                <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
+                <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>
                 <div className='text-sm text-[#494949]'>{paymentStatusEnums[order.payment_status]}({convertKebabAndSnakeToTitleCase(order?.payment_options)})</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>

@@ -205,9 +205,7 @@ export default function OrdersDashboardPayments() {
                 </Button>
               )
             }
-            <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-              <Plus className='mr-2 h-4 w-4' /> Add Order
-            </LinkButton>
+        
             <Button
               variant='outline'
               className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'

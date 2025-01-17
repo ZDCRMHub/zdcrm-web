@@ -89,7 +89,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
             <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
             <TableCell className='min-w-max'>
-                <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
+                <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>
                 <div className='text-sm text-[#494949]'>{order.payment_status}</div>
             </TableCell>
             <TableCell className='min-w-max'>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
-import { Mail, MessageCircle, User, X } from "lucide-react";
+import { Mail, MessageCircle, PhoneMissed, User, X } from "lucide-react";
 import {
   Book,
   Notepad2,
@@ -11,7 +11,6 @@ import {
   UserEdit,
 } from "iconsax-react";
 import { Separator } from "@radix-ui/react-select";
-import { Phone } from "@phosphor-icons/react";
 import Image from "next/image";
 import {
   Checkbox,
@@ -142,7 +141,7 @@ export default function PaymentsDetailSheet({
                       <span>adebayo@gmail.com</span>
                     </p>
                     <p className="flex items-center gap-2 text-sm">
-                      <Phone
+                      <PhoneMissed
                         size={20}
                         className="text-[#FFC600] flex-shrink-0"
                       />

@@ -1,8 +1,10 @@
 export const PRODUCT_TYPES_OPTIONS = {
   Cakes: {
     sizes: [
+      { label: "4 inches", value: "4" },
       { label: "6 inches", value: "6" },
       { label: "8 inches", value: "8" },
+      { label: "9 inches", value: "9" },
       { label: "10 inches", value: "10" },
       { label: "12 inches", value: "12" }
     ],
@@ -76,7 +78,7 @@ export const ENQUIRY_PAYMENT_OPTIONS = [
 ];
 
 export const ORDER_STATUS_OPTIONS = [
-  { value: "PND", label: "Payment Made" },
+  { value: "PND", label: "Pending" },
   { value: "SOA", label: "SOA" },
   { value: "SOR", label: "Sorted" },
   { value: "STD", label: "Sent to Dispatch" },
@@ -100,38 +102,6 @@ export const paymentOptions = [
   { label: "Paid (Bitcoin)", value: "paid_bitcoin" },
   { label: "Not Received (Paid)", value: "not_received_paid" }
 ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const STOCK_CATEGORIES_OPTIONS = [
   { value: 'C', label: 'Cake' },
@@ -186,11 +156,11 @@ export const ENQUIRY_CHANNEL_OPTIONS = [
 ]
 
 export const ENQUIRY_OCCASION_OPTIONS = [
-  { value: 'birthday', label: 'Birthday' },
-  { value: 'anniversary', label: 'Anniversary' },
-  { value: 'wedding', label: 'Wedding' },
-  { value: 'father_s_Day', label: "Father's Day" },
-  { value: 'mother_s_Day', label: "Mother's Day" },
+  { value: 'Birthday', label: 'Birthday' },
+  { value: 'Anniversary', label: 'Anniversary' },
+  { value: 'Wedding', label: 'Wedding' },
+  { value: "Father's Day", label: "Father's Day" },
+  { value: "Mother's Day", label: "Mother's Day" },
 ]
 
 export const DISPATCH_METHOD_OPTIONS = [

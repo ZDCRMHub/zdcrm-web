@@ -17,7 +17,7 @@ import { TOrder } from '../types';
 import { Button, LinkButton, Spinner } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
-import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
+import { convertKebabAndSnakeToTitleCase, maskString } from '@/utils/strings';
 import { TCustomerHistory } from '../api/getClientHistory';
 
 type StatusColor =
@@ -80,22 +80,22 @@ const OrderRow: React.FC<OrderRowProps> = ({ customer }) => {
                 <div>{customer.name}</div>
             </TableCell>
             <TableCell className=''>
-                <div>{customer.phone}</div>
+                <div>{maskString(customer.phone, 3, true)}</div>
             </TableCell>
-            
+
             <TableCell className=''>
-                <div>{customer.email}</div>
+                <div>{maskString(customer.email, 3, false, 12)}</div>
             </TableCell>
-            
+
             <TableCell className=''>
                 <div>{customer.orders_count}</div>
             </TableCell>
-            
+
             <TableCell className=''>
                 <div>{formatCurrency(parseInt(customer.total_amount_spent), "NGN")}</div>
-            </TableCell>          
+            </TableCell>
 
-          
+
 
         </TableRow>
     );

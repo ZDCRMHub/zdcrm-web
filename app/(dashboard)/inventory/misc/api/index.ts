@@ -1,3 +1,4 @@
+'use client'
 export { useGetStockInventory } from './getStockInventories';
 export { useGetVariations } from './getCategoryVariations';
 export { useGetCategories } from './getCategories';
@@ -7,3 +8,5 @@ export { useGetStockCategories } from './getStockCategories';
 export { useGetStockInventoryDetails } from './getStockInventoryDetail';
 export { useGetProductsInventory } from './getProductInventories';
 export { useGetStoreInventory } from './getStoreInventories';
+export { useGetProductInventoryDetails } from './getProductInvetoryDetails';
+export { useGetProductInventoryHistory } from './getProductInvetoryHistory';

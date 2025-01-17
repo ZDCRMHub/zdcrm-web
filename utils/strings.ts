@@ -124,3 +124,22 @@ export function formatTimeString(timeString: string, formatString?:string): stri
   }
 }
 
+
+
+
+export function maskString(
+  input: string,
+  visibleChars: number,
+  useOriginalLength: boolean,
+  fixedLength?: number
+): string {
+  const length = input.length;
+  const totalMaskLength = useOriginalLength ? length - 2 * visibleChars : fixedLength! - 2 * visibleChars;
+  
+  if (totalMaskLength < 0) {
+    throw new Error("Fixed length must be greater than twice the visible character count.");
+  }
+  
+  const mask = "*".repeat(totalMaskLength);
+  return `${input.slice(0, visibleChars)}${mask}${input.slice(-visibleChars)}`;
+}
