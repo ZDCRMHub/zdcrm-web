@@ -134,7 +134,7 @@ const ProductInventorySelector: React.FC<ProductInventorySelectorProps> = ({
                                                         <Image
                                                             src={option.image_one as string}
                                                             alt={option.name as string}
-                                                            className="w-full h-full object-cover text-xs"
+                                                            className="w-full h-full object-cover text-xs rounded-xl"
                                                             fill
                                                         />
                                                         :

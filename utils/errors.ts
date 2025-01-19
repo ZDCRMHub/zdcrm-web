@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type AxiosError } from 'axios';
 import { FieldValues, UseFormSetError } from 'react-hook-form';
 
@@ -113,14 +112,14 @@ export function formatAxiosErrorMessage(
 
 
 type ErrorResponse = {
-    status: string;
-    status_code: number | null;
-    data: any | null;
-    errors: {
-        [key: string]: string[];
-    };
-    customMessages?: {
-      [key: string]: string;
+  status: string;
+  status_code: number | null;
+  data: any | null;
+  errors: {
+    [key: string]: string[];
+  };
+  customMessages?: {
+    [key: string]: string;
   };
 };
 
@@ -131,14 +130,14 @@ export const setFormErrors = (
   setError: UseFormSetError<FieldValues>
 ) => {
   Object.keys(errors).forEach((fieldName) => {
-      const fieldError = errors[fieldName].join(' ');
-      console.log(fieldName)
-      console.log(fieldError)
-      const errorMessage = customMessages?.[fieldName] || fieldError;
-      setError(fieldName, {
-          type: 'manual',
-          message: errorMessage,
-      });
+    const fieldError = errors[fieldName].join(' ');
+    console.log(fieldName)
+    console.log(fieldError)
+    const errorMessage = customMessages?.[fieldName] || fieldError;
+    setError(fieldName, {
+      type: 'manual',
+      message: errorMessage,
+    });
   });
 };
 
@@ -166,17 +165,19 @@ export function extractErrorMessage(error: unknown): string {
 
   const errorObj = error as ErrorResponse2;
 
-  if (!errorObj.error || !errorObj.error.fields) {
+  if (!errorObj.error) {
     return "An unexpected error occurred. Please try again later.";
   }
-
-  const { fields } = errorObj.error;
+  
   const errorMessages: string[] = [];
+  if (errorObj.error?.fields) {
+    const { fields } = errorObj.error;
 
-  // Iterate through all field errors
-  for (const [field, messages] of Object.entries(fields)) {
-    if (Array.isArray(messages) && messages.length > 0) {
-      errorMessages.push(`${field}: ${messages.join(', ')}`);
+    // Iterate through all field errors
+    for (const [field, messages] of Object.entries(fields)) {
+      if (Array.isArray(messages) && messages.length > 0) {
+        errorMessages.push(`${field}: ${messages.join(', ')}`);
+      }
     }
   }
 

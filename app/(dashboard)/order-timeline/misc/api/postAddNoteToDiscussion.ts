@@ -22,7 +22,7 @@ export const useAddNoteToDiscussion = ({ id }: useAddNoteToDiscussionProps) => {
         onSuccess() {
 
             queryClient.invalidateQueries({
-                queryKey: [`order-timeline-list`, id]
+                queryKey: [`order-timeline-list`]
             });
 
         },

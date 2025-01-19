@@ -1,4 +1,4 @@
-import Axios from 'axios';
+import Axios, { AxiosError } from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 export const APIAxios = Axios.create({
@@ -26,13 +26,22 @@ export const handleInactiveAccountRedirect = () => {
 
 APIAxios.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (
-      error.response && 
-      error.response.data?.error?.summary === 'inactive account'
-    ) {
-      handleInactiveAccountRedirect();
+  (error: AxiosError) => {
+    // Log the entire error response to the console
+    console.log('Axios Error Response:', error.response);
+
+    if (error.response) {
+      const errorData = error.response.data as { error?: { summary?: string } };
+      const errorSummary = errorData.error?.summary;
+      
+      if (errorSummary === 'inactive account' || errorSummary === 'Invalid token' || errorSummary === 'Token has expired') {
+        console.log('Authentication Error:', errorSummary);
+        deleteAxiosDefaultToken();
+        handleInactiveAccountRedirect();
+      }
     }
     return Promise.reject(error);
   }
 );
+
+export default APIAxios;

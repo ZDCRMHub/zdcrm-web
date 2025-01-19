@@ -1,10 +1,10 @@
 "use client";
-import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link } from 'iconsax-react';
+import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link, TruckRemove } from 'iconsax-react';
 import React from 'react';
 import { Button, LinkButton } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
 import ProgressTimeline from './ProgressTimeline';
-import { useGetOrderDetail } from '../../../misc/api';
+import { useGetOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
 import { formatTimeString } from '@/utils/strings';
 import OrderPageSkeleton from './CompleteOrderPageSkeleton';
 
@@ -21,6 +21,12 @@ const CompleteOrderPage = () => {
         console.log("Order successfully delivered!");
         // Add any additional logic here
     };
+
+    const { mutate: updateStatus } = useUpdateDeliveryStatus(order_id);
+    const handleStatusUpdate = (status: "PND" | "DIS" | "DSC" | "DEL" | "CAN") => {
+        updateStatus({ id: order_id, status });
+    };
+
 
     if (isLoading) {
         return <OrderPageSkeleton />;
@@ -50,6 +56,7 @@ const CompleteOrderPage = () => {
                         orderNumber={order?.order_number}
                         currentStatus={order?.delivery.status}
                         onDelivered={onDelivered}
+                        order={order!}
                     />
 
                     <article className="grid grid-cols-[0.85fr,1fr] gap-5 justify-around p-4 px-6 border border-[#0F172B1A] rounded-3xl w-full max-w-[800px] mx-auto mt-9">
@@ -57,7 +64,7 @@ const CompleteOrderPage = () => {
                             <div className="flex items-center text-sm">
                                 <Truck variant="Bold" size="24" className="mr-2" /> Driver
                             </div>
-                            <div className="font-medium text-xl">ID: 222-111-33</div>
+                            {/* <div className="font-medium text-xl">ID: 222-111-33</div> */}
                             <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver_name}</div>
                             <div className="platform text-sm text-[#194A7A]">
                                 Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.delivery_platform}</a>
@@ -88,9 +95,12 @@ const CompleteOrderPage = () => {
                     </article>
 
                     {/* Share Delivery Link Section */}
-                    <div className="share-link-section p-4 text-center">
+                    <div className="flex items-center gap-4 p-4 text-center">
                         <Button className="px-8 h-14" >
                             <Link size="24" className="mr-2" /> Share Delivery Link
+                        </Button>
+                        <Button variant="destructive" className="px-8 h-14" onClick={() => handleStatusUpdate("CAN")}>
+                            <TruckRemove size="24" className="mr-2" /> Cancel Order
                         </Button>
                     </div>
                 </section>

@@ -1,18 +1,31 @@
+'use client'
+
 import React from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Button, SelectSingleCombo } from '@/components/ui';
 import { Plus, User, X } from 'lucide-react';
 import { Add, Book } from 'iconsax-react';
+import toast from 'react-hot-toast';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button, SelectSingleCombo } from '@/components/ui';
+import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
+import { PRODUCT_TYPES_OPTIONS } from '@/constants';
+import useCloudinary from '@/hooks/useCloudinary';
+import { useLoading } from '@/contexts';
+import useErrorModalState from '@/hooks/useErrorModalState';
+import { extractErrorMessage, formatAxiosErrorMessage } from '@/utils/errors';
 import { Separator } from '@radix-ui/react-select';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIAxios } from "@/utils/axios";
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
-import toast from 'react-hot-toast';
+import ErrorModal from '@/components/ui/modal-error';
+
+import CustomImagePicker from './CustomImagePicker';
 import { useGetStockCategories } from '../api';
-import { PRODUCT_TYPES_OPTIONS } from '@/constants';
+
+
+
 
 const variationSchema = z.object({
     size: z.string().optional(),
@@ -22,11 +35,35 @@ const variationSchema = z.object({
     cost_price: z.string().min(1, { message: 'Cost price is required' }),
     quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
 });
+const MAX_FILE_SIZE = 1000000;
 
 const schema = z.object({
     name: z.string().min(1, { message: 'Item name is required' }).max(255),
     category: z.number(),
     branch: z.number(),
+    image_one: z.any().nullable().refine(
+        file => {
+            if (!file) {
+                throw z.ZodError.create([{
+                    path: ['image_one'],
+                    message: 'Please select a file.',
+                    code: 'custom',
+                }]);
+            }
+            if (!file.type.startsWith('image/')) {
+                throw z.ZodError.create([{
+                    path: ['image_one'],
+                    message: 'Please select an image file.',
+                    code: 'custom',
+                }]);
+            }
+            return file.size <= MAX_FILE_SIZE;
+        },
+
+        {
+            message: 'Max image size is 10MB.',
+        }
+    ),
     variations: z.array(variationSchema).min(1, { message: 'At least one variation is required' })
 
 }).refine((data) => {
@@ -48,7 +85,7 @@ const schema = z.object({
 
 type FormType = z.infer<typeof schema>;
 
-const createStockInventory = async (data: FormType) => {
+const createStockInventory = async (data: FormType & { image_one?: string }) => {
     console.log(data)
     const res = await APIAxios.post('/inventory/create-stock-inventory/', data, {
         // headers: { 'Content-Type': 'multipart/form-data' },
@@ -57,10 +94,11 @@ const createStockInventory = async (data: FormType) => {
 };
 
 export default function NewInventorySheet() {
-    const { control, handleSubmit, formState: { errors, isDirty }, watch, reset } = useForm<FormType>({
+    const { register, control, handleSubmit, formState: { errors, isDirty }, watch, setValue, reset } = useForm<FormType>({
         resolver: zodResolver(schema),
         defaultValues: {
-            variations: [{ selling_price: null, cost_price: '', quantity: 0 }],
+            image_one: null,
+            variations: [{ selling_price: null, cost_price: '', }],
         },
     });
 
@@ -71,6 +109,15 @@ export default function NewInventorySheet() {
 
     const { data: categories, isLoading: categoriesLoading } = useGetStockCategories();
     const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
+    const { uploadToCloudinary } = useCloudinary()
+    const { isUploading } = useLoading()
+    const {
+        isErrorModalOpen,
+        errorModalMessage,
+        openErrorModalWithMessage,
+        closeErrorModal,
+        setErrorModalState
+    } = useErrorModalState()
 
     const queryClient = useQueryClient();
     const { mutate: createStockInvetory, isPending: isCreating } = useMutation({
@@ -79,10 +126,15 @@ export default function NewInventorySheet() {
             queryClient.invalidateQueries({ queryKey: ['stockInventory'] });
             toast.success('Stock inventory created successfully');
             reset();
+            setValue('image_one', null)
         },
+        onError: (error: unknown) => {
+            const errorMessage = extractErrorMessage(error) || formatAxiosErrorMessage(error as any)
+            openErrorModalWithMessage(errorMessage)
+        }
     });
 
-    const onSubmit = (data: FormType) => {
+    const onSubmit = async (data: FormType) => {
         if (data.category === 8) {
             data.variations.forEach(variation => {
                 delete variation.color;
@@ -99,216 +151,246 @@ export default function NewInventorySheet() {
                 delete variation.color;
             });
         }
-        createStockInvetory(data);
+        let image_one: string | undefined
+        const imageFile = data.image_one
+        if (data.image_one) {
+            const data = await uploadToCloudinary(imageFile)
+            image_one = data.secure_url
+        }
+        const dataToSubmit = {
+            ...data,
+            image_one: imageFile ? image_one : undefined,
+        }
+        createStockInvetory(dataToSubmit);
     };
     console.log(errors)
     const selectedCategoryName = categories?.find(cat => cat.id === watch('category'))?.name;
 
     return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant='default' className='bg-black text-white'>
-                    <Plus className='mr-2 h-4 w-4' /> Add New Stock Item
-                </Button>
-            </SheetTrigger>
-
-            <SheetContent className='!w-[80vw] !max-w-[450px] h-screen flex flex-col overflow-y-scroll px-0'>
-                <SheetTitle className='border-b pb-4 px-8'>
-                    <h2 className='text-xl font-semibold flex items-center gap-4'>
-                        <span className='bg-[#E8EEFD] p-2 rounded-full'>
-                            <Book size={25} variant='Bold' color='#194A7A' />
-                        </span>
-                        <span>Add Inventory</span>
-                    </h2>
-                </SheetTitle>
-                <SheetClose className='absolute top-full left-[-100%]'>
-                    <Add className='mr-2 h-6 w-6 rotate-45' />
-                </SheetClose>
-
-                <Separator />
-
-                <form onSubmit={handleSubmit(onSubmit)} className='grow flex flex-col gap-8 px-8 py-10'>
-                    {/* <CustomImagePicker
-                        control={control}
-                        name="image_one"
-                        errors={errors}
-                    /> */}
-                    <Controller
-                        name="name"
-                        control={control}
-                        render={({ field }) => (
-                            <Input
-                                {...field}
-                                value={field.value?.toString() ?? ''}
-                                placeholder='Item name'
-                                hasError={!!errors.name}
-                                errorMessage={errors.name?.message}
-                            />
-                        )}
-                    />
-
-
-                    <Controller
-                        name="branch"
-                        control={control}
-                        render={({ field }) => (
-                            <SelectSingleCombo
-                                {...field}
-                                name='branch'
-                                value={field.value?.toString() || ''}
-                                options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                                valueKey='value'
-                                labelKey="label"
-                                placeholder='Select Branch'
-                                onChange={(value) => field.onChange(Number(value))}
-                                isLoadingOptions={branchesLoading}
-                                hasError={!!errors.branch}
-                                errorMessage={errors.branch?.message}
-                            />
-                        )}
-                    />
-                    <Controller
-                        name="category"
-                        control={control}
-                        render={({ field }) => (
-                            <SelectSingleCombo
-                                {...field}
-                                name='category'
-                                value={field.value?.toString() || ''}
-                                options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
-                                valueKey='value'
-                                labelKey="label"
-                                placeholder='Item category'
-                                onChange={(value) => field.onChange(Number(value))}
-                                isLoadingOptions={categoriesLoading}
-                                hasError={!!errors.category}
-                                errorMessage={errors.category?.message}
-                            />
-                        )}
-                    />
-
-
-
-                    {fields.map((field, index) => (
-                        <div key={field.id} className="space-y-4">
-                            <h3 className="font-semibold">Variation {index + 1}</h3>
-                            {watch('category') === 8 && (
-                                <Controller
-                                    name={`variations.${index}.size`}
-                                    control={control}
-                                    render={({ field }) => (
-                                       
-                                        <SelectSingleCombo
-                                            options={
-                                                PRODUCT_TYPES_OPTIONS.Cakes.sizes
-                                            }
-                                            label="Size"
-                                            valueKey="value"
-                                            labelKey="label"
-                                            placeholder="Select Size"
-                                            {...field}
-                                            hasError={!!errors.variations?.[index]?.size}
-                                            errorMessage={errors.variations?.[index]?.size?.message as string}
-                                        />
-                                    )}
-                                />
-                            )}
-                            {watch('category') === 9 && (
-                                <Controller
-                                    name={`variations.${index}.color`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Input
-                                            {...field}
-                                            value={field.value || ''}
-                                            placeholder='Colour'
-                                            hasError={!!errors.variations?.[index]?.color}
-                                            errorMessage={errors.variations?.[index]?.color?.message}
-                                        />
-                                    )}
-                                />
-                            )}
-                            {watch('category') === 10 && (
-                                <Controller
-                                    name={`variations.${index}.flavour`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Input
-                                            {...field}
-                                            value={field.value || ''}
-                                            placeholder='Flavour'
-                                            hasError={!!errors.variations?.[index]?.flavour}
-                                            errorMessage={errors.variations?.[index]?.flavour?.message}
-                                        />
-                                    )}
-                                />
-                            )}
-                            <Controller
-                                name={`variations.${index}.selling_price`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        value={field.value ?? ''}
-                                        placeholder='Selling Price'
-                                        hasError={!!errors.variations?.[index]?.selling_price}
-                                        errorMessage={errors.variations?.[index]?.selling_price?.message}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name={`variations.${index}.cost_price`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        placeholder='Cost Price'
-                                        hasError={!!errors.variations?.[index]?.cost_price}
-                                        errorMessage={errors.variations?.[index]?.cost_price?.message}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                name={`variations.${index}.quantity`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Input
-                                        {...field}
-                                        type="number"
-                                        placeholder='Quantity'
-                                        hasError={!!errors.variations?.[index]?.quantity}
-                                        errorMessage={errors.variations?.[index]?.quantity?.message}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                    />
-                                )}
-                            />
-                            {index > 0 && (
-                                <Button type="button" onClick={() => remove(index)} variant="outline">
-                                    Remove Variation
-                                </Button>
-                            )}
-                        </div>
-                    ))}
-
-                    <Button
-                        type="button"
-                        onClick={() => append({ selling_price: null, cost_price: '', quantity: 0 })}
-                        variant="outline"
-                    >
-                        Add Variation
+        <>
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant='default' className='bg-black text-white'>
+                        <Plus className='mr-2 h-4 w-4' /> Add New Stock Item
                     </Button>
+                </SheetTrigger>
 
-                    <div className="flex items-center gap-4 mt-auto">
-                        <SheetClose asChild>
-                            <Button type="button" className='h-14 w-full' variant="outline">Cancel</Button>
-                        </SheetClose>
-                        <Button type="submit" className='h-14 w-full' variant="black" disabled={!isDirty || isCreating}>
-                            {isCreating ? 'Saving...' : 'Save Record'}
+                <SheetContent className='!w-[80vw] !max-w-[450px] h-screen flex flex-col overflow-y-scroll px-0'>
+                    <SheetTitle className='border-b pb-4 px-8'>
+                        <h2 className='text-xl font-semibold flex items-center gap-4'>
+                            <span className='bg-[#E8EEFD] p-2 rounded-full'>
+                                <Book size={25} variant='Bold' color='#194A7A' />
+                            </span>
+                            <span>Add Inventory</span>
+                        </h2>
+                    </SheetTitle>
+                    <SheetClose className='absolute top-full left-[-100%]'>
+                        <Add className='mr-2 h-6 w-6 rotate-45' />
+                    </SheetClose>
+
+                    <Separator />
+
+                    <form onSubmit={handleSubmit(onSubmit)} className='grow flex flex-col gap-8 px-8 py-10'>
+                        <CustomImagePicker
+                            control={control}
+                            name="image_one"
+                            errors={errors}
+                            hasError={!!errors.image_one}
+                            errorMessage={errors.image_one?.message as string}
+                        />
+                        <Controller
+                            name="name"
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    value={field.value?.toString() ?? ''}
+                                    placeholder='Item name'
+                                    hasError={!!errors.name}
+                                    errorMessage={errors.name?.message}
+                                />
+                            )}
+                        />
+
+
+                        <Controller
+                            name="branch"
+                            control={control}
+                            render={({ field }) => (
+                                <SelectSingleCombo
+                                    {...field}
+                                    name='branch'
+                                    value={field.value?.toString() || ''}
+                                    options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                                    valueKey='value'
+                                    labelKey="label"
+                                    placeholder='Select Branch'
+                                    onChange={(value) => field.onChange(Number(value))}
+                                    isLoadingOptions={branchesLoading}
+                                    hasError={!!errors.branch}
+                                    errorMessage={errors.branch?.message}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name="category"
+                            control={control}
+                            render={({ field }) => (
+                                <SelectSingleCombo
+                                    {...field}
+                                    name='category'
+                                    value={field.value?.toString() || ''}
+                                    options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
+                                    valueKey='value'
+                                    labelKey="label"
+                                    placeholder='Item category'
+                                    onChange={(value) => field.onChange(Number(value))}
+                                    isLoadingOptions={categoriesLoading}
+                                    hasError={!!errors.category}
+                                    errorMessage={errors.category?.message}
+                                />
+                            )}
+                        />
+
+
+
+                        {fields.map((field, index) => (
+                            <div key={field.id} className="space-y-4">
+                                <h3 className="font-semibold">Variation {index + 1}</h3>
+                                {watch('category') === 8 && (
+                                    <Controller
+                                        name={`variations.${index}.size`}
+                                        control={control}
+                                        render={({ field }) => (
+
+                                            <SelectSingleCombo
+                                                options={
+                                                    PRODUCT_TYPES_OPTIONS.Cakes.sizes
+                                                }
+                                                label="Size"
+                                                valueKey="value"
+                                                labelKey="label"
+                                                placeholder="Select Size"
+                                                {...field}
+                                                hasError={!!errors.variations?.[index]?.size}
+                                                errorMessage={errors.variations?.[index]?.size?.message as string}
+                                            />
+                                        )}
+                                    />
+                                )}
+                                {watch('category') === 9 && (
+                                    <Controller
+                                        name={`variations.${index}.color`}
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                value={field.value || ''}
+                                                placeholder='Colour'
+                                                hasError={!!errors.variations?.[index]?.color}
+                                                errorMessage={errors.variations?.[index]?.color?.message}
+                                            />
+                                        )}
+                                    />
+                                )}
+                                {watch('category') === 10 && (
+                                    <Controller
+                                        name={`variations.${index}.flavour`}
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                value={field.value || ''}
+                                                placeholder='Flavour'
+                                                hasError={!!errors.variations?.[index]?.flavour}
+                                                errorMessage={errors.variations?.[index]?.flavour?.message}
+                                            />
+                                        )}
+                                    />
+                                )}
+                                <Controller
+                                    name={`variations.${index}.selling_price`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            value={field.value ?? ''}
+                                            placeholder='Selling Price'
+                                            hasError={!!errors.variations?.[index]?.selling_price}
+                                            errorMessage={errors.variations?.[index]?.selling_price?.message}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name={`variations.${index}.cost_price`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            placeholder='Cost Price'
+                                            hasError={!!errors.variations?.[index]?.cost_price}
+                                            errorMessage={errors.variations?.[index]?.cost_price?.message}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    name={`variations.${index}.quantity`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            {...register(`variations.${index}.quantity`, { valueAsNumber: true })}
+                                            type="number"
+                                            placeholder='Quantity'
+                                            pattern="^[0-9]*$"
+                                            hasError={!!errors.variations?.[index]?.quantity}
+                                            errorMessage={errors.variations?.[index]?.quantity?.message}
+                                            // onChange={(e) => field.onChange(Number(e.target.value))}
+                                        />
+                                    )}
+                                />
+                                {index > 0 && (
+                                    <Button type="button" onClick={() => remove(index)} variant="outline">
+                                        Remove Variation
+                                    </Button>
+                                )}
+                            </div>
+                        ))}
+
+                        <Button
+                            type="button"
+                            onClick={() => append({ selling_price: null, cost_price: '', quantity: 1 })}
+                            variant="outline"
+                        >
+                            Add Variation
                         </Button>
-                    </div>
-                </form>
-            </SheetContent>
-        </Sheet>
+
+                        <div className="flex items-center gap-4 mt-auto">
+                            <SheetClose asChild>
+                                <Button type="button" className='h-14 w-full' variant="outline">Cancel</Button>
+                            </SheetClose>
+                            <Button type="submit" className='h-14 w-full' variant="black" disabled={!isDirty || isCreating || isUploading}>
+                                {(isCreating || isUploading) ? 'Saving...' : 'Save Record'}
+                            </Button>
+                        </div>
+                    </form>
+                </SheetContent>
+            </Sheet>
+
+
+            <ErrorModal
+                heading='An error Occured'
+                subheading={errorModalMessage || "Check your inputs"}
+                isErrorModalOpen={isErrorModalOpen}
+                setErrorModalState={setErrorModalState}
+            >
+                <div className="p-5 rounded-t-2xl rounded-b-3xl bg-red-200">
+                    <Button variant="destructive" className='w-full' onClick={closeErrorModal}>
+                        Okay
+                    </Button>
+                </div>
+            </ErrorModal>
+        </>
     );
 }
 

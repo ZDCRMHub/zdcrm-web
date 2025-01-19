@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { StockInventoryDashboard } from '../misc/components';
 // import StockInventoryDashboard from './misc/components/StockInventoryDashboard';

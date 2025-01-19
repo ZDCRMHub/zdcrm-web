@@ -14,6 +14,9 @@ import CustomImagePicker from './CustomImagePicker';
 import { useGetCategories } from '../api/getCategories';
 import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
 import toast from 'react-hot-toast';
+import { useLoading } from '@/contexts';
+import useCloudinary from '@/hooks/useCloudinary';
+import { extractErrorMessage } from '@/utils/errors';
 
 
 
@@ -23,7 +26,29 @@ const schema = z.object({
     branch: z.number(),
     quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
     cost_price: z.number().int().positive({ message: 'Cost price must be a positive integer' }),
-    // image_one: z.instanceof(File, { message: 'Image is required' }).refine(file => file.size > 0, { message: 'Image is required' }),
+    image_one: z.any().nullable().refine(
+        file => {
+            if (!file) {
+                throw z.ZodError.create([{
+                    path: ['image_one'],
+                    message: 'Please select a file.',
+                    code: 'custom',
+                }]);
+            }
+            if (!file.type.startsWith('image/')) {
+                throw z.ZodError.create([{
+                    path: ['image_one'],
+                    message: 'Please select an image file.',
+                    code: 'custom',
+                }]);
+            }
+            return file.size <= 1000000;
+        },
+
+        {
+            message: 'Max image size is 10MB.',
+        }
+    ),
 });
 
 type FormType = z.infer<typeof schema>;
@@ -37,7 +62,7 @@ const createStoreInventory = async (data: FormType) => {
 };
 
 export default function NewStoreInventorySheet() {
-    const { control, handleSubmit, formState: { errors, isDirty }, setValue, reset } = useForm<FormType>({
+    const { register,control, handleSubmit, formState: { errors, isDirty }, setValue, reset } = useForm<FormType>({
         resolver: zodResolver(schema),
     });
 
@@ -52,10 +77,25 @@ export default function NewStoreInventorySheet() {
             toast.success('Store Inventory created successfully');
             queryClient.invalidateQueries({ queryKey: ['storeInventory'] });
         },
+        onError(error, variables, context) {
+            const errorMessage = extractErrorMessage(error);
+            toast.error(errorMessage);
+        },
     });
-
-    const onSubmit = (data: FormType) => {
-        createStoreInvetory(data);
+    const { uploadToCloudinary } = useCloudinary()
+    const { isUploading } = useLoading()
+    const onSubmit = async (data: FormType) => {
+        let image_one: string | undefined
+        const imageFile = data.image_one
+        if (data.image_one) {
+            const data = await uploadToCloudinary(imageFile)
+            image_one = data.secure_url
+        }
+        const dataToSubmit = {
+            ...data,
+            image_one: imageFile ? image_one : undefined,
+        }
+        createStoreInvetory(dataToSubmit, {});
     };
     console.log(errors)
 
@@ -84,11 +124,14 @@ export default function NewStoreInventorySheet() {
                 <Separator />
 
                 <form onSubmit={handleSubmit(onSubmit)} className='grow flex flex-col gap-8 px-8 py-10'>
-                    {/* <CustomImagePicker
+                    <CustomImagePicker
                         control={control}
                         name="image_one"
                         errors={errors}
-                    /> */}
+
+                        hasError={!!errors.image_one}
+                        errorMessage={errors.image_one?.message as string}
+                    />
                     <Controller
                         name="name"
                         control={control}
@@ -131,7 +174,7 @@ export default function NewStoreInventorySheet() {
                         hasError={!!errors.cost_price}
                         errorMessage={errors.cost_price?.message}
                         pattern='[0-9]*'
-                        onChange={(e) => setValue('cost_price', parseInt(e.target.value) || 0)}
+                        {...register('cost_price', { valueAsNumber: true })}
                     />
 
                     <Input
@@ -140,16 +183,16 @@ export default function NewStoreInventorySheet() {
                         hasError={!!errors.quantity}
                         errorMessage={errors.quantity?.message}
                         pattern='[0-9]*'
-                        onChange={(e) => setValue('quantity', parseInt(e.target.value) || 0)}
+                        {...register('quantity', { valueAsNumber: true })}
                     />
 
 
                     <div className="flex items-center gap-4 mt-auto">
                         <SheetClose asChild>
-                            <Button type="button" className='h-14 w-full' variant="outline">Cancel</Button>
+                            <Button type="button" className='h-14 w-full' variant="outline">Close</Button>
                         </SheetClose>
-                        <Button type="submit" className='h-14 w-full' variant="black" disabled={!isDirty || isCreating}>
-                            {isCreating ? 'Saving...' : 'Save Record'}
+                        <Button type="submit" className='h-14 w-full' variant="black" disabled={!isDirty || isCreating || isUploading}>
+                            {(isCreating || isUploading) ? 'Saving...' : 'Save Record'}
                         </Button>
                     </div>
                 </form>

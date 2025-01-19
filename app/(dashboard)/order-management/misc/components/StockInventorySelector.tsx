@@ -128,21 +128,7 @@ const StockInventorySelector: React.FC<StockInventorySelectorProps> = ({
                                     {option.name}
                                 </p>
                             </button>
-                            // <button
-                            //     key={option.id}
-                            //     className="flex w-full items-center px-4 py-2 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                            //     onClick={() => handleSelect(option)}
-                            // >
-                            //     <div className="mr-3 h-8 w-8 overflow-hidden rounded-full">
-                            //         <Image
-                            //             src={option.image_one || "/placeholder.svg"}
-                            //             alt={option.name}
-                            //             width={32}
-                            //             height={32}
-                            //         />
-                            //     </div>
-                            //     {option.name}
-                            // </button>
+                            
                         ))}
                     </div>
                 </PopoverContent>

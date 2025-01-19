@@ -1,5 +1,4 @@
 
-
 export interface TOrder {
   id: number;
   customer: Customer;
@@ -15,14 +14,30 @@ export interface TOrder {
   status: string;
   payment_status: string;
   payment_options: string;
-  payment_proof: string | null;
-  total_amount: string;
+  payment_proof: null;
+  total_production_cost: string;
+  total_selling_price: null;
   delivery: TOrderDelivery;
   items: TOrderItem[];
   discussions: TOrderDiscussion[];
   create_date: string;
   update_date: string;
+  part_payments: Partpayment[];
+  initial_amount_paid: number
 }
+
+
+interface Partpayment {
+  id: number;
+  payment_options: string;
+  payment_proof: string;
+  payment_currency: string;
+  amount_paid: string;
+  payment_receipt_name: string;
+  recorded_by: Createdby;
+  create_date: string;
+}
+
 
 export interface TOrderDiscussion {
   id: number;
@@ -40,8 +55,30 @@ interface TOrderItem {
   custom_image: string | null;
   create_date: string;
   update_date: string;
+  price_at_order: string;
+  is_sorted: boolean;  
 }
 
+
+interface Variation {
+  id: number;
+  variation_details: Variationdetails;
+  quantity: number;
+  price_at_order: string;
+}
+
+interface Variationdetails {
+  id: number;
+  size: string | null;
+  color: string | null;
+  flavour: string;
+  selling_price: string | null;
+  cost_price: string;
+  quantity: number;
+  last_updated_by: number;
+  create_date: string;
+  update_date: string;
+}
 interface TOrderInventory {
   id: number;
   stock_inventory: Stockinventory;
@@ -50,7 +87,7 @@ interface TOrderInventory {
   message: string;
   instruction: string | null;
   properties: Property[];
-  variations: any[];
+  variations: Variation[];
 }
 
 interface Property {
@@ -111,6 +148,7 @@ interface TOrderDelivery {
   delivery_platform: string | null;
   tracking_link: string | null;
   delivery_expense: string | null;
+  
 }
 
 interface Branch {

@@ -5,15 +5,17 @@ import { AddDeliveryNoteModal } from '../../../misc/components';
 import { useUpdateDeliveryStatus } from '../../../misc/api';
 import { Button } from '@/components/ui';
 import { Check, X } from 'lucide-react';
+import { TOrder } from '../../../misc/types';
 
 interface Props {
     orderId: number;
     orderNumber: string;
     currentStatus: "PND" | "DIS" | "DSC" | "DEL" | "CAN";
     onDelivered?: () => void;
+    order: TOrder;
 }
 
-const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered }: Props) => {
+const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, order }: Props) => {
     const steps = [
         { label: "Pending", status: "PND" },
         { label: "Sent to dispatch", status: "DIS" },
@@ -27,7 +29,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered }: 
         setFalse: closeAddDeliveryNoteModal,
     } = useBooleanStateControl();
 
-    const { mutate: updateStatus } = useUpdateDeliveryStatus(orderId);
+    const { mutate: updateStatus, isPending } = useUpdateDeliveryStatus(orderId);
 
     const currentStep = steps.findIndex(step => step.status === currentStatus);
 
@@ -99,23 +101,23 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered }: 
                         {step.label}
                     </Button>
                 ))}
-                <Button
-                    className={cn(
-                        "px-4 py-1.5 text-sm rounded transition-all duration-[2s]",
-                        isCancelled
-                            ? "bg-red-500 text-white scale-105"
-                            : "border-white border bg-transparent text-white"
-                    )}
-                    onClick={() => handleStatusUpdate("CAN")}
-                    disabled={isCancelled}
-                >
-                    Cancel Order
-                </Button>
+                {
+                    order?.delivery.status === "DEL" &&
+                    <Button
+                        className={cn("px-4 py-1.5 text-sm rounded transition-all duration-[2s]")}
+                        onClick={openAddDeliveryNoteModal}
+                        disabled={isCancelled}
+                        variant="yellow"
+                    >
+                        Enter Feedback
+                    </Button>
+                }
             </div>
 
             <AddDeliveryNoteModal
                 isModalOpen={isAddDeliveryNoteModalOpen}
                 closeModal={closeAddDeliveryNoteModal}
+                orderId={order.id}
             />
         </div>
     );

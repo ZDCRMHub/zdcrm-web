@@ -1,8 +1,10 @@
 export const PRODUCT_TYPES_OPTIONS = {
   Cakes: {
     sizes: [
+      { label: "4 inches", value: "4" },
       { label: "6 inches", value: "6" },
       { label: "8 inches", value: "8" },
+      { label: "9 inches", value: "9" },
       { label: "10 inches", value: "10" },
       { label: "12 inches", value: "12" }
     ],
@@ -33,9 +35,41 @@ export const PRODUCT_TYPES_OPTIONS = {
     ]
   },
   Flowers: {
-    vaseOptions: [
+    glass_vase: [
       { label: "25cm", value: "25cm" },
       { label: "50cm", value: "50cm" }
+    ],
+    bouquets: [
+      
+      { name: "Medium (8*10)", value: "Medium" },
+      { name: "Small (8*8)", value: "Small" },
+      { name: "Standard (8*14)", value: "Standard" },
+      { name: "Standard Plus (10*10)", value: "Standard Plus" },
+      { name: "Xsmall (6*10)", value: "Xsmall" },
+      { name: "24cm Small Box", value: "24cm Small Box" },
+      { name: "27cm Moyenne Box", value: "27cm Moyenne Box" },
+      { name: "30cm Luxe Moyenne Box", value: "30cm Luxe Moyenne Box" },
+      { name: "33cm Standard Box", value: "33cm Standard Box" },
+      { name: "36cm Luxe Standard Box", value: "36cm Luxe Standard Box" },
+      { name: "39cm Deluxe Box", value: "39cm Deluxe Box" },
+      { name: "42cm Deluxe Plus Box", value: "42cm Deluxe Plus Box" },
+      { name: "45cm Deluxe Premium", value: "45cm Deluxe Premium" },
+      { name: "48cm First Class Box", value: "48cm First Class Box" },
+      { name: "Deluxe Bouquet", value: "Deluxe Bouquet" },
+      { name: "Deluxe Plus Bouquet", value: "Deluxe Plus Bouquet" },
+      { name: "Deluxe Premium Bouquet", value: "Deluxe Premium Bouquet" },
+      { name: "Entry Bouquet", value: "Entry Bouquet" },
+      { name: "First Class Bouquet", value: "First Class Bouquet" },
+      { name: "Moyenne Bouquet", value: "Moyenne Bouquet" },
+      { name: "Small Bouquet", value: "Small Bouquet" },
+      { name: "Standard Bouquet", value: "Standard Bouquet" },
+      { name: "Xsmall Bouquet", value: "Xsmall Bouquet" },
+      { name: "Large Bouquet", value: "Large Bouquet" },
+      { name: "Vip Deluxe", value: "Vip Deluxe" },
+      { name: "Vip Deluxe Plus", value: "Vip Deluxe Plus" },
+      { name: "Vip Moyenne", value: "Vip Moyenne" },
+      { name: "Vip Standard", value: "Vip Standard" }
+
     ]
   },
   Teddies: {
@@ -57,10 +91,7 @@ export const PRODUCT_TYPES_OPTIONS = {
 };
 
 
-export const BRANCH_OPTIONS = [
-  { label: "Zuzu Delights", value: "Zuzu Delights" },
-  { label: "Prestige Flowers", value: "Prestige Flowers" }
-]
+
 
 export const ENQUIRY_PAYMENT_OPTIONS = [
   { value: "not_paid_go_ahead", label: "Not Paid (Go Ahead)" },
@@ -70,13 +101,14 @@ export const ENQUIRY_PAYMENT_OPTIONS = [
   { value: "paid_usd_transfer", label: "Paid (USD Transfer)" },
   { value: "paid_paypal", label: "Paid (PayPal)" },
   { value: "cash_paid", label: "Cash Paid" },
-  { value: "part_payment", label: "Part Payment" },
+  { value: "part_payment_cash", label: "Part Payment(Cash)" },
+  { value: "part_payment_transfer", label: "Part Payment(Transfer)" },
   { value: "paid_bitcoin", label: "Paid (Bitcoin)" },
   { value: "not_received_paid", label: "Not Received (Paid)" },
 ];
 
 export const ORDER_STATUS_OPTIONS = [
-  { value: "PND", label: "Payment Made" },
+  { value: "PND", label: "Pending" },
   { value: "SOA", label: "SOA" },
   { value: "SOR", label: "Sorted" },
   { value: "STD", label: "Sent to Dispatch" },
@@ -84,60 +116,33 @@ export const ORDER_STATUS_OPTIONS = [
   { value: "CAN", label: "Cancelled" },
 ]
 
+export const CATEGORIES_ENUMS: Record<string, string> = {
+  "Cake": "C",
+  "Flower": "F",
+  "Cupcake": "CC",
+
+  "Wine": "W",
+  "Teddy Bear": "TB",
+  "Gift Card": "GC",
+  "Vase": "V",
+  "Chocolate": "CH",
+  "Baloon": "B",
+  "Perfume": "P",
+  "Hand Bag": "HB",
+
+}
+export const ORDER_STATUS_ENUMS: Record<string, string> = {
+  "PND": "PENDING",
+  "SOA": "SOA",
+  "SOR": "SORTED",
+  "STD": "SENT TO DELIVERY",
+  "COM": "DELIVERED",
+  "CAN": "CANCELLED",
+
+}
 
 
 
-
-export const paymentOptions = [
-  { label: "Not Paid (But Go Ahead)", value: "not_paid_go_ahead" },
-  { label: "Paid (Website Card)", value: "paid_website_card" },
-  { label: "Paid (Naira Transfer)", value: "paid_naira_transfer" },
-  { label: "Paid (POS)", value: "paid_pos" },
-  { label: "Paid (USD Transfer)", value: "paid_usd_transfer" },
-  { label: "Paid (Paypal)", value: "paid_paypal" },
-  { label: "Cash Paid", value: "cash_paid" },
-  { label: "Part Payment", value: "part_payment" },
-  { label: "Paid (Bitcoin)", value: "paid_bitcoin" },
-  { label: "Not Received (Paid)", value: "not_received_paid" }
-];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const STOCK_CATEGORIES_OPTIONS = [
-  { value: 'C', label: 'Cake' },
-  { value: 'F', label: 'Flower' },
-  { value: 'CC', label: 'Cup Cake' },
-]
 
 export const PRODUCT_CATEGORIES_OPTIONS = [
   { value: 'W', label: 'Wine' },
@@ -186,11 +191,11 @@ export const ENQUIRY_CHANNEL_OPTIONS = [
 ]
 
 export const ENQUIRY_OCCASION_OPTIONS = [
-  { value: 'birthday', label: 'Birthday' },
-  { value: 'anniversary', label: 'Anniversary' },
-  { value: 'wedding', label: 'Wedding' },
-  { value: 'father_s_Day', label: "Father's Day" },
-  { value: 'mother_s_Day', label: "Mother's Day" },
+  { value: 'Birthday', label: 'Birthday' },
+  { value: 'Anniversary', label: 'Anniversary' },
+  { value: 'Wedding', label: 'Wedding' },
+  { value: "Father's Day", label: "Father's Day" },
+  { value: "Mother's Day", label: "Mother's Day" },
 ]
 
 export const DISPATCH_METHOD_OPTIONS = [

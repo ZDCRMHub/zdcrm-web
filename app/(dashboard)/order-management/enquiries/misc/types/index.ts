@@ -18,8 +18,10 @@ export interface TEnquiry {
   payment_currency: string;
   initial_amount_paid: string;
   amount_paid_in_usd: string;
-  total_amount: string;
+  total_production_cost: string;
+  total_selling_price: string;
   payment_proof: string;
+  payment_receipt_name: string;
   items: Item[];
   discussions: TEnquiryDiscussion[];
   create_date: string;
@@ -76,7 +78,7 @@ interface Productinventory {
   id: number;
   name: string;
   category: TProductCategory;
-  image_one: null;
+  image_one: string | null;
   cost_price: string;
   inventory_number: string;
 }
@@ -86,7 +88,7 @@ export interface Stockinventory {
   id: number;
   name: string;
   category: TProductCategory;
-  image_one: null;
+  image_one: string | null;
   inventory_number: string;
 }
 

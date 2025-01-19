@@ -55,7 +55,7 @@ export default function ClientHistoryDashboard() {
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
               type='text'
-              placeholder='Search (client name, customer rep, phone number)'
+              placeholder='Search (client name,  phone number)'
               className='w-full focus:border min-w-[350px] text-xs !h-10'
               value={searchText}
               onChange={handleSearch}
@@ -75,9 +75,7 @@ export default function ClientHistoryDashboard() {
                 </Button>
               )
             }
-            <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-              <Plus className='mr-2 h-4 w-4' /> Add Order
-            </LinkButton>
+           
             <Button
               variant='outline'
               className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'

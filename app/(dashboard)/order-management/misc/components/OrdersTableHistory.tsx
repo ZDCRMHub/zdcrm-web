@@ -19,6 +19,7 @@ import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import { ORDER_STATUS_COLORS } from './OrdersTable';
+import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS } from '@/constants';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -80,16 +81,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         <Badge
                             key={item.id}
                             variant="outline"
-                            className="flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                            className={cn("flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5",
+                                item.is_sorted && "text-white bg-[#367917] border-transparent"
+                            )}
                         >
-                            {item.product.category.name.charAt(0)}
+                            {CATEGORIES_ENUMS[item.product.category.name]}
                         </Badge>
                     ))}
                 </div>
             </TableCell>
             <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
             <TableCell className='min-w-max'>
-                <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
+                <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>
                 <div className='text-sm text-[#494949]'>{order.payment_status}</div>
             </TableCell>
             <TableCell className='min-w-max'>
@@ -99,7 +102,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         'rounded-md w-max'
                     )}
                 >
-                    {order.status}
+                    {ORDER_STATUS_ENUMS[order.status]}
                 </Badge>
             </TableCell>
 

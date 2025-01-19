@@ -10,7 +10,9 @@ import {
 import { Money, TruckTime, ShoppingBag } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
+import { format } from "date-fns";
 
+import useCloudinary from '@/hooks/useCloudinary';
 import {
   Accordion,
   AccordionContent,
@@ -42,14 +44,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import { useGetCategories, useGetProducts } from "@/app/(dashboard)/inventory/misc/api";
 import FormError from "@/components/ui/formError";
+import { formatCurrency } from "@/utils/currency";
+import { useBooleanStateControl } from "@/hooks";
+import { extractErrorMessage } from "@/utils/errors";
 
 import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
 import OrderFormItemsSection from "../../misc/components/OrderFormItemsSection";
 import { useCreateOrder, useGetOrderDeliveryLocations } from "../../misc/api";
-import { useBooleanStateControl } from "@/hooks";
 import { TOrder } from "../../misc/types";
 import { useRouter } from "next/navigation";
-import { formatCurrency } from "@/utils/currency";
+import { useLoading } from "@/contexts";
 
 
 const NewOrderPage = () => {
@@ -67,8 +71,7 @@ const NewOrderPage = () => {
       delivery: {
         zone: "LM",
         method: "Dispatch",
-        // delivery_date: new Date(),
-        delivery_date: new Date().toISOString().split('T')[0],
+        delivery_date: format(new Date(), 'yyyy-MM-dd'),
         address: "",
         recipient_name: "",
         recipient_phone: ""
@@ -119,14 +122,15 @@ const NewOrderPage = () => {
     if (selectedPaymentOption == "paid_usd_transfer" || selectedPaymentOption == "paid_naira_transfer" || selectedPaymentOption == "cash_paid" || selectedPaymentOption == "paid_website_card"
       || selectedPaymentOption == "paid_pos" || selectedPaymentOption == "paid_paypal" || selectedPaymentOption == "paid_bitcoin") {
       setValue('payment_status', 'FP')
-    } else if (selectedPaymentOption == "part_payment") {
+    } else if (selectedPaymentOption == "part_payment_cash" || selectedPaymentOption == "part_payment_transfer") {
       setValue('payment_status', 'PP')
     } else {
       setValue('payment_status', 'UP')
     }
   }, [selectedPaymentOption])
 
-
+  const { uploadToCloudinary } = useCloudinary()
+  const { isUploading } = useLoading();
   const [createdOrder, setCreatedOrder] = React.useState<TOrder | null>(null);
   const {
     state: isSuccessModalOpen,
@@ -134,14 +138,30 @@ const NewOrderPage = () => {
     setFalse: closeSuccessModal,
   } = useBooleanStateControl()
 
+  // const router = useRouter()
   const { mutate, isPending } = useCreateOrder()
-  const onSubmit = (data: NewOrderFormValues) => {
-    mutate(data, {
+  const onSubmit = async (data: NewOrderFormValues) => {
+    let payment_proof: string | undefined
+    const PdfFile = data.payment_proof
+    if (data.payment_proof) {
+      const data = await uploadToCloudinary(PdfFile)
+      payment_proof = data.secure_url
+    }
+    const dataToSubmit = {
+      ...data,
+      payment_proof: PdfFile ? payment_proof : undefined,
+    }
+
+    mutate(dataToSubmit, {
       onSuccess(data) {
         toast.success("Created successfully");
-        openSuccessModal();
+        router.push(`/order-management/orders/${data.data.id}/order-summary`)
         setCreatedOrder(data?.data);
       },
+      onError(error: unknown) {
+        const errMessage = extractErrorMessage((error as any)?.response?.data as any);
+        toast.error(errMessage, { duration: 7500 });
+      }
     })
   };
 
@@ -410,7 +430,7 @@ const NewOrderPage = () => {
                     render={({ field }) => (
                       <FormItem>
                         <SelectSingleCombo
-                          label="Delivery Method"
+                          label="Dispatch Location"
                           {...field}
                           value={field.value?.toString() || ''}
                           isLoadingOptions={dispatchLocationsLoading}
@@ -433,7 +453,7 @@ const NewOrderPage = () => {
                         <SingleDatePicker
                           label="Delivery Date"
                           value={new Date(field.value)}
-                          onChange={(newValue) => setValue('delivery.delivery_date', newValue.toISOString().split('T')[0])}
+                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
                           placeholder="Select delivery date"
                         />
                         {
@@ -454,7 +474,23 @@ const NewOrderPage = () => {
 
                   // placeholder="Select delivery date"
                   />
-
+                  <FormField
+                    control={control}
+                    name="delivery.note"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormControl>
+                          <Input
+                            label="Delivery Note"
+                            {...field}
+                            hasError={!!errors.delivery?.note}
+                            errorMessage={errors.delivery?.note?.message}
+                            placeholder="Enter delivery note"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
                 </div>
               </AccordionContent>
@@ -515,7 +551,6 @@ const NewOrderPage = () => {
                           errors={errors}
                           register={register}
                           setValue={setValue}
-                          removeItem={() => remove(index)}
                         />
                       )
                     })
@@ -551,6 +586,11 @@ const NewOrderPage = () => {
               </AccordionContent>
             </AccordionItem>
 
+
+
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////                  PAYMENT INFORMATION                  ///////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
             <AccordionItem value="payment-information">
               <AccordionTrigger className="py-4">
                 <div className="flex items-center gap-5">
@@ -602,7 +642,7 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {selectedPaymentOption === "part_payment" && (
+                  {(selectedPaymentOption === "part_payment_cash" || selectedPaymentOption === "part_payment_transfer") && (
                     <Controller
                       name="initial_amount_paid"
                       control={control}
@@ -612,6 +652,7 @@ const NewOrderPage = () => {
                           placeholder="Enter initial amount paid"
                           id="initial_amount_paid"
                           className=""
+                          pattern="^[0-9]*$"
                           {...field}
                           hasError={!!errors.initial_amount_paid}
                           errorMessage={errors.initial_amount_paid?.message}
@@ -642,13 +683,28 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {/* <FilePicker
-                    onFileSelect={(file) => setValue("proofOfPayment", file!)}
-                    hasError={!!errors.proofOfPayment}
-                    errorMessage={errors.proofOfPayment?.message as string}
+                  <FilePicker
+                    onFileSelect={(file) => setValue("payment_proof", file!)}
+                    hasError={!!errors.payment_proof}
+                    errorMessage={errors.payment_proof?.message as string}
                     maxSize={10}
                     title="Upload Payment Proof"
-                  /> */}
+                  />
+                  <Controller
+                    name="payment_receipt_name"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        label="Payment Receipt Name"
+                        id="payment_receipt_name"
+                        placeholder="Enter name in payment receipt"
+                        className="col-span-3"
+                        {...field}
+                        hasError={!!errors.payment_receipt_name}
+                        errorMessage={errors.payment_receipt_name?.message}
+                      />
+                    )}
+                  />
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -660,11 +716,11 @@ const NewOrderPage = () => {
               variant="default"
               size="lg"
               className="flex items-center gap-2 ml-auto"
-              disabled={isPending}
+              disabled={isPending || isUploading}
             >
               Proceed
               {
-                isPending && <Spinner size={20} />
+                (isPending || isUploading) && <Spinner size={20} />
               }
             </Button>
           </footer>

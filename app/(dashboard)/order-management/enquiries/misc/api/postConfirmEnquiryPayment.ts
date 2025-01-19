@@ -5,7 +5,7 @@ import { TOrder } from "../../../misc/types";
 
 interface confirmPaymentProps {
     id: number | string;
-    data: ConfirmPaymentFormData
+    data: ConfirmPaymentFormData & {payment_proof?: string}
 }
 
 interface ConfirmationAPIResponse {

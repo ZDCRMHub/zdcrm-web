@@ -1,6 +1,12 @@
 "use client";
 import React from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Box } from "iconsax-react";
+import { useRouter } from "next/navigation";
+import { format } from 'date-fns';
+import Image from "next/image";
+import toast from "react-hot-toast";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NewEnquirySchema, NewEnquiryFormValues } from "../misc/utils/schema";
 import { DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS } from "@/constants";
@@ -9,20 +15,22 @@ import { DollarSignIcon as Money, TruckIcon as TruckTime, UserIcon, Plus } from 
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import FormError from "@/components/ui/formError";
 import { useGetCategories, useGetProducts, useGetStockInventory } from "@/app/(dashboard)/inventory/misc/api";
-import Image from "next/image";
 import EnquiryItemsSection from "../misc/components/EnquiryFormItemsSection";
 import { useCreateEnquiry } from "../misc/api";
-import toast from "react-hot-toast";
 import { useBooleanStateControl } from "@/hooks";
 import { TEnquiry } from "../misc/types";
-import { Box } from "iconsax-react";
-import { useRouter } from "next/navigation";
+import { useGetOrderDeliveryLocations } from "../../misc/api";
+import { formatCurrency } from "@/utils/currency";
+import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 
-const NewOrderPage = () => {
+
+const NewEnquiryPage = () => {
 
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
+  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
+
 
   const form = useForm<NewEnquiryFormValues>({
     resolver: zodResolver(NewEnquirySchema),
@@ -33,7 +41,7 @@ const NewOrderPage = () => {
         zone: "LM",
         method: "Dispatch",
         // delivery_date: new Date(),
-        delivery_date: new Date().toISOString().split('T')[0],
+        delivery_date: format(new Date(), 'yyyy-MM-dd'),
         address: "",
         recipient_name: "",
         recipient_phone: ""
@@ -43,7 +51,6 @@ const NewOrderPage = () => {
       items: [
         {
           category: categories?.[0].id,
-          product_id: products?.[0].id,
           quantity: 1,
           inventories: [{
             variations: [],
@@ -54,7 +61,7 @@ const NewOrderPage = () => {
     }
   });
 
-  const { control, handleSubmit, formState: { errors }, watch, setValue, reset, register } = form;
+  const { control, handleSubmit, formState: { errors }, watch, setValue, reset, register, getValues, setError } = form;
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items"
@@ -64,7 +71,7 @@ const NewOrderPage = () => {
   const addNewItem = () => {
     append({
       category: categories?.[0].id || 1,
-      product_id: products?.[0].id || 0,
+      product_id: products?.[0].id || 1,
       quantity: 1,
       inventories: [{
         variations: [],
@@ -75,8 +82,8 @@ const NewOrderPage = () => {
 
   const [createdOrder, setCreatedOrder] = React.useState<TEnquiry | null>(null);
   const router = useRouter();
-  const routeToOrderDetails = () => {
-    router.push(`/order-management/orders/${createdOrder?.id}`);
+  const routeToEnquiryDetails = () => {
+    router.push(`/order-management/enquiries/${createdOrder?.id}`);
   }
   const resetForm = () => {
     reset();
@@ -89,19 +96,33 @@ const NewOrderPage = () => {
 
   const { mutate, isPending } = useCreateEnquiry()
   const onSubmit = (data: NewEnquiryFormValues) => {
+    data.items.forEach((item, index) => {
+      if (item.product_id == 0) {
+        setError(`items.${index}.product_id`, {
+          type: 'manual',
+          message: 'Product is required'
+        })
+      }
+      return
+    })
     mutate(data, {
-      onSuccess(data, variables, context) {
+      onSuccess(data) {
         toast.success("Created successfully")
         openSuccessModal();
         setCreatedOrder(data?.data);
 
       },
+      onError(error: unknown) {
+        const errMessage = extractErrorMessage((error as any).response?.data as any);
+        toast.error(errMessage, { duration: 7500 });
+      }
     })
   };
   console.log(errors)
+  console.log(getValues())
 
   return (
-    <div className="px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
+    <div className="relative px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
@@ -348,13 +369,35 @@ const NewOrderPage = () => {
                   />
                   <FormField
                     control={control}
+                    name="delivery.dispatch"
+                    render={({ field }) => (
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Dispatch Location"
+                          {...field}
+                          value={field.value?.toString() || ''}
+                          isLoadingOptions={dispatchLocationsLoading}
+                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                          valueKey={"value"}
+                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                          placeholder="Select dispatch location"
+                          hasError={!!errors.delivery?.dispatch}
+                          errorMessage={errors.delivery?.dispatch?.message}
+                        />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
                     name="delivery.delivery_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
                           label="Delivery Date"
                           value={new Date(field.value)}
-                          onChange={(newValue) => setValue('delivery.delivery_date', newValue.toISOString().split('T')[0])}
+                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
+                          // onChange={(newValue) => setValue('delivery.delivery_date', newValue.toISOString().split('T')[0])}
+
                           placeholder="Select delivery date"
                         />
                         {
@@ -373,7 +416,23 @@ const NewOrderPage = () => {
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
                   />
-
+                  <FormField
+                    control={control}
+                    name="delivery.note"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormControl>
+                          <Input
+                            label="Delivery Note"
+                            {...field}
+                            hasError={!!errors.delivery?.note}
+                            errorMessage={errors.delivery?.note?.message}
+                            placeholder="Enter delivery note"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
 
                 </div>
               </AccordionContent>
@@ -487,11 +546,11 @@ const NewOrderPage = () => {
         isModalOpen={isSuccessModalOpen}
         icon={<Box className="text-[#37d67a]" size={60} />}
         customTitleText="Success"
-        heading="Order created successfully"
-        subheading="Order has been created successfully"
-        customConfirmText="View Order"
-        customCancelText="Create New Order"
-        confirmFn={routeToOrderDetails}
+        heading="Enquiry created successfully"
+        subheading="Enquiry has been created successfully"
+        customConfirmText="View Enquiry"
+        customCancelText="Create New Enquiry"
+        confirmFn={routeToEnquiryDetails}
         closeModal={closeSuccessModal}
         cancelAction={resetForm}
       />
@@ -499,4 +558,4 @@ const NewOrderPage = () => {
   );
 };
 
-export default NewOrderPage;
+export default NewEnquiryPage;

@@ -69,74 +69,81 @@ export default function ProductsInventoryDashboard() {
   }
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full'>
-      <div className='sticky top-0 flex justify-between items-center mb-8 gap-4 pt-6 z-[2]'>
-        <div className='flex items-center gap-2 w-80 grow'>
-          <Input
-            type='text'
-            placeholder='Search (client name, customer rep, phone number)'
-            className='w-full focus:border min-w-[350px] text-xs !h-10'
-            value={searchText}
-            onChange={handleSearch}
-            rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
-          />
+    <div className='relative grid grid-rows-[max-content,1fr,max-content] w-full md:w-[95%] max-w-[1792px] mx-auto pb-3 max-h-full'>
+      <header className='sticky top-0  pt-6 z-[2] bg-[#FAFAFA]'>
+        <div className='sticky top-0 flex justify-between items-center mb-8 gap-4 pt-6 z-[2]'>
+          <div className='flex items-center gap-2 w-80 grow'>
+            <Input
+              type='text'
+              placeholder="Search by product name or inventory number"
+              className='w-full focus:border min-w-[350px] text-xs !h-10'
+              value={searchText}
+              onChange={handleSearch}
+              rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
+            />
 
-          <SelectSingleCombo
-            name='filterBy'
-            options={branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []}
-            value={selectedBranch?.toString() || ""}
-            onChange={(value) => handleBranchChange(Number(value))}
-            valueKey='value'
-            labelKey='label'
-            isLoadingOptions={branchesLoading}
-            placeholder='Filter by branch'
-            className='w-32 !h-10 text-[#8B909A] text-xs'
-            placeHolderClass='text-[#8B909A] text-xs'
-            triggerColor='#8B909A'
-            showSelectedValue={false}
-          />
-          <SelectSingleCombo
-            name='sortBy'
-            options={categories?.map((category) => ({ value: category.id.toString(), label: category.name })) || []}
-            isLoadingOptions={categoriesLoading}
-            value={selectedCategory?.toString() || ""}
-            onChange={(value) => handleCategoryChange(Number(value))}
-            valueKey='value'
-            labelKey='label'
-            placeholder='Sort by'
-            className='w-32 !h-10 text-[#8B909A] text-xs'
-            placeHolderClass='text-[#8B909A] text-xs'
-            triggerColor='#8B909A'
-          />
+            <SelectSingleCombo
+              name='filterBy'
+              options={branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []}
+              value={selectedBranch?.toString() || ""}
+              onChange={(value) => handleBranchChange(Number(value))}
+              valueKey='value'
+              labelKey='label'
+              isLoadingOptions={branchesLoading}
+              placeholder='Filter by branch'
+              className='w-32 !h-10 text-[#8B909A] text-xs'
+              placeHolderClass='text-[#8B909A] text-xs'
+              triggerColor='#8B909A'
+              showSelectedValue={false}
+            />
+            <SelectSingleCombo
+              name='category-filter'
+              options={categories?.map((category) => ({ value: category.id.toString(), label: category.name })) || []}
+              isLoadingOptions={categoriesLoading}
+              value={selectedCategory?.toString() || ""}
+              onChange={(value) => handleCategoryChange(Number(value))}
+              valueKey='value'
+              labelKey='label'
+              placeholder='Sort by'
+              className='w-32 !h-10 text-[#8B909A] text-xs'
+              placeHolderClass='text-[#8B909A] text-xs'
+              triggerColor='#8B909A'
+            />
+          </div>
+          <div className='flex items-center gap-2'>
+            <NewProductInventorySheet />
+            {
+              (selectedBranch || selectedCategory || debouncedSearchText) && (
+                <Button
+                  variant='outline'
+                  className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
+                  onClick={clearFilters}
+                >
+                  Clear Filters
+                </Button>
+              )
+            }
+
+            <Button
+              variant='outline'
+              className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
+              onClick={handleRefresh}
+            >
+              <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+            </Button>
+          </div>
         </div>
-        <div className='flex items-center gap-2'>
-          <NewProductInventorySheet />
-          {
-            (selectedBranch || selectedCategory || debouncedSearchText) && (
-              <Button
-                variant='outline'
-                className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </Button>
-            )
-          }
+      </header>
 
-          <Button
-            variant='outline'
-            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
-            onClick={handleRefresh}
-          >
-            <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
-          </Button>
-        </div>
-      </div>
-
-      <section>
+      <section className="flex-grow overflow-auto w-full pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Inventory', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Inventory'} />
-        <ProductsInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} />
+        <ProductsInventoryTable
+          data={data?.data}
+          isLoading={isLoading}
+          isFetching={isFetching}
+          error={error}
+        />
       </section>
 
       <footer className="sticky bottom-0">

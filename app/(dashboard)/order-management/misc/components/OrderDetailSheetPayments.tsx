@@ -9,6 +9,7 @@ import {
   EmojiHappy,
   ProfileCircle,
   UserEdit,
+  Money,
 } from "iconsax-react";
 import { Separator } from "@radix-ui/react-select";
 import { Phone } from "@phosphor-icons/react";
@@ -36,16 +37,18 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
-import { ORDER_STATUS_OPTIONS, paymentOptions } from "@/constants";
+import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_OPTIONS } from "@/constants";
 import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
-import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
+import { convertKebabAndSnakeToTitleCase, formatTimeString } from "@/utils/strings";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
+import PartPaymentsForm from "./PartPaymentsForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -63,15 +66,25 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
     setFalse: closeEditDeliveryDetailsModal,
   } = useBooleanStateControl();
 
+  const queryClient = useQueryClient();
+  const refetchDetailsAndList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['order-details']
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['active-orders-list']
+    });
+  }
   const handleStatusUpdate = (new_status: string) => {
     mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
+          refetchDetailsAndList();
         },
         onError: (error) => {
-          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+          const errorMessage = extractErrorMessage((error as any).response?.data);
           toast.error(errorMessage), {
             duration: 5000,
           };
@@ -84,9 +97,10 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
       {
         onSuccess: (data) => {
           toast.success("Payment method updated successfully");
+          refetchDetailsAndList();
         },
         onError: (error) => {
-          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+          const errorMessage = extractErrorMessage((error as any).response?.data);
           toast.error(errorMessage), {
             duration: 5000,
           };
@@ -96,6 +110,10 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
   }
 
 
+  const {
+    state: isEditingPaymentDetails,
+    toggle: togglePaymentDetailsEdit
+  } = useBooleanStateControl()
 
 
 
@@ -122,7 +140,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
             <OrderDetailSheetSkeleton />
             :
             <>
-              <div className="flex justify-between pt-8">
+              <header className="flex justify-between pt-8">
                 <div className="flex items-center gap-5">
                   <div className="flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0">
                     <span className="text-sm">Order ID: {order?.order_number}</span>
@@ -152,16 +170,18 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                 </div>
 
                 <div className="flex items-center space-x-2">
-                 
+
                   <Select value={order?.payment_options} defaultValue={order?.payment_options} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
-                    <SelectTrigger className="w-[200px] bg-[#3679171F]">
+                    <SelectTrigger className="w-[200px] bg-[#3679171F]"
+                      disabled={order?.payment_options !== "not_paid_go_ahead"}
+                    >
                       <SelectValue placeholder="Select Payment Method" />
                       {
                         isUpdatingPaymentMethod && <Spinner size={18} />
                       }
                     </SelectTrigger>
                     <SelectContent>
-                      {paymentOptions.map((option) => (
+                      {ENQUIRY_PAYMENT_OPTIONS.map((option) => (
                         <SelectItem
                           key={option.value}
                           value={option.value}
@@ -174,7 +194,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
+              </header>
 
               <div className="py-4 space-y-10">
                 <div className="grid grid-cols-2 gap-2.5 mt-8">
@@ -272,6 +292,92 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                 <section className="mt-16 mb-8">
                   <header className="border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                      <Money size={19} />
+                      Payment Details
+                      <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+                    </p>
+                  </header>
+                  <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
+                    {[
+                      ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
+                      // ["Amount Paid(USD)", order?.amoun],
+                      [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
+                      [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
+                      [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
+                      <span className="flex items-center gap-2" key={order?.id}>
+                        {
+                          formatCurrency(
+                            Number(Number(order?.total_production_cost ?? 0)
+                              -
+                              (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
+                              -
+                              (order?.initial_amount_paid || 0)
+                            ), 'NGN')
+                        }
+                        <button
+                          className="flex items-center justify-center rounded-md h-6 w-6 bg-[#FFC600] text-[#111827]"
+                          onClick={togglePaymentDetailsEdit}
+                        >
+                          <EditPenIcon height={16} width={16} />
+                        </button>
+                      </span>
+
+                      ],
+                    ].map(([label, value], index) => (
+                      <React.Fragment key={index}>
+                        {
+                          !!label && !!value &&
+                          <>
+                            <span className="text-[#687588] font-manrope text-sm">{label}</span>
+                            <span className="text-[#111827] text-sm">{value}</span>
+                          </>
+                        }
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  {
+                    order?.part_payments.map((payment, index) => (
+                      <div className="space-y-2 text-sm mt-4 ml-3" key={index}>
+                        {[
+                          ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
+                          ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
+                          ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
+                          ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
+                          ["Payment Receipt Name", payment.payment_receipt_name],
+                        ].map(([label, value], index) => (
+                          <p className=" grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
+                            {
+                              !!label && !!value &&
+                              <>
+                                <span className="text-[#687588] font-manrope text-[13px]">{label}</span>
+                                <span className="text-[#111827] text-[13px]">{value}</span>
+                              </>
+                            }
+                          </p>
+                        ))}
+                      </div>
+                    ))
+                  }
+                  {
+                    isEditingPaymentDetails && <PartPaymentsForm
+                      order_id={order?.id || default_order?.id}
+                      outstanding_balance={
+                        Number(order?.total_production_cost || 0) -
+                        (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0) -
+                        (order?.initial_amount_paid || 0)
+                      }
+                      closeForm={togglePaymentDetailsEdit}
+                      refetch={refetchDetailsAndList}
+                    />
+                  }
+
+
+                </section>
+
+
+                <section className="mt-16 mb-8">
+                  <header className="border-b border-b-[#00000021]">
+                    <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
                       <Notepad2 size={19} />
                       Delivery Note
                       <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
@@ -313,7 +419,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                                       />
                                     </div>
                                     <div className="flex items-center gap-4 self-start">
-                                      <Checkbox checked />
+                                      {/* <Checkbox checked /> */}
                                     </div>
                                   </header>
 
@@ -406,7 +512,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                       ["Primary address", order?.delivery.address],
                       ["Delivery Location", "Yaba(N5000)"],
                       ["Delivery Zone", order?.delivery.zone],
-                      ["Dispatch Time", order?.delivery.delivery_time],
+                      ["Dispatch Time", formatTimeString(order?.delivery.delivery_time ?? "00:00", "h:mma")],
                       ["Delivery Date", order?.delivery.delivery_date],
                     ].map(([label, value]) => (
                       <>
@@ -423,7 +529,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_amount || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_production_cost || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

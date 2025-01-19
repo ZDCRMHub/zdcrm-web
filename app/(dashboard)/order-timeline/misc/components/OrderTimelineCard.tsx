@@ -1,15 +1,21 @@
 'use client'
 import React from 'react';
+import { format } from 'date-fns';
+import toast from 'react-hot-toast';
+import { UserCheck, Phone, Calendar } from "lucide-react";
+
 import { Card, CardContent, CardTitle } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
-import { UserCheck, Phone, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import AddNewNoteModal from './AddNewNoteModal';
 import { useBooleanStateControl } from '@/hooks';
-import { format } from 'date-fns';
+import { useQueryClient } from '@tanstack/react-query';
+import { useUpdateOrderStatus } from '@/app/(dashboard)/order-management/misc/api';
+
+import AddNewNoteModal from './AddNewNoteModal';
 import { TOrderTimeItem } from '../api/getOrderTimeline';
+
 
 const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false }: { order: TOrderTimeItem; isExpanded?: boolean; hideOtherDetails?: boolean }) => {
     const {
@@ -20,6 +26,22 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
     } = useBooleanStateControl();
 
     const [isOpen, setIsOpen] = React.useState(isExpanded);
+    const { mutate, isPending } = useUpdateOrderStatus(order?.id);
+    const queryClient = useQueryClient();
+
+    const updateOrderStatus = (new_status: "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN") => {
+        mutate({ id: order?.id || 0, status: new_status }, {
+            onSuccess: () => {
+                toast.success("Order status updated successfully");
+                queryClient.invalidateQueries({
+                    queryKey: ['order-timeline-list']
+                });
+            }
+        });
+
+    }
+
+
 
     return (
         <Card className={cn("mb-4 border border-[#194A7A] bg-[#f4f6f3] !rounded-md", !isOpen && "py-3")}>
@@ -32,7 +54,7 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                 <AccordionItem value="item-1" className='!border-none !outline-none'>
                     <AccordionTrigger className="hover:no-underline px-6 py-4 no-underline !border-none">
                         <div className='grow grid grid-cols-[1fr,0.35fr] gap-5'>
-                            <CardTitle className='text-[#194A7A] font-semibold text-[1.35rem] text-left no-underline'>
+                            <CardTitle className='text-[#194A7A] font-semibold text-[1.125rem] text-left no-underline'>
                                 {order.message}
                             </CardTitle>
 
@@ -85,35 +107,27 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                                 !hideOtherDetails &&
                                 <div className="flex items-center gap-4">
                                     <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
-                                    {/* <Select defaultValue={order.type == 'enquiry' ? 'Still Discussing' : 'Payment Made'}>
+                                    <Select defaultValue={order?.order_details?.status?.toString()} onValueChange={(value) => updateOrderStatus(value as any)}>
                                         <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
                                             <SelectValue placeholder="Status" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {order.type === 'enquiry' ? (
-                                                <>
-                                                    <SelectItem value="Still Discussing">Still Discussing</SelectItem>
-                                                    <SelectItem value="Finalized Discussion">Finalized Discussion</SelectItem>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <SelectItem value="Payment Made">Payment Made</SelectItem>
-                                                    <SelectItem value="SOA">SOA</SelectItem>
-                                                    <SelectItem value="Sorted">Sorted</SelectItem>
-                                                    <SelectItem value="Sent to Dispatch">Sent to Dispatch</SelectItem>
-                                                    <SelectItem value="DIS CL">DIS CL</SelectItem>
-                                                    <SelectItem value="Delivered">Delivered</SelectItem>
-                                                </>
-                                            )}
+                                            <SelectItem value="PND">Pending</SelectItem>
+                                            <SelectItem value="SOA">SOA</SelectItem>
+                                            <SelectItem value="SOR">Sorted</SelectItem>
+                                            <SelectItem value="STD">Sent to Dispatch</SelectItem>
+                                            {/* <SelectItem value="DIS CL"></SelectItem> */}
+                                            <SelectItem value="COM">Delivered</SelectItem>
+                                            <SelectItem value="DEL">Delivered</SelectItem>
                                         </SelectContent>
-                                    </Select> */}
+                                    </Select>
                                 </div>
                             }
                         </CardContent>
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
-            <AddNewNoteModal isModalOpen={isModalOpen} closeModal={closeModal} setModalOpen={setModalState} order_id={order.id} />
+            <AddNewNoteModal isModalOpen={isModalOpen} closeModal={closeModal} setModalOpen={setModalState} order_id={order.order} />
         </Card>
     );
 };

@@ -8,12 +8,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 export default function OrderDetailSheetSkeleton() {
     return (
         <div className="w-full !max-w-[800px]">
-            <header>
+            {/* <header>
                 <h2 className="text-xl font-semibold flex items-center gap-4">
                     <Skeleton className="h-10 w-10 rounded-full" />
                     <Skeleton className="h-6 w-40" />
                 </h2>
-            </header>
+            </header> */}
 
             <div className="flex justify-between pt-8">
                 <div className="flex items-center gap-5">

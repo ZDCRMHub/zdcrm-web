@@ -6,39 +6,33 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { Logo } from "@/icons/core";
+import { X } from 'lucide-react';
 import Image from "next/image";
 import { Card } from "@/components/ui";
+import { formatCurrency } from "@/utils/currency";
+import { format } from "date-fns";
+import { TOrder } from "../types";
 
 interface ModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
-    orderData: {
-        branch: string;
-        orderNumber: string;
-        date: string;
-        customerName: string;
-        phoneNumber: string;
-        address: string;
-        items: Array<{
-            description: string;
-            quantity: number;
-            price: number;
-        }>;
-        subtotal: number;
-        tax: number;
-        discount: number;
-        deliveryFee: number;
-        total: number;
-    };
+    order: TOrder; // Replace 'any' with your actual order type
 }
 
 const OrderSummaryExportModal: React.FC<ModalProps> = ({
     isModalOpen,
     closeModal,
-    orderData,
+    order,
 }) => {
+    if (!order) return null;
+
+    const subtotal = order.items.reduce((acc: number, item: any) => acc + (item.quantity * (item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0)), 0);
+    const total = Number(order.total_production_cost);
+    const deliveryFee = Number(order.delivery.dispatch?.delivery_price) || 0;
+    // const discount = order.discount?.amount || 0;
+    const discount =  0;
+    const tax = total - subtotal - deliveryFee + discount;
+
     return (
         <Dialog open={isModalOpen}>
             <DialogContent
@@ -60,7 +54,7 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
                         </div>
 
                         <div className="text-right font-poppins">
-                            <h2 className="text-xl font-semibold">{orderData.branch}</h2>
+                            <h2 className="text-xl font-semibold">{order.branch.name}</h2>
                             <p className="text-xs text-balance">113 Freeman St, Adekunle 101223, Lagos, Nigeria, Lagos, Lagos State</p>
                             <p className="text-xs font-medium">zuzudelight@gmail.com | +234 8154354433</p>
                         </div>
@@ -70,21 +64,21 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
                         <div className="flex justify-between mb-6">
                             <div>
                                 <h3 className="font-medium text-[0.625rem] text-[#113770]">BILLED TO:</h3>
-                                <p className="text-[#545B6A] text-sm">{orderData.customerName}</p>
+                                <p className="text-[#545B6A] text-sm">{order.customer.name}</p>
                                 <p className="text-[#8E8E8E] text-[0.625rem]">Phone Number: {" "}
                                     <span className="text-[#0F172B] font-medium">
-                                        {orderData.phoneNumber}
+                                        {order.customer.phone}
                                     </span>
                                 </p>
                                 <p className="text-[#8E8E8E] text-[0.625rem]">Delivery Address: {" "}
                                     <span className="text-[#0F172B] font-medium">
-                                        {orderData.address}
+                                        {order.delivery.address}
                                     </span>
                                 </p>
                             </div>
                             <div className="text-right">
-                                <p>Order ID: {orderData.orderNumber}</p>
-                                <p>Issued Date: {orderData.date}</p>
+                                <p>Order ID: {order.order_number}</p>
+                                <p>Issued Date: {format(new Date(order.create_date), 'yyyy-MM-dd')}</p>
                             </div>
                         </div>
 
@@ -123,11 +117,11 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {orderData.items.map((item, index) => (
+                                {order.items.map((item: any, index: number) => (
                                     <tr key={index} className="border-b text-[0.625rem]">
-                                        <td className="py-2 px-4">{item.description}</td>
+                                        <td className="py-2 px-4">{item.product.name}</td>
                                         <td className="py-2 px-4 text-center">{item.quantity}</td>
-                                        <td className="py-2 px-4 text-right">₦{item.price.toLocaleString()}</td>
+                                        <td className="py-2 px-4 text-right">{formatCurrency(item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0, 'NGN')}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -137,23 +131,23 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
                             <div className="w-full divide-y">
                                 <div className="flex justify-between py-1.5 px-4">
                                     <span className="text-[#8E8E8E]">Sub total</span>
-                                    <span>₦{orderData.subtotal.toLocaleString()}</span>
+                                    <span>{formatCurrency(subtotal, 'NGN')}</span>
                                 </div>
                                 <div className="flex justify-between py-1.5 px-4">
-                                    <span className="text-[#8E8E8E]">Tax(%)</span>
-                                    <span>₦{orderData.tax.toLocaleString()}</span>
+                                    <span className="text-[#8E8E8E]">Tax</span>
+                                    <span>{formatCurrency(tax, 'NGN')}</span>
                                 </div>
                                 <div className="flex justify-between py-1.5 px-4">
-                                    <span className="text-[#8E8E8E]">Discount(%)</span>
-                                    <span className="text-red-500">-₦{orderData.discount.toLocaleString()}</span>
+                                    <span className="text-[#8E8E8E]">Discount</span>
+                                    <span className="text-red-500">-{formatCurrency(discount, 'NGN')}</span>
                                 </div>
                                 <div className="flex justify-between pt-1.5 pb-5 px-4">
                                     <span className="text-[#8E8E8E]">Delivery Fee</span>
-                                    <span>₦{orderData.deliveryFee.toLocaleString()}</span>
+                                    <span>{formatCurrency(deliveryFee, 'NGN')}</span>
                                 </div>
                                 <div className="flex justify-between font-semibold text-lg border-t border-t-[#31A5F9] pt-2 mt-3">
                                     <span>Total</span>
-                                    <span>₦{orderData.total.toLocaleString()}</span>
+                                    <span>{formatCurrency(total, 'NGN')}</span>
                                 </div>
                             </div>
                         </div>
@@ -176,3 +170,4 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
 };
 
 export default OrderSummaryExportModal;
+

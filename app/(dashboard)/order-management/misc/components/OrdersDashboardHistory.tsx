@@ -33,7 +33,7 @@ export default function OrdersDashboardHistory() {
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const defaultStatuses = 'PND,SOA,SOR,STD,COM,CAN'
+  const defaultStatuses = 'COM,CAN'
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>(defaultStatuses);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const { control, register, setValue, watch } = useForm<{
@@ -96,7 +96,8 @@ export default function OrdersDashboardHistory() {
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
               type='text'
-              placeholder='Search (client name, customer rep, phone number)'
+              placeholder='Search (order number, items name, customer name and phone number)'
+            
               className='w-full focus:border min-w-[350px] text-xs !h-10'
               value={searchText}
               onChange={handleSearch}
@@ -174,7 +175,7 @@ export default function OrdersDashboardHistory() {
                           return (
                             <React.Fragment key={index}>
                               {
-                                status.value !== "CAN" &&
+                                (status.value == "CAN" || status.value == "COM") &&
                                 <MenubarItem
                                   onClick={() => handleStatusChange(status.value)}
                                 >

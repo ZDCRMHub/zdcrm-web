@@ -66,7 +66,7 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
           <TableCell>{format(item.update_date, 'dd-MMM-yyyy')}</TableCell>
           <TableCell>
             <LinkButton
-              href={`/inventory/details?stock=${item.id}`}
+              href={`/inventory/stock/${item.id}?variation=${variation.id}`}
               variant="unstyled"
               className=""
               size="sm"

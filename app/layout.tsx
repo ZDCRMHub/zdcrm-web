@@ -3,6 +3,7 @@ import { DM_Sans, Manrope, Poppins } from 'next/font/google';
 import './globals.css';
 import { AllProviders } from '@/contexts';
 import { Toaster } from 'react-hot-toast';
+import { cn } from '@/lib/utils';
 
 const dmSans = DM_Sans({
   weight: ['400', '500', '600', '700'],
@@ -36,7 +37,8 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={`${dmSans.className} ${poppins.variable} ${manrope.variable}`}
+        // className={`${dmSans.className} ${poppins.variable} ${manrope.variable}` }
+      className={cn(dmSans.className, poppins.variable, manrope.variable, "w-screen h-screen overflow-hidden")}
       >
         <AllProviders>
           {children}

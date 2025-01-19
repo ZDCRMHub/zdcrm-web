@@ -46,7 +46,7 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
       <TableCell>{product.created_by}</TableCell>
       <TableCell>
         <LinkButton
-          href="/inventory/details"
+          href={`/inventory/store/${product.id}`}
           variant="unstyled"
           className=""
           size="sm"

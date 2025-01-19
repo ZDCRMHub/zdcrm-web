@@ -1,10 +1,11 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, Button, Textarea, SuccessModal } from '@/components/ui'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, Button, Textarea, SuccessModal, DialogTitle, DialogHeader } from '@/components/ui'
 import { useBooleanStateControl } from '@/hooks'
 import React from 'react'
 
 interface ModalProps {
     isModalOpen: boolean
     closeModal: () => void
+    orderId: number
 
 }
 const AddDeliveryNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, }) => {
@@ -17,19 +18,24 @@ const AddDeliveryNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, }
         <>
 
             <Dialog open={isModalOpen} >
-                <DialogContent onPointerDownOutside={closeModal}>
-
-
-                    <Textarea
-                        placeholder="Enter client feedback"
-                        className="w-full rounded-md"
-                        rows={7}
-                    />
-                    <DialogFooter className='flex'>
-                        <Button className="ml-auto" size="thin" onClick={() => { openSuccessModal(); closeModal() }}>
-                            Complete Delivery
-                        </Button>
-                    </DialogFooter>
+                <DialogContent onPointerDownOutside={closeModal} className="max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle>
+                            Customer&apos;s Feedback
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="p-3">
+                        <Textarea
+                            placeholder="Enter client feedback"
+                            className="w-full rounded-md"
+                            rows={7}
+                        />
+                        <DialogFooter className='flex mt-4'>
+                            <Button className="ml-auto" size="thin" onClick={() => { openSuccessModal(); closeModal() }}>
+                                Complete Delivery
+                            </Button>
+                        </DialogFooter>
+                    </div>
                 </DialogContent>
             </Dialog>
 

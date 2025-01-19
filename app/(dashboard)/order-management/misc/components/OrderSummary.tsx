@@ -71,8 +71,10 @@ export default function OrderSummary() {
       handleStatusUpdate()
     }
   }
+
+  const selectedDiscountAmount = discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount || 0;
   const handleStatusUpdate = () => {
-    updateStatus({ id: order_id, status: "STD" as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
+    updateStatus({ id: order_id, status: "SOA" as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
@@ -89,11 +91,11 @@ export default function OrderSummary() {
     );
   }
 
-  React.useEffect(() => {
-    if (!isLoading && !!order) {
-      setprocessed(order.status === 'STD' || order.status === 'COM' || order.status === 'CAN')
-    }
-  }, [order, isLoading])
+  // React.useEffect(() => {
+  //   if (!isLoading && !!order) {
+  //     setprocessed(order.status === 'STD' || order.status === 'COM' || order.status === 'CAN')
+  //   }
+  // }, [order, isLoading])
 
   if (isLoading) {
     return <OrderSummarySkeleton />;
@@ -167,13 +169,18 @@ export default function OrderSummary() {
               <div>
                 <div className="space-y-4 mt-1">
                   {
-                    order?.items.map((item: any, index: number) => (
+                    order?.items.map((item, index: number) => {
+                      const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.product?.category.name
+                      const placeHolderImage = `/img/placeholders/${itemCategory}.svg`
+
+                      return(
                       <article key={item.id} className="flex border rounded-2xl p-6 bg-white">
                         <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
                           <header className="flex items-start justify-between">
                             <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
                               <Image
-                                src="/placeholder.svg"
+                               src={ item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
+                              //  src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
                                 alt={item.product.name}
                                 fill
                                 className="object-cover rounded-md"
@@ -233,7 +240,7 @@ export default function OrderSummary() {
                               <span className="text-[#687588] italic font-light text-[0.8rem]">
                                 Production Cost:{" "}
                               </span>
-                              {formatCurrency(item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0, 'NGN')}
+                              {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
                             </p>
                             <p className="font-medium text-[#194A7A]">
                               Amount:{" "}
@@ -244,7 +251,7 @@ export default function OrderSummary() {
                           </section>
                         </div>
                       </article>
-                    ))
+                    )})
                   }
                 </div>
 
@@ -285,12 +292,17 @@ export default function OrderSummary() {
                         isLoadingOptions={isLoadingDiscounts}
                       />
                       <div className='mt-16 w-[300px] self-end'>
-                        <p className='font-medium mt-6 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
-                        <p className='text-xl font-bold mt-6'>Total (NGN):
-
+                        <p className='font-medium mt-2 text-[#8B909A]'>
+                          Subtotal (NGN):
+                          {formatCurrency(Number(order?.total_selling_price	),"NGN")}
+                        </p>
+                        <p className='font-medium mt-2 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
+                        <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(selectedDiscountAmount) || 0, "NGN")}</p>
+                        <p className='text-xl font-bold mt-6'>
+                          Total (NGN):
                           {
                             formatCurrency(
-                              Number(order?.total_amount) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
+                              Number(order?.total_selling_price	) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
                               "NGN")
                           }
                         </p>
