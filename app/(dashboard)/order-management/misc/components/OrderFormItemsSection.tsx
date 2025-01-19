@@ -238,7 +238,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
                                 {
                                     fields.map((_, invIndex) => (
-                                        <div className="col-span-full">
+                                        <div className="col-span-full" key={invIndex}>
                                             <h4 className="px-4 py-1 bg-custom-blue text-white max-w-max">
                                                 {stockInvetories?.data?.find(inv => inv.id === watchedInventories[invIndex]?.stock_inventory_id)?.name || ''}
                                             </h4>

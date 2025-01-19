@@ -121,7 +121,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
   }
 
 
-  const { mutate: updateStatus, isPending: isUpdatingItemSortedStatus } = (() => {
+  const useUpdate = () => {
     return useMutation({
       mutationFn: async ({ item_id, is_sorted }: { item_id: string, is_sorted: boolean }) => {
         const res = await APIAxios.patch(`/order/${order?.id || default_order?.id}/items/${item_id}/sorted/`, { is_sorted });
@@ -137,7 +137,8 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
         refetchDetailsAndList();
       }
     });
-  })()
+  }
+  const { mutate: updateStatus, isPending: isUpdatingItemSortedStatus } = useUpdate();
 
   const handleUpdateItemStatus = (data: { item_id: string, is_sorted: boolean }) => {
     updateStatus(data)
@@ -342,13 +343,13 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                         <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                       </p>
                     </header>
-                    <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
+                    <div className=" space-y-2 text-sm mt-4">
                       {[
                         ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
                         [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
                         [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
                         [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
-                        <span className="flex items-center gap-2">
+                        <span className="flex items-center gap-2" key={order?.id}>
                           {
                             formatCurrency(
                               Number(Number(order?.total_production_cost ?? 0)
@@ -367,8 +368,8 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                         </span>
 
                         ],
-                      ].map(([label, value]) => (
-                        <>
+                      ].map(([label, value], index) => (
+                        <p className=" grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
                           {
                             !!label && !!value &&
                             <>
@@ -376,20 +377,20 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                               <span className="text-[#111827] text-sm">{value}</span>
                             </>
                           }
-                        </>
+                        </p>
                       ))}
                     </div>
                     {
                       order?.part_payments.map((payment, index) => (
-                        <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4 ml-3">
+                        <div className=" space-y-2 text-sm mt-4 ml-3" key={index}>
                           {[
                             ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
                             ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
                             ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
                             ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
                             ["Payment Receipt Name", payment.payment_receipt_name],
-                          ].map(([label, value]) => (
-                            <>
+                          ].map(([label, value], index) => (
+                            <p className="grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
                               {
                                 !!label && !!value &&
                                 <>
@@ -397,7 +398,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                   <span className="text-[#111827] text-[13px]">{value}</span>
                                 </>
                               }
-                            </>
+                            </p>
                           ))}
                         </div>
                       ))
