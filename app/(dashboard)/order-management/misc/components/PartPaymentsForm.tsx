@@ -63,13 +63,16 @@ export type AddPartPaymentFormData = z.infer<typeof paymentFormSchema>;
 
 interface PartPaymentsFormProps {
   order_id: number | string
+  outstanding_balance: number
+  closeForm: () => void
+  refetch: () => void
 }
 
-const PartPaymentsForm = ({ order_id }: PartPaymentsFormProps) => {
-  const { register, control, handleSubmit, watch, formState: { errors }, setValue } = useForm<AddPartPaymentFormData>({
+const PartPaymentsForm = ({ order_id, outstanding_balance, closeForm, refetch }: PartPaymentsFormProps) => {
+  const { register, control, handleSubmit, watch, formState: { errors }, setValue, reset } = useForm<AddPartPaymentFormData>({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
-      payment_options: "not_paid_go_ahead",
+      payment_options: "part_payment_cash",
       payment_currency: "NGN",
     }
   });
@@ -82,6 +85,10 @@ const PartPaymentsForm = ({ order_id }: PartPaymentsFormProps) => {
   const selectedPaymentOption = watch("payment_options");
   const { mutate, isPending } = useAddPartPayment()
   const onSubmit = async (data: AddPartPaymentFormData) => {
+    if (data.amount_paid > outstanding_balance) {
+      toast.error("Amount paid cannot be greater than the outstanding balance")
+      return
+    }
     let payment_proof: string | undefined
     const PdfFile = data.payment_proof
     if (data.payment_proof) {
@@ -96,7 +103,9 @@ const PartPaymentsForm = ({ order_id }: PartPaymentsFormProps) => {
     mutate({ id: order_id, data: dataToSubmit }, {
       onSuccess: (data) => {
         toast.success('Payment Confirmed')
-        router.push(`/order-management/orders/${data.data.id}/order-summary`)
+        reset();
+        refetch();
+        closeForm();
       },
       onError: (error) => {
         const errorMessage = extractErrorMessage((error as any)?.response?.data) || "An unexpected error occurred. Please try again later."
@@ -127,7 +136,7 @@ const PartPaymentsForm = ({ order_id }: PartPaymentsFormProps) => {
               // label="Payment Option"
               valueKey="value"
               labelKey="label"
-              options={memoizedENQUIRY_PAYMENT_OPTIONS}
+              options={memoizedENQUIRY_PAYMENT_OPTIONS.filter((option) => option.value.startsWith("part_payment"))}
               placeholder="Select Payment Option"
               hasError={!!errors.payment_options}
               errorMessage={errors.payment_options?.message}
@@ -175,7 +184,7 @@ const PartPaymentsForm = ({ order_id }: PartPaymentsFormProps) => {
           hasError={!!errors.payment_proof}
           errorMessage={errors.payment_proof?.message as string}
           maxSize={10}
-          title="Upload Payment Proof"
+          title="Payment Proof"
         />
 
         <Controller
@@ -196,10 +205,10 @@ const PartPaymentsForm = ({ order_id }: PartPaymentsFormProps) => {
         />
 
 
-        <Button type="submit" className='flex items-center justify-center gap-2 w-full h-12 text-[#45971F] bg-[#aed29d] hover:bg-[#aed29d]'>
+        <Button type="submit" className='flex items-center justify-center gap-2 w-full h-12 text-[#45971F] bg-[#aed29d] hover:bg-[#aed29d]' disabled={isPending || isUploading}>
           Confirm Payment
           {
-            isPending && <Spinner size={20} />
+            (isPending || isUploading) && <Spinner size={20} />
           }
         </Button>
       </form>

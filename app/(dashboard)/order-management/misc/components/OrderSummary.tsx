@@ -169,13 +169,18 @@ export default function OrderSummary() {
               <div>
                 <div className="space-y-4 mt-1">
                   {
-                    order?.items.map((item, index: number) => (
+                    order?.items.map((item, index: number) => {
+                      const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.product?.category.name
+                      const placeHolderImage = `/img/placeholders/${itemCategory}.svg`
+
+                      return(
                       <article key={item.id} className="flex border rounded-2xl p-6 bg-white">
                         <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
                           <header className="flex items-start justify-between">
                             <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
                               <Image
-                                src="/placeholder.svg"
+                               src={ item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
+                              //  src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
                                 alt={item.product.name}
                                 fill
                                 className="object-cover rounded-md"
@@ -246,7 +251,7 @@ export default function OrderSummary() {
                           </section>
                         </div>
                       </article>
-                    ))
+                    )})
                   }
                 </div>
 

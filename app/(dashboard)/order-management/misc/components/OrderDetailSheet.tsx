@@ -10,6 +10,7 @@ import {
   EmojiHappy,
   ProfileCircle,
   UserEdit,
+  Money,
 } from "iconsax-react";
 import { Separator } from "@radix-ui/react-select";
 import { Phone } from "@phosphor-icons/react";
@@ -50,6 +51,7 @@ import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
 import { useRouter } from "next/navigation";
 import APIAxios from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import PartPaymentsForm from "./PartPaymentsForm";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -67,13 +69,23 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
     setTrue: openEditDeliveryDetailsModal,
     setFalse: closeEditDeliveryDetailsModal,
   } = useBooleanStateControl();
-
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const refetchDetailsAndList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['order-details']
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['active-orders-list']
+    });
+  }
   const handleStatusUpdate = (new_status: string) => {
     mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
+          refetchDetailsAndList();
           if (new_status == "STD") {
             router.push("/order-management/delivery")
           }
@@ -90,16 +102,13 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
       }
     );
   }
-  const router = useRouter();
-  const queryClient = useQueryClient();
+
   const handleUpdatePaymentMethod = (new_payment_method: string) => {
     updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
       {
         onSuccess: (data) => {
           toast.success("Payment method updated successfully");
-          queryClient.invalidateQueries({
-            queryKey: ['order-details']
-          });
+          refetchDetailsAndList();
         },
         onError: (error) => {
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
@@ -125,12 +134,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
         else {
           toast.success("Item unsorted successfully");
         }
-        queryClient.invalidateQueries({
-          queryKey: ['order-details']
-        });
-        queryClient.invalidateQueries({
-          queryKey: ['active-orders-list']
-        });
+        refetchDetailsAndList();
       }
     });
   })()
@@ -138,6 +142,11 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
   const handleUpdateItemStatus = (data: { item_id: string, is_sorted: boolean }) => {
     updateStatus(data)
   }
+  const {
+    state: isEditingPaymentDetails,
+    toggle: togglePaymentDetailsEdit,
+    setFalse: stopEditingPaymentDetails,
+  } = useBooleanStateControl()
 
 
 
@@ -172,7 +181,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
             :
 
             <>
-              <div className="flex justify-between pt-8">
+              <header className="flex justify-between pt-8">
                 <div className="flex items-center gap-5">
                   <div className="flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0">
                     <span className="text-sm">Order ID: {order?.order_number}</span>
@@ -203,7 +212,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
 
                 <div className="flex items-center space-x-2">
                   <Select value={order?.payment_options} defaultValue={order?.payment_options} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
-                      
+
                     <SelectTrigger className="w-[200px] bg-[#3679171F]" disabled={order?.payment_options !== "not_paid_go_ahead"}>
                       <SelectValue placeholder="Select Payment Method" />
                       {
@@ -224,7 +233,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
+              </header>
 
               <div className="py-4 space-y-10">
                 <div className="grid grid-cols-2 gap-2.5 mt-8">
@@ -319,6 +328,101 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                   </div>
                 </section>
 
+
+                {/* //////////////////////////////////////////////////////////////////////////////////// */}
+                {/* ///////////                       PAYMENT DETAILS                     ////////////// */}
+                {/* //////////////////////////////////////////////////////////////////////////////////// */}
+                {
+                  order?.payment_options.startsWith("part_payment") &&
+                  <section className="mt-16 mb-8">
+                    <header className="border-b border-b-[#00000021]">
+                      <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                        <Money size={19} />
+                        Payment Details
+                        <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+                      </p>
+                    </header>
+                    <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
+                      {[
+                        ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
+                        [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
+                        [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
+                        [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
+                        <span className="flex items-center gap-2">
+                          {
+                            formatCurrency(
+                              Number(Number(order?.total_production_cost ?? 0)
+                                -
+                                (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
+                                -
+                                (order?.initial_amount_paid || 0)
+                              ), 'NGN')
+                          }
+                          <button
+                            className="flex items-center justify-center rounded-md h-6 w-6 bg-[#FFC600] text-[#111827]"
+                            onClick={togglePaymentDetailsEdit}
+                          >
+                            <EditPenIcon height={16} width={16} />
+                          </button>
+                        </span>
+
+                        ],
+                      ].map(([label, value]) => (
+                        <>
+                          {
+                            !!label && !!value &&
+                            <>
+                              <span className="text-[#687588] font-manrope text-sm">{label}</span>
+                              <span className="text-[#111827] text-sm">{value}</span>
+                            </>
+                          }
+                        </>
+                      ))}
+                    </div>
+                    {
+                      order?.part_payments.map((payment, index) => (
+                        <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4 ml-3">
+                          {[
+                            ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
+                            ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
+                            ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
+                            ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
+                            ["Payment Receipt Name", payment.payment_receipt_name],
+                          ].map(([label, value]) => (
+                            <>
+                              {
+                                !!label && !!value &&
+                                <>
+                                  <span className="text-[#687588] font-manrope text-[13px]">{label}</span>
+                                  <span className="text-[#111827] text-[13px]">{value}</span>
+                                </>
+                              }
+                            </>
+                          ))}
+                        </div>
+                      ))
+                    }
+                    {
+                      isEditingPaymentDetails &&
+                      <PartPaymentsForm
+                        order_id={order?.id || default_order?.id}
+                        outstanding_balance={
+                          Number(order?.total_production_cost || 0) -
+                          (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0) -
+                          (order?.initial_amount_paid || 0)
+                        }
+                        closeForm={stopEditingPaymentDetails}
+                        refetch={refetchDetailsAndList}
+                      />
+                    }
+                  </section>
+                }
+
+
+
+                {/* //////////////////////////////////////////////////////////////////////////////////// */}
+                {/* ///////////                         DELIVERY NOTE                     ////////////// */}
+                {/* //////////////////////////////////////////////////////////////////////////////////// */}
                 <section className="mt-16 mb-8">
                   <header className="border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
@@ -363,6 +467,9 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                       />
                                     </div>
                                     <div className="flex items-center gap-4 self-start">
+                                      {
+                                        isUpdatingItemSortedStatus && <Spinner className="text-custom-blue h-4 w-4" size={16} />
+                                      }
                                       <Checkbox
                                         checked={item.is_sorted}
                                         customIcon={isUpdatingItemSortedStatus && <Spinner className="text-custom-blue h-4 w-4" size={16} />}
@@ -460,7 +567,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       ["Primary address", order?.delivery.address],
                       ["Delivery Location", "Yaba(N5000)"],
                       ["Delivery Zone", order?.delivery.zone],
-                      ["Dispatch Time", formatTimeString(order?.delivery.delivery_time??"00:00")],
+                      ["Dispatch Time", formatTimeString(order?.delivery.delivery_time ?? "00:00")],
 
                       ["Delivery Date", order?.delivery.delivery_date],
                     ].map(([label, value]) => (
@@ -485,7 +592,6 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
 
                 <section className="flex justify-end my-12">
                   <Button
-                    // href={`/order-management/orders/${order?.id}/order-summary`}
                     className="h-12 px-8"
                     onClick={closeSheet}
                   >

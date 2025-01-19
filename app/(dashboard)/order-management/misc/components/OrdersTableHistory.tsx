@@ -81,7 +81,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         <Badge
                             key={item.id}
                             variant="outline"
-                            className="flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                            className={cn("flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5",
+                                item.is_sorted && "text-white bg-[#367917] border-transparent"
+                            )}
                         >
                             {CATEGORIES_ENUMS[item.product.category.name]}
                         </Badge>

@@ -147,7 +147,7 @@ const EnquiryDetailsPage = () => {
 
                         <div className="flex items-center gap-5">
                             <h3 className="text-sm text-gray-500">Delivery Note</h3>
-                            <p className="text-[0.825rem] font-manrope">Deliver in person</p>
+                            {/* <p className="text-[0.825rem] font-manrope">{data?.delivery.note}</p> */}
                         </div>
                     </Card>
                 </div>
@@ -187,82 +187,87 @@ const EnquiryDetailsPage = () => {
                     </AccordionTrigger>
                     <AccordionContent className="space-y-8">
                         {
-                            data?.items.map((item, index) => (
-                                <Card className="py-6 px-10 rounded-xl max-w-2xl" key={index}>
-                                    <div className="flex items-center justify-between">
-                                        <h2 className="font-semibold mb-4 text-sm font-manrope">
-                                            Item {index + 1}
-                                        </h2>
-                                        {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0] cursor-pointer" /> */}
-                                    </div>
+                            data?.items.map((item, index) => {
+                                const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
+                                const placeHolderImage = `/img/placeholders/${itemCategory}.svg`
 
-                                    <Separator className="mb-2" />
-
-                                    <div className="flex gap-10">
-                                        <div className="flex flex-col shrink-0">
-                                            <div className="bg-white-grey rounded-[6px] w-fit">
-
-                                                <Image
-                                                    src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || "/img/cake.png"}
-                                                    alt="Adeline Fautline Cake"
-                                                    className="w-24 h-24 object-cover rounded-md p-2"
-                                                    width={100}
-                                                    height={100}
-                                                />
-                                            </div>
-
-                                            <p className="text-custom-blue font-medium text-sm max-w-[150px] text-balance">
-                                                {item.inventories[0]?.stock_inventory?.name || item.inventories[0]?.product_inventory?.name}
-                                            </p>
+                                return (
+                                    <Card className="py-6 px-10 rounded-xl max-w-2xl" key={index}>
+                                        <div className="flex items-center justify-between">
+                                            <h2 className="font-semibold mb-4 text-sm font-manrope">
+                                                Item {index + 1}
+                                            </h2>
+                                            {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0] cursor-pointer" /> */}
                                         </div>
-                                        <div className="space-y-3 text-sm">
-                                            <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
-                                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                                    <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
-                                                </p>
-                                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                                    {/* <span className="text-[#687588]">Category:</span> {item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name} */}
 
-                                                </p>
+                                        <Separator className="mb-2" />
 
-                                                <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                                    <span className="text-[#687588]">Size:</span> 6 inches
+                                        <div className="flex gap-10">
+                                            <div className="flex flex-col shrink-0">
+                                                <div className="bg-white-grey rounded-[6px] w-fit">
+                                                    <Image
+                                                        src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage}
+                                                        alt={item.inventories[0]?.stock_inventory?.name || item.inventories[0]?.product_inventory?.name || "Product"}
+                                                        className="w-24 h-24 object-cover rounded-md p-2 text-xxs"
+                                                        width={100}
+                                                        height={100}
+                                                    />
+                                                </div>
+
+                                                <p className="text-custom-blue font-medium text-sm max-w-[150px] text-balance">
+                                                    {item.inventories[0]?.stock_inventory?.name || item.inventories[0]?.product_inventory?.name}
                                                 </p>
                                             </div>
+                                            <div className="space-y-3 text-sm">
+                                                <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
+                                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                        <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
+                                                    </p>
+                                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                        {/* <span className="text-[#687588]">Category:</span> {item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name} */}
 
-                                            {
-                                                Object.entries(item.inventories[0]?.properties[0]).map(([key, value]) => (
-                                                    <>
-                                                        {
-                                                            key !== 'id' && !!value &&
-                                                            <p className="text-[#111827] font-medium">
-                                                                <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span>{" "}
-                                                                {value}
-                                                            </p>
-                                                        }
-                                                    </>
-                                                ))
-                                            }
+                                                    </p>
 
-                                            <p className="text-[#111827] font-medium">
-                                                <span className="text-[#687588]">Message {item.product.category.name == "Cake" && "on cake"}:</span>{" "}
-                                                {data?.message}
+                                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                        <span className="text-[#687588]">Size:</span> 6 inches
+                                                    </p>
+                                                </div>
+
+                                                {
+                                                    Object.entries(item.inventories[0]?.properties[0]).map(([key, value]) => (
+                                                        <>
+                                                            {
+                                                                key !== 'id' && !!value &&
+                                                                <p className="text-[#111827] font-medium">
+                                                                    <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span>{" "}
+                                                                    {value}
+                                                                </p>
+                                                            }
+                                                        </>
+                                                    ))
+                                                }
+
+                                                <p className="text-[#111827] font-medium">
+                                                    <span className="text-[#687588]">Message {item.product.category.name == "Cake" && "on cake"}:</span>{" "}
+                                                    {data?.message}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <Separator className="mt-7 mb-4" />
+
+                                        <div className="flex items-end justify-end mb-3 w-full">
+                                            <p className="font-semibold text-[#194A7A]">Amount: </p>
+                                            <p className="font-semibold text-[#194A7A]">
+                                                {
+                                                    !!item.inventories[0]?.product_inventory ? formatCurrency(Number(item.inventories[0]?.product_inventory?.cost_price || "0"), "NGN") : "-"
+                                                }
                                             </p>
                                         </div>
-                                    </div>
+                                    </Card>
 
-                                    <Separator className="mt-7 mb-4" />
-
-                                    <div className="flex items-end justify-end mb-3 w-full">
-                                        <p className="font-semibold text-[#194A7A]">Amount: </p>
-                                        <p className="font-semibold text-[#194A7A]">
-                                            {
-                                               !!item.inventories[0]?.product_inventory ? formatCurrency(  Number(item.inventories[0]?.product_inventory?.cost_price || "0"), "NGN") : "-"
-                                            }
-                                        </p>
-                                    </div>
-                                </Card>
-                            ))
+                                )
+                            })
                         }
 
 
@@ -335,11 +340,15 @@ const EnquiryDetailsPage = () => {
                 </p>
             </footer>
 
-            <ConfirmPaymentModal
-                isModalOpen={isConfirmModalOpen}
-                closeModal={closeConfirmModal}
-                enquiryId={enquiry_id as string}
-            />
+            {
+                data &&
+                <ConfirmPaymentModal
+                    isModalOpen={isConfirmModalOpen}
+                    closeModal={closeConfirmModal}
+                    enquiryId={enquiry_id as string}
+                    total_amount_due={Number(data?.total_selling_price || 0)}
+                />
+            }
         </div>
     )
 }

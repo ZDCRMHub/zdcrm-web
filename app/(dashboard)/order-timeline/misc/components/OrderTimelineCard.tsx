@@ -54,7 +54,7 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                 <AccordionItem value="item-1" className='!border-none !outline-none'>
                     <AccordionTrigger className="hover:no-underline px-6 py-4 no-underline !border-none">
                         <div className='grow grid grid-cols-[1fr,0.35fr] gap-5'>
-                            <CardTitle className='text-[#194A7A] font-semibold text-[1.35rem] text-left no-underline'>
+                            <CardTitle className='text-[#194A7A] font-semibold text-[1.125rem] text-left no-underline'>
                                 {order.message}
                             </CardTitle>
 

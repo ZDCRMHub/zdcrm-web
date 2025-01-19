@@ -48,6 +48,7 @@ import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
 import PartPaymentsForm from "./PartPaymentsForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -65,12 +66,22 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
     setFalse: closeEditDeliveryDetailsModal,
   } = useBooleanStateControl();
 
+  const queryClient = useQueryClient();
+  const refetchDetailsAndList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['order-details']
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['active-orders-list']
+    });
+  }
   const handleStatusUpdate = (new_status: string) => {
     mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
+          refetchDetailsAndList();
         },
         onError: (error) => {
           const errorMessage = extractErrorMessage((error as any).response?.data);
@@ -86,6 +97,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
       {
         onSuccess: (data) => {
           toast.success("Payment method updated successfully");
+          refetchDetailsAndList();
         },
         onError: (error) => {
           const errorMessage = extractErrorMessage((error as any).response?.data);
@@ -290,9 +302,18 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                       ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
                       // ["Amount Paid(USD)", order?.amoun],
                       [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
+                      [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
                       [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
                       <span className="flex items-center gap-2">
-                        {formatCurrency(Number(Number(order?.total_production_cost || 0) - 0), 'NGN')}
+                        {
+                          formatCurrency(
+                            Number(Number(order?.total_production_cost ?? 0)
+                              -
+                              (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
+                              -
+                              (order?.initial_amount_paid || 0)
+                            ), 'NGN')
+                        }
                         <button
                           className="flex items-center justify-center rounded-md h-6 w-6 bg-[#FFC600] text-[#111827]"
                           onClick={togglePaymentDetailsEdit}
@@ -315,8 +336,38 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     ))}
                   </div>
                   {
+                    order?.part_payments.map((payment, index) => (
+                      <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4 ml-3">
+                        {[
+                          ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
+                          ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
+                          ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
+                          ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
+                          ["Payment Receipt Name", payment.payment_receipt_name],
+                        ].map(([label, value]) => (
+                          <>
+                            {
+                              !!label && !!value &&
+                              <>
+                                <span className="text-[#687588] font-manrope text-[13px]">{label}</span>
+                                <span className="text-[#111827] text-[13px]">{value}</span>
+                              </>
+                            }
+                          </>
+                        ))}
+                      </div>
+                    ))
+                  }
+                  {
                     isEditingPaymentDetails && <PartPaymentsForm
                       order_id={order?.id || default_order?.id}
+                      outstanding_balance={
+                        Number(order?.total_production_cost || 0) -
+                        (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0) -
+                        (order?.initial_amount_paid || 0)
+                      }
+                      closeForm={togglePaymentDetailsEdit}
+                      refetch={refetchDetailsAndList}
                     />
                   }
 

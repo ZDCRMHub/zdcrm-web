@@ -79,7 +79,7 @@ const itemSchema = z.object({
         }
     });
 });
-export const MAX_FILE_SIZE = 1000000;
+export const MAX_FILE_SIZE = 10000000;
 
 export const NewOrderSchema = z.object({
     customer: z.object({

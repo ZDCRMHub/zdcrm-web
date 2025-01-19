@@ -18,8 +18,10 @@ export interface TEnquiry {
   payment_currency: string;
   initial_amount_paid: string;
   amount_paid_in_usd: string;
-  total_amount: string;
+  total_production_cost: string;
+  total_selling_price: string;
   payment_proof: string;
+  payment_receipt_name: string;
   items: Item[];
   discussions: TEnquiryDiscussion[];
   create_date: string;

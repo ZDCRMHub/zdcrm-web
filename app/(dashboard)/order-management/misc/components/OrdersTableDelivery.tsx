@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import OrderDetailSheet from './OrderDetailSheet';
 import { format } from 'date-fns';
-import { convertNumberToNaira } from '@/utils/currency';
+import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
 import { Button, LinkButton, Spinner } from '@/components/ui';
@@ -104,10 +104,13 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     )}
                 >
                     {ORDER_STATUS_ENUMS[order?.status!]}
-
                 </Badge>
             </TableCell>
-            <TableCell className='min-w-[180px] max-w-[500px]'>{"-"}</TableCell>
+            <TableCell className='min-w-[180px] max-w-[500px]'>
+                {
+                    formatCurrency(Number (order.delivery.dispatch?.delivery_price || 0), "NGN")
+                }
+            </TableCell>
 
             <TableCell>
                 <Button

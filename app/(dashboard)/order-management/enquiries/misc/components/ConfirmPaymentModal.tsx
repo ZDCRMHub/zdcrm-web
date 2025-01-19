@@ -19,7 +19,7 @@ import {
   FilePicker,
 } from "@/components/ui";
 import { OrderTimeLine } from '@/icons/sidebar';
-import { formatAxiosErrorMessage } from '@/utils/errors';
+import { extractErrorMessage, formatAxiosErrorMessage } from '@/utils/errors';
 import { ENQUIRY_PAYMENT_OPTIONS } from '@/constants';
 import { useLoading } from "@/contexts";
 
@@ -101,14 +101,16 @@ interface ConfirmPaymentModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
   enquiryId: string;
+  total_amount_due: number;
 }
 
 const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
   isModalOpen,
   closeModal,
   enquiryId,
+  total_amount_due
 }) => {
-  const { control, handleSubmit, watch, formState: { errors }, setValue } = useForm<ConfirmPaymentFormData>({
+  const { control, handleSubmit, watch, formState: { errors }, setValue, setError, clearErrors } = useForm<ConfirmPaymentFormData>({
     resolver: zodResolver(paymentFormSchema),
     defaultValues: {
       payment_status: "UP",
@@ -125,6 +127,16 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
   const selectedPaymentOption = watch("payment_options");
   const { mutate, isPending } = useConfirmEnquiry()
   const onSubmit = async (data: ConfirmPaymentFormData) => {
+    if (parseFloat(data.initial_amount_paid || '0') > total_amount_due) {
+      toast.error("Initial amount paid cannot be greater than total amount due")
+      setError("initial_amount_paid", {
+        type: 'manual',
+        message: "Initial amount paid cannot be greater than total amount due"
+      })
+      return
+    }
+    clearErrors("initial_amount_paid")
+
     let payment_proof: string | undefined
     const PdfFile = data.payment_proof
     if (data.payment_proof) {
@@ -143,8 +155,8 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
         router.push(`/order-management/orders/${data.data.id}/order-summary`)
       },
       onError: (error) => {
-        const errorMessage = formatAxiosErrorMessage(error as any)
-        toast.error(errorMessage)
+        const errorMessage = extractErrorMessage((error as any).response?.data)
+        toast.error(errorMessage, { duration: 10000 })
       }
     })
   };
@@ -292,10 +304,13 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
               />
             </div>
             <DialogFooter>
-              <Button type="submit" className='flex items-center justify-center gap-2 w-full h-14 mt-10'>
+              <Button
+                type="submit" className='flex items-center justify-center gap-2 w-full h-14 mt-10'
+                disabled={isPending || isUploading}
+              >
                 Confirm Payment
                 {
-                  isPending && <Spinner size={20} />
+                  (isPending || isUploading) && <Spinner size={20} />
                 }
               </Button>
             </DialogFooter>

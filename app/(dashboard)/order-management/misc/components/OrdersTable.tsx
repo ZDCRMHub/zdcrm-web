@@ -18,7 +18,7 @@ import { Button, LinkButton, Spinner } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
-import { CATEGORIES_ENUMS } from '@/constants';
+import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS } from '@/constants';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -131,7 +131,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         'rounded-md w-max'
                     )}
                 >
-                    {order.status}
+                    {ORDER_STATUS_ENUMS[order.status]}
                 </Badge>
             </TableCell>
             <TableCell className='min-w-max'>

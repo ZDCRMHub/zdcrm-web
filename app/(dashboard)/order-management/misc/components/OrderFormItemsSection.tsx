@@ -310,6 +310,34 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
                                                     )
                                                 }
+                                                {
+                                                    categoryName === 'Flower' && (
+                                                        <>
+
+                                                            <Controller
+                                                                name={`items.${index}.inventories.${invIndex}.properties.bouquet`}
+                                                                control={control}
+                                                                render={({ field }) => (
+                                                                    <SelectSingleCombo
+                                                                        options={
+                                                                            PRODUCT_TYPES_OPTIONS.Flowers.bouquets
+                                                                        }
+                                                                        label="Bouquet"
+                                                                        valueKey="value"
+                                                                        labelKey="name"
+                                                                        placeholder="Select bouquet"
+                                                                        {...field}
+                                                                        hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.properties?.bouquet}
+                                                                        errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.properties?.bouquet?.message as string}
+
+                                                                    />
+                                                                )}
+                                                            />
+
+                                                        </>
+
+                                                    )
+                                                }
 
 
                                                 <FormField
@@ -329,23 +357,26 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         </FormItem>
                                                     )}
                                                 />
-                                                <FormField
-                                                    control={control}
-                                                    name={`items.${index}.inventories.${invIndex}.message`}
-                                                    render={({ field }) => (
-                                                        <FormItem className='col-span-2'>
-                                                            <FormControl>
-                                                                <Input
-                                                                    label="Message"
-                                                                    placeholder='Enter message'
-                                                                    {...field}
-                                                                    hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.message}
-                                                                    errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.message as string}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
+                                                {
+                                                    categoryName === 'Cake' || categoryName === 'Cupcake' &&
+                                                    <FormField
+                                                        control={control}
+                                                        name={`items.${index}.inventories.${invIndex}.message`}
+                                                        render={({ field }) => (
+                                                            <FormItem className='col-span-2'>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        label="Message on Cake"
+                                                                        placeholder='Enter message'
+                                                                        {...field}
+                                                                        hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.message}
+                                                                        errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.message as string}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                }
                                             </div>
                                         </div>
                                     ))

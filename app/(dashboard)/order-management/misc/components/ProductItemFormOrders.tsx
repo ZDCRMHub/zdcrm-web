@@ -76,7 +76,7 @@ const ProductItemFormOrders = ({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={control}
               name={`items.${index}.inventories.${invIndex}.message`}
               render={({ field }) => (
@@ -92,7 +92,7 @@ const ProductItemFormOrders = ({
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
 
           </>
         )

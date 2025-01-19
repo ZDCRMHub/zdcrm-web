@@ -278,6 +278,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
                       // ["Amount Paid(USD)", order?.amoun],
                       [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
+                      [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
                       [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
                       <span className="flex items-center gap-2">
                         {

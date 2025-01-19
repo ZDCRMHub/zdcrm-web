@@ -38,6 +38,38 @@ export const PRODUCT_TYPES_OPTIONS = {
     glass_vase: [
       { label: "25cm", value: "25cm" },
       { label: "50cm", value: "50cm" }
+    ],
+    bouquets: [
+      
+      { name: "Medium (8*10)", value: "Medium" },
+      { name: "Small (8*8)", value: "Small" },
+      { name: "Standard (8*14)", value: "Standard" },
+      { name: "Standard Plus (10*10)", value: "Standard Plus" },
+      { name: "Xsmall (6*10)", value: "Xsmall" },
+      { name: "24cm Small Box", value: "24cm Small Box" },
+      { name: "27cm Moyenne Box", value: "27cm Moyenne Box" },
+      { name: "30cm Luxe Moyenne Box", value: "30cm Luxe Moyenne Box" },
+      { name: "33cm Standard Box", value: "33cm Standard Box" },
+      { name: "36cm Luxe Standard Box", value: "36cm Luxe Standard Box" },
+      { name: "39cm Deluxe Box", value: "39cm Deluxe Box" },
+      { name: "42cm Deluxe Plus Box", value: "42cm Deluxe Plus Box" },
+      { name: "45cm Deluxe Premium", value: "45cm Deluxe Premium" },
+      { name: "48cm First Class Box", value: "48cm First Class Box" },
+      { name: "Deluxe Bouquet", value: "Deluxe Bouquet" },
+      { name: "Deluxe Plus Bouquet", value: "Deluxe Plus Bouquet" },
+      { name: "Deluxe Premium Bouquet", value: "Deluxe Premium Bouquet" },
+      { name: "Entry Bouquet", value: "Entry Bouquet" },
+      { name: "First Class Bouquet", value: "First Class Bouquet" },
+      { name: "Moyenne Bouquet", value: "Moyenne Bouquet" },
+      { name: "Small Bouquet", value: "Small Bouquet" },
+      { name: "Standard Bouquet", value: "Standard Bouquet" },
+      { name: "Xsmall Bouquet", value: "Xsmall Bouquet" },
+      { name: "Large Bouquet", value: "Large Bouquet" },
+      { name: "Vip Deluxe", value: "Vip Deluxe" },
+      { name: "Vip Deluxe Plus", value: "Vip Deluxe Plus" },
+      { name: "Vip Moyenne", value: "Vip Moyenne" },
+      { name: "Vip Standard", value: "Vip Standard" }
+
     ]
   },
   Teddies: {
