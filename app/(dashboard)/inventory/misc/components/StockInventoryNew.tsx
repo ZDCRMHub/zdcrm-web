@@ -342,7 +342,7 @@ export default function NewInventorySheet() {
                                             {...register(`variations.${index}.quantity`, { valueAsNumber: true })}
                                             type="number"
                                             placeholder='Quantity'
-                                            pattern="[0-9]*"
+                                            pattern="^[0-9]*$"
                                             hasError={!!errors.variations?.[index]?.quantity}
                                             errorMessage={errors.variations?.[index]?.quantity?.message}
                                             // onChange={(e) => field.onChange(Number(e.target.value))}

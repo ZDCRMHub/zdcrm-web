@@ -22,7 +22,22 @@ export interface TOrder {
   discussions: TOrderDiscussion[];
   create_date: string;
   update_date: string;
+  part_payments: Partpayment[];
+  initial_amount_paid: number
 }
+
+
+interface Partpayment {
+  id: number;
+  payment_options: string;
+  payment_proof: string;
+  payment_currency: string;
+  amount_paid: string;
+  payment_receipt_name: string;
+  recorded_by: Createdby;
+  create_date: string;
+}
+
 
 export interface TOrderDiscussion {
   id: number;
@@ -41,6 +56,7 @@ interface TOrderItem {
   create_date: string;
   update_date: string;
   price_at_order: string;
+  is_sorted: boolean;  
 }
 
 

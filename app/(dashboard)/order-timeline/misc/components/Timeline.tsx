@@ -48,7 +48,7 @@ const OrderTimeline = () => {
             <div className='flex items-center justify-between gap-2 w-full grow pt-6 pb-10'>
                 <Input
                     type='text'
-                    placeholder='Search (client name, customer rep, phone number)'
+              placeholder='Search (order number, customer name and phone number)'                    
                     className='w-full focus:border min-w-[350px] text-xs !h-10'
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}

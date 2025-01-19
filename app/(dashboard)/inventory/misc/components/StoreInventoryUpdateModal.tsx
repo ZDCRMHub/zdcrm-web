@@ -19,14 +19,14 @@ import {
     Input,
 } from "@/components/ui";
 
-import { TProductInventoryItem } from '../types/products';
+import { TStoreInventoryItem } from '../types/store';
 import FormError from '@/components/ui/formError';
 import { useUpdateProductInventory } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/icons/core';
 
-const productInventorySchema = z.object({
+const storeInventorySchema = z.object({
     quantity: z.number().int().nonnegative(),
     cost_price: z.number()
         .min(1, {
@@ -35,20 +35,20 @@ const productInventorySchema = z.object({
             message: "Cost price must be a number"
         }).positive({ message: "Cost price must be a positive number" }),
 });
-interface ProductsInventoryUpdateModalProps {
+interface StoreInventoryUpdateModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
     refetch: () => void;
-    product: TProductInventoryItem
+    product: TStoreInventoryItem
 }
 
-const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch }) => {
+const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch }) => {
     const { register, formState: { errors }, setValue, handleSubmit, watch, getValues, setError } = useForm({
         defaultValues: {
             quantity: product.quantity,
             cost_price: parseInt(product.cost_price),
         },
-        resolver: zodResolver(productInventorySchema)
+        resolver: zodResolver(storeInventorySchema)
     })
 
     const quantityMinus = () => {
@@ -60,8 +60,8 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
         setValue('quantity', prevQuantity + 1)
     }
 
-    const { mutate, isPending } = useUpdateProductInventory()
-    const submit = (data: { quantity: number; cost_price: number }) => {
+      const {mutate, isPending} =  useUpdateProductInventory()
+        const submit = (data: { quantity: number; cost_price: number }) => {
         if (isNaN(data.cost_price)) {
             alert("Cost price cannot be NaN");
             setError("cost_price", {
@@ -70,21 +70,21 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
             })
             return;
         }
-        mutate({ data, id: product.id },
+        mutate({data, id: product.id},
             {
                 onSuccess: () => {
+                    toast.success("Store inventory updated successfully")
                     refetch();
-                    toast.success("Product inventory updated successfully")
                     closeModal()
                 },
                 onError: (error) => {
-                    const erMessage = extractErrorMessage(error)
+                    const erMessage  = extractErrorMessage(error)
                     toast.error(erMessage)
                 }
             }
         )
     }
-
+    
 
 
 
@@ -92,6 +92,9 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
         <Dialog open={isModalOpen} onOpenChange={closeModal} modal>
 
             <DialogContent className=" max-w-[596px] ">
+                {/* <DialogClose className="absolute right-8">
+                    <IoIosClose size={30} />
+                </DialogClose> */}
                 <DialogHeader className="">
                     <DialogTitle className="text-xl font-semibold uppercase">
                         stock adjustment
@@ -105,7 +108,7 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                             alt={product.name}
                             width={78}
                             height={69}
-                            className="rounded-xl"
+                            className="rounded-xl text-[0.6rem]"
                         />
                         <div className="flex flex-col gap-2">
                             <h3 className="uppercase font-bold">{product.name}</h3>
@@ -168,12 +171,12 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                         <Button
                             type="submit"
                             id='FORM'
-                            disabled={isPending}
+                            disabled={isPending}    
                             className="bg-[#17181C] mt-10 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                         >
                             Save Changes
                             {
-                                isPending && <Spinner />
+                                isPending && <Spinner/>
                             }
                         </Button>
                     </DialogFooter>
@@ -183,4 +186,4 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
     )
 }
 
-export default ProductsInventoryUpdateModal
+export default StoreInventoryUpdateModal

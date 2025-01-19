@@ -75,7 +75,7 @@ export default function ProductsInventoryDashboard() {
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
               type='text'
-              placeholder='Search by product name'
+              placeholder="Search by product name or inventory number"
               className='w-full focus:border min-w-[350px] text-xs !h-10'
               value={searchText}
               onChange={handleSearch}

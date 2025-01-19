@@ -19,6 +19,7 @@ import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import { ORDER_STATUS_COLORS } from './OrdersTable';
+import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS } from '@/constants';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -82,7 +83,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             variant="outline"
                             className="flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
                         >
-                            {item.product.category.name.charAt(0)}
+                            {CATEGORIES_ENUMS[item.product.category.name]}
                         </Badge>
                     ))}
                 </div>
@@ -99,7 +100,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         'rounded-md w-max'
                     )}
                 >
-                    {order.status}
+                    {ORDER_STATUS_ENUMS[order.status]}
                 </Badge>
             </TableCell>
 

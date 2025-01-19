@@ -126,7 +126,7 @@ const StockItemFormEnquiry: React.FC<StockItemFormEnquiryProps> = ({
                       <Image
                         src={option.product_image as string}
                         alt={option.name as string}
-                        className="w-full h-full object-cover text-xs"
+                        className="w-full h-full object-cover text-xs rounded-xl"
                         fill
                       />
                       :

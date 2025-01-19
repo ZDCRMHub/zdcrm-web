@@ -34,6 +34,12 @@ const itemSchema = z.object({
         cost: z.string().min(1, { message: "Miscellaneous cost is required" })
     })).optional()
 }).superRefine((data, ctx) => {
+    if(data.product_id && data.product_id == 0) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Product type is required",
+        });
+    }
     data.inventories.forEach((inventory, index) => {
         if (inventory === null) return; // Skip validation for null inventories
 

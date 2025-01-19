@@ -19,14 +19,14 @@ import {
     Input,
 } from "@/components/ui";
 
-import { TProductInventoryItem } from '../types/products';
 import FormError from '@/components/ui/formError';
-import { useUpdateProductInventory } from '../api';
+import { useUpdateStockInventory } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/icons/core';
+import { TStockInventoryItem, TStockVariation } from '../types/stock';
 
-const productInventorySchema = z.object({
+const stockInventorySchema = z.object({
     quantity: z.number().int().nonnegative(),
     cost_price: z.number()
         .min(1, {
@@ -35,20 +35,22 @@ const productInventorySchema = z.object({
             message: "Cost price must be a number"
         }).positive({ message: "Cost price must be a positive number" }),
 });
-interface ProductsInventoryUpdateModalProps {
+interface StockInventoryUpdateModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
     refetch: () => void;
-    product: TProductInventoryItem
+    stock: TStockInventoryItem
+    variation: TStockVariation
+
 }
 
-const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch }) => {
+const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ isModalOpen, closeModal, variation, stock, refetch }) => {
     const { register, formState: { errors }, setValue, handleSubmit, watch, getValues, setError } = useForm({
         defaultValues: {
-            quantity: product.quantity,
-            cost_price: parseInt(product.cost_price),
+            quantity: variation.quantity,
+            cost_price: parseInt(variation.cost_price),
         },
-        resolver: zodResolver(productInventorySchema)
+        resolver: zodResolver(stockInventorySchema)
     })
 
     const quantityMinus = () => {
@@ -60,7 +62,7 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
         setValue('quantity', prevQuantity + 1)
     }
 
-    const { mutate, isPending } = useUpdateProductInventory()
+    const { mutate, isPending } = useUpdateStockInventory()
     const submit = (data: { quantity: number; cost_price: number }) => {
         if (isNaN(data.cost_price)) {
             alert("Cost price cannot be NaN");
@@ -70,11 +72,11 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
             })
             return;
         }
-        mutate({ data, id: product.id },
+        mutate({ data, id: variation.id },
             {
                 onSuccess: () => {
-                    refetch();
-                    toast.success("Product inventory updated successfully")
+                    refetch()
+                    toast.success("stock inventory updated successfully")
                     closeModal()
                 },
                 onError: (error) => {
@@ -92,6 +94,9 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
         <Dialog open={isModalOpen} onOpenChange={closeModal} modal>
 
             <DialogContent className=" max-w-[596px] ">
+                {/* <DialogClose className="absolute right-8">
+                    <IoIosClose size={30} />
+                </DialogClose> */}
                 <DialogHeader className="">
                     <DialogTitle className="text-xl font-semibold uppercase">
                         stock adjustment
@@ -101,19 +106,19 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                 <form onSubmit={handleSubmit(submit)} id="FORM" className='flex flex-col gap-8 p-8 pt-6'>
                     <div className="mt-9 bg-[#72ADE614] h-24 rounded-xl py-3 pl-5 flex gap-10 items-center">
                         <Image
-                            src={product.image_one || "/placeholder.png"}
-                            alt={product.name}
+                            src={stock.image_one || "/placeholder.png"}
+                            alt={stock.name}
                             width={78}
                             height={69}
-                            className="rounded-xl"
+                            className="rounded-xl text-xs"
                         />
                         <div className="flex flex-col gap-2">
-                            <h3 className="uppercase font-bold">{product.name}</h3>
+                            <h3 className="uppercase font-bold">{stock.name} - {variation.size || variation.flavour || variation.color}</h3>
                             <div className="flex gap-3">
                                 <Hashtag />
                                 <p className="text-xs">
-                                    Stocked Product:{" "}
-                                    <span className="font-semibold">{product.quantity}</span>
+                                    Stocked stock:{" "}
+                                    <span className="font-semibold">{variation.quantity}</span>
                                 </p>
                             </div>
                         </div>
@@ -183,4 +188,4 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
     )
 }
 
-export default ProductsInventoryUpdateModal
+export default StockInventoryUpdateModal

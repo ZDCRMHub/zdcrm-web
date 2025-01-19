@@ -34,6 +34,12 @@ const itemSchema = z.object({
         cost: z.string().min(1, { message: "Miscellaneous cost is required" })
     })).optional()
 }).superRefine((data, ctx) => {
+    if (data.product_id && data.product_id == 0) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Product type is required",
+        });
+    }
     data.inventories.forEach((inventory, index) => {
         if (inventory === null) return; // Skip validation for null inventories
 
@@ -73,7 +79,7 @@ const itemSchema = z.object({
         }
     });
 });
-const MAX_FILE_SIZE = 1000000;
+export const MAX_FILE_SIZE = 1000000;
 
 export const NewOrderSchema = z.object({
     customer: z.object({
@@ -114,33 +120,34 @@ export const NewOrderSchema = z.object({
     ]),
     // payment_proof: z.string().url().optional().nullable(),
     payment_proof: z.any().nullable().refine(
-            file => {
-                if (!file) {
-                    throw z.ZodError.create([{
-                        path: ['payment_proof'],
-                        message: 'Please select a file.',
-                        code: 'custom',
-                    }]);
-                }
-                if (!file.type.startsWith('application/pdf')) {
-                    throw z.ZodError.create([{
-                        path: ['payment_proof'],
-                        message: 'Please select a PDF file.',
-                        code: 'custom',
-                    }]);
-                }
-                return file.size <= MAX_FILE_SIZE;
-            },
-    
-            {
-                message: 'Max image size is 10MB.',
+        file => {
+            if (!file) {
+                throw z.ZodError.create([{
+                    path: ['payment_proof'],
+                    message: 'Please select a file.',
+                    code: 'custom',
+                }]);
             }
-        ),
+            if (!file.type.startsWith('application/pdf') && !file.type.startsWith('image/')) {
+                throw z.ZodError.create([{
+                    path: ['payment_proof'],
+                    message: 'Please select a PDF or image file.',
+                    code: 'custom',
+                }]);
+            }
+            return file.size <= MAX_FILE_SIZE;
+        },
+
+        {
+            message: 'Max file size is 10MB.',
+        }
+    ),
+    payment_receipt_name: z.string().optional(),
     payment_currency: z.enum(["NGN", "USD"]),
     amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
     initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
 }).superRefine((data, ctx) => {
-    if ((data.payment_options === "part_payment_cash" || data.payment_options === "part_payment_transfer" ) && !data.initial_amount_paid) {
+    if ((data.payment_options === "part_payment_cash" || data.payment_options === "part_payment_transfer") && !data.initial_amount_paid) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Enter initial amount paid",

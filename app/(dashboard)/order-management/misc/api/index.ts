@@ -7,6 +7,7 @@ export { useGDiscounts } from './getDiscounts'
 export { useCreateOrder } from './postCreateOrder'
 export { useAddDiscountToOrder } from './postAddDiscountToOrder'
 export { useAddNoteToOrderDiscussion } from './postAddNoteToOrderDiscussion'
+export { useAddPartPayment } from './postAddPartPayment'
 
 export { useUpdateOrderStatus } from './patchUpdateOrderStatus'
 export { useUpdateDriverDetails } from './patchUpdateDriverDetails'

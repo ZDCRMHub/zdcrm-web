@@ -6,8 +6,8 @@ import { MoveLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-import { useGetProductInventoryDetails, useGetProductInventoryHistory } from "../../misc/api";
-import { ProductsInventoryHistoryTable, ProductsInventoryUpdateModal } from "../../misc/components";
+import { useGetStoreInventoryDetails, useGetStoreInventoryHistory } from "../../misc/api";
+import { ProductsInventoryHistoryTable, StoreInventoryUpdateModal } from "../../misc/components";
 import { useBooleanStateControl } from "@/hooks";
 
 
@@ -22,11 +22,8 @@ const InventoryDetailsPage = () => {
     setFalse: closeUpdateModal,
   } = useBooleanStateControl();
 
-
-
-  const { data, isLoading, isFetching, refetch: refetchData } = useGetProductInventoryDetails(product_id)
-  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch:refetchHistory } = useGetProductInventoryHistory(product_id)
-  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(undefined);
+  const { data, isLoading, isFetching, refetch:refetchData } = useGetStoreInventoryDetails(product_id)
+  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch:refetchHistory } = useGetStoreInventoryHistory(product_id)
 
   const refetch = () => {
     refetchData();
@@ -73,7 +70,7 @@ const InventoryDetailsPage = () => {
 
       {
         data &&
-        <ProductsInventoryUpdateModal
+        <StoreInventoryUpdateModal
           isModalOpen={isUpdateModalOpen}
           closeModal={closeUpdateModal}
           product={data}

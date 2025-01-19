@@ -41,25 +41,23 @@ const ProductItemFormOrders = ({
 
   return (
 
-    <div key={index} className="mt-4 border-t pt-4">
+    <>
       {
         watchedInventories.map((_, invIndex) =>
 
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 mb-8" key={invIndex}>
+          <>
             <ProductItemSelector
               inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
               setInventoryId={(inventoryId) => {
                 setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
               }}
-              hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
-              errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
               options={productsInvetories?.data!}
               disabled={productsLoading || (!productsLoading && !productsInvetories?.data.length)}
               isLoadingOptions={productsLoading}
               isFetchingOptions={productsFetching}
-
+              errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
+              hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
             />
-
 
             <FormField
               control={control}
@@ -96,10 +94,10 @@ const ProductItemFormOrders = ({
               )}
             />
 
-          </div>
+          </>
         )
       }
-    </div>
+    </>
 
   )
 }

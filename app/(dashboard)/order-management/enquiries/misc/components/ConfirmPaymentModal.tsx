@@ -16,15 +16,20 @@ import {
   Input,
   SelectSingleCombo,
   Spinner,
+  FilePicker,
 } from "@/components/ui";
 import { OrderTimeLine } from '@/icons/sidebar';
 import { formatAxiosErrorMessage } from '@/utils/errors';
 import { ENQUIRY_PAYMENT_OPTIONS } from '@/constants';
+import { useLoading } from "@/contexts";
+
 
 import { useConfirmEnquiry } from '../api';
+import { MAX_FILE_SIZE } from '../../../misc/utils/schema';
+import useCloudinary from '@/hooks/useCloudinary';
 
 
-const paymentFormSchema = z.object({
+export const paymentFormSchema = z.object({
   payment_status: z.enum(["UP", "FP", "PP"]),
   payment_options: z.enum([
     "not_paid_go_ahead",
@@ -34,42 +39,60 @@ const paymentFormSchema = z.object({
     "paid_usd_transfer",
     "paid_paypal",
     "cash_paid",
-    "part_payment",
+    "part_payment_cash",
+    "part_payment_transfer",
     "paid_bitcoin",
     "not_received_paid"
   ]),
-  payment_proof: z.string().url().optional().nullable(),
+  // payment_proof: z.string().url().optional().nullable(),
+  payment_receipt_name: z.string().optional(),
   payment_currency: z.enum(["NGN", "USD"]),
   amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
   initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
-}).refine(
-  (data) => {
-    if (
-      (data.payment_options === "paid_usd_transfer" ||
-        data.payment_options === "paid_paypal" ||
-        data.payment_options === "paid_bitcoin") &&
-      !data.amount_paid_in_usd
-    ) {
-      return false;
+  payment_proof: z.any().nullable().refine(
+    file => {
+      if (!file) {
+        throw z.ZodError.create([{
+          path: ['payment_proof'],
+          message: 'Please select a file.',
+          code: 'custom',
+        }]);
+      }
+      if (!file.type.startsWith('application/pdf') && !file.type.startsWith('image/')) {
+        throw z.ZodError.create([{
+          path: ['payment_proof'],
+          message: 'Please select a PDF or image file.',
+          code: 'custom',
+        }]);
+      }
+      return file.size <= MAX_FILE_SIZE;
+    },
+
+    {
+      message: 'Max file size is 10MB.',
     }
-    return true;
-  },
-  {
-    message: "Amount paid in USD is required",
-    path: ["amount_paid_in_usd"],
+  ),
+}).superRefine((data, ctx) => {
+  if ((data.payment_options === "part_payment_cash" || data.payment_options === "part_payment_transfer") && !data.initial_amount_paid) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Enter initial amount paid",
+      path: ["initial_amount_paid"]
+    });
   }
-).refine(
-  (data) => {
-    if (data.payment_options === "part_payment" && !data.initial_amount_paid) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: "Initial amount paid is required",
-    path: ["initial_amount_paid"],
+  if (
+    (data.payment_options === "paid_usd_transfer" ||
+      data.payment_options === "paid_paypal" ||
+      data.payment_options === "paid_bitcoin") &&
+    !data.amount_paid_in_usd
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Enter amount paid in USD",
+      path: ["amount_paid_in_usd"]
+    });
   }
-);
+});
 
 export type ConfirmPaymentFormData = z.infer<typeof paymentFormSchema>;
 
@@ -96,14 +119,28 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
 
 
   const router = useRouter();
+  const { uploadToCloudinary } = useCloudinary()
+  const { isUploading } = useLoading();
+
   const selectedPaymentOption = watch("payment_options");
   const { mutate, isPending } = useConfirmEnquiry()
-  const onSubmit = (data: ConfirmPaymentFormData) => {
-    mutate({ id: enquiryId, data }, {
+  const onSubmit = async (data: ConfirmPaymentFormData) => {
+    let payment_proof: string | undefined
+    const PdfFile = data.payment_proof
+    if (data.payment_proof) {
+      const data = await uploadToCloudinary(PdfFile)
+      payment_proof = data.secure_url
+    }
+    const dataToSubmit = {
+      ...data,
+      payment_proof: PdfFile ? payment_proof : undefined,
+    }
+
+    mutate({ id: enquiryId, data: dataToSubmit }, {
       onSuccess: (data) => {
         closeModal()
         toast.success('Payment Confirmed')
-        router.push(`/order-management/orders/${data.data.id}`)
+        router.push(`/order-management/orders/${data.data.id}/order-summary`)
       },
       onError: (error) => {
         const errorMessage = formatAxiosErrorMessage(error as any)
@@ -113,18 +150,17 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
   };
 
   React.useEffect(() => {
-    // "not_received_paid"
     if (selectedPaymentOption == "paid_usd_transfer" || selectedPaymentOption == "paid_naira_transfer" || selectedPaymentOption == "cash_paid" || selectedPaymentOption == "paid_website_card"
-       || selectedPaymentOption == "paid_pos" || selectedPaymentOption == "paid_paypal" || selectedPaymentOption == "paid_bitcoin") {
+      || selectedPaymentOption == "paid_pos" || selectedPaymentOption == "paid_paypal" || selectedPaymentOption == "paid_bitcoin") {
       setValue('payment_status', 'FP')
     }
-    else if (selectedPaymentOption == "part_payment") {
+    else if (selectedPaymentOption == "part_payment_cash" || selectedPaymentOption == "part_payment_transfer") {
       setValue('payment_status', 'PP')
     }
     else {
       setValue('payment_status', 'UP')
     }
-  }, [selectedPaymentOption])
+  }, [selectedPaymentOption, setValue])
 
 
   const memoizedENQUIRY_PAYMENT_OPTIONS = useMemo(() => ENQUIRY_PAYMENT_OPTIONS, []);
@@ -192,7 +228,7 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
                 />
               )}
 
-              {selectedPaymentOption === "part_payment" && (
+              {(selectedPaymentOption === "part_payment_cash" || selectedPaymentOption === "part_payment_transfer") && (
                 <Controller
                   name="initial_amount_paid"
                   control={control}
@@ -230,6 +266,30 @@ const ConfirmPaymentModal: React.FC<ConfirmPaymentModalProps> = React.memo(({
                   )}
                 />
               )}
+
+              <FilePicker
+                onFileSelect={(file) => setValue("payment_proof", file!)}
+                hasError={!!errors.payment_proof}
+                errorMessage={errors.payment_proof?.message as string}
+                maxSize={10}
+                title="Upload Payment Proof"
+              />
+
+              <Controller
+                name="payment_receipt_name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    label="Payment Receipt Name"
+                    id="payment_receipt_name"
+                    placeholder="Enter name in payment receipt"
+                    className="col-span-3"
+                    {...field}
+                    hasError={!!errors.payment_receipt_name}
+                    errorMessage={errors.payment_receipt_name?.message}
+                  />
+                )}
+              />
             </div>
             <DialogFooter>
               <Button type="submit" className='flex items-center justify-center gap-2 w-full h-14 mt-10'>

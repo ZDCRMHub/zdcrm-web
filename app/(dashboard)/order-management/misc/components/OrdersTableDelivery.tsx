@@ -19,6 +19,7 @@ import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
+import { ORDER_STATUS_ENUMS } from '@/constants';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -102,7 +103,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         'rounded-md w-max'
                     )}
                 >
-                    {order.status}
+                    {ORDER_STATUS_ENUMS[order?.status!]}
+
                 </Badge>
             </TableCell>
             <TableCell className='min-w-[180px] max-w-[500px]'>{"-"}</TableCell>

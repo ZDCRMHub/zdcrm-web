@@ -35,7 +35,7 @@ export const PRODUCT_TYPES_OPTIONS = {
     ]
   },
   Flowers: {
-    vaseOptions: [
+    glass_vase: [
       { label: "25cm", value: "25cm" },
       { label: "50cm", value: "50cm" }
     ]
@@ -59,10 +59,7 @@ export const PRODUCT_TYPES_OPTIONS = {
 };
 
 
-export const BRANCH_OPTIONS = [
-  { label: "Zuzu Delights", value: "Zuzu Delights" },
-  { label: "Prestige Flowers", value: "Prestige Flowers" }
-]
+
 
 export const ENQUIRY_PAYMENT_OPTIONS = [
   { value: "not_paid_go_ahead", label: "Not Paid (Go Ahead)" },
@@ -87,28 +84,33 @@ export const ORDER_STATUS_OPTIONS = [
   { value: "CAN", label: "Cancelled" },
 ]
 
+export const CATEGORIES_ENUMS: Record<string, string> = {
+  "Cake": "C",
+  "Flower": "F",
+  "Cupcake": "CC",
+
+  "Wine": "W",
+  "Teddy Bear": "TB",
+  "Gift Card": "GC",
+  "Vase": "V",
+  "Chocolate": "CH",
+  "Baloon": "B",
+  "Perfume": "P",
+  "Hand Bag": "HB",
+
+}
+export const ORDER_STATUS_ENUMS: Record<string, string> = {
+  "PND": "PENDING",
+  "SOA": "SOA",
+  "SOR": "SORTED",
+  "STD": "SENT TO DELIVERY",
+  "COM": "DELIVERED",
+  "CAN": "CANCELLED",
+
+}
 
 
 
-
-export const paymentOptions = [
-  { label: "Not Paid (But Go Ahead)", value: "not_paid_go_ahead" },
-  { label: "Paid (Website Card)", value: "paid_website_card" },
-  { label: "Paid (Naira Transfer)", value: "paid_naira_transfer" },
-  { label: "Paid (POS)", value: "paid_pos" },
-  { label: "Paid (USD Transfer)", value: "paid_usd_transfer" },
-  { label: "Paid (Paypal)", value: "paid_paypal" },
-  { label: "Cash Paid", value: "cash_paid" },
-  { label: "Part Payment", value: "part_payment" },
-  { label: "Paid (Bitcoin)", value: "paid_bitcoin" },
-  { label: "Not Received (Paid)", value: "not_received_paid" }
-];
-
-export const STOCK_CATEGORIES_OPTIONS = [
-  { value: 'C', label: 'Cake' },
-  { value: 'F', label: 'Flower' },
-  { value: 'CC', label: 'Cup Cake' },
-]
 
 export const PRODUCT_CATEGORIES_OPTIONS = [
   { value: 'W', label: 'Wine' },

@@ -18,6 +18,7 @@ import { Button, LinkButton, Spinner } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
+import { CATEGORIES_ENUMS } from '@/constants';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -110,9 +111,12 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                         <Badge
                             key={item.id}
                             variant="outline"
-                            className="flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                            className={cn("flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5",
+                                item.is_sorted && "text-white bg-[#367917] border-transparent"
+
+                            )}
                         >
-                            {item.product.category.name.charAt(0)}
+                            {CATEGORIES_ENUMS[item.product.category.name]}
                         </Badge>
                     ))}
                 </div>

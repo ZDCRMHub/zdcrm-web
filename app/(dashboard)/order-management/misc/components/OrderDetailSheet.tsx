@@ -37,17 +37,19 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
-import { ORDER_STATUS_OPTIONS, paymentOptions } from "@/constants";
+import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_OPTIONS, } from "@/constants";
 import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
-import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
+import { convertKebabAndSnakeToTitleCase, formatTimeString } from "@/utils/strings";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
 import { useRouter } from "next/navigation";
+import APIAxios from "@/utils/axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -56,9 +58,10 @@ interface OrderDetailsPanelProps {
 }
 
 export default function OrderDetailSheet({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
+  const { data: order, isLoading, isRefetching } = useGetOrderDetail(default_order?.id, isSheetOpen);
+
   const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
   const { mutate: updatePaymentMethod, isPending: isUpdatingPaymentMethod } = useUpdateOrderPaymentMethod()
-  const { data: order, isLoading } = useGetOrderDetail(default_order?.id, isSheetOpen);
   const {
     state: isEditDeliveryDetailsModalOpen,
     setTrue: openEditDeliveryDetailsModal,
@@ -88,12 +91,15 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
     );
   }
   const router = useRouter();
+  const queryClient = useQueryClient();
   const handleUpdatePaymentMethod = (new_payment_method: string) => {
     updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
       {
         onSuccess: (data) => {
           toast.success("Payment method updated successfully");
-         
+          queryClient.invalidateQueries({
+            queryKey: ['order-details']
+          });
         },
         onError: (error) => {
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
@@ -106,6 +112,32 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
   }
 
 
+  const { mutate: updateStatus, isPending: isUpdatingItemSortedStatus } = (() => {
+    return useMutation({
+      mutationFn: async ({ item_id, is_sorted }: { item_id: string, is_sorted: boolean }) => {
+        const res = await APIAxios.patch(`/order/${order?.id || default_order?.id}/items/${item_id}/sorted/`, { is_sorted });
+        return res.data;
+      },
+      onSuccess: (data, variables) => {
+        if (variables.is_sorted) {
+          toast.success("Item sorted successfully");
+        }
+        else {
+          toast.success("Item unsorted successfully");
+        }
+        queryClient.invalidateQueries({
+          queryKey: ['order-details']
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['active-orders-list']
+        });
+      }
+    });
+  })()
+
+  const handleUpdateItemStatus = (data: { item_id: string, is_sorted: boolean }) => {
+    updateStatus(data)
+  }
 
 
 
@@ -118,7 +150,12 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
             <span className="bg-[#E8EEFD] p-2 rounded-full">
               <Book size={25} variant="Bold" color="#194A7A" />
             </span>
-            <span>Order Details</span>
+            <span className="flex items-center gap-2">
+              Order Details
+              {
+                isRefetching && <Spinner />
+              }
+            </span>
           </h2>
         </SheetTitle>
         <SheetClose className="absolute top-1/2 left-[-100%]">
@@ -166,14 +203,15 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
 
                 <div className="flex items-center space-x-2">
                   <Select value={order?.payment_options} defaultValue={order?.payment_options} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
-                    <SelectTrigger className="w-[200px] bg-[#3679171F]">
+                      
+                    <SelectTrigger className="w-[200px] bg-[#3679171F]" disabled={order?.payment_options !== "not_paid_go_ahead"}>
                       <SelectValue placeholder="Select Payment Method" />
                       {
                         isUpdatingPaymentMethod && <Spinner size={18} />
                       }
                     </SelectTrigger>
                     <SelectContent>
-                      {paymentOptions.map((option) => (
+                      {ENQUIRY_PAYMENT_OPTIONS.map((option) => (
                         <SelectItem
                           key={option.value}
                           value={option.value}
@@ -325,7 +363,11 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                       />
                                     </div>
                                     <div className="flex items-center gap-4 self-start">
-                                      <Checkbox checked />
+                                      <Checkbox
+                                        checked={item.is_sorted}
+                                        customIcon={isUpdatingItemSortedStatus && <Spinner className="text-custom-blue h-4 w-4" size={16} />}
+                                        onCheckedChange={(new_value) => handleUpdateItemStatus({ item_id: item.id, is_sorted: !!new_value })}
+                                      />
                                     </div>
                                   </header>
 
@@ -418,7 +460,8 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       ["Primary address", order?.delivery.address],
                       ["Delivery Location", "Yaba(N5000)"],
                       ["Delivery Zone", order?.delivery.zone],
-                      ["Dispatch Time", order?.delivery.delivery_time],
+                      ["Dispatch Time", formatTimeString(order?.delivery.delivery_time??"00:00")],
+
                       ["Delivery Date", order?.delivery.delivery_date],
                     ].map(([label, value]) => (
                       <>
@@ -441,12 +484,13 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                 </section>
 
                 <section className="flex justify-end my-12">
-                  <LinkButton
-                    href={`/order-management/orders/${order?.id}/order-summary`}
+                  <Button
+                    // href={`/order-management/orders/${order?.id}/order-summary`}
                     className="h-12 px-8"
+                    onClick={closeSheet}
                   >
-                    Proceed to Summary
-                  </LinkButton>
+                    Close
+                  </Button>
                 </section>
 
                 <section className="flex flex-col gap-1.5">

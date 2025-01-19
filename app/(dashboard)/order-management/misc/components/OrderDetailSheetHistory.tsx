@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox, Button, LinkButton, CardTitle, Spinner } from "@/components/ui";
 import { Mail, MessageCircle, User, X } from "lucide-react";
 import {
@@ -10,6 +9,7 @@ import {
   EmojiHappy,
   ProfileCircle,
   UserEdit,
+  Money,
 } from "iconsax-react";
 import { Separator } from "@radix-ui/react-select";
 import { Phone } from "@phosphor-icons/react";
@@ -37,17 +37,18 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
-import { ORDER_STATUS_OPTIONS, paymentOptions } from "@/constants";
+import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS, } from "@/constants";
 import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
-import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
+import { convertKebabAndSnakeToTitleCase, formatTimeString } from "@/utils/strings";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
 import OrderDiscussCard from "./OrderDiscussCard";
+import { ORDER_STATUS_COLORS } from "./OrdersTable";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -75,7 +76,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
           toast.success("Order status updated successfully");
         },
         onError: (error) => {
-          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+          const errorMessage = extractErrorMessage((error as any).response?.data);
           toast.error(errorMessage), {
             duration: 5000,
           };
@@ -89,8 +90,9 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
         onSuccess: (data) => {
           toast.success("Payment method updated successfully");
         },
+
         onError: (error) => {
-          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+          const errorMessage = extractErrorMessage((error as any).response?.data);
           toast.error(errorMessage), {
             duration: 5000,
           };
@@ -135,40 +137,26 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     <span className="text-sm">Order ID: {order?.order_number}</span>
                   </div>
 
-                  <Select value={order?.status} defaultValue={order?.status} onValueChange={(new_value) => handleStatusUpdate(new_value)}>
-                    <SelectTrigger className="w-[150px] bg-transparent">
-                      <SelectValue placeholder={order?.status} className="!text-left" />
-                      {
-                        isUpdatingStatus && <Spinner size={18} />
-                      }
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        ORDER_STATUS_OPTIONS.map((option) => (
-                          <SelectItem
-                            key={option.value}
-                            value={option.value}
-                            className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
-                          >
-                            {option.label}
-                          </SelectItem>
-                        ))
-                      }
-                    </SelectContent>
-                  </Select>
+                  <button
+                    className={cn("px-4 py-1.5 text-sm rounded-lg",
+                      ORDER_STATUS_COLORS[order?.status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN"],
+                    )}
+                  >
+                    {ORDER_STATUS_ENUMS[order?.status!]}
+                  </button>
                 </div>
 
                 <div className="flex items-center space-x-2">
 
                   <Select value={order?.payment_options} defaultValue={order?.payment_options} onValueChange={(new_value) => handleUpdatePaymentMethod(new_value)}>
-                    <SelectTrigger className="w-[150px] bg-[#3679171F]">
+                    <SelectTrigger className="w-[150px] bg-[#3679171F]" disabled>
                       <SelectValue placeholder="Select Payment Method" />
                       {
                         isUpdatingPaymentMethod && <Spinner size={18} />
                       }
                     </SelectTrigger>
                     <SelectContent>
-                      {paymentOptions.map((option) => (
+                      {ENQUIRY_PAYMENT_OPTIONS.map((option) => (
                         <SelectItem
                           key={option.value}
                           value={option.value}
@@ -276,6 +264,85 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                   </div>
                 </section>
 
+
+                <section className="mt-16 mb-8">
+                  <header className="border-b border-b-[#00000021]">
+                    <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                      <Money size={19} />
+                      Payment Details
+                      <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
+                    </p>
+                  </header>
+                  <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
+                    {[
+                      ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
+                      // ["Amount Paid(USD)", order?.amoun],
+                      [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
+                      [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
+                      <span className="flex items-center gap-2">
+                        {
+                          formatCurrency(
+                            Number(Number(order?.total_production_cost ?? 0)
+                              -
+                              (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
+                              -
+                              (order?.initial_amount_paid || 0)
+                            ), 'NGN')
+                        }
+                        <button
+                          className="flex items-center justify-center rounded-md h-6 w-6 bg-[#FFC600] text-[#111827]"
+                        // onClick={togglePaymentDetailsEdit}
+                        >
+                          <EditPenIcon height={16} width={16} />
+                        </button>
+                      </span>
+
+                      ],
+                    ].map(([label, value]) => (
+                      <>
+                        {
+                          !!label && !!value &&
+                          <>
+                            <span className="text-[#687588] font-manrope text-sm">{label}</span>
+                            <span className="text-[#111827] text-sm">{value}</span>
+                          </>
+                        }
+                      </>
+                    ))}
+                  </div>
+
+                  {
+                    order?.part_payments.map((payment, index) => (
+                      <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4 ml-3">
+                        {[
+                          ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
+                          ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
+                          ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
+                          ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
+                          ["Payment Receipt Name", payment.payment_receipt_name],
+                        ].map(([label, value]) => (
+                          <>
+                            {
+                              !!label && !!value &&
+                              <>
+                                <span className="text-[#687588] font-manrope text-[13px]">{label}</span>
+                                <span className="text-[#111827] text-[13px]">{value}</span>
+                              </>
+                            }
+                          </>
+                        ))}
+                      </div>
+                    ))
+                  }
+                  {/* {
+                    isEditingPaymentDetails && <PartPaymentsForm
+                      order_id={order?.id || default_order?.id}
+                    />
+                  } */}
+
+
+                </section>
+
                 <section className="mt-16 mb-8">
                   <header className="border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
@@ -301,7 +368,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
 
                   </div>
 
-                  <OrderDiscussCard  discussions={order?.discussions!} refetch={refetch}/>
+                  <OrderDiscussCard discussions={order?.discussions!} refetch={refetch} />
                 </section>
 
                 <Accordion type="single" defaultValue="product-items">
@@ -424,7 +491,8 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       ["Primary address", order?.delivery.address],
                       ["Delivery Location", "Yaba(N5000)"],
                       ["Delivery Zone", order?.delivery.zone],
-                      ["Dispatch Time", order?.delivery.delivery_time],
+                      ["Dispatch Time", formatTimeString(order?.delivery.delivery_time ?? "00:00", "h:mma")],
+
                       ["Delivery Date", order?.delivery.delivery_date],
                     ].map(([label, value]) => (
                       <>
@@ -441,7 +509,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_amount || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

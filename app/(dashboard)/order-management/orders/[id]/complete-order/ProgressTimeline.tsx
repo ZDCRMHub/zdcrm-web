@@ -117,6 +117,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
             <AddDeliveryNoteModal
                 isModalOpen={isAddDeliveryNoteModalOpen}
                 closeModal={closeAddDeliveryNoteModal}
+                orderId={order.id}
             />
         </div>
     );

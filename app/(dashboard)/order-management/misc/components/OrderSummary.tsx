@@ -74,7 +74,7 @@ export default function OrderSummary() {
 
   const selectedDiscountAmount = discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount || 0;
   const handleStatusUpdate = () => {
-    updateStatus({ id: order_id, status: "STD" as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
+    updateStatus({ id: order_id, status: "SOA" as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
@@ -91,11 +91,11 @@ export default function OrderSummary() {
     );
   }
 
-  React.useEffect(() => {
-    if (!isLoading && !!order) {
-      setprocessed(order.status === 'STD' || order.status === 'COM' || order.status === 'CAN')
-    }
-  }, [order, isLoading])
+  // React.useEffect(() => {
+  //   if (!isLoading && !!order) {
+  //     setprocessed(order.status === 'STD' || order.status === 'COM' || order.status === 'CAN')
+  //   }
+  // }, [order, isLoading])
 
   if (isLoading) {
     return <OrderSummarySkeleton />;
@@ -169,7 +169,7 @@ export default function OrderSummary() {
               <div>
                 <div className="space-y-4 mt-1">
                   {
-                    order?.items.map((item: any, index: number) => (
+                    order?.items.map((item, index: number) => (
                       <article key={item.id} className="flex border rounded-2xl p-6 bg-white">
                         <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
                           <header className="flex items-start justify-between">
@@ -235,7 +235,7 @@ export default function OrderSummary() {
                               <span className="text-[#687588] italic font-light text-[0.8rem]">
                                 Production Cost:{" "}
                               </span>
-                              {formatCurrency(item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0, 'NGN')}
+                              {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
                             </p>
                             <p className="font-medium text-[#194A7A]">
                               Amount:{" "}

@@ -37,7 +37,7 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
-import { ORDER_STATUS_OPTIONS, paymentOptions } from "@/constants";
+import { ORDER_STATUS_OPTIONS } from "@/constants";
 import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
@@ -410,7 +410,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_amount || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_production_cost || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

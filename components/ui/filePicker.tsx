@@ -12,6 +12,7 @@ import Image from 'next/image'
 
 interface FilePickerProps {
     title?: string
+    label?: string
     maxSize?: number
     acceptedFileTypes?: string[]
     onFileSelect: (file: File | null) => void
@@ -24,6 +25,7 @@ interface FilePickerProps {
 
 export default function FilePicker({
     title = "Upload File",
+    label,
     maxSize = 5,
     acceptedFileTypes = ["image/*", "application/pdf"],
     onFileSelect,
@@ -85,7 +87,10 @@ export default function FilePicker({
 
     return (
         <div className={cn("w-full", className)}>
-            <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">{title}</Label>
+            {
+                label &&
+                <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">{label || title}</Label>
+            }
             <div
                 className={cn(
                     "mt-1 flex justify-center border-2 border-dashed rounded-md",
@@ -102,7 +107,7 @@ export default function FilePicker({
                 <div className="relative flex text-sm text-gray-600 w-full">
                     <label
                         htmlFor="file-upload"
-                        className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary-dark p-4 w-full"
+                        className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary-dark py-1 px-2 h-14 w-full"
                     >
                         {
                             variant === 'default' && (
@@ -146,7 +151,7 @@ export default function FilePicker({
                         <Button
                             type="button" onClick={handleRemove} variant="destructive" size="sm"
                             className={cn("absolute aspect-square -right-[5%] -top-[30%] mt-2 rounded-full bg-red-100 text-red-400 hover:text-white", !selectedFile && "hidden",
-                            variant === 'preview' && "right-2 top-2"
+                                variant === 'preview' && "right-2 top-2"
                             )}
                         >
                             <Trash2 size={16} />

@@ -3,6 +3,9 @@ import React from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Box } from "iconsax-react";
 import { useRouter } from "next/navigation";
+import { format } from 'date-fns';
+import Image from "next/image";
+import toast from "react-hot-toast";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NewEnquirySchema, NewEnquiryFormValues } from "../misc/utils/schema";
@@ -12,17 +15,16 @@ import { DollarSignIcon as Money, TruckIcon as TruckTime, UserIcon, Plus } from 
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import FormError from "@/components/ui/formError";
 import { useGetCategories, useGetProducts, useGetStockInventory } from "@/app/(dashboard)/inventory/misc/api";
-import Image from "next/image";
 import EnquiryItemsSection from "../misc/components/EnquiryFormItemsSection";
 import { useCreateEnquiry } from "../misc/api";
-import toast from "react-hot-toast";
 import { useBooleanStateControl } from "@/hooks";
 import { TEnquiry } from "../misc/types";
 import { useGetOrderDeliveryLocations } from "../../misc/api";
 import { formatCurrency } from "@/utils/currency";
+import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 
 
-const NewOrderPage = () => {
+const NewEnquiryPage = () => {
 
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
@@ -39,7 +41,7 @@ const NewOrderPage = () => {
         zone: "LM",
         method: "Dispatch",
         // delivery_date: new Date(),
-        delivery_date: new Date().toISOString().split('T')[0],
+        delivery_date: format(new Date(), 'yyyy-MM-dd'),
         address: "",
         recipient_name: "",
         recipient_phone: ""
@@ -104,12 +106,16 @@ const NewOrderPage = () => {
       return
     })
     mutate(data, {
-      onSuccess(data, variables, context) {
+      onSuccess(data) {
         toast.success("Created successfully")
         openSuccessModal();
         setCreatedOrder(data?.data);
 
       },
+      onError(error: unknown) {
+        const errMessage = extractErrorMessage((error as any).response?.data as any);
+        toast.error(errMessage, { duration: 7500 });
+      }
     })
   };
   console.log(errors)
@@ -373,7 +379,6 @@ const NewOrderPage = () => {
                           isLoadingOptions={dispatchLocationsLoading}
                           options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
                           valueKey={"value"}
-                          // labelKey={"label"}
                           labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
                           placeholder="Select dispatch location"
                           hasError={!!errors.delivery?.dispatch}
@@ -390,7 +395,9 @@ const NewOrderPage = () => {
                         <SingleDatePicker
                           label="Delivery Date"
                           value={new Date(field.value)}
-                          onChange={(newValue) => setValue('delivery.delivery_date', newValue.toISOString().split('T')[0])}
+                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
+                          // onChange={(newValue) => setValue('delivery.delivery_date', newValue.toISOString().split('T')[0])}
+
                           placeholder="Select delivery date"
                         />
                         {
@@ -551,4 +558,4 @@ const NewOrderPage = () => {
   );
 };
 
-export default NewOrderPage;
+export default NewEnquiryPage;
