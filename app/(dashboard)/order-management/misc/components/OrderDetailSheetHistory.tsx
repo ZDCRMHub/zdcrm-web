@@ -440,12 +440,12 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                       <span className="text-[#687588] italic font-light text-[0.8rem]">
                                         Production Cost:{" "}
                                       </span>
-                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                     </p>
                                     <p className="font-medium text-[#194A7A]">
                                       Amount:{" "}
                                       <span className="font-bold">
                                         {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                        {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                       </span>
                                     </p>
                                   </section>
@@ -503,12 +503,12 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                 </section>
 
                 <section className="flex justify-end my-12">
-                  <LinkButton
-                    href={`/order-management/orders/${order?.id}/confirm-delivery`}
-                    className="h-12 px-8"
+                  <Button
+                    className="h-12 px-12"
+                    onClick={closeSheet}
                   >
-                    Proceed to Dispatch
-                  </LinkButton>
+                    Close
+                  </Button>
                 </section>
 
                 <section className="flex flex-col gap-1.5">

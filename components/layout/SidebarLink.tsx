@@ -51,3 +51,48 @@ export function SidebarLink({ icon, link, text, isCollapsed, requiredPermissions
   )
 }
 
+
+interface SidebarActionButtonProps {
+  icon: React.ReactNode
+  action: ()=>void
+  text: string
+  isCollapsed: boolean
+  requiredPermissions?: string[]
+}
+
+export function SidebarActionButton({ icon, action, text, isCollapsed, requiredPermissions = [] }: SidebarActionButtonProps) {
+  const pathname = usePathname()
+  const { user } = useAuth()
+
+  const hasPermission = requiredPermissions.length === 0 || requiredPermissions.some(permission => user?.permissions.includes(permission))
+
+  if (!hasPermission) return null
+
+  const linkContent = (
+    <span className={cn("flex items-center gap-2 text-[#8B909A]",)}>
+      <span className="h-5 w-5 shrink-0">
+        {icon}
+      </span>
+      {!isCollapsed && <span>{text}</span>}
+    </span>
+  )
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            className={cn(
+              'flex grow items-center justify-between gap-1 p-3 font-dm-sans text-[0.9375rem] transition duration-500 ease-in-out hover:bg-sidebar-link-active hover:bg-opacity-60 md:py-2',
+            )}
+            onClick={action}
+          >
+            {linkContent}
+          </button>
+        </TooltipTrigger>
+        {isCollapsed && <TooltipContent side="right">{text}</TooltipContent>}
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+

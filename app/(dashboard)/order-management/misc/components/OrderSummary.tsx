@@ -236,16 +236,16 @@ export default function OrderSummary() {
                             </section>
 
                             <section className="flex items-center justify-between pt-1 border-t">
-                              <p className="text-[#111827] font-medium text-sm">
+                              {/* <p className="text-[#111827] font-medium text-sm">
                                 <span className="text-[#687588] italic font-light text-[0.8rem]">
                                   Production Cost:{" "}
                                 </span>
                                 {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
-                              </p>
+                              </p> */}
                               <p className="font-medium text-[#194A7A]">
                                 Amount:{" "}
                                 <span className="font-bold">
-                                  {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                  {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
                                 </span>
                               </p>
                             </section>
@@ -301,13 +301,13 @@ export default function OrderSummary() {
                         >
                           <Trash className='w-5 h-5 text-[#d8636d]' />
 
-                            Remove discount
+                          Remove discount
                         </Button>
                       </div>
                       <div className='mt-16 w-[300px] self-end'>
                         <p className='font-medium mt-2 text-[#8B909A]'>
                           Subtotal (NGN):
-                          {formatCurrency(Number(order?.total_production_cost	), "NGN")}
+                          {formatCurrency(Number(order?.total_production_cost) - Number(order?.delivery.dispatch?.delivery_price || '0'), "NGN")}
                         </p>
                         <p className='font-medium mt-2 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
                         <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(selectedDiscountAmount) || 0, "NGN")}</p>
@@ -315,7 +315,7 @@ export default function OrderSummary() {
                           Total (NGN):
                           {
                             formatCurrency(
-                              Number(order?.total_production_cost	) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
+                              Number(order?.total_production_cost) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
                               "NGN")
                           }
                         </p>

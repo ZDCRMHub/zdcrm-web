@@ -321,24 +321,27 @@ const NewOrderPage = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-5">
-                <FormField
-                  control={control}
-                  name="delivery.address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          className=""
-                          label="Delivery Address"
-                          {...field}
-                          hasError={!!errors.delivery?.address}
-                          errorMessage={errors.delivery?.address?.message}
-                          placeholder="Enter delivery address"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                {
+                  watch('delivery.method') === "Dispatch" &&
+                  <FormField
+                    control={control}
+                    name="delivery.address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            className=""
+                            label="Delivery Address"
+                            {...field}
+                            hasError={!!errors.delivery?.address}
+                            errorMessage={errors.delivery?.address?.message}
+                            placeholder="Enter delivery address"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                }
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
                   <FormField
                     control={control}

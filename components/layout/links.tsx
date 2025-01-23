@@ -9,12 +9,14 @@ import {
   Inventory,
   ConversionStatisticsIcon,
 } from "@/icons/sidebar";
+import { authTokenStorage } from "@/utils/auth";
 import {
   Bag2,
   BagTick2,
   DiscountShape,
   Graph,
   I3Dcube,
+  Logout,
   Setting2,
   ShopRemove,
   Trash,
@@ -169,6 +171,19 @@ export const linkGroups = [
             requiredPermissions: ["CAN_MANAGE_ROLES"],
           },
         ],
+      },
+    ],
+  },
+  {
+    key: "Logout",
+    heading: "LOGOUT",
+    requiredPermissions: [],
+    actions: [
+      {
+        text: "Logout",
+        icon: <Logout size={20} strokeWidth={1.5} />,
+        requiredPermissions: [],
+        action: authTokenStorage.logout,
       },
     ],
   },

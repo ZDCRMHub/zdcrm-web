@@ -9,7 +9,7 @@ import { Logo } from "@/icons/core";
 import { SidebarCollapsible } from "./SidebarCollapsible";
 import { useAuth } from "@/contexts/auth";
 
-import { SidebarLink } from "./SidebarLink";
+import { SidebarActionButton, SidebarLink } from "./SidebarLink";
 import { linkGroups } from "./links";
 
 export function Sidebar() {
@@ -38,7 +38,7 @@ export function Sidebar() {
         </div>
 
         <ul className="grow flex flex-col overflow-y-auto px-4 pt-8">
-          {linkGroups.map(({ heading, key, links, requiredPermissions }) => (
+          {linkGroups.map(({ heading, key, links, actions, requiredPermissions }) => (
             <li className="py-6 first-of-type:mb-8" key={key}>
               {
                 !!requiredPermissions && requiredPermissions?.length > 0 && !requiredPermissions?.some(permission => user?.permissions.includes(permission)) ? null : (
@@ -66,18 +66,34 @@ export function Sidebar() {
                           isCollapsed={isCollapsed}
                           requiredPermissions={requiredPermissions}
                         />
-                      ) : (
-                        <SidebarLink
-                          icon={icon}
-                          link={link!}
-                          text={text}
-                          isCollapsed={isCollapsed}
-                          requiredPermissions={requiredPermissions}
-                        />
-                      )}
+                      ) :
+                        (
+                          <SidebarLink
+                            icon={icon}
+                            link={link!}
+                            text={text}
+                            isCollapsed={isCollapsed}
+                            requiredPermissions={requiredPermissions}
+                          />
+                        )}
                     </li>
                   );
                 })}
+
+                {
+                  actions && (
+                    actions.map((action) => (
+                      <li key={action.text}>
+                        <SidebarActionButton
+                          icon={action.icon}
+                          action={action.action}
+                          text={action.text}
+                          isCollapsed={isCollapsed}
+                        />
+                      </li>
+                    ))
+                  )
+                }
               </ul>
             </li>
           ))}

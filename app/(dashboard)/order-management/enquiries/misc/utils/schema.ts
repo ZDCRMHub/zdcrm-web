@@ -95,7 +95,7 @@ export const NewEnquirySchema = z.object({
         delivery_date: z.string({ message: "Delivery date is required" }),
         method: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
         dispatch: z.string().optional(),
-        address: z.string().min(1, { message: "Delivery address is required" }),
+        address: z.string().optional(),
         recipient_name: z.string().min(1, { message: "Recipient's name is required" }),
         recipient_phone: z.string().min(1, { message: "Recipient's phone number is required" })
     }),
@@ -104,8 +104,18 @@ export const NewEnquirySchema = z.object({
     enquiry_occasion: z.string().min(1, { message: "Enquiry occasion is required" }),
     branch: z.number({ message: "Select a branch" }),
     message: z.string().optional(),
-    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),  
-})
+    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),
+}).superRefine((data, ctx) => {
+
+    if (data.delivery.method === "Dispatch" && (!data.delivery.address || !data.delivery.address.trim().length)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Enter address for dispatch delivery",
+            path: ["delivery.address"]
+        });
+    }
+});
+
 
 export type NewEnquiryFormValues = z.infer<typeof NewEnquirySchema>;
 

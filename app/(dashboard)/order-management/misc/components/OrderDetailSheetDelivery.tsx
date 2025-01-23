@@ -381,11 +381,11 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                                       <span className="text-[#687588] italic font-light text-[0.8rem]">
                                         Production Cost:{" "}
                                       </span>
-                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                     </p>
                                     <p className="font-medium text-[#194A7A]">
                                       Amount:{" "}
                                       <span className="font-bold">
+                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                         {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
                                       </span>
                                     </p>
@@ -408,7 +408,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_production_cost || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

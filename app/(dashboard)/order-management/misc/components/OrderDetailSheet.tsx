@@ -447,7 +447,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       <AccordionTrigger>
                         <header className="border-b border-b-[#00000021] mb-6">
                           <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5">
-                            Product Items
+                            Product Items[]
                             <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                           </p>
                         </header>
@@ -530,11 +530,11 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                       <span className="text-[#687588] italic font-light text-[0.8rem]">
                                         Production Cost:{" "}
                                       </span>
-                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                     </p>
                                     <p className="font-medium text-[#194A7A]">
                                       Amount:{" "}
                                       <span className="font-bold">
+                                        {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                         {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
                                       </span>
                                     </p>
@@ -586,7 +586,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_production_cost || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>
