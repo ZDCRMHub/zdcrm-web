@@ -61,7 +61,7 @@ export function OrderStatsDeliveryZoneSection() {
     period: watch('period'),
   });
 
-  const chartData = data?.data.zones || [];
+  const chartData = data?.data.delivery_stats || [];
 
   return (
     <Card className="">
@@ -134,7 +134,7 @@ export function OrderStatsDeliveryZoneSection() {
                     tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
                   />
                   <XAxis
-                    dataKey="zone"
+                    dataKey="name"
                     tickLine={false}
                     tickMargin={20}
                     axisLine={false}

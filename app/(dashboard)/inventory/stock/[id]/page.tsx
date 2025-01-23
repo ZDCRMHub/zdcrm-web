@@ -28,8 +28,8 @@ const InventoryDetailsPage = () => {
 
 
   const { data, isLoading, isFetching, refetch: refetchData } = useGetStockInventoryDetails(product_id)
-  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch: refetchHistory } = useGetStockInventoryHistory(product_id)
   const [selectedVariant, setSelectedVariant] = useState<TStockVariation | undefined>(data?.variations.find(variation => variation.id.toString() == variation_id) || data?.variations[0]);
+  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch: refetchHistory } = useGetStockInventoryHistory(selectedVariant?.id)
   React.useEffect(() => {
     if (variation_id && data && !isLoading) {
       setSelectedVariant(data?.variations.find(variation => variation.id.toString() == variation_id) || data?.variations[0]);

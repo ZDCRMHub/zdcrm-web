@@ -20,7 +20,7 @@ const FinancialReportPage = () => {
       <FinancialStatsHeaderSection />
 
       <div className='flex justify-end mt-14 mb-8'>
-        <ComparisonModal />
+        {/* <ComparisonModal /> */}
       </div>
 
       <FinancialOverviewSection />

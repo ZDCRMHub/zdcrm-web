@@ -6,7 +6,7 @@ import { format } from "date-fns";
 
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
     Accordion,
@@ -14,7 +14,6 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useRouter } from "next/navigation";
 import { CaretLeft } from "@phosphor-icons/react";
 import { EditPenIcon } from "@/icons/core";
 import ConfirmActionModal from "@/components/ui/confirmActionModal";

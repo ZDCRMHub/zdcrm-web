@@ -26,7 +26,7 @@ const page = () => {
       /> */}
 
       <div className='flex justify-start my-4'>
-        <ComparisonModal />
+        {/* <ComparisonModal /> */}
       </div>
 
       <div className='grid  2xl:grid-cols-2 gap-10 mb-10'>

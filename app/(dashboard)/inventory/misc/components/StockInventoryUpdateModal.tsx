@@ -115,7 +115,6 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                         <div className="flex flex-col gap-2">
                             <h3 className="uppercase font-bold">{stock.name} - {variation.size || variation.flavour || variation.color}</h3>
                             <div className="flex gap-3">
-                                <Hashtag />
                                 <p className="text-xs">
                                     Stocked stock:{" "}
                                     <span className="font-semibold">{variation.quantity}</span>

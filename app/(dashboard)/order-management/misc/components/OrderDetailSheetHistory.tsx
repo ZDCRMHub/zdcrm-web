@@ -315,7 +315,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                           ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
                           ["Payment Receipt Name", payment.payment_receipt_name],
                         ].map(([label, value], index) => (
-                          <p className=" grid grid-cols-[max-content,1fr] gap-x-6"  key={index}>
+                          <p className=" grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
                             {
                               !!label && !!value &&
                               <>
@@ -328,7 +328,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       </div>
                     ))
                   }
-                  
+
                 </section>
 
                 <section className="mt-16 mb-8">
@@ -359,6 +359,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                   <OrderDiscussCard discussions={order?.discussions!} refetch={refetch} />
                 </section>
 
+
                 <Accordion type="single" defaultValue="product-items">
                   <section className="mb-8">
                     <AccordionItem value="product-items">
@@ -373,7 +374,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       <AccordionContent>
                         <div className="space-y-4 mt-1">
                           {
-                            order?.items.map((item: any, index: number) => (
+                            order?.items.map((item, index: number) => (
                               <article key={item.id} className="flex border rounded-2xl p-6">
                                 <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
                                   <header className="flex items-start justify-between">
@@ -385,9 +386,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                         className="object-cover rounded-md"
                                       />
                                     </div>
-                                    {/* <div className="flex items-center gap-4 self-start">
-                                      <Checkbox checked />
-                                    </div> */}
+
                                   </header>
 
                                   <section className="flex flex-col justify-between">
@@ -409,7 +408,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                             </p>
                                           )}
                                         </div>
-                                        {item.inventories[0]?.properties[0] && Object.entries(item.inventories[0].properties[0]).map(([key, value]) => (
+                                        {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
                                           key !== 'id' && value && (
                                             <p key={key} className="text-[#111827] font-medium">
                                               <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
@@ -441,7 +440,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                       <span className="text-[#687588] italic font-light text-[0.8rem]">
                                         Production Cost:{" "}
                                       </span>
-                                      {formatCurrency(item.inventories[0]?.variations[0]?.variation_details?.cost_price || 0, 'NGN')}
+                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
                                     </p>
                                     <p className="font-medium text-[#194A7A]">
                                       Amount:{" "}
@@ -460,6 +459,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                   </section>
                 </Accordion>
 
+
                 <section className="p-4 px-6 rounded-2xl border">
                   <div className="flex justify-between items-center mb-2 border-b">
                     <h3 className="font-semibold font-manrope text-lg">
@@ -477,10 +477,9 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     {[
                       ["Delivery Method", order?.delivery.method],
                       ["Primary address", order?.delivery.address],
-                      ["Delivery Location", "Yaba(N5000)"],
+                      ["Delivery Location", `${order?.delivery.dispatch?.location} - ${formatCurrency(Number(order?.delivery.dispatch?.delivery_price || '0'), 'NGN')}`],
                       ["Delivery Zone", order?.delivery.zone],
-                      ["Dispatch Time", formatTimeString(order?.delivery.delivery_time ?? "00:00", "h:mma")],
-
+                      ["Dispatch Time", order?.delivery.delivery_time],
                       ["Delivery Date", order?.delivery.delivery_date],
                     ].map(([label, value]) => (
                       <>
@@ -490,6 +489,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     ))}
                   </div>
                 </section>
+
 
                 <section>
                   <p className="flex items-center gap-3">

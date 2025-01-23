@@ -181,13 +181,13 @@ export const PAYMENT_METHODS = [
 
 export const ENQUIRY_CHANNEL_OPTIONS = [
   { value: 'Email', label: 'Email' },
-  { value: 'Whatsapp', label: 'WhatsApp' },
+  { value: 'WhatsApp', label: 'WhatsApp' },
   { value: 'Website', label: 'Website' },
-  { value: 'Walk-in', label: 'Store Walk In' },
+  { value: 'Store Walk In', label: 'Store Walk In' },
   { value: 'Instagram', label: 'Instagram' },
-  { value: 'Phone', label: 'Phone Call' },
+  { value: 'Phone Call', label: 'Phone Call' },
   { value: 'Facebook', label: 'Facebook' },
-  { value: 'Tik Ttok', label: 'Tik Tok' },
+  { value: 'Tik Tok', label: 'Tik Tok' },
 ]
 
 export const ENQUIRY_OCCASION_OPTIONS = [
@@ -196,6 +196,8 @@ export const ENQUIRY_OCCASION_OPTIONS = [
   { value: 'Wedding', label: 'Wedding' },
   { value: "Father's Day", label: "Father's Day" },
   { value: "Mother's Day", label: "Mother's Day" },
+  { value: "Easter", label: "Easter" },
+  { value: "Valentines", label: "Valentines" },
 ]
 
 export const DISPATCH_METHOD_OPTIONS = [

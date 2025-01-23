@@ -9,37 +9,40 @@ import { formatCurrency } from '@/utils/currency';
 import { Dialog, DialogContent, DialogClose, DialogFooter } from '@/components/ui/dialog';
 import { formatTimeString } from '@/utils/strings';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { formatDate } from 'date-fns';
+import { TOrder } from '../types';
+import { TDiscount } from '../api/getDiscounts';
 
 interface ModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
-    order: any; // Replace 'any' with the actual order type
+    order: TOrder;
+    discount: TDiscount | undefined;
 }
 
 const OrderSummaryExportModal: React.FC<ModalProps> = ({
     isModalOpen,
     closeModal,
     order,
+    discount
 }) => {
     const receiptRef = useRef<HTMLDivElement>(null);
 
     if (!order) return null;
 
     const subtotal = order.items.reduce((acc: number, item: any) => {
-        const itemPrice = item.inventories[0]?.variations[0]?.variation_details?.cost_price || 
-                          item.inventories[0]?.product_inventory?.cost_price || 0;
+        const itemPrice = item.price_at_order|| 0;
         return acc + (item.quantity * Number(itemPrice));
     }, 0);
     const total = Number(order.total_production_cost);
     const deliveryFee = Number(order.delivery.dispatch?.delivery_price) || 0;
-    const discount = 0;
-    const tax = total - subtotal - deliveryFee + discount;
+    const discount_amount = Number(discount?.amount || '0');
+    const tax = total - subtotal - deliveryFee + discount_amount;
 
     const generatePDF = async () => {
         if (receiptRef.current) {
@@ -202,14 +205,15 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {order.items.map((item: any, index: number) => (
+                                {order.items.map((item, index: number) => (
                                     <tr key={index} className="border-b text-[0.625rem]">
                                         <td className="py-2 px-4">{item.product.name}</td>
                                         <td className="py-2 px-4 text-center">{item.quantity}</td>
                                         <td className="py-2 px-4 text-right">
                                             {formatCurrency(
-                                                (item.inventories[0]?.variations[0]?.variation_details?.cost_price || 
-                                                item.inventories[0]?.product_inventory?.cost_price || 0) * item.quantity, 
+                                                // (item.inventories[0]?.variations[0]?.variation_details?.cost_price || 
+                                                // item.inventories[0]?.product_inventory?.cost_price || 0) * item.quantity, 
+                                                Number(item.price_at_order),
                                                 'NGN'
                                             )}
                                         </td>
@@ -230,7 +234,7 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
                                 </div>
                                 <div className="flex justify-between py-1.5 px-4">
                                     <span className="text-[#8E8E8E]">Discount</span>
-                                    <span className="text-red-500">-{formatCurrency(discount, 'NGN')}</span>
+                                    <span className="text-red-500">-{formatCurrency(discount_amount, 'NGN')}</span>
                                 </div>
                                 <div className="flex justify-between pt-1.5 pb-5 px-4">
                                     <span className="text-[#8E8E8E]">Delivery Fee</span>

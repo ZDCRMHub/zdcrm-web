@@ -19,20 +19,17 @@ interface APIResponse {
 }
 
 interface Data {
-  zones: Zone[];
-  pickup: Pickup;
+  delivery_stats: Deliverystat[];
 }
 
-interface Pickup {
-  pickup_order_count: number;
-  pickup_enquiry_count: number;
-}
-
-interface Zone {
-  zone: string;
+interface Deliverystat {
+  name: string;
+  code: string;
+  type: string;
   order_count: number;
   enquiry_count: number;
 }
+
 
 
 const getStats = async (options: FetchOptions = {}): Promise<APIResponse> => {

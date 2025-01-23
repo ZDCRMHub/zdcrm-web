@@ -21,7 +21,6 @@ const inventorySchema = z.object({
     quantity_used: z.number().optional(),
     variations: z.array(variationSchema).optional(),
     custom_image: z.string().url().optional(),
-    properties: propertiesSchema
 }).nullable();
 
 const itemSchema = z.object({
@@ -29,22 +28,40 @@ const itemSchema = z.object({
     product_id: z.number({ message: "Product type is required" }),
     quantity: z.number().min(1),
     inventories: z.array(inventorySchema),
+    properties: propertiesSchema,
     miscellaneous: z.array(z.object({
         description: z.string().min(1, { message: "Description is required" }),
-        cost: z.string().min(1, { message: "Miscellaneous cost is required" })
+        cost: z.number().min(1, { message: "Miscellaneous cost is required" })
     })).optional()
 }).superRefine((data, ctx) => {
-    if(data.product_id && data.product_id == 0) {
+    if (data.product_id && data.product_id == 0) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Product type is required",
         });
     }
+
+    if (data.category === 8 && data.properties) {
+        if (!data.properties.toppings) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Toppings must be provided for Cakes",
+                path: [`inventories.properties.toppings`]
+            });
+        }
+        if (!data.properties.layers) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Layers must be provided for Cakes",
+                path: [`inventories.properties.layers`]
+            });
+        }
+    }
     data.inventories.forEach((inventory, index) => {
         if (inventory === null) return; // Skip validation for null inventories
 
         if ([8, 9, 10].includes(data.category)) {
-            if (inventory.stock_inventory_id == null) {
+            if (inventory?.stock_inventory_id == null) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "Stock inventory ID is required for this category",
@@ -52,7 +69,7 @@ const itemSchema = z.object({
                 });
             }
         } else {
-            if (inventory.product_inventory_id == null) {
+            if (inventory?.product_inventory_id == null) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "Product inventory ID is required for this category",
@@ -61,24 +78,9 @@ const itemSchema = z.object({
             }
         }
 
-        if (data.category === 8 && inventory.properties) {
-            if (!inventory.properties.toppings) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Toppings must be provided for Cakes",
-                    path: [`inventories.${index}.properties.toppings`]
-                });
-            }
-            if (!inventory.properties.layers) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Layers must be provided for Cakes",
-                    path: [`inventories.${index}.properties.layers`]
-                });
-            }
-        }
     });
 });
+
 
 export const NewEnquirySchema = z.object({
     customer: z.object({
@@ -102,8 +104,9 @@ export const NewEnquirySchema = z.object({
     enquiry_occasion: z.string().min(1, { message: "Enquiry occasion is required" }),
     branch: z.number({ message: "Select a branch" }),
     message: z.string().optional(),
-    items: z.array(itemSchema)
-});
+    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),  
+})
 
 export type NewEnquiryFormValues = z.infer<typeof NewEnquirySchema>;
+
 

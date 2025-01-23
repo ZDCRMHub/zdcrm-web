@@ -21,7 +21,7 @@ const OrderStatsPage = () => {
      <OrderStatsHeaderSection/>
 
       <div className='flex justify-end mt-14 mb-6'>
-        <ComparisonModal />
+        {/* <ComparisonModal /> */}
       </div>
 
       <div className='flex gap-12 flex-col'>
