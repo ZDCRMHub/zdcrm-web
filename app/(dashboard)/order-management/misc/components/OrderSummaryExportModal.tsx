@@ -35,14 +35,14 @@ const OrderSummaryExportModal: React.FC<ModalProps> = ({
 
     if (!order) return null;
 
+    const discount_amount = Number(discount?.amount || '0');
     const subtotal = order.items.reduce((acc: number, item: any) => {
         const itemPrice = item.price_at_order|| 0;
-        return acc + (item.quantity * Number(itemPrice));
+        return acc + (Number(itemPrice));
     }, 0);
-    const total = Number(order.total_production_cost);
+    const total = Number(order.total_production_cost) - discount_amount;
     const deliveryFee = Number(order.delivery.dispatch?.delivery_price) || 0;
-    const discount_amount = Number(discount?.amount || '0');
-    const tax = total - subtotal - deliveryFee + discount_amount;
+    const tax = total - subtotal - deliveryFee ;
 
     const generatePDF = async () => {
         if (receiptRef.current) {

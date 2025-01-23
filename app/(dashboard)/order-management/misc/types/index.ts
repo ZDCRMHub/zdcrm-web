@@ -18,7 +18,7 @@ export interface TOrder {
   payment_proof: null;
   total_production_cost: string;
   total_selling_price: null;
-  delivery: TOrderDelivery;
+  delivery: TOrderDeliveryInfo;
   items: TOrderItem[];
   discussions: TOrderDiscussion[];
   create_date: string;
@@ -140,7 +140,7 @@ interface Dispatch {
   delivery_price: string;
 }
 
-interface TOrderDelivery {
+export interface TOrderDeliveryInfo {
   id: number;
   zone: string;
   note: string | null;

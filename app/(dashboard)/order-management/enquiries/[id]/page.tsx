@@ -19,7 +19,7 @@ import { EditPenIcon } from "@/icons/core";
 import ConfirmActionModal from "@/components/ui/confirmActionModal";
 import { useBooleanStateControl } from "@/hooks";
 import { LinkButton, Spinner, SuccessModal } from "@/components/ui";
-import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
+import { convertKebabAndSnakeToTitleCase, formatTimeString } from '@/utils/strings';
 
 import EnquiryDiscussCard from '../misc/components/EnquiryDiscussCard';
 import { ConfirmPaymentModal } from '../misc/components';
@@ -129,7 +129,7 @@ const EnquiryDetailsPage = () => {
                         <div className="flex items-center gap-5">
                             <h3 className="text-sm text-gray-500">Delivery Date</h3>
                             <p className="text-[0.825rem] font-manrope">
-                                {/* {format(data?.status, "dd MMM, yyyy")} */}
+                                {format(new Date(data?.delivery.delivery_date || 0), "dd-MMM-yyyy")}
                             </p>
                         </div>
                     </Card>
@@ -139,14 +139,16 @@ const EnquiryDetailsPage = () => {
                             <h2 className="font-semibold font-manrope text-sm">
                                 Delivery Note
                             </h2>
-                            {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" /> */}
+                            {/* <p className="text-[0.825rem] font-manrope">
+                                {data?.delivery.note}
+                            </p> */}
                         </div>
 
                         <Separator />
 
                         <div className="flex items-center gap-5">
                             <h3 className="text-sm text-gray-500">Delivery Note</h3>
-                            {/* <p className="text-[0.825rem] font-manrope">{data?.delivery.note}</p> */}
+                            <p className="text-[0.825rem] font-manrope">{data?.delivery.note}</p>
                         </div>
                     </Card>
                 </div>
@@ -163,7 +165,7 @@ const EnquiryDetailsPage = () => {
 
                     <div className="flex items-center gap-5">
                         <p className="text-[0.825rem] font-manrope">
-                            {format(new Date(), "hh:mm a")}
+                            {!!data?.delivery.delivery_time ? formatTimeString(data?.delivery.delivery_time, 'hh:mma') : "-"}
                         </p>
                     </div>
                 </Card>
@@ -227,13 +229,13 @@ const EnquiryDetailsPage = () => {
 
                                                     </p>
 
-                                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                    {/* <p className="flex items-center gap-1 text-[#111827] font-medium">
                                                         <span className="text-[#687588]">Size:</span> 6 inches
-                                                    </p>
+                                                    </p> */}
                                                 </div>
 
                                                 {
-                                                    Object.entries(item.inventories[0]?.properties[0]).map(([key, value]) => (
+                                                    Object.entries(item.properties[0]).map(([key, value]) => (
                                                         <>
                                                             {
                                                                 key !== 'id' && !!value &&
@@ -259,7 +261,7 @@ const EnquiryDetailsPage = () => {
                                             <p className="font-semibold text-[#194A7A]">Amount: </p>
                                             <p className="font-semibold text-[#194A7A]">
                                                 {
-                                                    !!item.inventories[0]?.product_inventory ? formatCurrency(Number(item.inventories[0]?.product_inventory?.cost_price || "0"), "NGN") : "-"
+                                                    formatCurrency(Number(item.price_at_order || "0"), "NGN")
                                                 }
                                             </p>
                                         </div>

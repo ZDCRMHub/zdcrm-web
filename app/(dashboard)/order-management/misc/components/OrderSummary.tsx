@@ -179,7 +179,7 @@ export default function OrderSummary() {
                             <header className="flex items-start justify-between">
                               <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
                                 <Image
-                                  src={item.inventories[0]?.stock_inventory?.image_one || placeHolderImage}
+                                  src={item.inventories[0]?.stock_inventory?.image_one || item.inventories[0]?.product_inventory?.image_one || placeHolderImage}
                                   //  src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
                                   alt={item.product.name}
                                   fill
