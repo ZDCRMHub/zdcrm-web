@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Book, Edit2, Money, Trash } from 'iconsax-react';
-import {  useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { format } from 'date-fns';
 
@@ -50,11 +50,11 @@ export default function OrderSummary() {
 
 
   const [processed, setprocessed] = useState(false)
- 
+
   const order_id = useParams()?.id as string;
   const { data: order, isLoading } = useGetOrderDetail(order_id);
   const { data: discounts, isLoading: isLoadingDiscounts } = useGDiscounts();
-  const { mutate: addDiscount, isPending:isAddingDiscount } = useAddDiscountToOrder();
+  const { mutate: addDiscount, isPending: isAddingDiscount } = useAddDiscountToOrder();
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus()
   const onSubmit = (data: FormData) => {
     console.log(data);
@@ -173,85 +173,86 @@ export default function OrderSummary() {
                       const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.product?.category.name
                       const placeHolderImage = `/img/placeholders/${itemCategory}.svg`
 
-                      return(
-                      <article key={item.id} className="flex border rounded-2xl p-6 bg-white">
-                        <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
-                          <header className="flex items-start justify-between">
-                            <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
-                              <Image
-                               src={ item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
-                              //  src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
-                                alt={item.product.name}
-                                fill
-                                className="object-cover rounded-md"
-                              />
-                            </div>
+                      return (
+                        <article key={item.id} className="flex border rounded-2xl p-6 bg-white">
+                          <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
+                            <header className="flex items-start justify-between">
+                              <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
+                                <Image
+                                  src={item.inventories[0]?.stock_inventory?.image_one || item.inventories[0]?.product_inventory?.image_one || placeHolderImage}
+                                  //  src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
+                                  alt={item.product.name}
+                                  fill
+                                  className="object-cover rounded-md"
+                                />
+                              </div>
 
-                          </header>
+                            </header>
 
-                          <section className="flex flex-col justify-between">
-                            <h5 className="text-[#194A7A] text-lg font-medium mb-5">
-                              {item.product.name}
-                            </h5>
-                            <div className="xl:flex">
-                              <div className="space-y-2.5 text-[0.8rem]">
-                                <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
-                                  <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                    <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
-                                  </p>
-                                  <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                    <span className="text-[#687588]">Category:</span> {item.product.category.name}
-                                  </p>
-                                  {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                            <section className="flex flex-col justify-between">
+                              <h5 className="text-[#194A7A] text-lg font-medium mb-5">
+                                {item.product.name}
+                              </h5>
+                              <div className="xl:flex">
+                                <div className="space-y-2.5 text-[0.8rem]">
+                                  <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
                                     <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                      <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                      <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
+                                    </p>
+                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                      <span className="text-[#687588]">Category:</span> {item.product.category.name}
+                                    </p>
+                                    {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                                      <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                        <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                      </p>
+                                    )}
+                                  </div>
+                                  {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
+                                    key !== 'id' && value && (
+                                      <p key={key} className="text-[#111827] font-medium">
+                                        <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
+                                        {value as string}
+                                      </p>
+                                    )
+                                  ))}
+                                  {item.inventories[0]?.instruction && (
+                                    <p className="text-[#111827] font-medium">
+                                      <span className="text-[#687588]">Instructions:</span>{" "}
+                                      {item.inventories[0].instruction}
                                     </p>
                                   )}
                                 </div>
-                                {item.inventories[0]?.properties[0] && Object.entries(item.inventories[0].properties[0]).map(([key, value]) => (
-                                  key !== 'id' && value && (
-                                    <p key={key} className="text-[#111827] font-medium">
-                                      <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
-                                      {value as string}
+
+                                <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
+                                  {item.inventories[0]?.message && (
+                                    <p className="flex flex-col text-[#111827] font-medium text-right">
+                                      <span className="text-[#687588]">Message:</span>{" "}
+                                      {item.inventories[0].message}
                                     </p>
-                                  )
-                                ))}
-                                {item.inventories[0]?.instruction && (
-                                  <p className="text-[#111827] font-medium">
-                                    <span className="text-[#687588]">Instructions:</span>{" "}
-                                    {item.inventories[0].instruction}
-                                  </p>
-                                )}
+                                  )}
+                                </div>
                               </div>
+                            </section>
 
-                              <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
-                                {item.inventories[0]?.message && (
-                                  <p className="flex flex-col text-[#111827] font-medium text-right">
-                                    <span className="text-[#687588]">Message:</span>{" "}
-                                    {item.inventories[0].message}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          </section>
-
-                          <section className="flex items-center justify-between pt-1 border-t">
-                            <p className="text-[#111827] font-medium text-sm">
-                              <span className="text-[#687588] italic font-light text-[0.8rem]">
-                                Production Cost:{" "}
-                              </span>
-                              {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
-                            </p>
-                            <p className="font-medium text-[#194A7A]">
-                              Amount:{" "}
-                              <span className="font-bold">
-                                {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
-                              </span>
-                            </p>
-                          </section>
-                        </div>
-                      </article>
-                    )})
+                            <section className="flex items-center justify-between pt-1 border-t">
+                              <p className="text-[#111827] font-medium text-sm">
+                                <span className="text-[#687588] italic font-light text-[0.8rem]">
+                                  Production Cost:{" "}
+                                </span>
+                                {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
+                              </p>
+                              <p className="font-medium text-[#194A7A]">
+                                Amount:{" "}
+                                <span className="font-bold">
+                                  {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                </span>
+                              </p>
+                            </section>
+                          </div>
+                        </article>
+                      )
+                    })
                   }
                 </div>
 
@@ -276,25 +277,37 @@ export default function OrderSummary() {
                           </span>
                         </h3>
                       </header>
-                      <SelectSingleCombo
-                        name='discount_id'
-                        className='max-w-[350px]'
-                        value={form.watch('discount_id')}
-                        onChange={(value) => form.setValue('discount_id', value)}
-                        label='Discount Type'
-                        labelKey={'label'}
-                        valueKey={'value'}
-                        placeholder='Select discount type'
-                        options={discounts?.data?.map((discount) => ({
-                          label: discount.type,
-                          value: discount.id.toString()
-                        }))}
-                        isLoadingOptions={isLoadingDiscounts}
-                      />
+                      <div>
+                        <SelectSingleCombo
+                          name='discount_id'
+                          className='max-w-[350px]'
+                          value={form.watch('discount_id')}
+                          onChange={(value) => form.setValue('discount_id', value)}
+                          label='Discount Type'
+                          labelKey={(item) => `${item.label} - ${formatCurrency(Number(item.amount), 'NGN')}`}
+                          valueKey={'value'}
+                          placeholder='Select discount type'
+                          options={discounts?.data?.map((discount) => ({
+                            label: discount.type,
+                            value: discount.id.toString(),
+                            amount: discount.amount
+                          }))}
+                          isLoadingOptions={isLoadingDiscounts}
+                        />
+                        <Button
+                          type="button"
+                          className='flex items-center gap-1 mt-4 text-[#d8636d]'
+                          onClick={() => setValue('discount_id', '')}
+                        >
+                          <Trash className='w-5 h-5 text-[#d8636d]' />
+
+                            Remove discount
+                        </Button>
+                      </div>
                       <div className='mt-16 w-[300px] self-end'>
                         <p className='font-medium mt-2 text-[#8B909A]'>
                           Subtotal (NGN):
-                          {formatCurrency(Number(order?.total_selling_price	),"NGN")}
+                          {formatCurrency(Number(order?.total_production_cost	), "NGN")}
                         </p>
                         <p className='font-medium mt-2 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
                         <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(selectedDiscountAmount) || 0, "NGN")}</p>
@@ -302,7 +315,7 @@ export default function OrderSummary() {
                           Total (NGN):
                           {
                             formatCurrency(
-                              Number(order?.total_selling_price	) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
+                              Number(order?.total_production_cost	) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
                               "NGN")
                           }
                         </p>
@@ -388,7 +401,7 @@ export default function OrderSummary() {
                 variant="inputButton">
                 Send For Processing
                 {
-                  (isUpdatingStatus || isAddingDiscount) && <Spinner/>
+                  (isUpdatingStatus || isAddingDiscount) && <Spinner />
                 }
               </Button>
             </footer>
@@ -399,6 +412,7 @@ export default function OrderSummary() {
                 isModalOpen={isExportSummaaryModalOpen}
                 closeModal={closeExportSummaryModal}
                 order={order!}
+                discount={discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))}
               />
             }
           </div>

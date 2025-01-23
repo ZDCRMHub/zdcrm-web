@@ -132,11 +132,15 @@ export function FinancialOverviewSection() {
                 <XAxis
                   dataKey="formattedDate"
                   tickLine={false}
-                  tickMargin={20}
                   axisLine={false}
-                  tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
-                  textAnchor="center"
-                  height={80}
+                  tick={{ fontFamily: "Poppins, sans-serif", fontSize: 11 }}
+                  interval={0}
+                  tickFormatter={(value) => value}
+                  height={60}
+                  xAxisId={0}
+                  tickSize={20}
+                  scale="point"
+                  padding={{ left: 20, right: 20 }}
                 />
                 <Tooltip
                   cursor={false}
@@ -179,7 +183,7 @@ export function FinancialOverviewSection() {
                     alignItems: "center",
                     justifyContent: "center",
                     bottom: "10px",
-                    paddingLeft: "20px",
+                    // paddingLeft: "20px",
                   }}
                 />
               </BarChart>

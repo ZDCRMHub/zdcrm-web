@@ -252,6 +252,7 @@ const OrdersTablePayments = ({ data, isLoading, isFetching, error, isFiltered }:
                         <Inbox size={60} />
                         <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No Orders Found</div>
                         <LinkButton href="./orders/new-order">
+                            Create New Order
                         </LinkButton>
                     </div>
                 )

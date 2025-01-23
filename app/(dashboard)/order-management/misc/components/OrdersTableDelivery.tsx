@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import OrderDetailSheet from './OrderDetailSheet';
 import { format } from 'date-fns';
 import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
@@ -17,7 +16,6 @@ import { TOrder } from '../types';
 import { Button, LinkButton, Spinner } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
-import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
 import { ORDER_STATUS_ENUMS } from '@/constants';
 
@@ -108,7 +106,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
             <TableCell className='min-w-[180px] max-w-[500px]'>
                 {
-                    formatCurrency(Number (order.delivery.dispatch?.delivery_price || 0), "NGN")
+                    formatCurrency(Number(order.delivery.dispatch?.delivery_price || 0), "NGN")
                 }
             </TableCell>
 
@@ -270,6 +268,7 @@ const OrdersTableDelivery = ({ data, isLoading, isFetching, error, isFiltered }:
                         <Inbox size={60} />
                         <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No Orders Found</div>
                         <LinkButton href="./orders/new-order">
+                            Create New Order
                         </LinkButton>
 
                     </div>

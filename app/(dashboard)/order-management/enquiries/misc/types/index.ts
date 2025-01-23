@@ -1,4 +1,5 @@
 import { TBranch, TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
+import { TOrderDeliveryInfo } from "../../../misc/types";
 
 export interface TEnquiry {
   id: number;
@@ -7,6 +8,7 @@ export interface TEnquiry {
   finalized_by: Createdby;
   converted_by: Createdby;
   deleted_by: Createdby;
+  delivery: TOrderDeliveryInfo;
   enquiry_channel: string;
   social_media_details: string;
   enquiry_occasion: string;
@@ -52,6 +54,8 @@ export interface Item {
   custom_image: null;
   create_date: string;
   update_date: string;
+  properties: Property[];
+  price_at_order: number
 }
 
 export interface Inventory {
@@ -60,7 +64,6 @@ export interface Inventory {
   product_inventory: Productinventory | null;
   message: string;
   instruction: string;
-  properties: Property[];
   variations: any[];
 }
 

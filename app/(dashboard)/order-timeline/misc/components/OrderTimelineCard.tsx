@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { UserCheck, Phone, Calendar } from "lucide-react";
 
-import { Card, CardContent, CardTitle } from "@/components/ui";
+import { Card, CardContent, CardTitle, Spinner } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui";
@@ -30,7 +30,7 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
     const queryClient = useQueryClient();
 
     const updateOrderStatus = (new_status: "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN") => {
-        mutate({ id: order?.id || 0, status: new_status }, {
+        mutate({ id: order?.order || 0, status: new_status }, {
             onSuccess: () => {
                 toast.success("Order status updated successfully");
                 queryClient.invalidateQueries({
@@ -110,13 +110,15 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                                     <Select defaultValue={order?.order_details?.status?.toString()} onValueChange={(value) => updateOrderStatus(value as any)}>
                                         <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
                                             <SelectValue placeholder="Status" />
+                                            {
+                                                isPending && <Spinner/>
+                                            }
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="PND">Pending</SelectItem>
                                             <SelectItem value="SOA">SOA</SelectItem>
                                             <SelectItem value="SOR">Sorted</SelectItem>
                                             <SelectItem value="STD">Sent to Dispatch</SelectItem>
-                                            {/* <SelectItem value="DIS CL"></SelectItem> */}
                                             <SelectItem value="COM">Delivered</SelectItem>
                                             <SelectItem value="DEL">Delivered</SelectItem>
                                         </SelectContent>

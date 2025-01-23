@@ -22,7 +22,7 @@ export const useGDiscounts = (options: FetchOptions = {}) => {
     queryFn: () => fetchActiveOrders(options),
   });
 }
-interface TDiscount {
+export interface TDiscount {
   id: number;
   type: string;
   amount: string;

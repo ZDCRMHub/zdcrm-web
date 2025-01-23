@@ -83,9 +83,9 @@ const NewOrderPage = () => {
           category: categories?.[0].id,
           product_id: products?.[0].id,
           quantity: 1,
+          properties: {},
           inventories: [{
             variations: [],
-            properties: {}
           }],
         }
       ],
@@ -108,9 +108,9 @@ const NewOrderPage = () => {
       category: categories?.[0].id || 1,
       product_id: products?.[0].id || 0,
       quantity: 1,
+      properties: {},
       inventories: [{
         variations: [],
-        properties: {}
       }],
     });
   };
@@ -688,7 +688,7 @@ const NewOrderPage = () => {
                     hasError={!!errors.payment_proof}
                     errorMessage={errors.payment_proof?.message as string}
                     maxSize={10}
-                    title="Upload Payment Proof"
+                    label="Upload Payment Proof"
                   />
                   <Controller
                     name="payment_receipt_name"

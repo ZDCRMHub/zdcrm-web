@@ -113,7 +113,6 @@ const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ i
                         <div className="flex flex-col gap-2">
                             <h3 className="uppercase font-bold">{product.name}</h3>
                             <div className="flex gap-3">
-                                <Hashtag />
                                 <p className="text-xs">
                                     Stocked Product:{" "}
                                     <span className="font-semibold">{product.quantity}</span>

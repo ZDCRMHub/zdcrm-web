@@ -1,3 +1,4 @@
+import { TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
 
 export interface TOrder {
   id: number;
@@ -17,7 +18,7 @@ export interface TOrder {
   payment_proof: null;
   total_production_cost: string;
   total_selling_price: null;
-  delivery: TOrderDelivery;
+  delivery: TOrderDeliveryInfo;
   items: TOrderItem[];
   discussions: TOrderDiscussion[];
   create_date: string;
@@ -57,6 +58,7 @@ interface TOrderItem {
   update_date: string;
   price_at_order: string;
   is_sorted: boolean;  
+  properties: Property[];
 }
 
 
@@ -82,12 +84,19 @@ interface Variationdetails {
 interface TOrderInventory {
   id: number;
   stock_inventory: Stockinventory;
-  product_inventory: null;
+  product_inventory: Productinventory | null;
   quantity_used: string | number | null;
   message: string;
   instruction: string | null;
-  properties: Property[];
   variations: Variation[];
+}
+interface Productinventory {
+  id: number;
+  name: string;
+  category: TProductCategory;
+  image_one: string | null;
+  cost_price: string;
+  inventory_number: string;
 }
 
 interface Property {
@@ -131,7 +140,7 @@ interface Dispatch {
   delivery_price: string;
 }
 
-interface TOrderDelivery {
+export interface TOrderDeliveryInfo {
   id: number;
   zone: string;
   note: string | null;

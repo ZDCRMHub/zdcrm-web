@@ -73,8 +73,6 @@ export default function NewProductInventorySheet() {
             name: '',
             category: undefined,
             branch: undefined,
-            quantity: 0,
-            cost_price: 0,
             image_one: null,
         }
     });
@@ -97,8 +95,6 @@ export default function NewProductInventorySheet() {
         onSuccess: () => {
             reset()
             setValue('image_one', null)
-            setValue('quantity', 0)
-            setValue('cost_price', 0)
             toast.success('Product Inventory created successfully');
             queryClient.invalidateQueries({ queryKey: ['productsInventory'] });
         },
@@ -108,7 +104,7 @@ export default function NewProductInventorySheet() {
         }
     });
 
-    const onSubmit = async(data: FormType) => {
+    const onSubmit = async (data: FormType) => {
         let image_one: string | undefined
         const imageFile = data.image_one
         if (data.image_one) {
@@ -216,9 +212,9 @@ export default function NewProductInventorySheet() {
                             placeholder='Cost Price'
                             hasError={!!errors.cost_price}
                             errorMessage={errors.cost_price?.message}
-                            pattern='[0-9]*'
+                            pattern="^[0-9]*$"
                             {...register('cost_price', { valueAsNumber: true })}
-                            // onChange={(e) => setValue('cost_price', parseInt(e.target.value) || 0)}
+                        // onChange={(e) => setValue('cost_price', parseInt(e.target.value) || 0)}
                         />
 
                         <Input
@@ -226,9 +222,9 @@ export default function NewProductInventorySheet() {
                             placeholder='Quantity'
                             hasError={!!errors.quantity}
                             errorMessage={errors.quantity?.message}
-                            pattern='[0-9]*'
+                            pattern="^[0-9]*$"
                             {...register('quantity', { valueAsNumber: true })}
-                            // onChange={(e) => setValue('quantity', parseInt(e.target.value) || 0)}
+                        // onChange={(e) => setValue('quantity', parseInt(e.target.value) || 0)}
                         />
 
 
