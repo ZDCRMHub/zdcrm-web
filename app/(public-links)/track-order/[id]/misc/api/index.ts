@@ -1,0 +1,1 @@
+export {useGetOrderDetail} from './getOrderDetails'

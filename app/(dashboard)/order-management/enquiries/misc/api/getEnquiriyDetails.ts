@@ -6,7 +6,8 @@ import { TEnquiry } from "../types";
 
 const fetchDetail = async (enquiry_id?: string): Promise<TEnquiry> => {
   const res = await APIAxios.get(`/enquiry/${enquiry_id}/details/`);
-  return res.data?.data;
+  console.log(res.data)
+  return res.data?.data as TEnquiry;
 }
 
 export const useGetEnquiryDetail = (enquiry_id?: string) => {

@@ -1,25 +1,26 @@
 import React from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Badge } from '@/components/ui/badge';
-import { Button, SelectSingleCombo } from '@/components/ui';
-import { Plus, User, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { Add, Book } from 'iconsax-react';
+import { Plus, User, X } from 'lucide-react';
+import { useForm, Controller } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AmountInput, Button, SelectSingleCombo } from '@/components/ui';
 import { Separator } from '@radix-ui/react-select';
 import { Input, Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIAxios } from "@/utils/axios";
-import CustomImagePicker from './CustomImagePicker';
-import { useGetCategories } from '../api/getCategories';
 import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
-import toast from 'react-hot-toast';
-import { useGetProductCategories } from '../api';
 import ErrorModal from '@/components/ui/modal-error';
 import useErrorModalState from '@/hooks/useErrorModalState';
 import { extractErrorMessage, formatAxiosErrorMessage } from '@/utils/errors';
 import { useLoading } from '@/contexts';
 import useCloudinary from '@/hooks/useCloudinary';
+
+import CustomImagePicker from './CustomImagePicker';
+import { useGetProductCategories } from '../api';
+
 
 
 const MAX_FILE_SIZE = 1000000;
@@ -29,8 +30,8 @@ const schema = z.object({
     category: z.number(),
     branch: z.number(),
     quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
-    cost_price: z.number().int().positive({ message: 'Cost price must be a positive integer' }),
-    // image_one: z.instanceof(File, { message: 'Image is required' }).refine(file => file.size > 0, { message: 'Image is required' }),
+    cost_price: z.number().min(1, { message: 'Cost price is required' }),
+    selling_price: z.number().min(1, { message: 'Selling price is required' }),
     image_one: z.any().nullable().refine(
         file => {
             if (!file) {
@@ -49,7 +50,6 @@ const schema = z.object({
             }
             return file.size <= MAX_FILE_SIZE;
         },
-
         {
             message: 'Max image size is 10MB.',
         }
@@ -158,6 +158,7 @@ export default function NewProductInventorySheet() {
                             render={({ field }) => (
                                 <Input
                                     {...field}
+                                    label="Product Name"
                                     value={field.value?.toString() ?? ''}
                                     placeholder='Item name'
                                     hasError={!!errors.name}
@@ -178,6 +179,7 @@ export default function NewProductInventorySheet() {
                                     options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
+                                    label="Branch"
                                     placeholder='Select Branch'
                                     onChange={(value) => field.onChange(Number(value))}
                                     isLoadingOptions={branchesLoading}
@@ -197,6 +199,7 @@ export default function NewProductInventorySheet() {
                                     options={categories?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
+                                    label="Category"
                                     placeholder='Select Category'
                                     onChange={(value) => field.onChange(Number(value))}
                                     isLoadingOptions={categoriesLoading}
@@ -207,14 +210,35 @@ export default function NewProductInventorySheet() {
                         />
 
 
-                        <Input
-                            type='number'
-                            placeholder='Cost Price'
-                            hasError={!!errors.cost_price}
-                            errorMessage={errors.cost_price?.message}
-                            pattern="^[0-9]*$"
-                            {...register('cost_price', { valueAsNumber: true })}
-                        // onChange={(e) => setValue('cost_price', parseInt(e.target.value) || 0)}
+
+
+                        <Controller
+                            name={`cost_price`}
+                            control={control}
+                            render={({ field }) => (
+                                <AmountInput
+                                    {...field}
+                                    label="Cost Price"
+                                    value={field.value ?? ''}
+                                    placeholder='Cost Price'
+                                    hasError={!!errors.selling_price}
+                                    errorMessage={errors.selling_price?.message}
+                                />
+                            )}
+                        />
+                        <Controller
+                            name={`selling_price`}
+                            control={control}
+                            render={({ field }) => (
+                                <AmountInput
+                                    {...field}
+                                    label="Selling Price"
+                                    value={field.value ?? ''}
+                                    placeholder='Selling Price'
+                                    hasError={!!errors.selling_price}
+                                    errorMessage={errors.selling_price?.message}
+                                />
+                            )}
                         />
 
                         <Input

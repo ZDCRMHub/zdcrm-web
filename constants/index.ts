@@ -40,7 +40,7 @@ export const PRODUCT_TYPES_OPTIONS = {
       { label: "50cm", value: "50cm" }
     ],
     bouquets: [
-      
+
       { name: "Medium (8*10)", value: "Medium" },
       { name: "Small (8*8)", value: "Small" },
       { name: "Standard (8*14)", value: "Standard" },
@@ -125,10 +125,11 @@ export const CATEGORIES_ENUMS: Record<string, string> = {
   "Teddy Bear": "TB",
   "Gift Card": "GC",
   "Vase": "V",
-  "Chocolate": "CH",
+  "Chocolates": "CH",
   "Baloon": "B",
   "Perfume": "P",
   "Hand Bag": "HB",
+  "Combo": "CO",
 
 }
 export const ORDER_STATUS_ENUMS: Record<string, string> = {
@@ -153,6 +154,7 @@ export const PRODUCT_CATEGORIES_OPTIONS = [
   { value: 'B', label: 'Baloon' },
   { value: 'P', label: 'Perfume' },
   { value: 'HB', label: 'Hand Bag' },
+  { value: 'CO', label: 'Combo' },
 ]
 
 export const PAYMENT_STATUS_OPTIONS = [
@@ -203,4 +205,22 @@ export const ENQUIRY_OCCASION_OPTIONS = [
 export const DISPATCH_METHOD_OPTIONS = [
   { value: "Dispatch", label: "Dispatch" },
   { value: "Pickup", label: "Pickup" },
+]
+
+export const ZONES_OPTIONS = [{
+  value: "LM",
+  label: "Lagos Mainland (LM)",
+},
+{
+  value: "LC",
+  label: "Lagos Central (LC)",
+},
+{
+  value: "LI",
+  label: "Lagos Island (LI)",
+},
+{
+  value: "ND",
+  label: "No Destination (ND)",
+},
 ]

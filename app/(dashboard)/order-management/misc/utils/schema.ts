@@ -25,7 +25,7 @@ const inventorySchema = z.object({
 
 const itemSchema = z.object({
     category: z.number({ message: "Category is required" }),
-    product_id: z.number({ message: "Product type is required" }),
+    product_id: z.number({ message: "Product Name is required" }),
     quantity: z.number().min(1),
     inventories: z.array(inventorySchema),
     properties: propertiesSchema,
@@ -37,7 +37,7 @@ const itemSchema = z.object({
     if (data.product_id && data.product_id == 0) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Product type is required",
+            message: "Product Name is required",
         });
     }
 
@@ -86,7 +86,7 @@ export const NewOrderSchema = z.object({
     customer: z.object({
         name: z.string().min(1, { message: "Customer's name is required" }),
         phone: z.string().min(1, { message: "Customer's phone number is required" }),
-        email: z.string().email().optional()
+        email: z.string().optional()
     }),
     delivery: z.object({
         zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
@@ -97,7 +97,9 @@ export const NewOrderSchema = z.object({
         dispatch: z.string().optional(),
         address: z.string().optional(),
         recipient_name: z.string().min(1, { message: "Recipient's name is required" }),
-        recipient_phone: z.string().min(1, { message: "Recipient's phone number is required" })
+        recipient_phone: z.string().min(1, { message: "Recipient's phone number is required" }),
+        fee: z.number().optional(),
+        is_custom_delivery: z.boolean().optional(),
     }),
     enquiry_channel: z.string().min(1, { message: "Enquiry channel is required" }),
     social_media_details: z.string().optional(),
@@ -120,41 +122,54 @@ export const NewOrderSchema = z.object({
         "not_received_paid"
     ]),
     // payment_proof: z.string().url().optional().nullable(),
-    payment_proof: z.any().nullable().refine(
-        file => {
-            if (!file) {
-                throw z.ZodError.create([{
-                    path: ['payment_proof'],
-                    message: 'Please select a file.',
-                    code: 'custom',
-                }]);
-            }
-            if (!file.type.startsWith('application/pdf') && !file.type.startsWith('image/')) {
-                throw z.ZodError.create([{
-                    path: ['payment_proof'],
-                    message: 'Please select a PDF or image file.',
-                    code: 'custom',
-                }]);
-            }
-            return file.size <= MAX_FILE_SIZE;
-        },
-
-        {
-            message: 'Max file size is 10MB.',
-        }
-    ),
+    payment_proof: z.any().nullable(),
     payment_receipt_name: z.string().optional(),
     payment_currency: z.enum(["NGN", "USD"]),
     amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
     initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
 }).superRefine((data, ctx) => {
- 
-    if (data.delivery.method === "Dispatch" && (!data.delivery.address || !data.delivery.address.trim().length)) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Enter address for dispatch delivery",
-            path: ["delivery.address"]
-        });
+    if(data.payment_options !== 'not_paid_go_ahead') {
+        if (!data.payment_proof) {
+            throw z.ZodError.create([{
+                path: ['payment_proof'],
+                message: 'Please select a file.',
+                code: 'custom',
+            }]);
+        }
+        if (!data.payment_proof.type.startsWith('application/pdf') && !data.payment_proof.type.startsWith('image/')) {
+            throw z.ZodError.create([{
+                path: ['payment_proof'],
+                message: 'Please select a PDF or image file.',
+                code: 'custom',
+            }]);
+        }
+        if(data.payment_proof.size > MAX_FILE_SIZE){
+            throw z.ZodError.create([{
+                path: ['payment_proof'],
+                message: 'Please select a file smaller than 10MB.',
+                code: 'custom',
+            }])
+
+
+        }
+    }
+    if (data.delivery.method === "Dispatch") {
+        if (data.delivery.is_custom_delivery) {
+            if (!data.delivery.fee) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Enter delivery fee",
+                    path: ["delivery.fee"]
+                });
+            }
+        }
+        if (!data.delivery.address || !data.delivery.address.trim().length) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Enter address for dispatch delivery",
+                path: ["delivery.address"]
+            });
+        }
     }
     if ((data.payment_options === "part_payment_cash" || data.payment_options === "part_payment_transfer") && !data.initial_amount_paid) {
         ctx.addIssue({

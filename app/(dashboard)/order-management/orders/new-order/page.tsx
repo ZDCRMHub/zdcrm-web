@@ -38,6 +38,7 @@ import {
   ENQUIRY_CHANNEL_OPTIONS,
   ENQUIRY_OCCASION_OPTIONS,
   ENQUIRY_PAYMENT_OPTIONS,
+  ZONES_OPTIONS,
 } from "@/constants";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -172,6 +173,12 @@ const NewOrderPage = () => {
   const resetForm = () => {
     reset();
   }
+  const isCustomDelivery = watch(`delivery.is_custom_delivery`);
+  const toggleCustomDelivery = () => {
+    setValue('delivery.is_custom_delivery', !isCustomDelivery);
+  }
+
+
   console.log(getValues('items'))
 
 
@@ -401,29 +408,21 @@ const NewOrderPage = () => {
                     name="delivery.zone"
                     render={({ field }) => (
                       <FormItem>
+
+
                         <SelectSingleCombo
                           label="Delivery Zone"
-                          options={[
-                            {
-                              value: "LM",
-                              label: "Lagos Mainland (LM)",
-                            },
-                            {
-                              value: "LC",
-                              label: "Lagos Central (LC)",
-                            },
-                            {
-                              value: "LI",
-                              label: "Lagos Island (LI)",
-                            },
-                          ]}
+                          options={ZONES_OPTIONS}
                           {...field}
                           valueKey={"value"}
                           labelKey={"label"}
                           placeholder="Select delivery zone"
                           hasError={!!errors.delivery?.zone}
                           errorMessage={errors.delivery?.zone?.message}
+
                         />
+
+
                       </FormItem>
                     )}
                   />
@@ -432,19 +431,39 @@ const NewOrderPage = () => {
                     name="delivery.dispatch"
                     render={({ field }) => (
                       <FormItem>
-                        <SelectSingleCombo
-                          label="Dispatch Location"
-                          {...field}
-                          value={field.value?.toString() || ''}
-                          isLoadingOptions={dispatchLocationsLoading}
-                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                          valueKey={"value"}
-                          // labelKey={"label"}
-                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                          placeholder="Select dispatch location"
-                          hasError={!!errors.delivery?.dispatch}
-                          errorMessage={errors.delivery?.dispatch?.message}
-                        />
+                        {
+                          isCustomDelivery ?
+                            <Input
+                              label="Delivery Fee"
+                              {...register('delivery.fee', { valueAsNumber: true })}
+                              hasError={!!errors.delivery?.fee}
+                              errorMessage={errors.delivery?.fee?.message}
+                              placeholder="Enter delivery fee"
+                            />
+                            :
+                            <SelectSingleCombo
+                              label="Dispatch Location"
+                              {...field}
+                              value={field.value?.toString() || ''}
+                              isLoadingOptions={dispatchLocationsLoading}
+                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                              valueKey={"value"}
+                              // labelKey={"label"}
+                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                              placeholder="Select dispatch location"
+                              hasError={!!errors.delivery?.dispatch}
+                              errorMessage={errors.delivery?.dispatch?.message}
+                            />
+                        }
+                        <button
+                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                          onClick={toggleCustomDelivery}
+                          type="button"
+                        >
+                          {
+                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                          }
+                        </button>
                       </FormItem>
                     )}
                   />
@@ -554,6 +573,7 @@ const NewOrderPage = () => {
                           errors={errors}
                           register={register}
                           setValue={setValue}
+                          addNewItem={addNewItem}
                         />
                       )
                     })

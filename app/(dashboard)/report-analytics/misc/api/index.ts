@@ -1,6 +1,7 @@
 export { useGetOrderStats } from './getOrderStatistics'
 export { useGetOrderDeliveryStats } from './getOrderStatisticsDeliveryZone'
 export { useGetTopProducts } from './getOrderStatisticsTopProducts'
+export { useGetTopCategories } from './getOrderStatisticsTopCategories'
 
 export { useGetFinancialReportStats } from './getFinancialReportStatistic'
 export { useGetFinancialOverviewStats } from './getFinancialOverviewStatistic'

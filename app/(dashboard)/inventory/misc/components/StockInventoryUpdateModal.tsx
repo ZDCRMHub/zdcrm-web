@@ -1,12 +1,13 @@
 'use client'
 import React from 'react'
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import Image from 'next/image';
 import { AddCircle, Hashtag, MinusCirlce } from 'iconsax-react';
 import * as z from 'zod';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+    AmountInput,
     Button,
     Dialog,
     DialogClose,
@@ -28,13 +29,9 @@ import { TStockInventoryItem, TStockVariation } from '../types/stock';
 
 const stockInventorySchema = z.object({
     quantity: z.number().int().nonnegative(),
-    cost_price: z.number()
-        .min(1, {
-            message: "Cost price must be greater than 0"
-        }).int({
-            message: "Cost price must be a number"
-        }).positive({ message: "Cost price must be a positive number" }),
-});
+    cost_price: z.number().min(1, { message: 'Cost price is required' }),
+       selling_price: z.number().min(1, { message: 'Selling price is required' }),
+   });
 interface StockInventoryUpdateModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
@@ -45,10 +42,11 @@ interface StockInventoryUpdateModalProps {
 }
 
 const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ isModalOpen, closeModal, variation, stock, refetch }) => {
-    const { register, formState: { errors }, setValue, handleSubmit, watch, getValues, setError } = useForm({
+    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm({
         defaultValues: {
             quantity: variation.quantity,
             cost_price: parseInt(variation.cost_price),
+            selling_price: parseInt(variation.selling_price),
         },
         resolver: zodResolver(stockInventorySchema)
     })
@@ -144,30 +142,36 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                             )
                         }
                     </div>
-                    {/* <div>
-                        <p className="text-xs">Low in Stock</p>
-                        <div className="border border-solid border-[#E1E1E1] py-3 px-[18px] flex gap-12 mt-2">
-                            <div className="cursor-pointer" onClick={lowStockMinus}>
-                                <CiCircleMinus size={20} />
-                            </div>
-                            <div className="font-bold text-sm">{lowStockCounter}</div>
-                            <div className="cursor-pointer" onClick={lowStockPlus}>
-                                <CiCirclePlus size={20} />
-                            </div>
-                        </div>
-                    </div> */}
-                    <Input
-                        label="Cost Price (₦)"
-                        id="price"
-                        type="number"
-                        {...register('cost_price', {
-                            valueAsNumber: true
-                        })}
-                        pattern="^[0-9]*$"
-                        hasError={!!errors.cost_price}
-                        errorMessage={errors.cost_price?.message}
-                        placeholder='Enter cost price'
+
+                    <Controller
+                        name={`cost_price`}
+                        control={control}
+                        render={({ field }) => (
+                            <AmountInput
+                                {...field}
+                                label="Cost Price"
+                                value={field.value ?? ''}
+                                placeholder='Cost Price'
+                                hasError={!!errors.selling_price}
+                                errorMessage={errors.selling_price?.message}
+                            />
+                        )}
                     />
+                    <Controller
+                        name={`selling_price`}
+                        control={control}
+                        render={({ field }) => (
+                            <AmountInput
+                                {...field}
+                                label="Selling Price"
+                                value={field.value ?? ''}
+                                placeholder='Selling Price'
+                                hasError={!!errors.selling_price}
+                                errorMessage={errors.selling_price?.message}
+                            />
+                        )}
+                    />
+
                     <DialogFooter className="p-2">
                         <Button
                             type="submit"
@@ -175,9 +179,11 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                             disabled={isPending}
                             className="bg-[#17181C] mt-10 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                         >
-                            Save Changes
                             {
-                                isPending && <Spinner />
+                                isPending  ? "Saving Changes" : "Save Changes"
+                            }
+                            {
+                                isPending && <Spinner color='white' />
                             }
                         </Button>
                     </DialogFooter>

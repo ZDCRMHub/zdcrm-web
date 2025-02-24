@@ -65,7 +65,7 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
             <Popover open={open} onOpenChange={setOpen}>
                 <div className="flex flex-col gap-2">
                     <Label className="text-sm text-[#0F172B] font-poppins font-medium">
-                        Inventory
+                        Stock
                     </Label>
                     <PopoverTrigger asChild>
                         <Button

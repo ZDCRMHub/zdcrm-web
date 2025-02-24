@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import OrderDetailSheetPayments from './OrderDetailSheetPayments';
 import { format } from 'date-fns';
-import { convertNumberToNaira } from '@/utils/currency';
+import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
 import { Button, LinkButton, Spinner } from '@/components/ui';
@@ -74,19 +74,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     <div key={idx} className='!min-w-max'>{item.product.name}</div>
                 ))}
             </TableCell>
-            <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
-            <TableCell className='min-w-[180px] max-w-[300px]'>{convertKebabAndSnakeToTitleCase(order?.payment_options)}</TableCell>
-            <TableCell className='min-w-max'>
-                <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>
-                <div className='text-sm text-[#494949]'>{order.payment_status}</div>
-            </TableCell>
-            <TableCell className='min-w-max font-bold'>
-                {/* <div>{order.amountUSD ? "$" + order.amountUSD : "-"}</div> */}
-                {/* <div>{order.paymentStatus}</div> */}
-                -
-            </TableCell>
-
-            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Badge
                     className={cn(
@@ -97,6 +84,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     {convertKebabAndSnakeToTitleCase(order.payment_options)}
                 </Badge>
             </TableCell>
+            <TableCell className='min-w-max'>
+                <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>
+                <div className='text-sm text-[#494949]'>{order.payment_status}</div>
+            </TableCell>
+            <TableCell className='min-w-max font-bold'>
+             {
+                !!order.amount_paid_in_usd ?  formatCurrency(order.amount_paid_in_usd,'USD') : 'N/A'
+             }
+            </TableCell>
+
+            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
+           
 
             <TableCell>
                 <Button
@@ -222,12 +221,10 @@ const OrdersTablePayments = ({ data, isLoading, isFetching, error, isFiltered }:
                                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
                                     <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
                                     <TableHead className='min-w-[230px]'>Order Items</TableHead>
-                                    <TableHead className='w-[170px]'>Order Notes</TableHead>
                                     <TableHead className='min-w-[180px]'>Payment Mode</TableHead>
                                     <TableHead className='min-w-[150px]'>Amount</TableHead>
                                     <TableHead>Amount(USD)</TableHead>
                                     <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
-                                    <TableHead className='min-w-[175px] max-w-[500px]'>Payment Status</TableHead>
                                     <TableHead></TableHead>
                                 </TableRow>
                             </TableHeader>

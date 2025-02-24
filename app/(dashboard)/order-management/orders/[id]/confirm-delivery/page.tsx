@@ -23,7 +23,7 @@ const deliveryFormSchema = z.object({
   driver_name: z.string().min(1, 'Driver Name is required'),
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
-  delivery_expense: z.number().min(1, 'Delivery Expenses is required'),
+  delivery_expense: z.number().optional(),
   tracking_link: z.string({ message: "Enter a valid url" }).url().min(1, 'Tracking Link is required'),
 });
 
@@ -60,7 +60,7 @@ const OrdeManagementDelivery = () => {
     console.log(data);
   }
 
-
+console.log(errors)
 
   if (isLoading) {
     return <OrderManagementDeliverySkeleton />;
@@ -184,16 +184,7 @@ const OrdeManagementDelivery = () => {
             errorMessage={errors.delivery_platform?.message}
             defaultValue={order?.delivery?.delivery_platform ?? ""}
           />
-          <Input
-            label='Delivery Expenses *'
-            type='text'
-            placeholder='Enter delivery expenses'
-            className='w-full focus:border min-w-[350px] text-xs'
-            {...register('delivery_expense', { valueAsNumber: true })}
-            hasError={!!errors.delivery_expense}
-            errorMessage={errors.delivery_expense?.message}
-            defaultValue={order?.delivery?.delivery_expense ?? ""}
-          />
+          
           <Input
             label='Tracking Link *'
             type='text'

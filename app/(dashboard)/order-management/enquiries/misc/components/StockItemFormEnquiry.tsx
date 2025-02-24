@@ -153,7 +153,7 @@ const StockItemFormEnquiry: React.FC<StockItemFormEnquiryProps> = ({
                     />
                   ) : null}
                 </div>
-                <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.name} - ${option.variation}`}</p>
+                <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.variation} - ${option.name}`}</p>
               </button>
             ))}
           </div>

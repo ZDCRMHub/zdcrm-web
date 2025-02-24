@@ -1,51 +1,50 @@
 "use client";
-import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link, TruckRemove } from 'iconsax-react';
-import React from 'react';
-import { Button, LinkButton } from '@/components/ui';
-import { useParams, useRouter } from 'next/navigation';
-import ProgressTimeline from './ProgressTimeline';
-import { useGetOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
-import { formatTimeString } from '@/utils/strings';
-import OrderPageSkeleton from './CompleteOrderPageSkeleton';
+import { Notepad2, Call, Calendar, Truck, Location, Link, TruckRemove } from 'iconsax-react';
+import { useParams } from 'next/navigation';
 import { formatDate } from 'date-fns';
+import React from 'react';
+
+import { Button, LinkButton } from '@/components/ui';
+import { formatTimeString } from '@/utils/strings';
+
+import OrderPageSkeleton from './TrackOrderPageSkeleton';
+import ProgressTimeline from './ProgressTimeline';
+import { useGetOrderDetail } from './misc/api';
+
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
     const { data: order, isLoading } = useGetOrderDetail(order_id);
 
-    const router = useRouter();
-    const goBack = () => {
-        router.back();
-    }
-
     const onDelivered = () => {
         console.log("Order successfully delivered!");
+
         // Add any additional logic here
     };
 
-    const { mutate: updateStatus } = useUpdateDeliveryStatus(order_id);
-    const handleStatusUpdate = (status: "PND" | "DIS" | "DSC" | "DEL" | "CAN") => {
-        updateStatus({ id: order_id, status });
-    };
+
 
 
     if (isLoading) {
         return <OrderPageSkeleton />;
     }
+    if (!isLoading && !order) {
+        return (
+            <div className="flex items-center justify-center h-screen w-full">
+                <h1 className="font4xl font-manrope font-medium">
+                    Order not found
+                </h1>
+            </div>
+        );
+    }
+
 
     return (
         <div className="flex flex-col grow h-full px-8">
             <header className="flex items-center border-b border-b-[#00000021] w-full pt-4">
-                <Button
-                    variant='ghost'
-                    size='icon'
-                    className='mr-2'
-                    onClick={() => goBack()}>
-                    <ArrowLeft2 className='h-6 w-6 text-[#A0AEC0]' />
-                </Button>
                 <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
                     <Notepad2 size={19} />
-                    Complete order
+                    Track order
                     <span className="absolute h-[2px] w-full bottom-[-6px] left-0 bg-black" />
                 </p>
             </header>
@@ -55,7 +54,7 @@ const CompleteOrderPage = () => {
                     <ProgressTimeline
                         orderId={order?.id}
                         orderNumber={order?.order_number}
-                        currentStatus={order?.delivery.status}
+                        currentStatus={order?.delivery.status as "PND" | "DIS" | "DSC" | "DEL" | "CAN"}
                         onDelivered={onDelivered}
                         order={order!}
                     />
@@ -65,8 +64,9 @@ const CompleteOrderPage = () => {
                             <div className="flex items-center text-sm">
                                 <Truck variant="Bold" size="24" className="mr-2" /> Driver
                             </div>
-                            {/* <div className="font-medium text-xl">ID: 222-111-33</div> */}
-                            <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver_name}</div>
+                            <div className="name text-[#194A7A] font-semibold text-2xl">
+                                {order?.delivery.driver_name}                                
+                            </div>
                             <div className="platform text-sm text-[#194A7A]">
                                 Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.delivery_platform}</a>
                             </div>
@@ -95,17 +95,8 @@ const CompleteOrderPage = () => {
                         </section>
                     </article>
 
-                    {/* Share Delivery Link Section */}
-                    <div className="flex items-center gap-4 p-4 text-center">
-                        <Button className="px-8 h-14" >
-                            <Link size="24" className="mr-2" /> Share Delivery Link
-                        </Button>
-                        <Button variant="destructive" className="px-8 h-14" onClick={() => handleStatusUpdate("CAN")}>
-                            <TruckRemove size="24" className="mr-2" /> Cancel Order
-                        </Button>
-                    </div>
+                  
                 </section>
-
             }
         </div>
     )

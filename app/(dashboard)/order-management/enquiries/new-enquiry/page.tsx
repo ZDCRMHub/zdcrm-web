@@ -499,27 +499,27 @@ const NewEnquiryPage = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-5">
-                  {
-                                  watch('delivery.method') === "Dispatch" &&
-                                  <FormField
-                                    control={control}
-                                    name="delivery.address"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormControl>
-                                          <Input
-                                            className=""
-                                            label="Delivery Address"
-                                            {...field}
-                                            hasError={!!errors.delivery?.address}
-                                            errorMessage={errors.delivery?.address?.message}
-                                            placeholder="Enter delivery address"
-                                          />
-                                        </FormControl>
-                                      </FormItem>
-                                    )}
-                                  />
-                                }
+                {
+                  watch('delivery.method') === "Dispatch" &&
+                  <FormField
+                    control={control}
+                    name="delivery.address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            className=""
+                            label="Delivery Address"
+                            {...field}
+                            hasError={!!errors.delivery?.address}
+                            errorMessage={errors.delivery?.address?.message}
+                            placeholder="Enter delivery address"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                }
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
                   <FormField
                     control={control}
@@ -633,7 +633,7 @@ const NewEnquiryPage = () => {
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
                           label="Delivery Date"
-                          value={new Date(field.value)}
+                          value={field.value ? new Date(field.value) : new Date()}
                           onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
                           placeholder="Select delivery date"
                         />
@@ -712,13 +712,6 @@ const NewEnquiryPage = () => {
                       />
                     )}
                   />
-                  <Button
-                    variant="outline"
-                    onClick={addNewItem}
-                    type="button"
-                  >
-                    + Add Item
-                  </Button>
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
@@ -732,6 +725,7 @@ const NewEnquiryPage = () => {
                           errors={errors}
                           register={register}
                           setValue={setValue}
+                          addNewItem={addNewItem}
                         />
                       )
                     })

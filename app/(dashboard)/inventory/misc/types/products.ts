@@ -7,6 +7,7 @@ export interface TProductInventoryItem {
   branch: TBranch;
   image_one: string;
   cost_price: string;
+  selling_price: string;
   quantity: number;
   inventory_number: string;
   created_by: number;

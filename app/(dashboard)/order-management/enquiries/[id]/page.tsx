@@ -233,20 +233,23 @@ const EnquiryDetailsPage = () => {
                                                         <span className="text-[#687588]">Size:</span> 6 inches
                                                     </p> */}
                                                 </div>
+                                                <div className="grid gap-1">
+                                                    {item.properties.map((property, index) => (
+                                                        <div key={index}>
+                                                            {Object.entries(property).map(([key, value]) => {
+                                                                if (key === "id" || !value) return null
 
-                                                {
-                                                    Object.entries(item.properties[0]).map(([key, value]) => (
-                                                        <>
-                                                            {
-                                                                key !== 'id' && !!value &&
-                                                                <p className="text-[#111827] font-medium">
-                                                                    <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span>{" "}
-                                                                    {value}
-                                                                </p>
-                                                            }
-                                                        </>
-                                                    ))
-                                                }
+                                                                const displayValue = typeof value === "object" && value !== null ? value.name : value
+
+                                                                return (
+                                                                    <p key={key} className="text-[#111827] font-medium">
+                                                                        <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span> {displayValue}
+                                                                    </p>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    ))}
+                                                </div>
 
                                                 <p className="text-[#111827] font-medium">
                                                     <span className="text-[#687588]">Message {item.product.category.name == "Cake" && "on cake"}:</span>{" "}
@@ -261,7 +264,7 @@ const EnquiryDetailsPage = () => {
                                             <p className="font-semibold text-[#194A7A]">Amount: </p>
                                             <p className="font-semibold text-[#194A7A]">
                                                 {
-                                                    formatCurrency(Number(item.price_at_order || "0"), "NGN")
+                                                    formatCurrency(Number(item.product.selling_price || "0"), "NGN")
                                                 }
                                             </p>
                                         </div>
@@ -347,7 +350,7 @@ const EnquiryDetailsPage = () => {
                     isModalOpen={isConfirmModalOpen}
                     closeModal={closeConfirmModal}
                     enquiryId={enquiry_id as string}
-                    total_amount_due={Number(data?.total_selling_price || 0)}
+                    total_amount_due={Number(data?.total_production_cost || 0)}
                 />
             }
         </div>

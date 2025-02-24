@@ -7,31 +7,32 @@ import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo, B
 
 
 
-import { NewOrderFormValues } from "../utils/schema";
 import { PRODUCT_TYPES_OPTIONS } from '@/constants';
 import { Label } from '@/components/ui/label';
-import OrderFormMiscellaneous from './OrderFormMiscellaneous';
-import StockItemFormEnquiry from '../../enquiries/misc/components/StockItemFormEnquiry';
-import OrderFormProductInventorySelector from './OrderFormProductInventorySelector';
 import { TProductInventoryItem } from '@/app/(dashboard)/inventory/misc/types/products';
 import { TStockInventoryItem } from '@/app/(dashboard)/inventory/misc/types/stock';
 import { formatCurrency } from '@/utils/currency';
+import { ConvertibleEnquiryFormValues, NewEnquiryFormValues } from '../utils/schema';
+import EnquiryFormMiscellaneous from './EnquiryFormMiscellaneous';
+import EnquiryFormProductInventorySelector from './EnquiryFormProductInventorySelector';
+import StockItemFormEnquiry from './StockItemFormEnquiry';
 import { cn } from '@/lib/utils';
-import { useGetPropertyOptions } from '../api';
+import { useGetPropertyOptions } from '../../../misc/api';
+import EnquiryFormMiscellaneousComplete from './EnquiryFormMiscellaneousComplete';
 
 
-interface OrderItemsSectionProps {
-    control: Control<NewOrderFormValues>;
-    watch: UseFormWatch<NewOrderFormValues>;
-    setValue: UseFormSetValue<NewOrderFormValues>;
-    register: any;
-    errors: FieldErrors<NewOrderFormValues>;
-    index: number;
+interface EnquiryFormItemsSectionProps {
+    control: Control<ConvertibleEnquiryFormValues>
+    watch: UseFormWatch<ConvertibleEnquiryFormValues>
+    setValue: UseFormSetValue<ConvertibleEnquiryFormValues>
+    register: any
+    errors: FieldErrors<ConvertibleEnquiryFormValues>
+    index: number
     addNewItem: () => void
-
 }
-type TOrderFormItem = NewOrderFormValues['items']
+type TOrderFormItem = ConvertibleEnquiryFormValues['items']
 
+type TOrderFormItemSingle = TOrderFormItem extends (infer U)[] ? U : TOrderFormItem;
 
 export interface TFormItemSelectionOption {
     id: number;
@@ -39,10 +40,11 @@ export interface TFormItemSelectionOption {
     variation: string;
     stock_inventory_id: number;
     product_image?: string;
+
 }
 
 
-const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
+const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
     control,
     watch,
     setValue,
@@ -53,12 +55,10 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
 }) => {
     const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+    const { data: propertyOptions, isLoading: isLoadingPropertyOptions } = useGetPropertyOptions();
     const { data: products, isLoading: productsLoading, isFetching: productsFetching } = useGetProducts({
         category: watch(`items.${index}.category`)
     });
-
-    const { data: propertyOptions, isLoading: isLoadingPropertyOptions } = useGetPropertyOptions()
-
 
     const { remove: deleteItems } = useFieldArray({
         control,
@@ -91,8 +91,8 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
     }, [index, selectedCategory, setValue]);
 
-
-    const watchedItems = watch("items");
+    // TOrderFormItemSingle
+    const watchedItems = watch("items") || [] as TOrderFormItem[];
     const watchedItemAtIndex = watch(`items.${index}`)
     const watchedInventories = watch(`items.${index}.inventories`)
 
@@ -108,6 +108,8 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         size: 20000000000000,
         category: Number(watchedItems[index]?.category),
     });
+
+
     const handleProductVariationChange = (selectedItems: Array<TFormItemSelectionOption & { quantity: number }>) => {
         const newInventories = selectedItems.reduce((acc: any[], item) => {
             const existingInventory = acc.find(inv => inv.stock_inventory_id === item.stock_inventory_id);
@@ -144,13 +146,14 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             product_image: product.image_one,
             name: product.name,
             variation: variation.size || variation.color || variation.flavour,
-            category: product.category.name
+            category: product.category.name,
         }))
     ) || [];
 
 
     const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
-        const item = items[0];
+        const item = items?.[0];
+        if (!item) return 0
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
 
@@ -164,7 +167,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             } else {
                 const itemInventories = inventories.filter(inv => inventoriesIds.includes(inv.id));
 
-                const selectedVariations = items.map(item => item.inventories.map(inv => inv?.variations?.map(variation => {
+                const selectedVariations = items?.map(item => item.inventories.map(inv => inv?.variations?.map(variation => {
                     const selected = itemInventories.flatMap(inv =>
                         inv.variations.find(varr => variation.stock_variation_id == varr.id)
                     );
@@ -215,15 +218,17 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
 
 
+
     return (
-
         <>
-
             {
                 !!watchedItemAtIndex &&
                 <div className="rounded-md mb-10">
                     <div className="flex items-center gap-2 mb-4 ">
-                        <div className='flex items-center justify-center px-4 py-1.5 bg-yellow-500 max-w-max'>
+
+                        <div
+                            className='flex items-center justify-center px-4 py-1.5 bg-yellow-500 max-w-max'
+                        >
                             Item {index + 1}
                         </div>
                         <button
@@ -289,7 +294,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newQuantity = watch('items')?.[index].quantity - 1;
+                                        const newQuantity = (watch('items')?.[index]?.quantity ?? 0) - 1;
                                         if (newQuantity >= 1) {
                                             setValue(`items.${index}.quantity`, newQuantity);
                                         }
@@ -304,7 +309,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newQuantity = watch('items')?.[index].quantity + 1;
+                                        const newQuantity = (watch('items')?.[index]?.quantity ?? 0) + 1;
                                         setValue(`items.${index}.quantity`, newQuantity);
                                     }}
                                     className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
@@ -335,6 +340,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                             hasError={!!errors.items?.[index]?.inventories}
                                             errorMessage={errors.items?.[index]?.inventories?.message}
                                         />
+
 
 
                                         {
@@ -486,7 +492,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                 watchedInventories.map((_, invIndex) =>
 
                                                     <>
-                                                        <OrderFormProductInventorySelector
+                                                        <EnquiryFormProductInventorySelector
                                                             inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
                                                             setInventoryId={(inventoryId) => {
                                                                 setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
@@ -532,14 +538,12 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                     </div>
 
 
-                    <OrderFormMiscellaneous
+                    <EnquiryFormMiscellaneousComplete
                         index={index}
                         control={control}
                         register={register}
                         errors={errors}
                     />
-
-
 
                     <footer className="flex items-center justify-between border-t pt-2 mt-4">
                         <p className='flex items-center gap-1.5 font-semibold text-2xl text-custom-blue'>
@@ -573,9 +577,8 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                 </div>
             }
         </>
-
     );
 };
 
-export default OrderItemsSection;
+export default EnquiryFormItemsSection;
 

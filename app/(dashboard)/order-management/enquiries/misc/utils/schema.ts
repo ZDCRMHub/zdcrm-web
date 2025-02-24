@@ -25,7 +25,7 @@ const inventorySchema = z.object({
 
 const itemSchema = z.object({
     category: z.number({ message: "Category is required" }),
-    product_id: z.number({ message: "Product type is required" }),
+    product_id: z.number({ message: "Product Name is required" }),
     quantity: z.number().min(1),
     inventories: z.array(inventorySchema),
     properties: propertiesSchema,
@@ -37,7 +37,7 @@ const itemSchema = z.object({
     if (data.product_id && data.product_id == 0) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Product type is required",
+            message: "Product Name is required",
         });
     }
 
@@ -80,9 +80,66 @@ const itemSchema = z.object({
 
     });
 });
-
+const optionalItemSchema = z.object({
+    category: z.number({ message: "Category is required" }),
+    product_id: z.number({ message: "Product Name is required" }),
+    quantity: z.number().min(1),
+    properties: propertiesSchema,
+    inventories: z.array(
+      z.object({
+        message: z.string().optional(),
+        stock_inventory_id: z.number().optional(),
+        product_inventory_id: z.number().optional(),
+        instruction: z.string().optional(),
+        quantity_used: z.number().optional(),
+        variations: z
+          .array(
+            z.object({
+              stock_variation_id: z.number(),
+              quantity: z.number(),
+            }),
+          )
+          .optional(),
+        custom_image: z.string().optional(),
+      }),
+    ),
+    miscellaneous: z
+      .array(
+        z.object({
+          description: z.string(),
+          cost: z.number(),
+        }),
+      )
+      .optional(),
+  })
+  
 
 export const NewEnquirySchema = z.object({
+    customer: z.object({
+        name: z.string().min(1, { message: "Customer's name is required" }),
+        phone: z.string().optional(),
+        email: z.string().optional()
+    }),
+    delivery: z.object({
+        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        note: z.string().optional(),
+        delivery_time: z.string().optional(),
+        delivery_date: z.string({ message: "Delivery date is required" }).optional(),
+        method: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }).optional(),
+        dispatch: z.string().optional(),
+        address: z.string().optional(),
+        recipient_name: z.string().optional(),
+        recipient_phone: z.string().optional()
+    }),
+    enquiry_channel: z.string().min(1, { message: "Enquiry channel is required" }),
+    social_media_details: z.string().optional(),
+    enquiry_occasion: z.string().optional(),
+    branch: z.number({ message: "Select a branch" }).optional(),
+    message: z.string().optional(),
+    items: z.array(optionalItemSchema).min(1, { message: "At least one item is required" }).optional(),
+})
+
+export const ConvertiblEnquirySchema = z.object({
     customer: z.object({
         name: z.string().min(1, { message: "Customer's name is required" }),
         phone: z.string().min(1, { message: "Customer's phone number is required" }),
@@ -118,5 +175,6 @@ export const NewEnquirySchema = z.object({
 
 
 export type NewEnquiryFormValues = z.infer<typeof NewEnquirySchema>;
+export type ConvertibleEnquiryFormValues = z.infer<typeof ConvertiblEnquirySchema>;
 
 

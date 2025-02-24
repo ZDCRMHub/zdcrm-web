@@ -3,6 +3,7 @@ export { useGetOrderDetail } from './getOrderDetails'
 export { useGetOrderDeliveryLocations } from './getOrderDeliveryLocations'
 export { useGetCustomerHistory } from './getClientHistory'
 export { useGDiscounts } from './getDiscounts'
+export { useGetPropertyOptions } from './getPropertyOptions'
 
 export { useCreateOrder } from './postCreateOrder'
 export { useAddDiscountToOrder } from './postAddDiscountToOrder'

@@ -44,7 +44,7 @@ export {
   FormField,
 } from './form'
 
-export { Input } from './input'
+export { Input, AmountInput } from './input'
 
 export { LinkButton } from './linkButton'
 

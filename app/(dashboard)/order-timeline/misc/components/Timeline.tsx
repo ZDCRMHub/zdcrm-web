@@ -94,7 +94,6 @@ const OrderTimeline = () => {
                 <AccordionItem value="within72Hours">
                     <AccordionTrigger>
                         <p>
-
                             {format(new Date(new Date().setDate(new Date().getDate() + 2)), 'eeee, do MMMM yyyy')}
                             <span className="px-2 py-1 rounded-lg min-w-6 text-xs ml-2 text-white bg-custom-blue">
                                 {nextTomorrowData?.data?.length || 0}
@@ -105,7 +104,7 @@ const OrderTimeline = () => {
                         {nextTomorrowData?.data?.map(order => <OrderTimelineCard key={order.id} order={order} />)}
                     </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="within7Days">
+                <AccordionItem value="within3Days">
                     <AccordionTrigger>
                         <p>
                             {format(new Date(new Date().setDate(new Date().getDate() + 3)), 'eeee, do MMMM yyyy')}
@@ -118,7 +117,7 @@ const OrderTimeline = () => {
                         {inThreeDaysData?.data.map(order => <OrderTimelineCard key={order.id} order={order} />)}
                     </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="within7Days">
+                <AccordionItem value="within4Days">
                     <AccordionTrigger>
                         <p>
 

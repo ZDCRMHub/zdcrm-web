@@ -7,19 +7,19 @@ import { Plus, Minus } from "lucide-react";
 
 
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { ConvertibleEnquiryFormValues, NewEnquiryFormValues } from '../utils/schema';
+import { ConvertibleEnquiryFormValues } from '../utils/schema';
 import { Label } from '@/components/ui/label';
 
-function EnquiryFormMiscellaneous({
+function EnquiryFormMiscellaneousComplete({
   index,
   control,
   register,
   errors,
 }: {
   index: number;
-  control: Control<NewEnquiryFormValues>;
-  register: UseFormRegister<NewEnquiryFormValues>;
-  errors: FieldErrors<NewEnquiryFormValues>;
+  control: Control<ConvertibleEnquiryFormValues>;
+  register: UseFormRegister<ConvertibleEnquiryFormValues>;
+  errors: FieldErrors<ConvertibleEnquiryFormValues>;
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -73,4 +73,4 @@ function EnquiryFormMiscellaneous({
   );
 }
 
-export default EnquiryFormMiscellaneous
+export default EnquiryFormMiscellaneousComplete

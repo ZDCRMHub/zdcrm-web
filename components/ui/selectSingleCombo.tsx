@@ -26,7 +26,7 @@ export function generateCustomLabel(item: any, format: CustomLabelFormat): strin
 }
 
 
-interface SelectProps<T> extends VariantProps<typeof buttonVariants>{
+interface SelectProps<T> extends VariantProps<typeof buttonVariants> {
   value: string | boolean | undefined;
   onChange: (value: string) => void;
   options: T[] | undefined;
@@ -35,6 +35,7 @@ interface SelectProps<T> extends VariantProps<typeof buttonVariants>{
   hasError?: boolean;
   errorMessage?: string;
   label?: string | React.ReactNode;
+  bottomItem?: React.ReactNode;
   placeholder: string;
   className?: string;
   containerClass?: string;
@@ -66,6 +67,7 @@ const SelectSingleCombo = <T extends object>({
   labelClass,
   itemClass,
   fullWidth,
+  bottomItem,
   placeHolderClass,
   withIcon,
   isLoadingOptions,
@@ -73,7 +75,7 @@ const SelectSingleCombo = <T extends object>({
   labelKey,
   searchKey,
   triggerColor,
-  showSelectedValue = true,  
+  showSelectedValue = true,
   variant = "inputButton",
   size = "inputButton",
 }: SelectProps<T>) => {
@@ -141,8 +143,8 @@ const SelectSingleCombo = <T extends object>({
           }
           <PopoverTrigger asChild>
             <Button
-             variant={variant}
-             size={size}
+              variant={variant}
+              size={size}
               className={cn(
                 'flex w-full items-center justify-between gap-2 text-left text-sm transition duration-300',
                 className
@@ -162,7 +164,7 @@ const SelectSingleCombo = <T extends object>({
                     "Loading options..."
                     :
                     (showSelectedValue && value && options && options?.length)
-                      ? getOptionLabel(options.find(option => (option[valueKey]) === String(value)) || {} as T)
+                      ? getOptionLabel(options.find(option => (option[valueKey]) == String(value)) || {} as T)
                       : placeholder
                 }
 
@@ -220,7 +222,7 @@ const SelectSingleCombo = <T extends object>({
                       <CheckIcon
                         className={cn(
                           "mr-2 h-4 w-4",
-                          option[valueKey] === value ? "opacity-100" : "opacity-0"
+                          option[valueKey] == value ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {getOptionLabel(option)}
@@ -236,7 +238,9 @@ const SelectSingleCombo = <T extends object>({
           </div>
         </PopoverContent>
       </Popover>
-
+      {
+        bottomItem && bottomItem
+      }
       {
         hasError && errorMessage && (
           <FormError errorMessage={errorMessage} />
