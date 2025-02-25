@@ -44,7 +44,7 @@ import {
 import { Label } from "@/components/ui/label";
 import {
   useGetAllProducts,
-  UsecreateProduct,
+  useCreateProduct,
   useUpdateProduct,
 } from "./misc/api";
 import { TProductItem } from "./misc/types";
@@ -77,7 +77,7 @@ const Page = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { data: categories } = useGetCategories();
-  const createProductMutation = UsecreateProduct();
+  const createProductMutation = useCreateProduct();
   const updateProductMutation = useUpdateProduct();
 
   const {

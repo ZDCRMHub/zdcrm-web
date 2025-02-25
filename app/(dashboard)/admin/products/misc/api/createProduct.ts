@@ -12,7 +12,7 @@ const createProduct = async (data: createProductProps): Promise<TProductItem>=> 
     return response.data.data
 }
 
-export const UsecreateProduct = () => {
+export const useCreateProduct = () => {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: createProduct,

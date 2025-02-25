@@ -26,5 +26,10 @@ export const useGetAllProducts = (params: ProductsQueryParams = {}) => {
   return useQuery({
     queryKey: ["GET_ALL_PRODUCTS", params],
     queryFn: () => fetchAllProducts(params),
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };

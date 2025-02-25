@@ -43,28 +43,29 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import {
-  useGetAllDispatch,
-  UsecreateDispatch,
-  useUpdateDispatch,
+  useGetAllDiscounts,
+  useCreateDiscount,
+  useUpdateDiscount,
 } from "./misc/api";
-import { TDispatchItem } from "./misc/types";
+import { TDiscountItem } from "./misc/types";
+import { useGetCategories } from "../../inventory/misc/api";
 import ErrorModal from "@/components/ui/modal-error";
 import { extractErrorMessage } from "@/utils/errors";
+import { useDebounce } from "@/hooks";
 
 const Page = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [newDispatch, setNewDispatch] = useState<{
-    state: string;
-    location: string;
-    delivery_price: string;
+  
+  const [newDiscount, setNewDiscount] = useState<{
+    type: string;
+    amount: string;
   }>({
-    state: "",
-    location: "",
-    delivery_price: "",
+    type: "",
+    amount: "",
   });
-  const [editingDispatch, setEditingDispatch] = useState<TDispatchItem | null>(
+  const [editingDiscount, setEditingDiscount] = useState<TDiscountItem | null>(
     null
   );
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -72,32 +73,32 @@ const Page = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const createDispatchMutation = UsecreateDispatch();
-  const updateDispatchMutation = useUpdateDispatch();
+  const createDiscountMutation = useCreateDiscount();
+  const updateDiscountMutation = useUpdateDiscount();
 
   const {
-    data: dispatchData,
-    isLoading: isLoadingDispatch,
+    data: discountsData,
+    isLoading: isLoadingDiscounts,
     isFetching,
-    error: dispatchError,
-  } = useGetAllDispatch({
+    error: discountsError,
+  } = useGetAllDiscounts({
     paginate: true,
     page: currentPage,
     size: pageSize,
   });
 
   useEffect(() => {
-    if (dispatchData || dispatchError) {
+    if (discountsData || discountsError) {
       setIsInitialLoading(false);
     }
-  }, [dispatchData, dispatchError]);
+  }, [discountsData, discountsError]);
 
-  const handleEditClick = (dispatch: TDispatchItem) => {
-    setEditingDispatch(dispatch);
+  const handleEditClick = (discount: TDiscountItem) => {
+    setEditingDiscount(discount);
     setIsSheetOpen(true);
   };
 
-  if (isInitialLoading && isLoadingDispatch) {
+  if (isInitialLoading && isLoadingDiscounts) {
     return (
       <div className="flex items-center justify-center h-full w-full py-[30vh]">
         <Spinner size={18} />
@@ -105,36 +106,31 @@ const Page = () => {
     );
   }
 
-  if (dispatchError) return <div>Error: {dispatchError?.message}</div>;
+  if (discountsError) return <div>Error: {discountsError?.message}</div>;
 
   const handleCreate = () => {
-    if (
-      !newDispatch.state ||
-      !newDispatch.delivery_price ||
-      !newDispatch.location
-    ) {
+    if (!newDiscount.type || !newDiscount.amount) {
       setErrorMessage("Please fill in all required fields");
       setIsErrorModalOpen(true);
       return;
     }
 
-    createDispatchMutation.mutate(
+    createDiscountMutation.mutate(
       {
-        state: newDispatch.state,
-        location: newDispatch.location,
-        delivery_price: parseFloat(newDispatch.delivery_price),
+        type: newDiscount.type,
+        amount: parseInt(newDiscount.amount),
       },
       {
         onSuccess: () => {
-          setSuccessMessage("Dispatch created successfully");
+          setSuccessMessage("Discount created successfully");
           setIsSuccessModalOpen(true);
-          setNewDispatch({ state: "", location: "", delivery_price: "" });
+          setNewDiscount({ type: "", amount: "" });
         },
         onError: (error: unknown) => {
           const errMessage = extractErrorMessage(
             (error as any)?.response?.data as any
           );
-          setErrorMessage(errMessage || "Failed to create dispatch");
+          setErrorMessage(errMessage || "Failed to create discount");
           setIsErrorModalOpen(true);
         },
       }
@@ -142,28 +138,50 @@ const Page = () => {
   };
 
   const handleUpdate = () => {
-    if (!editingDispatch) return;
+    if (!editingDiscount) return;
 
-    updateDispatchMutation.mutate(
+    updateDiscountMutation.mutate(
       {
-        id: editingDispatch.id,
+        id: editingDiscount.id,
         data: {
-          state: editingDispatch.state,
-          location: editingDispatch.location,
-          delivery_price: parseFloat(editingDispatch.delivery_price),
+          type: editingDiscount.type,
+          amount: parseFloat(editingDiscount.amount),
+          is_active: editingDiscount.is_active,
         },
       },
       {
         onSuccess: () => {
-          setSuccessMessage("Dispatch updated successfully");
+          setSuccessMessage("Discount updated successfully");
           setIsSuccessModalOpen(true);
-          setEditingDispatch(null);
+          setEditingDiscount(null);
         },
         onError: (error: unknown) => {
           const errMessage = extractErrorMessage(
             (error as any)?.response?.data as any
           );
-          setErrorMessage(errMessage || "Failed to update dispatch");
+          setErrorMessage(errMessage || "Failed to update discount");
+          setIsErrorModalOpen(true);
+        },
+      }
+    );
+  };
+
+  const handleStatusChange = (id: number, value: boolean) => {
+    updateDiscountMutation.mutate(
+      {
+        id,
+        data: { is_active: value },
+      },
+      {
+        onSuccess: () => {
+          setSuccessMessage("Discount status updated successfully");
+          setIsSuccessModalOpen(true);
+        },
+        onError: (error: unknown) => {
+          const errMessage = extractErrorMessage(
+            (error as any)?.response?.data as any
+          );
+          setErrorMessage(errMessage || "Failed to update discount status");
           setIsErrorModalOpen(true);
         },
       }
@@ -171,10 +189,10 @@ const Page = () => {
   };
 
   const renderPaginationItems = () => {
-    if (!dispatchData) return null;
+    if (!discountsData) return null;
 
     const items = [];
-    for (let i = 1; i <= dispatchData.number_of_pages; i++) {
+    for (let i = 1; i <= discountsData.number_of_pages; i++) {
       items.push(
         <PaginationItem key={i}>
           <PaginationLink
@@ -198,93 +216,67 @@ const Page = () => {
       <section className="mt-7 pb-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A] px-[118px] pt-[35px]">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-medium">Delivery price Management</h1>
-            <p>Manage your delivery price here.</p>
+            <h1 className="text-xl font-medium">Discount Management</h1>
+            <p>Manage your discounts here.</p>
           </div>
         </div>
         <div className="mt-6 flex justify-between items-start">
-          <h2 className="text-2xl font-semibold">Delivery Settings</h2>
+          <h2 className="text-2xl font-semibold">Discount List</h2>
           <div className="flex gap-2">
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button className="h-12 flex gap-4 bg-transparent text-sm px-6 text-[#111827] border border-solid rounded-[10px]">
-                  Add New Dispatch
+                  Add New Discount
                 </Button>
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle className="text-2xl font-bold pb-8">
-                    {editingDispatch ? "Edit Dispatch" : "Add New Dispatch"}
+                    {editingDiscount ? "Edit Discount" : "Add New Discount"}
                   </SheetTitle>
                   <SheetDescription className="flex flex-col gap-3">
-                    <Label htmlFor="state" className="text-[#111827]">
-                      State <span className="text-red-500">*</span>
+                    <Label htmlFor="type" className="text-[#111827]">
+                      Discount type <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="state"
+                      id="type"
                       value={
-                        editingDispatch
-                          ? editingDispatch.state
-                          : newDispatch.state
+                        editingDiscount ? editingDiscount.type : newDiscount.type
                       }
                       onChange={(e) =>
-                        editingDispatch
-                          ? setEditingDispatch({
-                              ...editingDispatch,
-                              state: e.target.value,
+                        editingDiscount
+                          ? setEditingDiscount({
+                              ...editingDiscount,
+                              type: e.target.value,
                             })
-                          : setNewDispatch({
-                              ...newDispatch,
-                              state: e.target.value,
+                          : setNewDiscount({
+                              ...newDiscount,
+                              type: e.target.value,
                             })
                       }
                       className="h-14"
                     />
 
-                    <Label htmlFor="location" className="text-[#111827]">
-                      Location <span className="text-red-500">*</span>
+                    <Label htmlFor="amount" className="text-[#111827]">
+                      Amount <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="location"
-                      value={
-                        editingDispatch
-                          ? editingDispatch.location
-                          : newDispatch.location
-                      }
-                      onChange={(e) =>
-                        editingDispatch
-                          ? setEditingDispatch({
-                              ...editingDispatch,
-                              location: e.target.value,
-                            })
-                          : setNewDispatch({
-                              ...newDispatch,
-                              location: e.target.value,
-                            })
-                      }
-                      className="h-14"
-                    />
-
-                    <Label htmlFor="delivery-price" className="text-[#111827]">
-                      Delivery Price <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      id="delivery-price"
+                      id="amount"
                       type="number"
                       value={
-                        editingDispatch
-                          ? editingDispatch.delivery_price
-                          : newDispatch.delivery_price
+                        editingDiscount
+                          ? editingDiscount.amount
+                          : newDiscount.amount
                       }
                       onChange={(e) =>
-                        editingDispatch
-                          ? setEditingDispatch({
-                              ...editingDispatch,
-                              delivery_price: e.target.value,
+                        editingDiscount
+                          ? setEditingDiscount({
+                              ...editingDiscount,
+                              amount: e.target.value,
                             })
-                          : setNewDispatch({
-                              ...newDispatch,
-                              delivery_price: e.target.value,
+                          : setNewDiscount({
+                              ...newDiscount,
+                              amount: e.target.value,
                             })
                       }
                       className="h-14"
@@ -297,11 +289,10 @@ const Page = () => {
                       type="button"
                       className="w-full bg-white text-black border border-solid h-14"
                       onClick={() => {
-                        setEditingDispatch(null);
-                        setNewDispatch({
-                          state: "",
-                          location: "",
-                          delivery_price: "",
+                        setEditingDiscount(null);
+                        setNewDiscount({
+                          type: "",
+                          amount: "",
                         });
                       }}
                     >
@@ -311,16 +302,16 @@ const Page = () => {
                   <Button
                     type="submit"
                     className="w-full bg-[#111827] h-14"
-                    onClick={editingDispatch ? handleUpdate : handleCreate}
+                    onClick={editingDiscount ? handleUpdate : handleCreate}
                     disabled={
-                      createDispatchMutation.isPending ||
-                      updateDispatchMutation.isPending
+                      createDiscountMutation.isPending ||
+                      updateDiscountMutation.isPending
                     }
                   >
-                    {createDispatchMutation.isPending ||
-                    updateDispatchMutation.isPending ? (
+                    {createDiscountMutation.isPending ||
+                    updateDiscountMutation.isPending ? (
                       <Spinner className="ml-2" />
-                    ) : editingDispatch ? (
+                    ) : editingDiscount ? (
                       "Update"
                     ) : (
                       "Create"
@@ -334,26 +325,47 @@ const Page = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[22.9%]">State</TableHead>
-              <TableHead className="w-[22.9%]">Location</TableHead>
-              <TableHead className="w-[12.8%]">Delivery Price</TableHead>
+              <TableHead className="w-[22.9%]">Type</TableHead>
+              <TableHead className="w-[22.9%]">Amount</TableHead>
               <TableHead className="w-[22.9%] text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {dispatchData?.data?.map((dispatch: TDispatchItem) => (
-              <TableRow key={dispatch.id}>
-                <TableCell className="font-medium">{dispatch.state}</TableCell>
-                <TableCell>{dispatch.location}</TableCell>
-                <TableCell>{dispatch.delivery_price}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end">
-                    <div
-                      className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
-                      onClick={() => handleEditClick(dispatch)}
-                    >
-                      <MdOutlineModeEdit color="#fff" size={20} />
-                    </div>
+            {discountsData?.data?.map((discount: TDiscountItem) => (
+              <TableRow key={discount.id}>
+                <TableCell className="font-medium">{discount.type}</TableCell>
+                <TableCell>{discount.amount}</TableCell>
+                <TableCell className="text-right flex gap-[10px]">
+                  <Select
+                    value={discount.is_active ? "active" : "deactive"}
+                    onValueChange={(value) =>
+                      handleStatusChange(discount.id, value === "active")
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder="Select Action"
+                        className={
+                          discount.is_active
+                            ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
+                            : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem className="" value="active">
+                          Active
+                        </SelectItem>
+                        <SelectItem value="deactive">Deactivate</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <div
+                    className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
+                    onClick={() => handleEditClick(discount)}
+                  >
+                    <MdOutlineModeEdit color="#fff" size={20} />
                   </div>
                 </TableCell>
               </TableRow>
@@ -369,12 +381,12 @@ const Page = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (dispatchData?.previous_page) {
-                        setCurrentPage(dispatchData.previous_page);
+                      if (discountsData?.previous_page) {
+                        setCurrentPage(discountsData.previous_page);
                       }
                     }}
                     className={
-                      !dispatchData?.previous_page
+                      !discountsData?.previous_page
                         ? "pointer-events-none opacity-50"
                         : ""
                     }
@@ -388,12 +400,12 @@ const Page = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (dispatchData?.next_page) {
-                        setCurrentPage(dispatchData.next_page);
+                      if (discountsData?.next_page) {
+                        setCurrentPage(discountsData.next_page);
                       }
                     }}
                     className={
-                      !dispatchData?.next_page
+                      !discountsData?.next_page
                         ? "pointer-events-none opacity-50"
                         : ""
                     }
@@ -405,12 +417,12 @@ const Page = () => {
           <div className="flex gap-4 items-center">
             <p className="text-xs text-[#687588] ">
               Showing{" "}
-              {dispatchData?.data.length ? (currentPage - 1) * pageSize + 1 : 0}{" "}
+              {discountsData?.data.length ? (currentPage - 1) * pageSize + 1 : 0}{" "}
               to{" "}
-              {dispatchData?.data.length
-                ? (currentPage - 1) * pageSize + dispatchData.data.length
+              {discountsData?.data.length
+                ? (currentPage - 1) * pageSize + discountsData.data.length
                 : 0}{" "}
-              of {dispatchData?.count} entries
+              of {discountsData?.count} entries
             </p>
             <Select
               value={pageSize.toString()}
