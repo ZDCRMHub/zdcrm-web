@@ -5,7 +5,7 @@ const propertiesSchema = z.object({
     toppings: z.string().optional(),
     bouquet: z.string().optional(),
     glass_vase: z.string().optional(),
-    whipped_cream_upgrade: z.boolean().optional()
+    whipped_cream_upgrade: z.string().optional()
 }).optional();
 
 const variationSchema = z.object({

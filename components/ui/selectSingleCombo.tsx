@@ -113,7 +113,7 @@ const SelectSingleCombo = <T extends object>({
   }
 
   const handleSelect = (currentValue: string | boolean) => {
-    const selectedOption = options?.find(option => String(option[valueKey]) === String(currentValue));
+    const selectedOption = options?.find(option => String(option[valueKey]) == String(currentValue));
     const selectedValue = selectedOption ? String(selectedOption[valueKey]) : '';
     onChange(selectedValue);
     setOpen(false);

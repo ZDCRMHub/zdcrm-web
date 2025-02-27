@@ -241,7 +241,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                                 <>
                                   <DropdownMenuItem>
                                     <Link
-                                      href={`./enquiries/edit-enquiry/${enquiry.id}`}
+                                      href={`./enquiries/edit?enquiry_id=${enquiry.id}`}
                                       className="w-full"
                                     >
                                       <span className="flex items-center gap-2 pl-6 py-3">
@@ -253,7 +253,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
 
                                   <DropdownMenuItem>
                                     <Link
-                                      href={`./enquiries/edit?enwuiry_id=${enquiry.id}`}
+                                      href={`./enquiries/${enquiry.id}`}
                                       className="w-full"
                                     >
                                       <span className="flex items-center gap-2 pl-6 py-3">

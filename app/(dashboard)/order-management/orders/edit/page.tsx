@@ -32,6 +32,7 @@ import {
   SelectMultipleSpecialCombo,
   Spinner,
   ConfirmActionModal,
+  AmountInput,
 } from "@/components/ui";
 import {
   DISPATCH_METHOD_OPTIONS,
@@ -105,60 +106,62 @@ const NewOrderPage = () => {
     name: "items"
   });
 
-      React.useEffect(() => {
-        if (!isLoadingorderData && !!orderData) {
-          form.reset({
-            customer: {
-              name: orderData.customer.name,
-              phone: orderData.customer.phone,
-              email: orderData.customer.email
-            },
-            branch: orderData.branch.id,
-            delivery: {
-              zone: orderData.delivery?.zone as "LM" | "LC" | "LI",
-              method: orderData.delivery?.method as "Dispatch" | "Pickup",
-              dispatch: orderData.delivery?.dispatch.id.toString(),
-              address: orderData.delivery?.address,
-              recipient_name: orderData.delivery?.recipient_name,
-              recipient_phone: orderData.delivery?.recipient_phone,
-              delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
-            },
-            message: orderData.message,
-            items: orderData.items?.map(item => ({
-              category: item.product?.category.id,
-              product_id: item.product.id,
-              quantity: item.quantity,
-              properties: item.properties.reduce((acc, prop) => ({
-                ...acc,
-                layers: prop.layers.id,
-                toppings: prop.toppings.id,
-                bouquet: prop.bouquet,
-                glass_vase: prop.glass_vase,
-                // whipped_cream_upgrade: prop.whipped_cream_upgrade,
-              }), {}),
-              inventories: item.inventories.map(inventory => ({
-                product_inventory_id: inventory.stock_inventory?.id,
-                product_inventoryy_id: inventory.product_inventory?.id,
-                variations: inventory.variations.map(variation => ({
-                  stock_variation_id: variation.id
-                }))
-              }))
-            })),
-            payment_options: orderData.payment_options,
-            payment_currency: orderData.payment_currency as "NGN" | "USD",
-            payment_proof: orderData.payment_proof,
-            payment_receipt_name: orderData.payment_receipt_name,
-            amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
-            initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
+  React.useEffect(() => {
+    if (!isLoadingorderData && !!orderData) {
+      form.reset({
+        customer: {
+          name: orderData.customer.name,
+          phone: orderData.customer.phone,
+          email: orderData.customer.email
+        },
+        branch: orderData.branch.id,
+        delivery: {
+          zone: orderData.delivery?.zone as "LM" | "LC" | "LI",
+          method: orderData.delivery?.method as "Dispatch" | "Pickup",
+          dispatch: orderData.delivery?.dispatch.id.toString(),
+          address: orderData.delivery?.address,
+          recipient_name: orderData.delivery?.recipient_name,
+          recipient_phone: orderData.delivery?.recipient_phone,
+          delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
+        },
+        message: orderData.message,
+        items: orderData.items?.map(item => ({
+          category: item.product?.category.id,
+          product_id: item.product.id,
+          quantity: item.quantity,
+          properties: item.properties.reduce((acc, prop) => ({
+            ...acc,
+            layers: prop.layers.id,
+            toppings: prop.toppings.id,
+            bouquet: prop.bouquet,
+            glass_vase: prop.glass_vase,
+            // whipped_cream_upgrade: prop.whipped_cream_upgrade,
+          }), {}),
+          inventories: item.inventories.map(inventory => ({
+            product_inventory_id: inventory.stock_inventory?.id,
+            product_inventoryy_id: inventory.product_inventory?.id,
+            variations: inventory.variations.map(variation => ({
+              stock_variation_id: variation.id
+            }))
+          }))
+        })),
+        payment_options: orderData.payment_options,
+        payment_currency: orderData.payment_currency as "NGN" | "USD",
+        payment_proof: orderData.payment_proof,
+        payment_receipt_name: orderData.payment_receipt_name,
+        amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
+        initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
 
-          });
-        }
-      }, [orderData, isLoadingorderData]);
-    console.log(errors)
+      });
+    }
+  }, [orderData, isLoadingorderData]);
+  console.log(errors)
   console.log(errors)
 
   const addNewItem = () => {
-    append({
+    const prevItems = watch('items')
+    setValue('items', {
+      ...prevItems,
       category: categories?.[0].id || 1,
       product_id: products?.[0].id || 0,
       quantity: 1,
@@ -166,7 +169,8 @@ const NewOrderPage = () => {
       inventories: [{
         variations: [],
       }],
-    });
+    })
+
   };
 
   const router = useRouter();
@@ -486,9 +490,9 @@ const NewOrderPage = () => {
                       <FormItem>
                         {
                           isCustomDelivery ?
-                            <Input
+                            <AmountInput
                               label="Delivery Fee"
-                              {...register('delivery.fee', { valueAsNumber: true })}
+                              {...register('delivery.fee')}
                               hasError={!!errors.delivery?.fee}
                               errorMessage={errors.delivery?.fee?.message}
                               placeholder="Enter delivery fee"
@@ -616,7 +620,7 @@ const NewOrderPage = () => {
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
-                    fields.map((_, index) => {
+                    watch('items')?.map((_, index) => {
                       return (
                         <OrderFormItemsSection
                           key={index}
@@ -794,7 +798,7 @@ const NewOrderPage = () => {
               className="flex items-center gap-2 ml-auto"
               disabled={isPending || isUploading}
             >
-              Proceed
+              Update Order
               {
                 (isPending || isUploading) && <Spinner size={20} />
               }

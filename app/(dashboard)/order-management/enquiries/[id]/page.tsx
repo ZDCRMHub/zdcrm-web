@@ -69,9 +69,9 @@ const EnquiryDetailsPage = () => {
                         <h2 className="font-semibold font-manrope text-sm">
                             Customer Details
                         </h2>
-                        {/* <LinkButton href="./new-enquiry" variant="unstyled">
+                        <LinkButton href={`./edit?enquiry_id=${enquiry_id}`} variant="unstyled" className='!p-0'>
                             <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" />
-                        </LinkButton> */}
+                        </LinkButton>
                     </header>
                     <Separator />
 
@@ -121,7 +121,9 @@ const EnquiryDetailsPage = () => {
                             <h2 className="font-semibold font-manrope text-sm">
                                 Delivery Details
                             </h2>
-                            {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" /> */}
+                            <LinkButton href={`./edit?enquiry_id=${enquiry_id}`} variant="unstyled" className='!p-0'>
+                                <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" />
+                            </LinkButton>
                         </div>
 
                         <Separator />
@@ -158,7 +160,9 @@ const EnquiryDetailsPage = () => {
                         <h2 className="font-semibold font-manrope text-sm">
                             Dispatch Time
                         </h2>
-                        {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" /> */}
+                        <LinkButton href={`./edit?enquiry_id=${enquiry_id}#delivery`} variant="unstyled" className='!p-0'>
+                            <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" />
+                        </LinkButton>
                     </header>
 
                     <Separator />

@@ -187,9 +187,9 @@ export const ENQUIRY_CHANNEL_OPTIONS = [
   { value: 'Website', label: 'Website' },
   { value: 'Store Walk In', label: 'Store Walk In' },
   { value: 'Instagram', label: 'Instagram' },
-  { value: 'Phone Call', label: 'Phone Call' },
-  { value: 'Facebook', label: 'Facebook' },
-  { value: 'Tik Tok', label: 'Tik Tok' },
+  { value: 'Line 1', label: 'Phone Call - Line 1' },
+  { value: 'Line 2', label: 'Phone Call - Line 2' },
+  { value: 'Line 3', label: 'Phone Call - Line 3' },
 ]
 
 export const ENQUIRY_OCCASION_OPTIONS = [

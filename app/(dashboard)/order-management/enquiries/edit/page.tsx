@@ -55,6 +55,7 @@ import { useCreateEnquiry, useGetEnquiryDetail, useUpdateEnquiry } from "../misc
 import { TEnquiry } from "../misc/types";
 import { useGetOrderDeliveryLocations } from "../../misc/api";
 import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
+import { formatTimeString } from "@/utils/strings";
 
 
 const NewEnquiryPage = () => {
@@ -69,82 +70,65 @@ const NewEnquiryPage = () => {
 
   const form = useForm<NewEnquiryFormValues>({
     resolver: zodResolver(NewEnquirySchema),
-    defaultValues: {
-      branch: branches?.data?.[0].id,
-      customer: { name: "", phone: "", email: "" },
-      delivery: {
-        zone: "LM",
-        method: "Dispatch",
-        delivery_date: format(new Date(), 'yyyy-MM-dd'),
-        address: "",
-        recipient_name: "",
-        recipient_phone: ""
-      },
-      enquiry_channel: "",
-      enquiry_occasion: "",
-      items: [
-        {
-          category: categories?.[0].id,
-          product_id: products?.[0].id,
-          quantity: 1,
-          properties: {},
-          inventories: [{
-            variations: [],
-          }],
-        }
-      ],
-    }
   });
 
   const { control, handleSubmit, formState: { errors }, watch, setValue, getValues, register, reset } = form;
-  const { fields, append, remove } = useFieldArray({
+  const { append } = useFieldArray({
     control,
     name: "items"
   });
 
-    React.useEffect(() => {
-      if (!isLoadingEnquiryData && !!enquiryData) {
-        form.reset({
-          ...enquiryData,
-          customer: {
-            name: enquiryData.customer.name,
-            phone: enquiryData.customer.phone,
-            email: enquiryData.customer.email
-          },
-          branch: enquiryData.branch.id,
-          delivery: {
-            zone: enquiryData.delivery?.zone as "LM" | "LC" | "LI",
-            method: enquiryData.delivery?.method as "Dispatch" | "Pickup",
-            dispatch: enquiryData.delivery?.dispatch.id.toString(),
-            address: enquiryData.delivery?.address,
-            recipient_name: enquiryData.delivery?.recipient_name,
-            recipient_phone: enquiryData.delivery?.recipient_phone,
-            delivery_date: format(new Date(enquiryData.delivery?.delivery_date), 'yyyy-MM-dd'),
-          },
-          message: enquiryData.message,
-          items: enquiryData.items?.map(item => ({
-            category: item.product?.category.id,
-            product_id: item.product.id,
-            quantity: item.quantity,
-            properties: item.properties.reduce((acc, prop) => ({
-              ...acc,
-              layers: prop.layers.id,
-              toppings: prop.toppings.id,
-              bouquet: prop.bouquet,
-              glass_vase: prop.glass_vase,
-              // whipped_cream_upgrade: prop.whipped_cream_upgrade,
-            }), {}),
-            inventories: item.inventories.map(inventory => ({
-              product_inventory_id: inventory.stock_inventory?.id,
-              product_inventoryy_id: inventory.product_inventory?.id,
-              variations: inventory.variations.map(variation => ({
-                stock_variation_id: variation.id
-              }))
+  React.useEffect(() => {
+    if (!isLoadingEnquiryData && !!enquiryData) {
+      const resetData = {
+        customer: {
+          name: enquiryData.customer.name,
+          phone: enquiryData.customer.phone,
+          email: enquiryData.customer.email
+        },
+        enquiry_channel: enquiryData.enquiry_channel,
+        enquiry_occasion: enquiryData.enquiry_occasion,
+        social_media_details: enquiryData.social_media_details,
+        branch: enquiryData.branch.id,
+        delivery: {
+          zone: enquiryData.delivery?.zone as "LM" | "LC" | "LI",
+          method: enquiryData.delivery?.method as "Dispatch" | "Pickup",
+          dispatch: enquiryData.delivery?.dispatch.id.toString(),
+          address: enquiryData.delivery?.address,
+          recipient_name: enquiryData.delivery?.recipient_name,
+          recipient_phone: enquiryData.delivery?.recipient_phone,
+          delivery_date: format(new Date(enquiryData.delivery?.delivery_date), 'yyyy-MM-dd'),
+          delivery_time: formatTimeString(enquiryData.delivery?.delivery_time || "15:00", "HH:mm"),
+        },
+        message: enquiryData.message,
+        items: enquiryData.items?.map(item => ({
+          category: item.product?.category.id,
+          product_id: item.product.id,
+          quantity: item.quantity,
+          properties: item.properties.reduce((acc, prop) => ({
+            ...acc,
+            layers: prop.layers.id,
+            toppings: prop.toppings.id,
+            bouquet: prop.bouquet,
+            glass_vase: prop.glass_vase,
+            // whipped_cream_upgrade: prop.whipped_cream_upgrade,
+          }), {}),
+          inventories: item.inventories.map(inventory => ({
+            stock_inventory_id: inventory.stock_inventory?.id,
+            product_inventory_id: inventory.product_inventory?.id,
+            variations: inventory.variations?.map(variation => ({
+              stock_variation_id: variation.id,
+              quantity: variation.quantity,
             }))
           }))
-        });
+        }))
       }
-    }, [enquiryData, isLoadingEnquiryData]);
+      console.log(resetData, "CONSS.")
+      form.reset(resetData);
+      setValue('items', resetData.items);
+
+    }
+  }, [enquiryData, isLoadingEnquiryData]);
   console.log(errors)
 
   const addNewItem = () => {
@@ -170,7 +154,6 @@ const NewEnquiryPage = () => {
   const { mutate, isPending } = useUpdateEnquiry()
   const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
   const onSubmit = async (data: NewEnquiryFormValues) => {
-
     mutate({ id: enquiry_id ?? '', data }, {
       onSuccess(data) {
         toast.success("Enquiry created successfully");
@@ -185,7 +168,7 @@ const NewEnquiryPage = () => {
   };
 
   const routeToEnquiryDetails = () => {
-    router.push(`/order-management/enquiries/${createdEnquiry?.id}`);
+    router.push(`/order-management/enquiries/${enquiry_id}`);
   }
 
   const resetForm = () => {
@@ -194,8 +177,8 @@ const NewEnquiryPage = () => {
   console.log(getValues('items'))
 
 
-  if(isLoadingEnquiryData){
-    return <div className="w-full h-full flex items-center justify-center"><Spinner/></div>
+  if (isLoadingEnquiryData || !enquiryData) {
+    return <div className="w-full h-full flex items-center justify-center"><Spinner /></div>
   }
 
 
@@ -302,9 +285,10 @@ const NewEnquiryPage = () => {
                           valueKey="value"
                           labelKey="label"
                           placeholder="Select enquiry channel"
+                          {...field}
+                          value={watch('enquiry_channel')}
                           hasError={!!errors.enquiry_channel}
                           errorMessage={errors.enquiry_channel?.message}
-                          {...field}
                         />
                       </FormItem>
                     )}
@@ -560,7 +544,7 @@ const NewEnquiryPage = () => {
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
-                    fields.map((_, index) => {
+                    watch('items')?.map((_, index) => {
                       return (
                         <EnquiryFormItemsSection
                           key={index}
@@ -618,7 +602,7 @@ const NewEnquiryPage = () => {
               className="flex items-center gap-2 ml-auto"
               disabled={isPending}
             >
-              Proceed
+              Update Enquiry
               {
                 isPending && <Spinner size={20} />
               }
