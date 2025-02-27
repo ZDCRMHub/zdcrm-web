@@ -47,6 +47,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
+import { printNote } from "../utils/print";
+import Link from "next/link";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -80,21 +82,21 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
       }
     );
   }
-  const handleUpdatePaymentMethod = (new_payment_method: string) => {
-    updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
-      {
-        onSuccess: (data) => {
-          toast.success("Payment method updated successfully");
-        },
-        onError: (error) => {
-          const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
-          toast.error(errorMessage), {
-            duration: 5000,
-          };
-        }
-      }
-    );
-  }
+  // const handleUpdatePaymentMethod = (new_payment_method: string) => {
+  //   updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
+  //     {
+  //       onSuccess: (data) => {
+  //         toast.success("Payment method updated successfully");
+  //       },
+  //       onError: (error) => {
+  //         const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
+  //         toast.error(errorMessage), {
+  //           duration: 5000,
+  //         };
+  //       }
+  //     }
+  //   );
+  // }
 
 
 
@@ -254,19 +256,36 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                 </section>
 
                 <section className="mt-16 mb-8">
-                  <header className="border-b border-b-[#00000021]">
+                  <header className="flex items-center justify-between border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
                       <Notepad2 size={19} />
                       Delivery Note
                       <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                     </p>
+
+                    <Button
+                      variant="yellow"
+                      onClick={() => printNote(
+                        {
+                          note: order?.delivery.note || '',
+                          orderNumber: order?.order_number,
+                          title: "Order Notes",
+                        }
+                      )}
+                    >
+                      Print
+                    </Button>
                   </header>
                   <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
                     <Input
                       value={order?.delivery.note || "No note"}
                       readOnly
                       containerClassName={cn("w-full", !order?.delivery.note && "text-[#687588] italic")}
-                      rightIcon={<EditPenIcon width={20} height={20} />}
+                      rightIcon={
+                        <Link href={`/order-management/orders/edit?order_id=${order?.id}`} className="">
+                          <EditPenIcon width={20} height={20} />
+                        </Link>
+                      }
                     />
                   </div>
                 </section>
@@ -315,85 +334,100 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       <AccordionContent>
                         <div className="space-y-4 mt-1">
                           {
-                            order?.items.map((item, index: number) => (
-                              <article key={item.id} className="flex border rounded-2xl p-6">
-                                <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
-                                  <header className="flex items-start justify-between">
-                                    <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
-                                      <Image
-                                        src="/placeholder.svg"
-                                        alt={item.product.name}
-                                        fill
-                                        className="object-cover rounded-md"
-                                      />
-                                    </div>
+                            order?.items.map((item, index: number) => {
+                              const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
+                              const placeHolderImage = item.inventories[0]?.stock_inventory?.image_one || item.inventories[0]?.product_inventory?.image_one || `/img/placeholders/${itemCategory}.svg`
 
-                                  </header>
+                              return (
+                                <article key={item.id} className="flex border rounded-2xl p-6">
+                                  <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
+                                    <header className="flex items-start justify-between">
+                                      <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
+                                        <Image
+                                          src={placeHolderImage}
+                                          alt={item.product.name}
+                                          fill
+                                          className="object-cover rounded-md"
+                                        />
+                                      </div>
 
-                                  <section className="flex flex-col justify-between">
-                                    <h5 className="text-[#194A7A] text-lg font-medium mb-5">
-                                      {item.product.name}
-                                    </h5>
-                                    <div className="xl:flex">
-                                      <div className="space-y-2.5 text-[0.8rem]">
-                                        <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
-                                          <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                            <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
-                                          </p>
-                                          <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                            <span className="text-[#687588]">Category:</span> {item.product.category.name}
-                                          </p>
-                                          {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                                    </header>
+
+                                    <section className="flex flex-col justify-between">
+                                      <h5 className="text-[#194A7A] text-lg font-medium mb-5">
+                                        {item.product.name}
+                                      </h5>
+                                      <div className="xl:flex">
+                                        <div className="space-y-2.5 text-[0.8rem]">
+                                          <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
                                             <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                              <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                              <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
+                                            </p>
+                                            <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                              <span className="text-[#687588]">Category:</span> {item.product.category.name}
+                                            </p>
+                                            {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                                              <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                              </p>
+                                            )}
+                                          </div>
+                                          {item.properties.map((property, index) => (
+                                            <div key={index}>
+                                              {Object.entries(property).map(([key, value]) => {
+                                                if (key === "id" || !value) return null
+                                                if (key.includes("at_order")) return null
+
+                                                const displayValue = typeof value === "object" && value !== null ? value.name : value
+
+                                                return (
+                                                  <p key={key} className="text-[#111827] font-medium">
+                                                    <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span> {displayValue}
+                                                  </p>
+                                                )
+                                              })}
+                                            </div>
+                                          ))}
+                                          \
+                                          {item.inventories[0]?.instruction && (
+                                            <p className="text-[#111827] font-medium">
+                                              <span className="text-[#687588]">Instructions:</span>{" "}
+                                              {item.inventories[0].instruction}
                                             </p>
                                           )}
                                         </div>
-                                        {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
-                                          key !== 'id' && value && (
-                                            <p key={key} className="text-[#111827] font-medium">
-                                              <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
-                                              {value as string}
+
+                                        <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
+                                          {item.inventories[0]?.message && (
+                                            <p className="flex flex-col text-[#111827] font-medium text-right">
+                                              <span className="text-[#687588]">Message:</span>{" "}
+                                              {item.inventories[0].message}
                                             </p>
-                                          )
-                                        ))}
-                                        {item.inventories[0]?.instruction && (
-                                          <p className="text-[#111827] font-medium">
-                                            <span className="text-[#687588]">Instructions:</span>{" "}
-                                            {item.inventories[0].instruction}
-                                          </p>
-                                        )}
+                                          )}
+                                        </div>
                                       </div>
+                                    </section>
 
-                                      <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
-                                        {item.inventories[0]?.message && (
-                                          <p className="flex flex-col text-[#111827] font-medium text-right">
-                                            <span className="text-[#687588]">Message:</span>{" "}
-                                            {item.inventories[0].message}
-                                          </p>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </section>
-
-                                  <section className="flex items-center justify-between pt-1 border-t">
-                                    <p className="text-[#111827] font-medium text-sm">
-                                      <span className="text-[#687588] italic font-light text-[0.8rem]">
-                                        Production Cost:{" "}
-                                      </span>
-                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
-                                    </p>
-                                    <p className="font-medium text-[#194A7A]">
-                                      Amount:{" "}
-                                      <span className="font-bold">
-                                        {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
-                                      </span>
-                                    </p>
-                                  </section>
-                                </div>
-                              </article>
-                            ))
+                                    <section className="flex items-center justify-between pt-1 border-t">
+                                      <p className="text-[#111827] font-medium text-sm">
+                                        <span className="text-[#687588] italic font-light text-[0.8rem]">
+                                          Production Cost:{" "}
+                                        </span>
+                                      </p>
+                                      <p className="font-medium text-[#194A7A]">
+                                        Amount:{" "}
+                                        <span className="font-bold">
+                                          {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
+                                          {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                        </span>
+                                      </p>
+                                    </section>
+                                  </div>
+                                </article>
+                              )
+                            })
                           }
+
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -408,14 +442,14 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_production_cost || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>
 
                 <section className="flex justify-end my-12">
                   <LinkButton
-                    href={`/order-management/orders/${order?.id}/confirm-delivery`}
+                    href={(!order?.delivery.driver_phone && !order?.delivery.driver_name) ? `/order-management/orders/${order?.id}/confirm-delivery` : `/order-management/orders/${order?.id}/complete-order`}
                     className="h-12 px-8"
                   >
                     Proceed to Dispatch

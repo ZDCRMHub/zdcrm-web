@@ -1,208 +1,3 @@
-// "use client";
-// import React from "react";
-// import { Controller, useFieldArray, useForm } from "react-hook-form";
-// import { Box } from "iconsax-react";
-// import { useRouter } from "next/navigation";
-// import { format } from 'date-fns';
-// import Image from "next/image";
-// import toast from "react-hot-toast";
-
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { NewEnquirySchema, NewEnquiryFormValues } from "../misc/utils/schema";
-// import { DISPATCH_METHOD_OPTIONS, ENQUIRY_CHANNEL_OPTIONS, ENQUIRY_OCCASION_OPTIONS } from "@/constants";
-// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button, ConfirmActionModal, Form, FormControl, FormField, FormItem, Input, SelectSingleCombo, SingleDatePicker, Spinner, TimePicker } from "@/components/ui";
-// import { DollarSignIcon as Money, TruckIcon as TruckTime, UserIcon, Plus } from 'lucide-react';
-// import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
-// import FormError from "@/components/ui/formError";
-// import { useGetCategories, useGetProducts, useGetStockInventory } from "@/app/(dashboard)/inventory/misc/api";
-import EnquiryItemsSection from "../misc/components/EnquiryFormItemsSection";
-// import { useCreateEnquiry } from "../misc/api";
-// import { useBooleanStateControl } from "@/hooks";
-// import { TEnquiry } from "../misc/types";
-// import { useGetEnquiryDeliveryLocations } from "../../misc/api";
-// import { formatCurrency } from "@/utils/currency";
-// import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
-
-
-// const NewEnquiryPage = () => {
-
-
-//   const { control, handleSubmit, formState: { errors }, watch, setValue, reset, register, getValues, setError } = form;
-//   const { fields, append, remove } = useFieldArray({
-//     control,
-//     name: "items"
-//   });
-
-//   const watchedItems = watch("items");
-//   const addNewItem = () => {
-//     append({
-//       category: categories?.[0].id || 1,
-//       product_id: products?.[0].id || 1,
-//       quantity: 1,
-//       inventories: [{
-//         variations: [],
-//         properties: {}
-//       }],
-//     });
-//   };
-
-//   const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
-//   const router = useRouter();
-//   const routeToEnquiryDetails = () => {
-//     router.push(`/Enquiry-management/enquiries/${createdEnquiry?.id}`);
-//   }
-//   const resetForm = () => {
-//     reset();
-//   }
-//   const {
-//     state: isSuccessModalOpen,
-//     setTrue: openSuccessModal,
-//     setFalse: closeSuccessModal,
-//   } = useBooleanStateControl()
-
-//   const { mutate, isPending } = useCreateEnquiry()
-//   const onSubmit = (data: NewEnquiryFormValues) => {
-//     data.items.forEach((item, index) => {
-//       if (item.product_id == 0) {
-//         setError(`items.${index}.product_id`, {
-//           type: 'manual',
-//           message: 'Product is required'
-//         })
-//       }
-//       return
-//     })
-//     mutate(data, {
-//       onSuccess(data) {
-//         toast.success("Created successfully")
-//         openSuccessModal();
-//         setCreatedEnquiry(data?.data);
-
-//       },
-//       onError(error: unknown) {
-//         const errMessage = extractErrorMessage((error as any).response?.data as any);
-//         toast.error(errMessage, { duration: 7500 });
-//       }
-//     })
-//   };
-//   console.log(errors)
-//   console.log(getValues())
-
-//   return (
-//     <div className="relative px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
-//       <Form {...form}>
-//         <form onSubmit={handleSubmit(onSubmit)}>
-//           <Accordion
-//             type="multiple"
-//             defaultValue={[
-//               "customer-information",
-//               "enquiry-information",
-//               "delivery-information",
-//               "Enquiry-Instruction",
-//             ]}
-//             className="w-full"
-//           >
-//           
-
-//         
-
-
-//             {/* Enquiry Details Section */}
-//             <AccordionItem value="enquiry-information">
-//               <AccordionTrigger className="py-4">
-//                 <div className="flex items-center gap-5">
-//                   <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
-//                     <img src="/img/book.svg" alt="" width={24} height={24} />
-//                   </div>
-//                   <p className="text-custom-blue font-medium">Enquiry Details</p>
-//                 </div>
-//               </AccordionTrigger>
-//               <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
-//                 <section className="flex items-center justify-between gap-10">
-//                   <Controller
-//                     name="branch"
-//                     control={control}
-//                     render={({ field }) => (
-//                       <SelectSingleCombo
-//                         {...field}
-//                         name='branch'
-//                         value={field.value?.toString() || ''}
-//                         options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-//                         valueKey='value'
-//                         className="!h-10 min-w-40"
-//                         labelKey="label"
-//                         placeholder='Select Branch'
-//                         onChange={(value) => field.onChange(Number(value))}
-//                         isLoadingOptions={branchesLoading}
-//                         hasError={!!errors.branch}
-//                         errorMessage={errors.branch?.message}
-//                       />
-//                     )}
-//                   />
-//                   <Button
-//                     variant="outline"
-//                     onClick={addNewItem}
-//                     type="button"
-//                   >
-//                     + Add Item
-//                   </Button>
-//                 </section>
-//                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
-//                   {
-//                     watchedItems.map((field, index) => {
-//                       return (
-//                         <EnquiryItemsSection
-//                           key={index}
-//                           index={index}
-//                           control={control}
-//                           watch={watch}
-//                           errors={errors}
-//                           register={register}
-//                           setValue={setValue}
-//                         />
-//                       )
-//                     })
-//                   }
-//                 </section>
-//               </AccordionContent>
-//             </AccordionItem>
-
-//             {/* Message on Enquiry Section */}
-//             <AccordionItem value="Enquiry-Instruction">
-//               <AccordionTrigger className="py-4">
-//                 <div className="flex items-center gap-5">
-//                   <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
-//                     <Image src="/img/book.svg" alt="" width={24} height={24} />
-//                   </div>
-//                   <p className="text-custom-blue font-medium">
-//                     Message on Enquiry
-//                   </p>
-//                 </div>
-//               </AccordionTrigger>
-//               <AccordionContent className="pt-8 pb-14">
-//                 <Input
-//                   label="Message on Enquiry"
-//                   hasError={!!errors.message}
-//                   errorMessage={errors.message?.message as string}
-//                   placeholder="Enter message on Enquiry"
-//                   {...register("message")}
-//                 />
-//               </AccordionContent>
-//             </AccordionItem>
-//           </Accordion>
-
-//         </form>
-//       </Form>
-
-
-
-//      
-//     </div>
-//   );
-// };
-
-// export default NewEnquiryPage;
-
-
 "use client";
 import React from "react";
 import Image from "next/image";
@@ -350,6 +145,11 @@ const NewEnquiryPage = () => {
   const resetForm = () => {
     reset();
   }
+  const isCustomDelivery = watch(`delivery.is_custom_delivery`);
+  const toggleCustomDelivery = () => {
+    setValue('delivery.is_custom_delivery', !isCustomDelivery);
+  }
+
   console.log(getValues('items'))
 
 
@@ -499,24 +299,27 @@ const NewEnquiryPage = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-5">
-                <FormField
-                  control={control}
-                  name="delivery.address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          className=""
-                          label="Delivery Address"
-                          {...field}
-                          hasError={!!errors.delivery?.address}
-                          errorMessage={errors.delivery?.address?.message}
-                          placeholder="Enter delivery address"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                {
+                  watch('delivery.method') === "Dispatch" &&
+                  <FormField
+                    control={control}
+                    name="delivery.address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            className=""
+                            label="Delivery Address"
+                            {...field}
+                            hasError={!!errors.delivery?.address}
+                            errorMessage={errors.delivery?.address?.message}
+                            placeholder="Enter delivery address"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                }
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
                   <FormField
                     control={control}
@@ -607,19 +410,39 @@ const NewEnquiryPage = () => {
                     name="delivery.dispatch"
                     render={({ field }) => (
                       <FormItem>
-                        <SelectSingleCombo
-                          label="Dispatch Location"
-                          {...field}
-                          value={field.value?.toString() || ''}
-                          isLoadingOptions={dispatchLocationsLoading}
-                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                          valueKey={"value"}
-                          // labelKey={"label"}
-                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                          placeholder="Select dispatch location"
-                          hasError={!!errors.delivery?.dispatch}
-                          errorMessage={errors.delivery?.dispatch?.message}
-                        />
+                        {
+                          isCustomDelivery ?
+                            <Input
+                              label="Delivery Fee"
+                              {...register('delivery.fee', { valueAsNumber: true })}
+                              hasError={!!errors.delivery?.fee}
+                              errorMessage={errors.delivery?.fee?.message}
+                              placeholder="Enter delivery fee"
+                            />
+                            :
+                            <SelectSingleCombo
+                              label="Dispatch Location"
+                              {...field}
+                              value={field.value?.toString() || ''}
+                              isLoadingOptions={dispatchLocationsLoading}
+                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                              valueKey={"value"}
+                              // labelKey={"label"}
+                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                              placeholder="Select dispatch location"
+                              hasError={!!errors.delivery?.dispatch}
+                              errorMessage={errors.delivery?.dispatch?.message}
+                            />
+                        }
+                        <button
+                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                          onClick={toggleCustomDelivery}
+                          type="button"
+                        >
+                          {
+                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                          }
+                        </button>
                       </FormItem>
                     )}
                   />
@@ -630,7 +453,7 @@ const NewEnquiryPage = () => {
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
                           label="Delivery Date"
-                          value={new Date(field.value)}
+                          value={field.value ? new Date(field.value) : new Date()}
                           onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
                           placeholder="Select delivery date"
                         />
@@ -709,13 +532,6 @@ const NewEnquiryPage = () => {
                       />
                     )}
                   />
-                  <Button
-                    variant="outline"
-                    onClick={addNewItem}
-                    type="button"
-                  >
-                    + Add Item
-                  </Button>
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
@@ -729,6 +545,7 @@ const NewEnquiryPage = () => {
                           errors={errors}
                           register={register}
                           setValue={setValue}
+                          addNewItem={addNewItem}
                         />
                       )
                     })

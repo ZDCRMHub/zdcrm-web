@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { MAX_FILE_SIZE } from "../../../misc/utils/schema";
 
 const propertiesSchema = z.object({
     layers: z.string().optional(),
     toppings: z.string().optional(),
     bouquet: z.string().optional(),
     glass_vase: z.string().optional(),
-    whipped_cream_upgrade: z.boolean().optional()
+    whipped_cream_upgrade: z.string().optional()
 }).optional();
 
 const variationSchema = z.object({
@@ -25,7 +26,7 @@ const inventorySchema = z.object({
 
 const itemSchema = z.object({
     category: z.number({ message: "Category is required" }),
-    product_id: z.number({ message: "Product type is required" }),
+    product_id: z.number({ message: "Product Name is required" }),
     quantity: z.number().min(1),
     inventories: z.array(inventorySchema),
     properties: propertiesSchema,
@@ -37,7 +38,7 @@ const itemSchema = z.object({
     if (data.product_id && data.product_id == 0) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Product type is required",
+            message: "Product Name is required",
         });
     }
 
@@ -80,22 +81,108 @@ const itemSchema = z.object({
 
     });
 });
+const optionalItemSchema = z.object({
+    category: z.number({ message: "Category is required" }),
+    product_id: z.number({ message: "Product Name is required" }),
+    quantity: z.number().min(1),
+    properties: propertiesSchema,
+    inventories: z.array(
+        z.object({
+            message: z.string().optional(),
+            stock_inventory_id: z.number().optional(),
+            product_inventory_id: z.number().optional(),
+            instruction: z.string().optional(),
+            quantity_used: z.number().optional(),
+            variations: z
+                .array(
+                    z.object({
+                        stock_variation_id: z.number(),
+                        quantity: z.number(),
+                    }),
+                )
+                .optional(),
+        }),
+    ),
+    custom_image: z.any().nullable(),
+    is_custom_order: z.boolean().optional(),
+    miscellaneous: z.array(
+        z.object({
+            description: z.string(),
+            cost: z.number(),
+        }),
+    ).optional(),
+}).refine((data) => {
+    if (data.is_custom_order) {
+
+        if (!data.custom_image) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select a file.',
+                code: 'custom',
+            }]);
+        }
+
+        if (!data.custom_image.type.startsWith('image/')) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select an image file.',
+                code: 'custom',
+            }]);
+        }
+        if (data.custom_image.size > MAX_FILE_SIZE) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select a file smaller than 10MB.',
+                code: 'custom',
+            }])
+        }
+    }
+});
 
 
 export const NewEnquirySchema = z.object({
+    customer: z.object({
+        name: z.string().min(1, { message: "Customer's name is required" }),
+        phone: z.string().optional(),
+        email: z.string().optional()
+    }),
+    delivery: z.object({
+        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        note: z.string().optional(),
+        delivery_time: z.string().optional(),
+        delivery_date: z.string({ message: "Delivery date is required" }).optional(),
+        method: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }).optional(),
+        dispatch: z.string().optional(),
+        address: z.string().optional(),
+        recipient_name: z.string().optional(),
+        recipient_phone: z.string().optional(),
+        fee: z.number().optional(),
+        is_custom_delivery: z.boolean().optional(),
+
+
+    }),
+    enquiry_channel: z.string().min(1, { message: "Enquiry channel is required" }),
+    social_media_details: z.string().optional(),
+    enquiry_occasion: z.string().optional(),
+    branch: z.number({ message: "Select a branch" }).optional(),
+    message: z.string().optional(),
+    items: z.array(optionalItemSchema).min(1, { message: "At least one item is required" }).optional(),
+})
+
+export const ConvertiblEnquirySchema = z.object({
     customer: z.object({
         name: z.string().min(1, { message: "Customer's name is required" }),
         phone: z.string().min(1, { message: "Customer's phone number is required" }),
         email: z.string().email().optional()
     }),
     delivery: z.object({
-        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        zone: z.enum(["LM", "LC", "LI", "ND"], { message: "Delivery zone is required" }),
         note: z.string().optional(),
         delivery_time: z.string(),
         delivery_date: z.string({ message: "Delivery date is required" }),
         method: z.enum(["Dispatch", "Pickup"], { message: "Delivery method is required" }),
         dispatch: z.string().optional(),
-        address: z.string().min(1, { message: "Delivery address is required" }),
+        address: z.string().optional(),
         recipient_name: z.string().min(1, { message: "Recipient's name is required" }),
         recipient_phone: z.string().min(1, { message: "Recipient's phone number is required" })
     }),
@@ -104,9 +191,20 @@ export const NewEnquirySchema = z.object({
     enquiry_occasion: z.string().min(1, { message: "Enquiry occasion is required" }),
     branch: z.number({ message: "Select a branch" }),
     message: z.string().optional(),
-    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),  
-})
+    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),
+}).superRefine((data, ctx) => {
+
+    if (data.delivery.method === "Dispatch" && (!data.delivery.address || !data.delivery.address.trim().length)) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Enter address for dispatch delivery",
+            path: ["delivery.address"]
+        });
+    }
+});
+
 
 export type NewEnquiryFormValues = z.infer<typeof NewEnquirySchema>;
+export type ConvertibleEnquiryFormValues = z.infer<typeof ConvertiblEnquirySchema>;
 
 

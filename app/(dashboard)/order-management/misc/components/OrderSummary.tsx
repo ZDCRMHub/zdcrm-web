@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { format } from 'date-fns';
 
-import { Input, Button, LinkButton, Form, SelectSingleCombo, Spinner } from '@/components/ui';
+import { Input, Button, LinkButton, Form, SelectSingleCombo, Spinner, AmountInput } from '@/components/ui';
 import { Card, CardContent } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBooleanStateControl } from '@/hooks';
@@ -26,6 +26,7 @@ import { useAddDiscountToOrder, useGDiscounts, useGetOrderDetail, useUpdateOrder
 
 const schema = z.object({
   discount_id: z.string().optional(),
+  custom_discount_amount: z.number().optional(),
 });
 type FormData = z.infer<typeof schema>
 
@@ -40,13 +41,14 @@ export default function OrderSummary() {
     resolver: zodResolver(schema),
   });
 
-  const { handleSubmit, formState: { errors }, control, watch, setValue } = form;
+  const { handleSubmit, formState: { errors }, control, watch, setValue, register } = form;
 
   const router = useRouter();
 
   const goBack = () => {
     router.back();
   };
+
 
 
   const [processed, setprocessed] = useState(false)
@@ -58,8 +60,8 @@ export default function OrderSummary() {
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus()
   const onSubmit = (data: FormData) => {
     console.log(data);
-    if (data.discount_id) {
-      addDiscount({ discount_id: data.discount_id, id: order_id },
+    if (data.discount_id || data.custom_discount_amount) {
+      addDiscount({ ...data, id: order_id, },
         {
           onSuccess() {
             handleStatusUpdate()
@@ -90,6 +92,18 @@ export default function OrderSummary() {
       }
     );
   }
+
+  React.useEffect(() => {
+    if (!!watch('custom_discount_amount')) {
+      setValue('discount_id', undefined)
+    }
+  }, [watch('custom_discount_amount')])
+
+  React.useEffect(() => {
+    if (!!watch('discount_id')) {
+      setValue('custom_discount_amount', 0)
+    }
+  }, [watch('discount_id')])
 
   // React.useEffect(() => {
   //   if (!isLoading && !!order) {
@@ -236,16 +250,16 @@ export default function OrderSummary() {
                             </section>
 
                             <section className="flex items-center justify-between pt-1 border-t">
-                              <p className="text-[#111827] font-medium text-sm">
+                              {/* <p className="text-[#111827] font-medium text-sm">
                                 <span className="text-[#687588] italic font-light text-[0.8rem]">
                                   Production Cost:{" "}
                                 </span>
                                 {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
-                              </p>
+                              </p> */}
                               <p className="font-medium text-[#194A7A]">
                                 Amount:{" "}
                                 <span className="font-bold">
-                                  {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                  {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
                                 </span>
                               </p>
                             </section>
@@ -255,8 +269,6 @@ export default function OrderSummary() {
                     })
                   }
                 </div>
-
-
 
                 <div >
                   <div >
@@ -294,28 +306,38 @@ export default function OrderSummary() {
                           }))}
                           isLoadingOptions={isLoadingDiscounts}
                         />
+
+                        <AmountInput
+                          label="Discount Amount"
+                          className='max-w-[350px]'
+                          hasError={!!errors.custom_discount_amount}
+                          errorMessage={errors.custom_discount_amount?.message}
+                          placeholder="Enter discount amount"
+                          {...register('custom_discount_amount')}
+                        />
                         <Button
                           type="button"
-                          className='flex items-center gap-1 mt-4 text-[#d8636d]'
+                          className='flex items-center gap-1 mt-4 text-[#d8636d] bg-red-100'
                           onClick={() => setValue('discount_id', '')}
                         >
                           <Trash className='w-5 h-5 text-[#d8636d]' />
 
-                            Remove discount
+                          Remove discount
                         </Button>
                       </div>
                       <div className='mt-16 w-[300px] self-end'>
                         <p className='font-medium mt-2 text-[#8B909A]'>
                           Subtotal (NGN):
-                          {formatCurrency(Number(order?.total_production_cost	), "NGN")}
+                          {formatCurrency(Number(order?.total_production_cost) - Number(order?.delivery.dispatch?.delivery_price || '0'), "NGN")}
                         </p>
                         <p className='font-medium mt-2 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
-                        <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(selectedDiscountAmount) || 0, "NGN")}</p>
+                        <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(watch('custom_discount_amount') || selectedDiscountAmount) || 0, "NGN")}</p>
                         <p className='text-xl font-bold mt-6'>
                           Total (NGN):
                           {
                             formatCurrency(
-                              Number(order?.total_production_cost	) - (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0),
+                              Number(order?.total_production_cost) -
+                              (watch('custom_discount_amount') || (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0)),
                               "NGN")
                           }
                         </p>
@@ -331,8 +353,8 @@ export default function OrderSummary() {
                   <CardContent className='p-0'>
                     <div className='flex justify-between items-center mb-4 border-b py-3 px-6'>
                       <h2 className='font-semibold'>Delivery Details</h2>
-                      <LinkButton href="./new-order" variant='unstyled' size='sm'>
-                        {/* <Edit2 className='w-5 h-5 text-[#A0AEC0]' /> */}
+                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
+                        <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>
                     <div className='grid grid-cols-[max-content,1fr] gap-4 text-[0.75rem] px-4 pb-4 font-manrope'>
@@ -380,7 +402,7 @@ export default function OrderSummary() {
 
                     <div className='flex justify-between items-center mb-4 px-6 py-3 border-b'>
                       <h2 className='font-semibold'>Delivery Note</h2>
-                      <LinkButton href="./new-order" variant='unstyled' size='sm'>
+                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
                         <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>

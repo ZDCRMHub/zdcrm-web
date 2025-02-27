@@ -69,9 +69,9 @@ const EnquiryDetailsPage = () => {
                         <h2 className="font-semibold font-manrope text-sm">
                             Customer Details
                         </h2>
-                        {/* <LinkButton href="./new-enquiry" variant="unstyled">
+                        <LinkButton href={`./edit?enquiry_id=${enquiry_id}`} variant="unstyled" className='!p-0'>
                             <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" />
-                        </LinkButton> */}
+                        </LinkButton>
                     </header>
                     <Separator />
 
@@ -121,7 +121,9 @@ const EnquiryDetailsPage = () => {
                             <h2 className="font-semibold font-manrope text-sm">
                                 Delivery Details
                             </h2>
-                            {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" /> */}
+                            <LinkButton href={`./edit?enquiry_id=${enquiry_id}`} variant="unstyled" className='!p-0'>
+                                <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" />
+                            </LinkButton>
                         </div>
 
                         <Separator />
@@ -134,7 +136,7 @@ const EnquiryDetailsPage = () => {
                         </div>
                     </Card>
 
-                    <Card className="flex-1 space-y-4 p-5 rounded-xl">
+                    <Card className="flex-1 space-y-2 p-5 rounded-xl">
                         <div className="flex justify-between items-center">
                             <h2 className="font-semibold font-manrope text-sm">
                                 Delivery Note
@@ -153,12 +155,14 @@ const EnquiryDetailsPage = () => {
                     </Card>
                 </div>
 
-                <Card className="space-y-4 p-5 rounded-xl w-60">
+                <Card className="space-y-2 p-5 rounded-xl w-60">
                     <header className="flex justify-between items-center">
                         <h2 className="font-semibold font-manrope text-sm">
                             Dispatch Time
                         </h2>
-                        {/* <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" /> */}
+                        <LinkButton href={`./edit?enquiry_id=${enquiry_id}#delivery`} variant="unstyled" className='!p-0'>
+                            <EditPenIcon className="h-5 w-5 text-[#A0AEC0]" />
+                        </LinkButton>
                     </header>
 
                     <Separator />
@@ -233,20 +237,23 @@ const EnquiryDetailsPage = () => {
                                                         <span className="text-[#687588]">Size:</span> 6 inches
                                                     </p> */}
                                                 </div>
+                                                <div className="grid gap-1">
+                                                    {item.properties.map((property, index) => (
+                                                        <div key={index}>
+                                                            {Object.entries(property).map(([key, value]) => {
+                                                                if (key === "id" || !value) return null
 
-                                                {
-                                                    Object.entries(item.properties[0]).map(([key, value]) => (
-                                                        <>
-                                                            {
-                                                                key !== 'id' && !!value &&
-                                                                <p className="text-[#111827] font-medium">
-                                                                    <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span>{" "}
-                                                                    {value}
-                                                                </p>
-                                                            }
-                                                        </>
-                                                    ))
-                                                }
+                                                                const displayValue = typeof value === "object" && value !== null ? value.name : value
+
+                                                                return (
+                                                                    <p key={key} className="text-[#111827] font-medium">
+                                                                        <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span> {displayValue}
+                                                                    </p>
+                                                                )
+                                                            })}
+                                                        </div>
+                                                    ))}
+                                                </div>
 
                                                 <p className="text-[#111827] font-medium">
                                                     <span className="text-[#687588]">Message {item.product.category.name == "Cake" && "on cake"}:</span>{" "}
@@ -261,7 +268,7 @@ const EnquiryDetailsPage = () => {
                                             <p className="font-semibold text-[#194A7A]">Amount: </p>
                                             <p className="font-semibold text-[#194A7A]">
                                                 {
-                                                    formatCurrency(Number(item.price_at_order || "0"), "NGN")
+                                                    formatCurrency(Number(item.product.selling_price || "0"), "NGN")
                                                 }
                                             </p>
                                         </div>
@@ -347,7 +354,7 @@ const EnquiryDetailsPage = () => {
                     isModalOpen={isConfirmModalOpen}
                     closeModal={closeConfirmModal}
                     enquiryId={enquiry_id as string}
-                    total_amount_due={Number(data?.total_selling_price || 0)}
+                    total_amount_due={Number(data?.total_production_cost || 0)}
                 />
             }
         </div>

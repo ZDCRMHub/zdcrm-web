@@ -88,4 +88,95 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input.displayName = "Input"
 
+
+type AmountInputProps = Omit<InputProps, "value" | "onChange"> & {
+  value?: string | number
+  onChange?: (...event: any[]) => void
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+}
+
+export const AmountInput = React.forwardRef<HTMLInputElement, AmountInputProps>(
+  ({ value, onChange, onBlur, name, ...props }, ref) => {
+      const [displayValue, setDisplayValue] = React.useState(() => formatNumber(value ? Number(value) : 0))
+
+      const handleChange = React.useCallback(
+          (e: React.ChangeEvent<HTMLInputElement>) => {
+              const rawValue = e.target.value.replace(/[^0-9]/g, "")
+              const numericValue = Number(rawValue)
+
+              if (!isNaN(numericValue)) {
+                  const formattedValue = formatNumber(numericValue)
+                  setDisplayValue(formattedValue)
+                  if (onChange) {
+                      onChange({
+                          target: {
+                              name: name || "",
+                              value: numericValue,
+                          },
+                      } as unknown as React.ChangeEvent<HTMLInputElement>)
+                  }
+              } else {
+                  setDisplayValue("")
+                  if (onChange) {
+                      onChange({
+                          target: {
+                              name: name || "",
+                              value: "",
+                          },
+                      } as unknown as React.ChangeEvent<HTMLInputElement>)
+                  }
+              }
+          },
+          [onChange, name],
+      )
+
+      const handleBlur = React.useCallback(
+          (e: React.FocusEvent<HTMLInputElement>) => {
+              const numericValue = Number(e.target.value.replace(/[^0-9]/g, ""))
+              if (!isNaN(numericValue)) {
+                  const formattedValue = formatNumber(numericValue)
+                  setDisplayValue(formattedValue)
+                  if (onBlur) {
+                      // Create a new event with the numeric value
+                      const syntheticEvent = {
+                          ...e,
+                          target: {
+                              ...e.target,
+                              value: numericValue.toString(),
+                          },
+                      }
+                      onBlur(syntheticEvent)
+                  }
+              }
+          },
+          [onBlur],
+      )
+
+      React.useEffect(() => {
+          if (value !== undefined) {
+              setDisplayValue(formatNumber(Number(value)))
+          }
+      }, [value])
+
+      return (
+          <Input
+              {...props}
+              ref={ref}
+              name={name}
+              value={displayValue}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              type="text"
+              inputMode="numeric"
+          />
+      )
+  },
+)
+
+AmountInput.displayName = "AmountInput"
+
+function formatNumber(num: number): string {
+  return num.toLocaleString("en-US", { maximumFractionDigits: 0 })
+}
+
 export { Input }

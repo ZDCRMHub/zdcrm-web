@@ -46,6 +46,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ product }) => {
                     }
                 </div>
             </TableCell>
+            <TableCell className='text-center'>
+                <span>{product.quantity_sold}</span>
+            </TableCell>
             <TableCell>{product.cost_price}</TableCell>
             <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
 
@@ -124,7 +127,7 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoad
 
     return (
         <div className="relative h-[93%]">
-             <div className="flex items-center gap-4 h-3">
+            <div className="flex items-center gap-4 h-3">
                 <div className={cn('overflow-hidden rounded-full mb-1 grow')}>
                     <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
                         <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
@@ -164,6 +167,7 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoad
                                 <TableHead>Category</TableHead>
                                 <TableHead>Product Name</TableHead>
                                 <TableHead>Stock Quantity</TableHead>
+                                <TableHead>Quantity Sold</TableHead>
                                 <TableHead>Cost Price/Unit</TableHead>
                                 <TableHead>Last Updated</TableHead>
                                 <TableHead></TableHead>

@@ -8,7 +8,7 @@ import { Add, Book } from 'iconsax-react';
 import toast from 'react-hot-toast';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, SelectSingleCombo } from '@/components/ui';
+import { AmountInput, Button, SelectSingleCombo } from '@/components/ui';
 import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
 import { PRODUCT_TYPES_OPTIONS } from '@/constants';
 import useCloudinary from '@/hooks/useCloudinary';
@@ -31,8 +31,9 @@ const variationSchema = z.object({
     size: z.string().optional(),
     color: z.string().optional(),
     flavour: z.string().optional(),
-    selling_price: z.string().nullable(),
-    cost_price: z.string().min(1, { message: 'Cost price is required' }),
+
+    cost_price: z.number().min(1, { message: 'Cost price is required' }),
+    selling_price: z.number().min(1, { message: 'Selling price is required' }),
     quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
 });
 const MAX_FILE_SIZE = 1000000;
@@ -87,9 +88,7 @@ type FormType = z.infer<typeof schema>;
 
 const createStockInventory = async (data: FormType & { image_one?: string }) => {
     console.log(data)
-    const res = await APIAxios.post('/inventory/create-stock-inventory/', data, {
-        // headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const res = await APIAxios.post('/inventory/create-stock-inventory/', data);
     return res.data;
 };
 
@@ -98,7 +97,7 @@ export default function NewInventorySheet() {
         resolver: zodResolver(schema),
         defaultValues: {
             image_one: null,
-            variations: [{ selling_price: null, cost_price: '', }],
+            variations: [{ selling_price: 0, cost_price: 0, }],
         },
     });
 
@@ -243,7 +242,7 @@ export default function NewInventorySheet() {
                                     options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
-                                    placeholder='Item category'
+                                    placeholder='Category'
                                     onChange={(value) => field.onChange(Number(value))}
                                     isLoadingOptions={categoriesLoading}
                                     hasError={!!errors.category}
@@ -286,6 +285,7 @@ export default function NewInventorySheet() {
                                             <Input
                                                 {...field}
                                                 value={field.value || ''}
+                                                label="Colour"
                                                 placeholder='Colour'
                                                 hasError={!!errors.variations?.[index]?.color}
                                                 errorMessage={errors.variations?.[index]?.color?.message}
@@ -301,6 +301,8 @@ export default function NewInventorySheet() {
                                             <Input
                                                 {...field}
                                                 value={field.value || ''}
+                                                label="Flavor"
+
                                                 placeholder='Flavour'
                                                 hasError={!!errors.variations?.[index]?.flavour}
                                                 errorMessage={errors.variations?.[index]?.flavour?.message}
@@ -312,9 +314,10 @@ export default function NewInventorySheet() {
                                     name={`variations.${index}.selling_price`}
                                     control={control}
                                     render={({ field }) => (
-                                        <Input
+                                        <AmountInput
                                             {...field}
                                             value={field.value ?? ''}
+                                            label="Selling Price"
                                             placeholder='Selling Price'
                                             hasError={!!errors.variations?.[index]?.selling_price}
                                             errorMessage={errors.variations?.[index]?.selling_price?.message}
@@ -325,8 +328,10 @@ export default function NewInventorySheet() {
                                     name={`variations.${index}.cost_price`}
                                     control={control}
                                     render={({ field }) => (
-                                        <Input
+                                        <AmountInput
                                             {...field}
+                                            value={field.value ?? ''}
+                                            label="Cost Price"
                                             placeholder='Cost Price'
                                             hasError={!!errors.variations?.[index]?.cost_price}
                                             errorMessage={errors.variations?.[index]?.cost_price?.message}
@@ -341,11 +346,12 @@ export default function NewInventorySheet() {
                                             {...field}
                                             {...register(`variations.${index}.quantity`, { valueAsNumber: true })}
                                             type="number"
+                                            label="Quantity"
                                             placeholder='Quantity'
                                             pattern="^[0-9]*$"
                                             hasError={!!errors.variations?.[index]?.quantity}
                                             errorMessage={errors.variations?.[index]?.quantity?.message}
-                                            // onChange={(e) => field.onChange(Number(e.target.value))}
+                                        // onChange={(e) => field.onChange(Number(e.target.value))}
                                         />
                                     )}
                                 />
@@ -359,7 +365,7 @@ export default function NewInventorySheet() {
 
                         <Button
                             type="button"
-                            onClick={() => append({ selling_price: null, cost_price: '', quantity: 1 })}
+                            onClick={() => append({ selling_price: 0, cost_price: 0, quantity: 1 })}
                             variant="outline"
                         >
                             Add Variation

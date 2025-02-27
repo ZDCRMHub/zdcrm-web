@@ -18,3 +18,4 @@ export interface TBranch {
   create_date: string;
   update_date: string;
 }
+

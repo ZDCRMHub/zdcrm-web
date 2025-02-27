@@ -22,11 +22,21 @@ export const authTokenStorage = {
   },
 
   clearToken: () => {
-    if(typeof window !== undefined){
+    if (typeof window !== undefined) {
       window.localStorage.removeItem(`${TOKEN_STORAGE_PREFIX}_TOKEN`);
     }
-    else{
+    else {
       return
     }
   },
+
+  logout: () => {
+    if (typeof window !== undefined) {
+      window.localStorage.removeItem(`${TOKEN_STORAGE_PREFIX}_TOKEN`);
+      window.location.href = '/login';
+    }
+    else {
+      return
+    }
+  }
 };

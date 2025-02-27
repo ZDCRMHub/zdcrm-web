@@ -3,7 +3,7 @@ import { Controller, useFieldArray, UseFormWatch, Control, UseFormSetValue, Fiel
 import { TrashIcon } from 'lucide-react';
 
 import { useGetCategories, useGetProducts, useGetProductsInventory, useGetStockInventory } from '@/app/(dashboard)/inventory/misc/api';
-import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo } from '@/components/ui';
+import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo, Button } from '@/components/ui';
 
 
 
@@ -17,6 +17,8 @@ import { TProductInventoryItem } from '@/app/(dashboard)/inventory/misc/types/pr
 import { TStockInventoryItem } from '@/app/(dashboard)/inventory/misc/types/stock';
 import { formatCurrency } from '@/utils/currency';
 import { cn } from '@/lib/utils';
+import { useGetPropertyOptions } from '../api';
+import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 
 
 interface OrderItemsSectionProps {
@@ -26,6 +28,7 @@ interface OrderItemsSectionProps {
     register: any;
     errors: FieldErrors<NewOrderFormValues>;
     index: number;
+    addNewItem: () => void
 
 }
 type TOrderFormItem = NewOrderFormValues['items']
@@ -46,13 +49,17 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     setValue,
     register,
     errors,
-    index
+    index,
+    addNewItem
 
 }) => {
     const { data: categories, isLoading: categoriesLoading } = useGetCategories();
     const { data: products, isLoading: productsLoading, isFetching: productsFetching } = useGetProducts({
         category: watch(`items.${index}.category`)
     });
+
+    const { data: propertyOptions, isLoading: isLoadingPropertyOptions } = useGetPropertyOptions()
+
 
     const { remove: deleteItems } = useFieldArray({
         control,
@@ -69,21 +76,6 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     const isProductInventory = matchedCategory?.name !== 'Cake' && matchedCategory?.name !== 'Flower' && matchedCategory?.name !== 'Cupcake' && matchedCategory?.name !== 'Combo';
     const isComboItem = matchedCategory?.name === 'Combo';
 
-    React.useEffect(() => {
-        setValue(`items.${index}.product_id`, 0);
-        const prevItems = watch('items');
-        setValue(`items.${index}`,
-            {
-                ...prevItems,
-                category: selectedCategory,
-                product_id: 0,
-                properties: {},
-                quantity: 1,
-                inventories: [{ variations: [] },]
-            }
-        );
-
-    }, [index, selectedCategory, setValue]);
 
 
     const watchedItems = watch("items");
@@ -138,14 +130,28 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             product_image: product.image_one,
             name: product.name,
             variation: variation.size || variation.color || variation.flavour,
+            category: product.category.name
         }))
     ) || [];
 
 
     const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
-        const item = items[0];
+        const item = items?.[0];
+        if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
+        const allProperties = [
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
+        ]
+        const propertiesCost = allProperties.reduce((acc, item) => {
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
+            return acc + findItemPrice
+        }, 0)
+
 
         if (!item.category || !item.inventories) {
             return 0;
@@ -155,10 +161,10 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             if (!allInventoriesSelected) {
                 return 0;
             } else {
-                const itemInventories = inventories.filter(inv => inventoriesIds.includes(inv.id));
+                const itemInventories = inventories?.filter(inv => inventoriesIds.includes(inv.id));
 
                 const selectedVariations = items.map(item => item.inventories.map(inv => inv?.variations?.map(variation => {
-                    const selected = itemInventories.flatMap(inv =>
+                    const selected = itemInventories?.flatMap(inv =>
                         inv.variations.find(varr => variation.stock_variation_id == varr.id)
                     );
                     return { id: variation.stock_variation_id, quantity: variation.quantity, cost_price: selected?.[0]?.cost_price || 0 };
@@ -171,15 +177,29 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                     return acc + (Number(variation?.cost_price || '0') * (variation?.quantity || 1));
                 }, 0);
 
-                return (totalVariationCost * item.quantity) + miscCost;
+                return ((totalVariationCost + propertiesCost) * item.quantity) + miscCost;
             }
         }
     }, [watchedItemAtIndex]);
 
-    const calculateProductItemAmount = (items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
-        const item = items[0];
+    const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
+        const item = items?.[0];
+        if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
+        const allProperties = [
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
+        ]
+        console.log(allProperties, "PROPS")
+        const propertiesCost = allProperties.reduce((acc, item) => {
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
+            console.log(findItemPrice, "PRICES")
+            return acc + findItemPrice
+        }, 0)
 
         if (!item.category || !item.inventories.length) {
             return 0;
@@ -193,17 +213,16 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                 return 0;
             }
             else {
-                const itemInventories = inventories.filter(inv => inventoriesIds.includes(inv.id));
+                const itemInventories = inventories?.filter(inv => inventoriesIds.includes(inv.id));
                 console.log("itemInventories", itemInventories)
 
-                return itemInventories.reduce((acc, inv) => {
+                return itemInventories?.reduce((acc, inv) => {
                     return acc + (Number(inv.cost_price) * item.quantity);
-                }, miscCost);
+                }, miscCost + propertiesCost);
             }
 
         }
-    }
-
+    }, [watchedItemAtIndex])
 
 
 
@@ -239,11 +258,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 <SelectSingleCombo
                                     {...field}
                                     value={field.value ? field.value.toString() : ''}
-                                    label="Item Category"
+                                    label="Category"
                                     options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
-                                    placeholder='Item category'
+                                    placeholder='Category'
                                     onChange={(value) => field.onChange(parseInt(value))}
                                     isLoadingOptions={categoriesLoading}
                                     hasError={!!errors.items?.[index]?.category}
@@ -257,11 +276,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                             render={({ field }) => (
                                 <SelectSingleCombo
                                     {...field}
-                                    value={field.value ? field.value.toString() : ''}
+                                    value={watch(`items.${index}.product_id`)?.toString() || field.value?.toString() || ''}
                                     options={products?.map(prod => ({ label: prod.name, value: prod.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
-                                    label="Product Type"
+                                    label="Product Name"
                                     disabled={!selectedCategory || (!productsLoading && !products?.length)}
                                     placeholder={
                                         (!productsLoading && !products?.length) ?
@@ -310,19 +329,28 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                         {
                             selectedCategory &&
                             <>
+
+                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                {/* /////////////                    STOCK INVENTORY                 //////////////// */}
+                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {
+
                                     isStockInventory &&
                                     <>
                                         < StockItemFormEnquiry
                                             options={productVariations}
                                             onChange={handleProductVariationChange}
-                                            label="Inventory"
+                                            label="Stock"
+                                            // value={watch(`items.${index}.product_id`)?.toString() || ''}
+
                                             disabled={!selectedCategory || (!productsLoading && productsFetching && !products?.length)}
                                             placeholder={
                                                 (!productsLoading && !products?.length) ?
                                                     'No products found' :
                                                     selectedCategory ?
-                                                        'Select inventory   ' :
+                                                        'Select stock   ' :
                                                         'Select category first'
                                             }
                                             isLoadingOptions={productsLoading}
@@ -331,18 +359,17 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         />
 
 
+
                                         {
                                             categoryName === 'Cake' && (
                                                 <>
-
                                                     <Controller
                                                         name={`items.${index}.properties.layers`}
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={
-                                                                    PRODUCT_TYPES_OPTIONS.Cakes.layers
-                                                                }
+                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Layers"
                                                                 valueKey="value"
                                                                 labelKey="label"
@@ -360,9 +387,8 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={
-                                                                    PRODUCT_TYPES_OPTIONS.Cakes.toppings
-                                                                }
+                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Topping"
                                                                 valueKey="value"
                                                                 labelKey="label"
@@ -374,25 +400,26 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                             />
                                                         )}
                                                     />
-
                                                     <Controller
                                                         name={`items.${index}.properties.whipped_cream_upgrade`}
                                                         control={control}
                                                         render={({ field }) => (
-                                                            <Label htmlFor="Whipped Cream Upgrade" className='flex flex-col gap-4'>
-                                                                <span className='text-sm text-[#0F172B] font-poppins font-medium'>
-                                                                    Whipped Cream Upgrade
-                                                                </span>
-                                                                <Checkbox
-                                                                    id="Whipped Cream Upgrade"
-                                                                    value={field.value ? 'true' : 'false'}
-                                                                    className='h-7 w-7'
-                                                                    iconClass="h-5 w-5"
-                                                                    onCheckedChange={(value) => field.onChange(value)}
-                                                                />
-                                                            </Label>
+                                                            <SelectSingleCombo
+                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                isLoadingOptions={isLoadingPropertyOptions}
+                                                                label="Whipped Cream Upgrade"
+                                                                valueKey="value"
+                                                                labelKey="label"
+                                                                placeholder="Select Whipped Cream"
+                                                                {...field}
+                                                                hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}
+                                                                errorMessage={errors.items?.[index]?.properties?.whipped_cream_upgrade?.message as string}
+
+                                                            />
                                                         )}
                                                     />
+
+
                                                 </>
 
                                             )
@@ -400,18 +427,16 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         {
                                             categoryName === 'Flower' && (
                                                 <>
-
                                                     <Controller
                                                         name={`items.${index}.properties.bouquet`}
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={
-                                                                    PRODUCT_TYPES_OPTIONS.Flowers.bouquets
-                                                                }
-                                                                label="Bouquet"
+                                                                options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                isLoadingOptions={isLoadingPropertyOptions}
+                                                                label="Size"
                                                                 valueKey="value"
-                                                                labelKey="name"
+                                                                labelKey="label"
                                                                 placeholder="Select bouquet"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.bouquet}
@@ -420,6 +445,27 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                             />
                                                         )}
                                                     />
+
+
+                                                    <Controller
+                                                        name={`items.${index}.properties.glass_vase`}
+                                                        control={control}
+                                                        render={({ field }) => (
+                                                            <SelectSingleCombo
+                                                                options={propertyOptions?.data.filter(option => option.type === 'GLASS_VASE').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                isLoadingOptions={isLoadingPropertyOptions}
+                                                                label="Vase"
+                                                                valueKey="value"
+                                                                labelKey="label"
+                                                                placeholder="Select vase"
+                                                                {...field}
+                                                                hasError={!!errors.items?.[index]?.properties?.glass_vase}
+                                                                errorMessage={errors.items?.[index]?.properties?.glass_vase?.message as string}
+
+                                                            />
+                                                        )}
+                                                    />
+
 
                                                 </>
 
@@ -478,7 +524,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {
                                     !isStockInventory && !isComboItem && fields.map((_, invIndex) => (
-                                        <>
+                                        <React.Fragment key={invIndex}>
                                             {
                                                 watchedInventories.map((_, invIndex) =>
 
@@ -517,14 +563,20 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                     </>
                                                 )
                                             }
-                                        </>
+                                        </React.Fragment>
 
                                     ))
                                 }
                             </>
                         }
 
-
+                        <CustomImagePicker
+                            control={control}
+                            name={`items.${index}.custom_image`}
+                            errors={errors}
+                            hasError={!!errors.items?.[index]?.custom_image}
+                            errorMessage={errors.items?.[index]?.custom_image?.message as string}
+                        />
 
                     </div>
 
@@ -537,20 +589,35 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                     />
 
 
-                    <footer className='flex items-center gap-1.5 font-semibold text-2xl text-custom-blue mt-4'>
-                        <p>Amount: </p>
-                        <p>
-                            {
-                                formatCurrency(
-                                    isStockInventory ?
-                                        calcucateStockItemAmount([watch(`items.${index}`)], stockInvetories?.data!)
-                                        :
-                                        isProductInventory ?
-                                            calculateProductItemAmount([watch(`items.${index}`)], productsInvetories?.data!)
+
+                    <footer className="flex items-center justify-between border-t pt-2 mt-4">
+                        <p className='flex items-center gap-1.5 font-semibold text-2xl text-custom-blue'>
+
+                            <span>Amount: </span>
+                            <span>
+                                {
+                                    formatCurrency(
+                                        isStockInventory ?
+                                            calcucateStockItemAmount([watch(`items.${index}`)], stockInvetories?.data!)
                                             :
-                                            0, "NGN")
-                            }
+                                            isProductInventory ?
+                                                calculateProductItemAmount([watch(`items.${index}`)], productsInvetories?.data!)
+                                                :
+                                                0, "NGN")
+                                }
+                            </span>
                         </p>
+
+                        {
+
+                        }
+                        <Button
+                            // variant="outline"
+                            onClick={addNewItem}
+                            type="button"
+                        >
+                            + Add Item
+                        </Button>
                     </footer>
                 </div>
             }

@@ -277,13 +277,13 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     {[
                       ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
                       // ["Amount Paid(USD)", order?.amoun],
-                      [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_production_cost || 0), 'NGN')],
-                      [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
-                      [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
+                      [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price || 0), 'NGN')],
+                      [order?.payment_options?.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
+                      [order?.payment_options?.startsWith("part_payment") && "Oustanding Balance",
                       <span className="flex items-center gap-2" key={order?.id}>
                         {
                           formatCurrency(
-                            Number(Number(order?.total_production_cost ?? 0)
+                            Number(Number(order?.total_selling_price ?? 0)
                               -
                               (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
                               -
@@ -374,85 +374,99 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       <AccordionContent>
                         <div className="space-y-4 mt-1">
                           {
-                            order?.items.map((item, index: number) => (
-                              <article key={item.id} className="flex border rounded-2xl p-6">
-                                <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
-                                  <header className="flex items-start justify-between">
-                                    <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
-                                      <Image
-                                        src="/placeholder.svg"
-                                        alt={item.product.name}
-                                        fill
-                                        className="object-cover rounded-md"
-                                      />
-                                    </div>
+                            order?.items.map((item, index: number) => {
+                              const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
+                              const placeHolderImage = item.inventories[0]?.stock_inventory?.image_one || item.inventories[0]?.product_inventory?.image_one || `/img/placeholders/${itemCategory}.svg`
 
-                                  </header>
+                              return (
+                                <article key={item.id} className="flex border rounded-2xl p-6">
+                                  <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
+                                    <header className="flex items-start justify-between">
+                                      <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
+                                        <Image
+                                          src={placeHolderImage}
+                                          alt={item.product.name}
+                                          fill
+                                          className="object-cover rounded-md"
+                                        />
+                                      </div>
 
-                                  <section className="flex flex-col justify-between">
-                                    <h5 className="text-[#194A7A] text-lg font-medium mb-5">
-                                      {item.product.name}
-                                    </h5>
-                                    <div className="xl:flex">
-                                      <div className="space-y-2.5 text-[0.8rem]">
-                                        <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
-                                          <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                            <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
-                                          </p>
-                                          <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                            <span className="text-[#687588]">Category:</span> {item.product.category.name}
-                                          </p>
-                                          {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                                    </header>
+
+                                    <section className="flex flex-col justify-between">
+                                      <h5 className="text-[#194A7A] text-lg font-medium mb-5">
+                                        {item.product.name}
+                                      </h5>
+                                      <div className="xl:flex">
+                                        <div className="space-y-2.5 text-[0.8rem]">
+                                          <div className="flex items-center gap-x-5 gap-y-2 flex-wrap">
                                             <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                              <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                              <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
+                                            </p>
+                                            <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                              <span className="text-[#687588]">Category:</span> {item.product.category.name}
+                                            </p>
+                                            {item.inventories[0]?.variations[0]?.variation_details?.size && (
+                                              <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                <span className="text-[#687588]">Size:</span> {item.inventories[0].variations[0].variation_details.size}
+                                              </p>
+                                            )}
+                                          </div>
+                                          {item.properties.map((property, index) => (
+                                            <div key={index}>
+                                              {Object.entries(property).map(([key, value]) => {
+                                                if (key === "id" || !value) return null
+                                                if (key.includes("at_order")) return null
+
+                                                const displayValue = typeof value === "object" && value !== null ? value.name : value
+
+                                                return (
+                                                  <p key={key} className="text-[#111827] font-medium">
+                                                    <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span> {displayValue}
+                                                  </p>
+                                                )
+                                              })}
+                                            </div>
+                                          ))}
+                                          {item.inventories[0]?.instruction && (
+                                            <p className="text-[#111827] font-medium">
+                                              <span className="text-[#687588]">Instructions:</span>{" "}
+                                              {item.inventories[0].instruction}
                                             </p>
                                           )}
                                         </div>
-                                        {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
-                                          key !== 'id' && value && (
-                                            <p key={key} className="text-[#111827] font-medium">
-                                              <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
-                                              {value as string}
+
+                                        <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
+                                          {item.inventories[0]?.message && (
+                                            <p className="flex flex-col text-[#111827] font-medium text-right">
+                                              <span className="text-[#687588]">Message:</span>{" "}
+                                              {item.inventories[0].message}
                                             </p>
-                                          )
-                                        ))}
-                                        {item.inventories[0]?.instruction && (
-                                          <p className="text-[#111827] font-medium">
-                                            <span className="text-[#687588]">Instructions:</span>{" "}
-                                            {item.inventories[0].instruction}
-                                          </p>
-                                        )}
+                                          )}
+                                        </div>
                                       </div>
+                                    </section>
 
-                                      <div className="space-y-2.5 text-[0.8rem] content-center flex-1 flex justify-end">
-                                        {item.inventories[0]?.message && (
-                                          <p className="flex flex-col text-[#111827] font-medium text-right">
-                                            <span className="text-[#687588]">Message:</span>{" "}
-                                            {item.inventories[0].message}
-                                          </p>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </section>
-
-                                  <section className="flex items-center justify-between pt-1 border-t">
-                                    <p className="text-[#111827] font-medium text-sm">
-                                      <span className="text-[#687588] italic font-light text-[0.8rem]">
-                                        Production Cost:{" "}
-                                      </span>
-                                      {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
-                                    </p>
-                                    <p className="font-medium text-[#194A7A]">
-                                      Amount:{" "}
-                                      <span className="font-bold">
-                                        {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
-                                      </span>
-                                    </p>
-                                  </section>
-                                </div>
-                              </article>
-                            ))
+                                    <section className="flex items-center justify-between pt-1 border-t">
+                                      <p className="text-[#111827] font-medium text-sm">
+                                        <span className="text-[#687588] italic font-light text-[0.8rem]">
+                                          Production Cost:{" "}
+                                        </span>
+                                      </p>
+                                      <p className="font-medium text-[#194A7A]">
+                                        Amount:{" "}
+                                        <span className="font-bold">
+                                          {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
+                                          {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                        </span>
+                                      </p>
+                                    </section>
+                                  </div>
+                                </article>
+                              )
+                            })
                           }
+
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -503,12 +517,12 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                 </section>
 
                 <section className="flex justify-end my-12">
-                  <LinkButton
-                    href={`/order-management/orders/${order?.id}/confirm-delivery`}
-                    className="h-12 px-8"
+                  <Button
+                    className="h-12 px-12"
+                    onClick={closeSheet}
                   >
-                    Proceed to Dispatch
-                  </LinkButton>
+                    Close
+                  </Button>
                 </section>
 
                 <section className="flex flex-col gap-1.5">

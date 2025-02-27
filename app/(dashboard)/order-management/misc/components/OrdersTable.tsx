@@ -14,11 +14,14 @@ import { format } from 'date-fns';
 import { convertNumberToNaira } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
-import { Button, LinkButton, Spinner } from '@/components/ui';
+import { Button, LinkButton, Popover, Spinner, PopoverTrigger, PopoverContent } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
-import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS } from '@/constants';
+import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
+import { useUpdateOrderStatus } from '../api';
+import toast from 'react-hot-toast';
+import { extractErrorMessage } from '@/utils/errors';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -72,23 +75,29 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         setFalse: closeSheet,
         setTrue: openSheet,
     } = useBooleanStateControl()
+    const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
+    const handleStatusUpdate = (new_status: string) => {
+        mutate({ id: order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
+            {
+                onSuccess: (data) => {
+                    toast.success("Order status updated successfully");
+                },
+                onError: (error) => {
+                    const errorMessage = extractErrorMessage(error as unknown as any);
+                    toast.error(errorMessage), {
+                        duration: 5000,
+                    };
+                }
+            }
+        );
+    }
 
     return (
         <TableRow>
             <TableCell className='min-w-[150px]'>
                 <div>{order.order_number}</div>
-                {/* {
-                    order.tag &&
-                    <div className="flex items-center gap-1.5 text-[#494949] text-xs">
-                        <span>
-                            <Tag size={15} />
-                        </span>
-                        <span>
-                            {order.tag}
-                        </span>
-                    </div>
-                } */}
+
 
             </TableCell>
             <TableCell className=''>
@@ -125,14 +134,35 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
             <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
-                <Badge
-                    className={cn(
-                        ORDER_STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
-                        'rounded-md w-max'
-                    )}
-                >
-                    {ORDER_STATUS_ENUMS[order.status]}
-                </Badge>
+                <Popover>
+                    <PopoverTrigger className="flex items-center gap-1">
+                        <Badge
+                            className={cn(
+                                ORDER_STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                                'rounded-md w-max '
+                            )}
+                        >
+                            {ORDER_STATUS_ENUMS[order.status]}
+                        </Badge>
+                        {
+                            isUpdatingStatus && <Spinner size={18} />
+                        }
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
+                        {
+                            ORDER_STATUS_OPTIONS.map((option) => (
+                                <button
+                                    key={option.value}
+                                    value={option.value}
+                                    onClick={() => handleStatusUpdate(option.value)}
+                                    className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
+                                >
+                                    {option.label}
+                                </button>
+                            ))
+                        }
+                    </PopoverContent>
+                </Popover>
             </TableCell>
             <TableCell className='min-w-max'>
                 <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>

@@ -17,13 +17,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
+import { formatCurrency } from '@/utils/currency';
 
 const deliveryFormSchema = z.object({
   driver_name: z.string().min(1, 'Driver Name is required'),
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
-  delivery_expense: z.string().min(1, 'Delivery Expenses is required'),
-  tracking_link: z.string().min(1, 'Tracking Link is required'),
+  delivery_expense: z.number().optional(),
+  tracking_link: z.string({ message: "Enter a valid url" }).url().min(1, 'Tracking Link is required'),
 });
 
 export type DeliveryDriverFormType = z.infer<typeof deliveryFormSchema>;
@@ -41,7 +42,7 @@ const OrdeManagementDelivery = () => {
     resolver: zodResolver(deliveryFormSchema),
   });
 
-  const { mutate: updateDriverDetails, isPending:isUpdatingDriverDetails } = useUpdateDriverDetails();
+  const { mutate: updateDriverDetails, isPending: isUpdatingDriverDetails } = useUpdateDriverDetails();
   const onSubmit = (data: DeliveryDriverFormType) => {
     updateDriverDetails({ id: order_id, data },
       {
@@ -52,14 +53,14 @@ const OrdeManagementDelivery = () => {
         },
         onError: (error) => {
           const errorMessage = extractErrorMessage(error);
-          toast.error(errorMessage, {duration: 7500});
+          toast.error(errorMessage, { duration: 7500 });
         }
       }
     );
     console.log(data);
   }
 
-
+console.log(errors)
 
   if (isLoading) {
     return <OrderManagementDeliverySkeleton />;
@@ -107,7 +108,10 @@ const OrdeManagementDelivery = () => {
           </div>
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
             <h3 className='text-sm text-gray-500 font-manrope'>Delivery Location</h3>
-            <p className="text-[0.92rem] text-[#111827] font-medium">Yaba(N5000)</p>
+            <p className="text-[0.92rem] text-[#111827] font-medium">
+              {order?.delivery.dispatch?.location}{" "}
+              ({formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, 'NGN')})
+            </p>
           </div>
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
             <h3 className='text-sm text-gray-500 font-manrope'>Location Zone</h3>
@@ -180,20 +184,11 @@ const OrdeManagementDelivery = () => {
             errorMessage={errors.delivery_platform?.message}
             defaultValue={order?.delivery?.delivery_platform ?? ""}
           />
-          <Input
-            label='Delivery Expenses *'
-            type='text'
-            placeholder='Enter delivery expenses'
-            className='w-full focus:border min-w-[350px] text-xs'
-            {...register('delivery_expense')}
-            hasError={!!errors.delivery_expense}
-            errorMessage={errors.delivery_expense?.message}
-            defaultValue={order?.delivery?.delivery_expense ?? ""}
-          />
+          
           <Input
             label='Tracking Link *'
             type='text'
-            placeholder='Enter tracking link'
+            placeholder='Enter tracking link e.g. https://zuzutracker.com/Ioh7MvW'
             className='w-full focus:border min-w-[350px] text-xs'
             {...register('tracking_link')}
             hasError={!!errors.tracking_link}
@@ -209,12 +204,10 @@ const OrdeManagementDelivery = () => {
           >
             Proceed
             {
-              isUpdatingDriverDetails && <Spinner className='ml-2'/>
+              isUpdatingDriverDetails && <Spinner className='ml-2' />
             }
           </Button>
-          {/* <LinkButton href="./complete-order" variant='default' className='bg-black text-white w-full h-14' size="lg">
-            Proceed
-          </LinkButton> */}
+
 
         </form>
       </section>

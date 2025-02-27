@@ -11,7 +11,7 @@ import { APIAxios, setAxiosDefaultToken } from "@/utils/axios";
 import { authTokenStorage } from '@/utils/auth';
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { LoginAPIResponse } from '@/app/(auth)/misc/api/postLogin';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 // Existing interfaces
 export interface UserData {
@@ -169,9 +169,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     dispatch({ type: 'LOGOUT' });
   };
 
+  const pathname = usePathname();
+  const routes = [
+    "track-order"
+  ]
   const checkAuthStatus = async () => {
     const token = authTokenStorage.getToken();
-
+    if (routes.some(router => pathname.includes(router))) {
+      return;
+    }
     if (!token) {
       router.push('/login');
       dispatch({ type: 'SET_AUTHENTICATING', payload: false });

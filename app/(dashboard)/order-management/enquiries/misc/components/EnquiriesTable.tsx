@@ -16,7 +16,7 @@ import { TEnquiry } from "../types";
 import { useUpdateEnquiryStatus } from "../api";
 import { formatAxiosErrorMessage } from "@/utils/errors";
 import { useQueryClient } from "@tanstack/react-query";
-import { FilterSearch, I3DRotate, Trash } from "iconsax-react";
+import { Edit, FilterSearch, I3DRotate, Trash } from "iconsax-react";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 
 interface EnquiriesTableProps {
@@ -241,6 +241,18 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                                 <>
                                   <DropdownMenuItem>
                                     <Link
+                                      href={`./enquiries/edit?enquiry_id=${enquiry.id}`}
+                                      className="w-full"
+                                    >
+                                      <span className="flex items-center gap-2 pl-6 py-3">
+                                        <Edit size={20} />
+                                        Edit Enquiry
+                                      </span>
+                                    </Link>
+                                  </DropdownMenuItem>
+
+                                  <DropdownMenuItem>
+                                    <Link
                                       href={`./enquiries/${enquiry.id}`}
                                       className="w-full"
                                     >
@@ -308,21 +320,21 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
 
 
       {
-        data.length === 0 && isFiltered && (
+        data.length === 0 && !isFiltered && (
           <div className='flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'>
             <Inbox size={60} />
-            <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No Orders Found</div>
-            <LinkButton href="./orders/new-order">
+            <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No Enquiry Found</div>
+            <LinkButton href="./enquiries/new-enquiry" className="px-10 h-14 mt-4">
+              Create Enquiry
             </LinkButton>
-
           </div>
         )
       }
       {
-        data.length === 0 && !isFiltered && (
+        data.length === 0 && isFiltered && (
           <div className='flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'>
             <FilterSearch size={60} />
-            <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No orders match your filters. Clear filters and try again</div>
+            <div className='text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance'>No enquiries match your filters. Clear filters and try again</div>
           </div>
         )
       }

@@ -45,11 +45,6 @@ const statusColors: Record<string, StatusColor> = {
     // STD: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
 };
 
-const paymentStatusEnums = {
-    'FP': 'Full Payment',
-    'PP': 'Part Payment',
-    'UP': 'Unpaid',
-}
 
 
 interface OrderRowProps {

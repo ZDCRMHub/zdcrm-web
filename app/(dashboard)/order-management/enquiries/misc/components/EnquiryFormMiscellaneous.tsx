@@ -7,7 +7,7 @@ import { Plus, Minus } from "lucide-react";
 
 
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
-import { NewEnquiryFormValues } from '../utils/schema';
+import { ConvertibleEnquiryFormValues, NewEnquiryFormValues } from '../utils/schema';
 import { Label } from '@/components/ui/label';
 
 function EnquiryFormMiscellaneous({

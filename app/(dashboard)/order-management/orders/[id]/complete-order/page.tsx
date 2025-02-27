@@ -7,6 +7,7 @@ import ProgressTimeline from './ProgressTimeline';
 import { useGetOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
 import { formatTimeString } from '@/utils/strings';
 import OrderPageSkeleton from './CompleteOrderPageSkeleton';
+import { formatDate } from 'date-fns';
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
@@ -88,7 +89,7 @@ const CompleteOrderPage = () => {
                                     Date/Expected Time
                                 </p>
                                 <p className="text-sm">
-                                    {formatTimeString(order?.delivery.delivery_time || '0')}
+                                    {formatDate(order?.delivery.delivery_date || '0', "dd/MMMM/yyyy")} at {formatTimeString(order?.delivery.delivery_time || '0')}
                                 </p>
                             </div>
                         </section>

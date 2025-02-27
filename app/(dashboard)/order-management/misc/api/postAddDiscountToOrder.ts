@@ -3,11 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { TOrder } from "../types";
 
 interface Props {
-    discount_id: number | string;
+    discount_id?: number | string;
+    custom_discount_amount?: number
     id: number | string;
 }
-const discountOrder = async ({ discount_id, id }: Props) => {
-    const res = await APIAxios.post(`/order/${id}/discount/`, {discount_id});
+const discountOrder = async ({ discount_id, custom_discount_amount, id }: Props) => {
+    const res = await APIAxios.post(`/order/${id}/discount/`, {discount_id, custom_discount_amount: custom_discount_amount == 0 ? undefined : custom_discount_amount});
     return res.data as APIResponse;
 };
 export const useAddDiscountToOrder = () => {

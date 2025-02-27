@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { OrderStatsDeliveryZoneSection, OrderStatsHeaderSection, OrderStatsTopProducts } from '../misc/components/order-stats';
+import OrderStatsTopCategories from '../misc/components/order-stats/OrderStatsTopCategories';
 
 
 
@@ -27,6 +28,7 @@ const OrderStatsPage = () => {
       <div className='flex gap-12 flex-col'>
         <OrderStatsDeliveryZoneSection />
         <OrderStatsTopProducts />
+        <OrderStatsTopCategories/>
       </div>
 
       <footer className='flex justify-end mt-24 mb-10 gap-6'>
