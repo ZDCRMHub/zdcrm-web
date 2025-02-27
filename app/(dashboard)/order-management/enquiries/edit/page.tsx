@@ -29,7 +29,6 @@ import {
   FormMessage,
   Form,
   TimePicker,
-  SelectMultipleSpecialCombo,
   Spinner,
   ConfirmActionModal,
 } from "@/components/ui";
@@ -59,7 +58,7 @@ import { formatTimeString } from "@/utils/strings";
 
 
 const NewEnquiryPage = () => {
-
+//  const enquiry_id = new URLSearchParams(window?.location.search).get('enquiry_id');
   const enquiry_id = useSearchParams().get('enquiry_id');
 
   const { data: enquiryData, isLoading: isLoadingEnquiryData } = useGetEnquiryDetail(enquiry_id ?? '')

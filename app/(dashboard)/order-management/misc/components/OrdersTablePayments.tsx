@@ -1,4 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import toast from 'react-hot-toast';
+import { FilterSearch, Tag } from 'iconsax-react';
+import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+
 import {
     Table,
     TableBody,
@@ -9,19 +13,16 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import OrderDetailSheetPayments from './OrderDetailSheetPayments';
-import { format } from 'date-fns';
 import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
-import { FilterSearch, Tag } from 'iconsax-react';
-import { TOrder } from '../types';
 import { Button, Checkbox, LinkButton, Spinner } from '@/components/ui';
-import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl, useDebounce } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
-import { useUpdatePaymentVerified } from '../api';
 import { useQueryClient } from '@tanstack/react-query';
+
+import OrderDetailSheetPayments from './OrderDetailSheetPayments';
+import { TOrder } from '../types';
+import { useUpdatePaymentVerified } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
-import toast from 'react-hot-toast';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -44,16 +45,15 @@ const statusColors: Record<string, StatusColor> = {
     'not_paid_go_ahead': 'bg-red-100 hover:bg-red-100 text-red-800',
 };
 
+interface OrderRowProps {
+    order: TOrder;
+}
 const paymentStatusEnums = {
     'FP': 'Full Payment',
     'PP': 'Part Payment',
     'UP': 'Unpaid',
 }
 
-
-interface OrderRowProps {
-    order: TOrder;
-}
 
 const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     const {
@@ -74,7 +74,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     queryKey: ['active-orders-list']
                 });
             },
-            onError(error, variables, context) {
+            onError(error) {
                  const errMsg = extractErrorMessage(error as unknown as any);
                  toast.error(errMsg);
             },

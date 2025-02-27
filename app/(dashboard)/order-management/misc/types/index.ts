@@ -27,7 +27,7 @@ export interface TOrder {
   total_amount: string;
   delivery: TOrderDeliveryInfo;
   items: Item[];
-  TOrderDiscussions: TOrderDiscussion[];
+  discussions: TOrderDiscussion[];
   part_payments: any[];
   create_date: string;
   update_date: string;

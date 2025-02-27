@@ -18,6 +18,7 @@ import EnquiryFormProductInventorySelector from './EnquiryFormProductInventorySe
 import StockItemFormEnquiry from './StockItemFormEnquiry';
 import { cn } from '@/lib/utils';
 import { useGetPropertyOptions } from '../../../misc/api';
+import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 
 
 interface EnquiryFormItemsSectionProps {
@@ -93,6 +94,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         size: 20000000000000,
         category: Number(watchedItems?.[index]?.category),
     });
+
     const handleProductVariationChange = (selectedItems: Array<TFormItemSelectionOption & { quantity: number }>) => {
         const newInventories = selectedItems.reduce((acc: any[], item) => {
             const existingInventory = acc.find(inv => inv.stock_inventory_id === item.stock_inventory_id);
@@ -140,11 +142,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
         const allProperties = [
-           item?.properties?.bouquet,
-           item?.properties?.layers,
-           item?.properties?.glass_vase,
-           item?.properties?.toppings,
-           item?.properties?.whipped_cream_upgrade,
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
         ]
         const propertiesCost = allProperties.reduce((acc, item) => {
             const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
@@ -187,11 +189,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
         const allProperties = [
-           item?.properties?.bouquet,
-           item?.properties?.layers,
-           item?.properties?.glass_vase,
-           item?.properties?.toppings,
-           item?.properties?.whipped_cream_upgrade,
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
         ]
         console.log(allProperties, "PROPS")
         const propertiesCost = allProperties.reduce((acc, item) => {
@@ -216,7 +218,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                 console.log("itemInventories", itemInventories)
 
                 return itemInventories?.reduce((acc, inv) => {
-                    return acc + (Number(inv.cost_price) * item.quantity) ;
+                    return acc + (Number(inv.cost_price) * item.quantity);
                 }, miscCost + propertiesCost);
             }
 
@@ -247,6 +249,16 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 Remove
                             </span>
                         </button>
+                        <button
+                            onClick={() => deleteItems(index)}
+                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max', index == 0 && "hidden")}
+                        >
+                            Custom Order
+                            <span className="sr-only">
+                                Remove
+                            </span>
+                        </button>
+
                     </div>
 
                     <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
@@ -328,7 +340,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                         {
                             selectedCategory &&
                             <>
-                            
+
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////                    STOCK INVENTORY                 //////////////// */}
@@ -418,7 +430,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         )}
                                                     />
 
-                                                  
+
                                                 </>
 
                                             )
@@ -568,6 +580,14 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 }
                             </>
                         }
+
+                        <CustomImagePicker
+                            control={control}
+                            name={`items.${index}.custom_image`}
+                            errors={errors}
+                            hasError={!!errors.items?.[index]?.custom_image}
+                            errorMessage={errors.items?.[index]?.custom_image?.message as string}
+                        />
 
 
 

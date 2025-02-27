@@ -301,9 +301,9 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     {[
                       ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
                       // ["Amount Paid(USD)", order?.amoun],
-                      [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price	 || 0), 'NGN')],
-                      [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
-                      [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
+                      [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price	 || 0), 'NGN')],
+                      [order?.payment_options?.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
+                      [order?.payment_options?.startsWith("part_payment") && "Oustanding Balance",
                       <span className="flex items-center gap-2" key={order?.id}>
                         {
                           formatCurrency(

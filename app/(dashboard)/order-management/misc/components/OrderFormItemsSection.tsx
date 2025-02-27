@@ -18,6 +18,7 @@ import { TStockInventoryItem } from '@/app/(dashboard)/inventory/misc/types/stoc
 import { formatCurrency } from '@/utils/currency';
 import { cn } from '@/lib/utils';
 import { useGetPropertyOptions } from '../api';
+import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 
 
 interface OrderItemsSectionProps {
@@ -140,11 +141,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
         const allProperties = [
-           item?.properties?.bouquet,
-           item?.properties?.layers,
-           item?.properties?.glass_vase,
-           item?.properties?.toppings,
-           item?.properties?.whipped_cream_upgrade,
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
         ]
         const propertiesCost = allProperties.reduce((acc, item) => {
             const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
@@ -187,11 +188,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
         const allProperties = [
-           item?.properties?.bouquet,
-           item?.properties?.layers,
-           item?.properties?.glass_vase,
-           item?.properties?.toppings,
-           item?.properties?.whipped_cream_upgrade,
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
         ]
         console.log(allProperties, "PROPS")
         const propertiesCost = allProperties.reduce((acc, item) => {
@@ -216,7 +217,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                 console.log("itemInventories", itemInventories)
 
                 return itemInventories?.reduce((acc, inv) => {
-                    return acc + (Number(inv.cost_price) * item.quantity) ;
+                    return acc + (Number(inv.cost_price) * item.quantity);
                 }, miscCost + propertiesCost);
             }
 
@@ -568,6 +569,14 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 }
                             </>
                         }
+
+                        <CustomImagePicker
+                            control={control}
+                            name={`items.${index}.custom_image`}
+                            errors={errors}
+                            hasError={!!errors.items?.[index]?.custom_image}
+                            errorMessage={errors.items?.[index]?.custom_image?.message as string}
+                        />
 
                     </div>
 

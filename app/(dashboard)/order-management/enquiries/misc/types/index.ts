@@ -26,12 +26,12 @@ export interface TEnquiry {
   payment_receipt_name: string | null;
   delivery: TOrderDeliveryInfo;
   items: Item[];
-  discussions: Discussion[];
+  discussions: TEnquiryDiscussion[];
   create_date: string;
   update_date: string;
 }
 
-interface Discussion {
+export interface TEnquiryDiscussion {
   id: number;
   user: Createdby;
   message: string;

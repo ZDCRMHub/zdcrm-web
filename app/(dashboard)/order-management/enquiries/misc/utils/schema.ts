@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_FILE_SIZE } from "../../../misc/utils/schema";
 
 const propertiesSchema = z.object({
     layers: z.string().optional(),
@@ -86,33 +87,58 @@ const optionalItemSchema = z.object({
     quantity: z.number().min(1),
     properties: propertiesSchema,
     inventories: z.array(
-      z.object({
-        message: z.string().optional(),
-        stock_inventory_id: z.number().optional(),
-        product_inventory_id: z.number().optional(),
-        instruction: z.string().optional(),
-        quantity_used: z.number().optional(),
-        variations: z
-          .array(
-            z.object({
-              stock_variation_id: z.number(),
-              quantity: z.number(),
-            }),
-          )
-          .optional(),
-        custom_image: z.string().optional(),
-      }),
-    ),
-    miscellaneous: z
-      .array(
         z.object({
-          description: z.string(),
-          cost: z.number(),
+            message: z.string().optional(),
+            stock_inventory_id: z.number().optional(),
+            product_inventory_id: z.number().optional(),
+            instruction: z.string().optional(),
+            quantity_used: z.number().optional(),
+            variations: z
+                .array(
+                    z.object({
+                        stock_variation_id: z.number(),
+                        quantity: z.number(),
+                    }),
+                )
+                .optional(),
         }),
-      )
-      .optional(),
-  })
-  
+    ),
+    custom_image: z.any().nullable(),
+    is_custom_order: z.boolean().optional(),
+    miscellaneous: z.array(
+        z.object({
+            description: z.string(),
+            cost: z.number(),
+        }),
+    ).optional(),
+}).refine((data) => {
+    if (data.is_custom_order) {
+
+        if (!data.custom_image) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select a file.',
+                code: 'custom',
+            }]);
+        }
+
+        if (!data.custom_image.type.startsWith('image/')) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select an image file.',
+                code: 'custom',
+            }]);
+        }
+        if (data.custom_image.size > MAX_FILE_SIZE) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select a file smaller than 10MB.',
+                code: 'custom',
+            }])
+        }
+    }
+});
+
 
 export const NewEnquirySchema = z.object({
     customer: z.object({

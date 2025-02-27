@@ -35,7 +35,7 @@ const ProductItemFormEnquiry = ({
   const { data: productsInvetories, isLoading: productsLoading, isFetching: productsFetching, error: productsError, refetch: refetchProductsInventory } = useGetProductsInventory({
     page: 1,
     size: 20000000000000,
-    category: Number(watchedItems[index].category),
+    category: Number(watchedItems?.[index].category),
     branch: selectedBranch,
   });
 
