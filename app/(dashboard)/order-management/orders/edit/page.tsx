@@ -106,60 +106,60 @@ const NewOrderPage = () => {
     name: "items"
   });
 
-      React.useEffect(() => {
-        if (!isLoadingOrderData && !!orderData) {
-          form.reset({
-            customer: {
-              name: orderData.customer.name,
-              phone: orderData.customer.phone,
-              email: orderData.customer.email
-            },
-            enquiry_channel: orderData.enquiry_channel,
+  React.useEffect(() => {
+    if (!isLoadingOrderData && !!orderData) {
+      form.reset({
+        customer: {
+          name: orderData.customer.name,
+          phone: orderData.customer.phone,
+          email: orderData.customer.email
+        },
+        enquiry_channel: orderData.enquiry_channel,
         enquiry_occasion: orderData.enquiry_occasion,
         // social_media_details: orderData.social_media_details,
-            branch: orderData.branch.id,
-            delivery: {
-              zone: orderData.delivery?.zone as "LM" | "LC" | "LI" | "ND",
-              method: orderData.delivery?.method as "Dispatch" | "Pickup",
-              dispatch: orderData.delivery?.dispatch.id.toString(),
-              address: orderData.delivery?.address,
-              recipient_name: orderData.delivery?.recipient_name,
-              recipient_phone: orderData.delivery?.recipient_phone,
-              delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
-            },
-            message: orderData.message,
-            items: orderData.items?.map(item => ({
-              category: item.product?.category.id,
-              product_id: item.product.id,
-              quantity: item.quantity,
-              properties: item.properties.reduce((acc, prop) => ({
-                ...acc,
-                layers: prop.layers.id,
-                toppings: prop.toppings.id,
-                bouquet: prop.bouquet,
-                glass_vase: prop.glass_vase,
-                // whipped_cream_upgrade: prop.whipped_cream_upgrade,
-              }), {}),
-              inventories: item.inventories.map(inventory => ({
-                stock_inventory_id: inventory.stock_inventory?.id,
-                product_inventory_id: inventory.product_inventory?.id,
-                variations: inventory.variations?.map(variation => ({
-                  stock_variation_id: variation.id,
-                  quantity: variation.quantity,
-                }))
-              }))
-            })),
-            payment_options: orderData.payment_options,
-            payment_currency: orderData.payment_currency as "NGN" | "USD",
-            payment_proof: orderData.payment_proof,
-            payment_receipt_name: orderData.payment_receipt_name || '',
-            amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
-            initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
+        branch: orderData.branch.id,
+        delivery: {
+          zone: orderData.delivery?.zone as "LM" | "LC" | "LI" | "ND",
+          method: orderData.delivery?.method as "Dispatch" | "Pickup",
+          dispatch: orderData.delivery?.dispatch.id.toString(),
+          address: orderData.delivery?.address,
+          recipient_name: orderData.delivery?.recipient_name,
+          recipient_phone: orderData.delivery?.recipient_phone,
+          delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
+        },
+        message: orderData.message,
+        items: orderData.items?.map(item => ({
+          category: item.product?.category.id,
+          product_id: item.product.id,
+          quantity: item.quantity,
+          properties: item.properties.reduce((acc, prop) => ({
+            ...acc,
+            layers: prop.layers.id,
+            toppings: prop.toppings.id,
+            bouquet: prop.bouquet,
+            glass_vase: prop.glass_vase,
+            // whipped_cream_upgrade: prop.whipped_cream_upgrade,
+          }), {}),
+          inventories: item.inventories.map(inventory => ({
+            stock_inventory_id: inventory.stock_inventory?.id,
+            product_inventory_id: inventory.product_inventory?.id,
+            variations: inventory.variations?.map(variation => ({
+              stock_variation_id: variation.id,
+              quantity: variation.quantity,
+            }))
+          }))
+        })),
+        payment_options: orderData.payment_options,
+        payment_currency: orderData.payment_currency as "NGN" | "USD",
+        payment_proof: orderData.payment_proof,
+        payment_receipt_name: orderData.payment_receipt_name || '',
+        amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
+        initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
 
-          });
-        }
-      }, [orderData, isLoadingOrderData]);
-    console.log(errors)
+      });
+    }
+  }, [orderData, isLoadingOrderData]);
+  console.log(errors)
   console.log(errors)
 
   const addNewItem = () => {
@@ -210,8 +210,23 @@ const NewOrderPage = () => {
       const data = await uploadToCloudinary(PdfFile)
       payment_proof = data.secure_url
     }
+
+    const processedItems = await Promise.all(
+      data.items.map(async (item) => {
+        let custom_image: string | undefined
+        if (item.custom_image) {
+          const uploadResult = await uploadToCloudinary(item.custom_image)
+          custom_image = uploadResult.secure_url
+        }
+        return {
+          ...item,
+          custom_image,
+        }
+      }),
+    )
     const dataToSubmit = {
       ...data,
+      items: processedItems,
       payment_proof: PdfFile ? payment_proof : undefined,
     }
 
@@ -227,7 +242,6 @@ const NewOrderPage = () => {
       }
     })
   };
-
   const routeToOrderDetails = () => {
     router.push(`/order-management/orders/${createdOrder?.id}`);
   }
