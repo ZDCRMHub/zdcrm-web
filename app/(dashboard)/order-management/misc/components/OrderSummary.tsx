@@ -353,8 +353,8 @@ export default function OrderSummary() {
                   <CardContent className='p-0'>
                     <div className='flex justify-between items-center mb-4 border-b py-3 px-6'>
                       <h2 className='font-semibold'>Delivery Details</h2>
-                      <LinkButton href="./new-order" variant='unstyled' size='sm'>
-                        {/* <Edit2 className='w-5 h-5 text-[#A0AEC0]' /> */}
+                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
+                        <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>
                     <div className='grid grid-cols-[max-content,1fr] gap-4 text-[0.75rem] px-4 pb-4 font-manrope'>
@@ -402,7 +402,7 @@ export default function OrderSummary() {
 
                     <div className='flex justify-between items-center mb-4 px-6 py-3 border-b'>
                       <h2 className='font-semibold'>Delivery Note</h2>
-                      <LinkButton href={`./edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
+                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
                         <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>

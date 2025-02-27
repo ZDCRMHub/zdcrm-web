@@ -129,7 +129,11 @@ export const NewEnquirySchema = z.object({
         dispatch: z.string().optional(),
         address: z.string().optional(),
         recipient_name: z.string().optional(),
-        recipient_phone: z.string().optional()
+        recipient_phone: z.string().optional(),
+        fee: z.number().optional(),
+        is_custom_delivery: z.boolean().optional(),
+
+
     }),
     enquiry_channel: z.string().min(1, { message: "Enquiry channel is required" }),
     social_media_details: z.string().optional(),
@@ -146,7 +150,7 @@ export const ConvertiblEnquirySchema = z.object({
         email: z.string().email().optional()
     }),
     delivery: z.object({
-        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        zone: z.enum(["LM", "LC", "LI", "ND"], { message: "Delivery zone is required" }),
         note: z.string().optional(),
         delivery_time: z.string(),
         delivery_date: z.string({ message: "Delivery date is required" }),

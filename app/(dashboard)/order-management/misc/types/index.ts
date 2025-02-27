@@ -19,6 +19,7 @@ export interface TOrder {
   initial_amount_paid: number | null;
   payment_currency: string;
   payment_proof: string;
+  payment_verified: boolean;
   amount_paid_in_usd: number | null;
   payment_receipt_name: string;
   total_production_cost: string;

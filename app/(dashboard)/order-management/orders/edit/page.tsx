@@ -62,7 +62,7 @@ const NewOrderPage = () => {
 
   const order_id = useSearchParams().get('order_id');
 
-  const { data: orderData, isLoading: isLoadingorderData } = useGetOrderDetail(order_id ?? '')
+  const { data: orderData, isLoading: isLoadingOrderData } = useGetOrderDetail(order_id ?? '')
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
@@ -106,71 +106,76 @@ const NewOrderPage = () => {
     name: "items"
   });
 
-  React.useEffect(() => {
-    if (!isLoadingorderData && !!orderData) {
-      form.reset({
-        customer: {
-          name: orderData.customer.name,
-          phone: orderData.customer.phone,
-          email: orderData.customer.email
-        },
-        branch: orderData.branch.id,
-        delivery: {
-          zone: orderData.delivery?.zone as "LM" | "LC" | "LI",
-          method: orderData.delivery?.method as "Dispatch" | "Pickup",
-          dispatch: orderData.delivery?.dispatch.id.toString(),
-          address: orderData.delivery?.address,
-          recipient_name: orderData.delivery?.recipient_name,
-          recipient_phone: orderData.delivery?.recipient_phone,
-          delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
-        },
-        message: orderData.message,
-        items: orderData.items?.map(item => ({
-          category: item.product?.category.id,
-          product_id: item.product.id,
-          quantity: item.quantity,
-          properties: item.properties.reduce((acc, prop) => ({
-            ...acc,
-            layers: prop.layers.id,
-            toppings: prop.toppings.id,
-            bouquet: prop.bouquet,
-            glass_vase: prop.glass_vase,
-            // whipped_cream_upgrade: prop.whipped_cream_upgrade,
-          }), {}),
-          inventories: item.inventories.map(inventory => ({
-            product_inventory_id: inventory.stock_inventory?.id,
-            product_inventoryy_id: inventory.product_inventory?.id,
-            variations: inventory.variations.map(variation => ({
-              stock_variation_id: variation.id
-            }))
-          }))
-        })),
-        payment_options: orderData.payment_options,
-        payment_currency: orderData.payment_currency as "NGN" | "USD",
-        payment_proof: orderData.payment_proof,
-        payment_receipt_name: orderData.payment_receipt_name,
-        amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
-        initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
+      React.useEffect(() => {
+        if (!isLoadingOrderData && !!orderData) {
+          form.reset({
+            customer: {
+              name: orderData.customer.name,
+              phone: orderData.customer.phone,
+              email: orderData.customer.email
+            },
+            enquiry_channel: orderData.enquiry_channel,
+        enquiry_occasion: orderData.enquiry_occasion,
+        // social_media_details: orderData.social_media_details,
+            branch: orderData.branch.id,
+            delivery: {
+              zone: orderData.delivery?.zone as "LM" | "LC" | "LI" | "ND",
+              method: orderData.delivery?.method as "Dispatch" | "Pickup",
+              dispatch: orderData.delivery?.dispatch.id.toString(),
+              address: orderData.delivery?.address,
+              recipient_name: orderData.delivery?.recipient_name,
+              recipient_phone: orderData.delivery?.recipient_phone,
+              delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
+            },
+            message: orderData.message,
+            items: orderData.items?.map(item => ({
+              category: item.product?.category.id,
+              product_id: item.product.id,
+              quantity: item.quantity,
+              properties: item.properties.reduce((acc, prop) => ({
+                ...acc,
+                layers: prop.layers.id,
+                toppings: prop.toppings.id,
+                bouquet: prop.bouquet,
+                glass_vase: prop.glass_vase,
+                // whipped_cream_upgrade: prop.whipped_cream_upgrade,
+              }), {}),
+              inventories: item.inventories.map(inventory => ({
+                stock_inventory_id: inventory.stock_inventory?.id,
+                product_inventory_id: inventory.product_inventory?.id,
+                variations: inventory.variations?.map(variation => ({
+                  stock_variation_id: variation.id,
+                  quantity: variation.quantity,
+                }))
+              }))
+            })),
+            payment_options: orderData.payment_options,
+            payment_currency: orderData.payment_currency as "NGN" | "USD",
+            payment_proof: orderData.payment_proof,
+            payment_receipt_name: orderData.payment_receipt_name || '',
+            amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
+            initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
 
-      });
-    }
-  }, [orderData, isLoadingorderData]);
-  console.log(errors)
+          });
+        }
+      }, [orderData, isLoadingOrderData]);
+    console.log(errors)
   console.log(errors)
 
   const addNewItem = () => {
     const prevItems = watch('items')
-    setValue('items', {
+    setValue('items', [
       ...prevItems,
-      category: categories?.[0].id || 1,
-      product_id: products?.[0].id || 0,
-      quantity: 1,
-      properties: {},
-      inventories: [{
-        variations: [],
-      }],
-    })
-
+      {
+        category: categories?.[0].id || 1,
+        product_id: products?.[0].id || 0,
+        quantity: 1,
+        properties: {},
+        inventories: [{
+          variations: [],
+        }],
+      }
+    ])
   };
 
   const router = useRouter();
@@ -238,7 +243,9 @@ const NewOrderPage = () => {
 
   console.log(getValues('items'))
 
-
+  if (isLoadingOrderData || !orderData) {
+    return <div className="w-full h-full flex items-center justify-center"><Spinner /></div>
+  }
 
   return (
     <div className="px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
@@ -346,6 +353,8 @@ const NewOrderPage = () => {
                           hasError={!!errors.enquiry_channel}
                           errorMessage={errors.enquiry_channel?.message}
                           {...field}
+                          value={watch('enquiry_channel')}
+
                         />
                       </FormItem>
                     )}

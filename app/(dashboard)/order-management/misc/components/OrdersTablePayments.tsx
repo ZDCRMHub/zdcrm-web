@@ -14,10 +14,11 @@ import { format } from 'date-fns';
 import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
-import { Button, LinkButton, Spinner } from '@/components/ui';
+import { Button, Checkbox, LinkButton, Spinner } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
-import { useBooleanStateControl } from '@/hooks';
+import { useBooleanStateControl, useDebounce } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
+import { useUpdatePaymentVerified } from '../api';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -60,6 +61,17 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
     } = useBooleanStateControl()
 
 
+    const { mutate, isPending } = useUpdatePaymentVerified(order.id);
+
+    const handlePaymentVerifiedStatus = ()=>{
+        mutate({ id: order.id, payment_verified: !order?.payment_verified }, {
+            onSuccess: () => {
+                console.log('Order payment status updated successfully');
+            }
+        });
+    }
+
+    
     return (
         <TableRow>
             <TableCell className='min-w-[150px]'>
@@ -77,7 +89,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             <TableCell className='min-w-max'>
                 <Badge
                     className={cn(
-                        statusColors[order.payment_options] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                        statusColors[order.payment_options || 'not_paid_go_ahead'] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
                         'rounded-md w-max'
                     )}
                 >
@@ -89,13 +101,25 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div className='text-sm text-[#494949]'>{order.payment_status}</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>
-             {
-                !!order.amount_paid_in_usd ?  formatCurrency(order.amount_paid_in_usd,'USD') : 'N/A'
-             }
+                {
+                    !!order.amount_paid_in_usd ? formatCurrency(order.amount_paid_in_usd, 'USD') : 'N/A'
+                }
             </TableCell>
 
-            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
-           
+            <TableCell className=' uppercase'>
+                <div className="flex items-center gap-1.5">
+                    <Checkbox
+                        checked={order.payment_verified}
+                        disabled={isPending}
+                        onCheckedChange={()=>handlePaymentVerifiedStatus()}
+                    />
+                    {
+                        isPending &&
+                        <Spinner size={16} />
+                    }
+                </div>
+            </TableCell>
+
 
             <TableCell>
                 <Button
@@ -224,7 +248,7 @@ const OrdersTablePayments = ({ data, isLoading, isFetching, error, isFiltered }:
                                     <TableHead className='min-w-[180px]'>Payment Mode</TableHead>
                                     <TableHead className='min-w-[150px]'>Amount</TableHead>
                                     <TableHead>Amount(USD)</TableHead>
-                                    <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
+                                    <TableHead className='min-w-[175px] max-w-[500px]'>Payment Confirmed</TableHead>
                                     <TableHead></TableHead>
                                 </TableRow>
                             </TableHeader>

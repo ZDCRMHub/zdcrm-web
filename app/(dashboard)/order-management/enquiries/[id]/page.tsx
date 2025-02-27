@@ -136,7 +136,7 @@ const EnquiryDetailsPage = () => {
                         </div>
                     </Card>
 
-                    <Card className="flex-1 space-y-4 p-5 rounded-xl">
+                    <Card className="flex-1 space-y-2 p-5 rounded-xl">
                         <div className="flex justify-between items-center">
                             <h2 className="font-semibold font-manrope text-sm">
                                 Delivery Note
@@ -155,7 +155,7 @@ const EnquiryDetailsPage = () => {
                     </Card>
                 </div>
 
-                <Card className="space-y-4 p-5 rounded-xl w-60">
+                <Card className="space-y-2 p-5 rounded-xl w-60">
                     <header className="flex justify-between items-center">
                         <h2 className="font-semibold font-manrope text-sm">
                             Dispatch Time

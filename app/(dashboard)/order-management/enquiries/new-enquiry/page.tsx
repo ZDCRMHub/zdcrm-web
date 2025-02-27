@@ -145,6 +145,11 @@ const NewEnquiryPage = () => {
   const resetForm = () => {
     reset();
   }
+  const isCustomDelivery = watch(`delivery.is_custom_delivery`);
+  const toggleCustomDelivery = () => {
+    setValue('delivery.is_custom_delivery', !isCustomDelivery);
+  }
+
   console.log(getValues('items'))
 
 
@@ -405,19 +410,39 @@ const NewEnquiryPage = () => {
                     name="delivery.dispatch"
                     render={({ field }) => (
                       <FormItem>
-                        <SelectSingleCombo
-                          label="Dispatch Location"
-                          {...field}
-                          value={field.value?.toString() || ''}
-                          isLoadingOptions={dispatchLocationsLoading}
-                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                          valueKey={"value"}
-                          // labelKey={"label"}
-                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                          placeholder="Select dispatch location"
-                          hasError={!!errors.delivery?.dispatch}
-                          errorMessage={errors.delivery?.dispatch?.message}
-                        />
+                        {
+                          isCustomDelivery ?
+                            <Input
+                              label="Delivery Fee"
+                              {...register('delivery.fee', { valueAsNumber: true })}
+                              hasError={!!errors.delivery?.fee}
+                              errorMessage={errors.delivery?.fee?.message}
+                              placeholder="Enter delivery fee"
+                            />
+                            :
+                            <SelectSingleCombo
+                              label="Dispatch Location"
+                              {...field}
+                              value={field.value?.toString() || ''}
+                              isLoadingOptions={dispatchLocationsLoading}
+                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                              valueKey={"value"}
+                              // labelKey={"label"}
+                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                              placeholder="Select dispatch location"
+                              hasError={!!errors.delivery?.dispatch}
+                              errorMessage={errors.delivery?.dispatch?.message}
+                            />
+                        }
+                        <button
+                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                          onClick={toggleCustomDelivery}
+                          type="button"
+                        >
+                          {
+                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                          }
+                        </button>
                       </FormItem>
                     )}
                   />

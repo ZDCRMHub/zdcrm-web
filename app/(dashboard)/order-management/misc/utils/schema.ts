@@ -88,8 +88,9 @@ export const NewOrderSchema = z.object({
         phone: z.string().min(1, { message: "Customer's phone number is required" }),
         email: z.string().optional()
     }),
+    
     delivery: z.object({
-        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        zone: z.enum(["LM", "LC", "LI", "ND"], { message: "Delivery zone is required" }),
         note: z.string().optional(),
         delivery_time: z.string(),
         delivery_date: z.string({ message: "Delivery date is required" }),
@@ -128,11 +129,19 @@ export const NewOrderSchema = z.object({
     amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
     initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
 }).superRefine((data, ctx) => {
+    
     if(data.payment_options !== 'not_paid_go_ahead') {
         if (!data.payment_proof) {
             throw z.ZodError.create([{
                 path: ['payment_proof'],
                 message: 'Please select a file.',
+                code: 'custom',
+            }]);
+        }
+        if (!data.payment_receipt_name) {
+            throw z.ZodError.create([{
+                path: ['payment_receipt_name'],
+                message: 'Please enter name on receipt.',
                 code: 'custom',
             }]);
         }

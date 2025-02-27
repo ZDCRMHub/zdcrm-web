@@ -52,6 +52,7 @@ import { useRouter } from "next/navigation";
 import APIAxios from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PartPaymentsForm from "./PartPaymentsForm";
+import { printNote } from "../utils/print";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -431,6 +432,18 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       Delivery Note
                       <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                     </p>
+
+                    <Button
+                    onClick={()=>printNote(
+                      {
+                        note: order?.delivery.note || '',
+                        orderNumber: order?.order_number,
+                        title: "Order Notes",
+                      }
+                    )}
+                    >
+                      Print
+                    </Button>
                   </header>
                   <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
                     <Input
