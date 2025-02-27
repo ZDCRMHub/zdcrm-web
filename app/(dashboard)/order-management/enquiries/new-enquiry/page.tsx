@@ -120,12 +120,29 @@ const NewEnquiryPage = () => {
     setFalse: closeSuccessModal,
   } = useBooleanStateControl()
 
-  // const router = useRouter()
   const { mutate, isPending } = useCreateEnquiry()
+  const { uploadToCloudinary } = useCloudinary()
   const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
   const onSubmit = async (data: NewEnquiryFormValues) => {
+    const processedItems = !!data.items ? await Promise.all(
+      data.items.map(async (item) => {
+        let custom_image: string | undefined
+        if (item.custom_image) {
+          const uploadResult = await uploadToCloudinary(item.custom_image)
+          custom_image = uploadResult.secure_url
+        }
+        return {
+          ...item,
+          custom_image,
+        }
+      }) 
+    ) : [];
+    const dataToSubmit = {
+      ...data,
+      items: processedItems,
+    }
 
-    mutate(data, {
+    mutate(dataToSubmit, {
       onSuccess(data) {
         toast.success("Enquiry created successfully");
         openSuccessModal();

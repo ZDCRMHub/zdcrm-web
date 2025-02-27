@@ -40,7 +40,6 @@ import {
   ENQUIRY_PAYMENT_OPTIONS,
   ZONES_OPTIONS,
 } from "@/constants";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import { useGetCategories, useGetProducts } from "@/app/(dashboard)/inventory/misc/api";
@@ -139,7 +138,7 @@ const NewOrderPage = () => {
     setFalse: closeSuccessModal,
   } = useBooleanStateControl()
 
-  // const router = useRouter()
+
   const { mutate, isPending } = useCreateOrder()
   const onSubmit = async (data: NewOrderFormValues) => {
     let payment_proof: string | undefined
@@ -148,8 +147,23 @@ const NewOrderPage = () => {
       const data = await uploadToCloudinary(PdfFile)
       payment_proof = data.secure_url
     }
+
+    const processedItems = await Promise.all(
+      data.items.map(async (item) => {
+        let custom_image: string | undefined
+        if (item.custom_image) {
+          const uploadResult = await uploadToCloudinary(item.custom_image)
+          custom_image = uploadResult.secure_url
+        }
+        return {
+          ...item,
+          custom_image,
+        }
+      }),
+    )
     const dataToSubmit = {
       ...data,
+      items: processedItems,
       payment_proof: PdfFile ? payment_proof : undefined,
     }
 

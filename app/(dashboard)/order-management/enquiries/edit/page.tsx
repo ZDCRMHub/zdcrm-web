@@ -3,11 +3,10 @@ import React from "react";
 import Image from "next/image";
 import {
   Controller,
-  FieldErrors,
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import { Money, TruckTime, ShoppingBag, Box } from "iconsax-react";
+import { Money, TruckTime, Box } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
@@ -36,7 +35,6 @@ import {
   DISPATCH_METHOD_OPTIONS,
   ENQUIRY_CHANNEL_OPTIONS,
   ENQUIRY_OCCASION_OPTIONS,
-  ENQUIRY_PAYMENT_OPTIONS,
 } from "@/constants";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,17 +46,14 @@ import { useBooleanStateControl } from "@/hooks";
 import { extractErrorMessage } from "@/utils/errors";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLoading } from "@/contexts";
 import { NewEnquiryFormValues, NewEnquirySchema } from "../misc/utils/schema";
 import { useCreateEnquiry, useGetEnquiryDetail, useUpdateEnquiry } from "../misc/api";
-import { TEnquiry } from "../misc/types";
 import { useGetOrderDeliveryLocations } from "../../misc/api";
 import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
 import { formatTimeString } from "@/utils/strings";
 
 
 const NewEnquiryPage = () => {
-//  const enquiry_id = new URLSearchParams(window?.location.search).get('enquiry_id');
   const enquiry_id = useSearchParams().get('enquiry_id');
 
   const { data: enquiryData, isLoading: isLoadingEnquiryData } = useGetEnquiryDetail(enquiry_id ?? '')
@@ -122,7 +117,6 @@ const NewEnquiryPage = () => {
           }))
         }))
       }
-      console.log(resetData, "CONSS.")
       form.reset(resetData);
       setValue('items', resetData.items);
 
@@ -148,16 +142,31 @@ const NewEnquiryPage = () => {
     setTrue: openSuccessModal,
     setFalse: closeSuccessModal,
   } = useBooleanStateControl()
-
-  // const router = useRouter()
   const { mutate, isPending } = useUpdateEnquiry()
-  const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
+
+  const { uploadToCloudinary } = useCloudinary();
   const onSubmit = async (data: NewEnquiryFormValues) => {
-    mutate({ id: enquiry_id ?? '', data }, {
+    const processedItems = !!data.items ? await Promise.all(
+      data.items.map(async (item) => {
+        let custom_image: string | undefined
+        if (item.custom_image) {
+          const uploadResult = await uploadToCloudinary(item.custom_image)
+          custom_image = uploadResult.secure_url
+        }
+        return {
+          ...item,
+          custom_image,
+        }
+      })
+    ) : [];
+    const dataToSubmit = {
+      ...data,
+      items: processedItems,
+    }
+    mutate({ id: enquiry_id ?? '', data: dataToSubmit }, {
       onSuccess(data) {
         toast.success("Enquiry created successfully");
         openSuccessModal();
-        setCreatedEnquiry(data?.data);
       },
       onError(error: unknown) {
         const errMessage = extractErrorMessage((error as any)?.response?.data as any);
@@ -181,6 +190,7 @@ const NewEnquiryPage = () => {
   }
 
 
+  
   return (
     <div className="px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
       <Form {...form}>

@@ -80,6 +80,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
 
     const watchedItems = watch("items");
     const watchedItemAtIndex = watch(`items.${index}`)
+    const isCustomOrder = watch(`items.${index}.is_custom_order`)
     const watchedInventories = watch(`items.${index}.inventories`)
 
     const { data: productsInvetories, isLoading: productInventoriesLoading, isFetching: productInventoriesFetching, error: productsError, refetch: refetchProductsInventory } = useGetProductsInventory({
@@ -242,7 +243,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                         </div>
                         <button
                             onClick={() => deleteItems(index)}
-                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max', index == 0 && "hidden")}
+                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max', watchedItems?.length && watchedItems?.length < 2 && "hidden")}
                         >
                             <TrashIcon size={20} />
                             <span className="sr-only">
@@ -250,13 +251,17 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             </span>
                         </button>
                         <button
-                            onClick={() => deleteItems(index)}
-                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max', index == 0 && "hidden")}
+                            onClick={() => {
+                                setValue(`items.${index}.is_custom_order`, !isCustomOrder)
+                             }}
+                            className={cn('flex items-center justify-center px-3 py-1.5 bg-[#FFC600] text-[#111827] hover:opacity-90 max-w-max')}
                         >
-                            Custom Order
-                            <span className="sr-only">
-                                Remove
-                            </span>
+                            {
+                                watchedItemAtIndex?.is_custom_order ?
+                                    "+ Regular Order" :
+                                    "+ Custom Order"
+                            }
+
                         </button>
 
                     </div>
@@ -581,13 +586,16 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             </>
                         }
 
-                        <CustomImagePicker
-                            control={control}
-                            name={`items.${index}.custom_image`}
-                            errors={errors}
-                            hasError={!!errors.items?.[index]?.custom_image}
-                            errorMessage={errors.items?.[index]?.custom_image?.message as string}
-                        />
+                        {
+                            isCustomOrder &&
+                            <CustomImagePicker
+                                control={control}
+                                name={`items.${index}.custom_image`}
+                                errors={errors}
+                                hasError={!!errors.items?.[index]?.custom_image}
+                                errorMessage={errors.items?.[index]?.custom_image?.message as string}
+                            />
+                        }
 
 
 
