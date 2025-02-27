@@ -139,7 +139,7 @@ export const linkGroups = [
   {
     key: "bottom",
     heading: "ADMIN",
-    requiredPermissions: ["CAN_MANAGE_STAFFS", "CAN_MANAGE_ROLES", "CAN_MANAGE_BRANCHES"],
+    requiredPermissions: ["CAN_MANAGE_STAFFS", "CAN_MANAGE_ROLES", "CAN_MANAGE_BRANCHES", "CAN_MANAGE_INVENTORIES"],
     links: [
       {
         text: "Manage Admin",
@@ -163,6 +163,24 @@ export const linkGroups = [
             text: "Invite Employee",
             icon: <ShopRemove size={20} />,
             requiredPermissions: ["CAN_MANAGE_STAFFS"],
+          },
+          {
+            link: "/admin/products",
+            text: "Products",
+            icon: <I3Dcube />,
+            requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
+          },
+          {
+            link: "/admin/dispatch",
+            text: "Dispatch",
+            icon: <I3Dcube />,
+            requiredPermissions: ["CAN_MANAGE_ORDERS"],
+          },
+          {
+            link: "/admin/discount",
+            text: "Discount",
+            icon: <I3Dcube />,
+            requiredPermissions: ["CAN_MANAGE_ORDERS"],
           },
           {
             link: "/admin/admin-roles",

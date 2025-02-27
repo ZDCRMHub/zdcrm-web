@@ -33,7 +33,7 @@ const SuccessModal: React.FC<ModalProps> = ({
   buttonText,
 }) => {
   return (
-    <Dialog open={isModalOpen}>
+    <Dialog open={isModalOpen}> 
       <DialogContent
         onPointerDownOutside={closeModal}
         className="p-0 !rounded-2xl w-[569px]"

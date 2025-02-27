@@ -55,6 +55,6 @@ const ErrorModal = ({
       </DialogContent>
     </Dialog>
   );
-}
+} 
 
 export default ErrorModal;
