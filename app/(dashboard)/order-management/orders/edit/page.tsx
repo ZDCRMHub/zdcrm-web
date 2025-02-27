@@ -7,7 +7,7 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import { Money, TruckTime, ShoppingBag, Box } from "iconsax-react";
+import { Money, TruckTime, ShoppingBag } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
@@ -38,6 +38,7 @@ import {
   ENQUIRY_CHANNEL_OPTIONS,
   ENQUIRY_OCCASION_OPTIONS,
   ENQUIRY_PAYMENT_OPTIONS,
+  ZONES_OPTIONS,
 } from "@/constants";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,24 +49,26 @@ import { formatCurrency } from "@/utils/currency";
 import { useBooleanStateControl } from "@/hooks";
 import { extractErrorMessage } from "@/utils/errors";
 
-import { useRouter } from "next/navigation";
+import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
+import OrderFormItemsSection from "../../misc/components/OrderFormItemsSection";
+import { useCreateOrder, useGetOrderDeliveryLocations, useGetOrderDetail } from "../../misc/api";
+import { TOrder } from "../../misc/types";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLoading } from "@/contexts";
-import { NewEnquiryFormValues, NewEnquirySchema } from "../misc/utils/schema";
-import { useCreateEnquiry } from "../misc/api";
-import { TEnquiry } from "../misc/types";
-import { useGetOrderDeliveryLocations } from "../../misc/api";
-import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
 
 
-const NewEnquiryPage = () => {
+const NewOrderPage = () => {
 
+  const order_id = useSearchParams().get('order_id');
+
+  const { data: orderData, isLoading: isLoadingorderData } = useGetOrderDetail(order_id ?? '')
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
   const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
 
-  const form = useForm<NewEnquiryFormValues>({
-    resolver: zodResolver(NewEnquirySchema),
+  const form = useForm<NewOrderFormValues>({
+    resolver: zodResolver(NewOrderSchema),
     defaultValues: {
       branch: branches?.data?.[0].id,
       customer: { name: "", phone: "", email: "" },
@@ -90,6 +93,9 @@ const NewEnquiryPage = () => {
           }],
         }
       ],
+      payment_status: "UP",
+      payment_options: "not_paid_go_ahead",
+      payment_currency: "NGN",
     }
   });
 
@@ -99,6 +105,56 @@ const NewEnquiryPage = () => {
     name: "items"
   });
 
+      React.useEffect(() => {
+        if (!isLoadingorderData && !!orderData) {
+          form.reset({
+            customer: {
+              name: orderData.customer.name,
+              phone: orderData.customer.phone,
+              email: orderData.customer.email
+            },
+            branch: orderData.branch.id,
+            delivery: {
+              zone: orderData.delivery?.zone as "LM" | "LC" | "LI",
+              method: orderData.delivery?.method as "Dispatch" | "Pickup",
+              dispatch: orderData.delivery?.dispatch.id.toString(),
+              address: orderData.delivery?.address,
+              recipient_name: orderData.delivery?.recipient_name,
+              recipient_phone: orderData.delivery?.recipient_phone,
+              delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
+            },
+            message: orderData.message,
+            items: orderData.items?.map(item => ({
+              category: item.product?.category.id,
+              product_id: item.product.id,
+              quantity: item.quantity,
+              properties: item.properties.reduce((acc, prop) => ({
+                ...acc,
+                layers: prop.layers.id,
+                toppings: prop.toppings.id,
+                bouquet: prop.bouquet,
+                glass_vase: prop.glass_vase,
+                // whipped_cream_upgrade: prop.whipped_cream_upgrade,
+              }), {}),
+              inventories: item.inventories.map(inventory => ({
+                product_inventory_id: inventory.stock_inventory?.id,
+                product_inventoryy_id: inventory.product_inventory?.id,
+                variations: inventory.variations.map(variation => ({
+                  stock_variation_id: variation.id
+                }))
+              }))
+            })),
+            payment_options: orderData.payment_options,
+            payment_currency: orderData.payment_currency as "NGN" | "USD",
+            payment_proof: orderData.payment_proof,
+            payment_receipt_name: orderData.payment_receipt_name,
+            amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
+            initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
+
+          });
+        }
+      }, [orderData, isLoadingorderData]);
+    console.log(errors)
   console.log(errors)
 
   const addNewItem = () => {
@@ -114,6 +170,22 @@ const NewEnquiryPage = () => {
   };
 
   const router = useRouter();
+  const selectedPaymentOption = watch("payment_options");
+  React.useEffect(() => {
+    // "not_received_paid"
+    if (selectedPaymentOption == "paid_usd_transfer" || selectedPaymentOption == "paid_naira_transfer" || selectedPaymentOption == "cash_paid" || selectedPaymentOption == "paid_website_card"
+      || selectedPaymentOption == "paid_pos" || selectedPaymentOption == "paid_paypal" || selectedPaymentOption == "paid_bitcoin") {
+      setValue('payment_status', 'FP')
+    } else if (selectedPaymentOption == "part_payment_cash" || selectedPaymentOption == "part_payment_transfer") {
+      setValue('payment_status', 'PP')
+    } else {
+      setValue('payment_status', 'UP')
+    }
+  }, [selectedPaymentOption])
+
+  const { uploadToCloudinary } = useCloudinary()
+  const { isUploading } = useLoading();
+  const [createdOrder, setCreatedOrder] = React.useState<TOrder | null>(null);
   const {
     state: isSuccessModalOpen,
     setTrue: openSuccessModal,
@@ -121,15 +193,24 @@ const NewEnquiryPage = () => {
   } = useBooleanStateControl()
 
   // const router = useRouter()
-  const { mutate, isPending } = useCreateEnquiry()
-  const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
-  const onSubmit = async (data: NewEnquiryFormValues) => {
+  const { mutate, isPending } = useCreateOrder()
+  const onSubmit = async (data: NewOrderFormValues) => {
+    let payment_proof: string | undefined
+    const PdfFile = data.payment_proof
+    if (data.payment_proof) {
+      const data = await uploadToCloudinary(PdfFile)
+      payment_proof = data.secure_url
+    }
+    const dataToSubmit = {
+      ...data,
+      payment_proof: PdfFile ? payment_proof : undefined,
+    }
 
-    mutate(data, {
+    mutate(dataToSubmit, {
       onSuccess(data) {
-        toast.success("Enquiry created successfully");
-        openSuccessModal();
-        setCreatedEnquiry(data?.data);
+        toast.success("Created successfully");
+        router.push(`/order-management/orders/${data.data.id}/order-summary`)
+        setCreatedOrder(data?.data);
       },
       onError(error: unknown) {
         const errMessage = extractErrorMessage((error as any)?.response?.data as any);
@@ -138,13 +219,19 @@ const NewEnquiryPage = () => {
     })
   };
 
-  const routeToEnquiryDetails = () => {
-    router.push(`/order-management/enquiries/${createdEnquiry?.id}`);
+  const routeToOrderDetails = () => {
+    router.push(`/order-management/orders/${createdOrder?.id}`);
   }
 
   const resetForm = () => {
     reset();
   }
+  const isCustomDelivery = watch(`delivery.is_custom_delivery`);
+  const toggleCustomDelivery = () => {
+    setValue('delivery.is_custom_delivery', !isCustomDelivery);
+  }
+
+
   console.log(getValues('items'))
 
 
@@ -155,7 +242,7 @@ const NewEnquiryPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={["customer-information", "Enquiry-information", "delivery-information", "Enquiry-Instruction", "payment-information",]}
+            defaultValue={["customer-information", "order-information", "delivery-information", "order-Instruction", "payment-information",]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -374,29 +461,21 @@ const NewEnquiryPage = () => {
                     name="delivery.zone"
                     render={({ field }) => (
                       <FormItem>
+
+
                         <SelectSingleCombo
                           label="Delivery Zone"
-                          options={[
-                            {
-                              value: "LM",
-                              label: "Lagos Mainland (LM)",
-                            },
-                            {
-                              value: "LC",
-                              label: "Lagos Central (LC)",
-                            },
-                            {
-                              value: "LI",
-                              label: "Lagos Island (LI)",
-                            },
-                          ]}
+                          options={ZONES_OPTIONS}
                           {...field}
                           valueKey={"value"}
                           labelKey={"label"}
                           placeholder="Select delivery zone"
                           hasError={!!errors.delivery?.zone}
                           errorMessage={errors.delivery?.zone?.message}
+
                         />
+
+
                       </FormItem>
                     )}
                   />
@@ -405,19 +484,39 @@ const NewEnquiryPage = () => {
                     name="delivery.dispatch"
                     render={({ field }) => (
                       <FormItem>
-                        <SelectSingleCombo
-                          label="Dispatch Location"
-                          {...field}
-                          value={field.value?.toString() || ''}
-                          isLoadingOptions={dispatchLocationsLoading}
-                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                          valueKey={"value"}
-                          // labelKey={"label"}
-                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                          placeholder="Select dispatch location"
-                          hasError={!!errors.delivery?.dispatch}
-                          errorMessage={errors.delivery?.dispatch?.message}
-                        />
+                        {
+                          isCustomDelivery ?
+                            <Input
+                              label="Delivery Fee"
+                              {...register('delivery.fee', { valueAsNumber: true })}
+                              hasError={!!errors.delivery?.fee}
+                              errorMessage={errors.delivery?.fee?.message}
+                              placeholder="Enter delivery fee"
+                            />
+                            :
+                            <SelectSingleCombo
+                              label="Dispatch Location"
+                              {...field}
+                              value={field.value?.toString() || ''}
+                              isLoadingOptions={dispatchLocationsLoading}
+                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                              valueKey={"value"}
+                              // labelKey={"label"}
+                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                              placeholder="Select dispatch location"
+                              hasError={!!errors.delivery?.dispatch}
+                              errorMessage={errors.delivery?.dispatch?.message}
+                            />
+                        }
+                        <button
+                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                          onClick={toggleCustomDelivery}
+                          type="button"
+                        >
+                          {
+                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                          }
+                        </button>
                       </FormItem>
                     )}
                   />
@@ -428,7 +527,7 @@ const NewEnquiryPage = () => {
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
                           label="Delivery Date"
-                          value={field.value ? new Date(field.value) : new Date()}
+                          value={new Date(field.value)}
                           onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
                           placeholder="Select delivery date"
                         />
@@ -474,15 +573,15 @@ const NewEnquiryPage = () => {
 
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            {/* /////////////                  Enquiry INFORMATION                  ///////////// */}
+            {/* /////////////                  ORDER INFORMATION                  ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="Enquiry-information">
+            <AccordionItem value="order-information">
               <AccordionTrigger className="py-4">
                 <div className="flex items-center gap-5">
                   <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
-                    <Image src="/img/book.svg" alt="" width={24} height={24} />
+                    <img src="/img/book.svg" alt="" width={24} height={24} />
                   </div>
-                  <p className="text-custom-blue font-medium">Enquiry Details</p>
+                  <p className="text-custom-blue font-medium">Order Details</p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
@@ -507,12 +606,19 @@ const NewEnquiryPage = () => {
                       />
                     )}
                   />
+                  <Button
+                    variant="outline"
+                    onClick={addNewItem}
+                    type="button"
+                  >
+                    + Add Item
+                  </Button>
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
                     fields.map((_, index) => {
                       return (
-                        <EnquiryFormItemsSection
+                        <OrderFormItemsSection
                           key={index}
                           index={index}
                           control={control}
@@ -531,26 +637,26 @@ const NewEnquiryPage = () => {
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            {/* /////////////                  Enquiry INSTRUCTION                  ///////////// */}
+            {/* /////////////                  ORDER INSTRUCTION                  ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="Enquiry-Instruction">
+            <AccordionItem value="order-Instruction">
               <AccordionTrigger className="py-4">
                 <div className="flex items-center gap-5">
                   <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
                     <Image src="/img/book.svg" alt="" width={24} height={24} />
                   </div>
                   <p className="text-custom-blue font-medium">
-                    Message on Enquiry
+                    Message on Order
                   </p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-8 pb-14">
                 <Input
-                  label="Message on Enquiry"
+                  label="Message on Order"
                   hasError={!!errors.message}
                   errorMessage={errors.message?.message as string}
-                  placeholder="Enter message on Enquiry"
+                  placeholder="Enter message on order"
                   {...register("message")}
                 />
               </AccordionContent>
@@ -558,6 +664,126 @@ const NewEnquiryPage = () => {
 
 
 
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////                  PAYMENT INFORMATION                  ///////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            <AccordionItem value="payment-information">
+              <AccordionTrigger className="py-4">
+                <div className="flex items-center gap-5">
+                  <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
+                    <Money
+                      className="text-custom-blue"
+                      stroke="#194a7a"
+                      size={18}
+                    />
+                  </div>
+                  <p className="text-custom-blue font-medium">Payment</p>
+                </div>
+              </AccordionTrigger>
+
+              <AccordionContent>
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
+                  <Controller
+                    name="payment_options"
+                    control={control}
+                    render={({ field }) => (
+                      <SelectSingleCombo
+                        {...field}
+                        label="Payment Option"
+                        valueKey="value"
+                        labelKey="label"
+                        options={ENQUIRY_PAYMENT_OPTIONS}
+                        placeholder="Select Payment Option"
+                        hasError={!!errors.payment_options}
+                        errorMessage={errors.payment_options?.message}
+                      />
+                    )}
+                  />
+
+                  {(selectedPaymentOption === "paid_usd_transfer" || selectedPaymentOption === "paid_paypal" || selectedPaymentOption === "paid_bitcoin") && (
+                    <Controller
+                      name="amount_paid_in_usd"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          label="Amount Paid (USD)"
+                          id="amount_paid_in_usd"
+                          placeholder="Enter amount paid in USD"
+                          className="col-span-3"
+                          {...field}
+                          hasError={!!errors.amount_paid_in_usd}
+                          errorMessage={errors.amount_paid_in_usd?.message}
+                        />
+                      )}
+                    />
+                  )}
+
+                  {(selectedPaymentOption === "part_payment_cash" || selectedPaymentOption === "part_payment_transfer") && (
+                    <Controller
+                      name="initial_amount_paid"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          label="Initial Amount Paid"
+                          placeholder="Enter initial amount paid"
+                          id="initial_amount_paid"
+                          className=""
+                          pattern="^[0-9]*$"
+                          {...field}
+                          hasError={!!errors.initial_amount_paid}
+                          errorMessage={errors.initial_amount_paid?.message}
+                        />
+                      )}
+                    />
+                  )}
+
+                  {!(selectedPaymentOption === "paid_usd_transfer" || selectedPaymentOption === "paid_paypal" || selectedPaymentOption === "paid_bitcoin") && (
+                    <Controller
+                      name="payment_currency"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectSingleCombo
+                          {...field}
+                          label="Currency"
+                          valueKey="value"
+                          labelKey="label"
+                          options={[
+                            { value: "NGN", label: "NGN" },
+                            { value: "USD", label: "USD" },
+                          ]}
+                          placeholder="Select Currency"
+                          hasError={!!errors.payment_currency}
+                          errorMessage={errors.payment_currency?.message}
+                        />
+                      )}
+                    />
+                  )}
+
+                  <FilePicker
+                    onFileSelect={(file) => setValue("payment_proof", file!)}
+                    hasError={!!errors.payment_proof}
+                    errorMessage={errors.payment_proof?.message as string}
+                    maxSize={10}
+                    label="Upload Payment Proof"
+                  />
+                  <Controller
+                    name="payment_receipt_name"
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        label="Payment Receipt Name"
+                        id="payment_receipt_name"
+                        placeholder="Enter name in payment receipt"
+                        className="col-span-3"
+                        {...field}
+                        hasError={!!errors.payment_receipt_name}
+                        errorMessage={errors.payment_receipt_name?.message}
+                      />
+                    )}
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion>
 
           <footer className="flex py-16">
@@ -566,11 +792,11 @@ const NewEnquiryPage = () => {
               variant="default"
               size="lg"
               className="flex items-center gap-2 ml-auto"
-              disabled={isPending}
+              disabled={isPending || isUploading}
             >
               Proceed
               {
-                isPending && <Spinner size={20} />
+                (isPending || isUploading) && <Spinner size={20} />
               }
             </Button>
           </footer>
@@ -580,13 +806,13 @@ const NewEnquiryPage = () => {
 
       <ConfirmActionModal
         isModalOpen={isSuccessModalOpen}
-        icon={<Box className="text-[#37d67a]" size={60} />}
+        icon={<ShoppingBag className="text-[#37d67a]" size={60} />}
         customTitleText="Success"
-        heading="Enquiry created successfully"
-        subheading="Enquiry has been created successfully"
-        customConfirmText="View Enquiry"
-        customCancelText="Create New Enquiry"
-        confirmFn={routeToEnquiryDetails}
+        heading="Order updated successfully"
+        subheading="Order has been updated successfully"
+        customConfirmText="View Order"
+        customCancelText="Create New Order"
+        confirmFn={routeToOrderDetails}
         closeModal={closeSuccessModal}
         cancelAction={resetForm}
       />
@@ -594,4 +820,4 @@ const NewEnquiryPage = () => {
   );
 };
 
-export default NewEnquiryPage;
+export default NewOrderPage;

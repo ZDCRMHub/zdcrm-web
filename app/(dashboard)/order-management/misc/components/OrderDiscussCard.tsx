@@ -118,7 +118,7 @@ const OrderDiscussCard = ({ discussions, refetch, isExpanded = false, hideOtherD
                                 <div className="flex items-center gap-4">
                                     <Button variant="outline" onClick={openModal}><Calendar size={16} /> + Add Note</Button>
                                     {
-                                        !!order && order?.status !== 'CON' && order?.status !== 'DEL' && (
+                                        !!order && order?.status !== 'COM' && order?.status !== 'CAN' && (
                                             <Select
                                                 defaultValue={order?.status}
                                                 onValueChange={(value) => updateOrderStatus(value as any)}

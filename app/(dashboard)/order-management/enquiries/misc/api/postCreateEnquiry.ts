@@ -10,14 +10,33 @@ const newEnquiry = async (data: NewEnquiryFormValues) => {
     });
     return res.data as APIResponse;
 };
- export const useCreateEnquiry = () =>{
+export const useCreateEnquiry = () => {
     return useMutation({
         mutationFn: newEnquiry,
         mutationKey: ['create-enquiry']
     });
- }
+}
 
- interface APIResponse {
+type Props = {
+    id: string;
+    data: NewEnquiryFormValues;
+}
+const updateEnquiry = async ({ id, data }: Props) => {
+    console.log(data)
+    const res = await APIAxios.put(`/enquiry/${id}/update/`, data, {
+    });
+    return res.data as APIResponse;
+};
+
+
+export const useUpdateEnquiry = () => {
+    return useMutation({
+        mutationFn: updateEnquiry,
+        mutationKey: ['update-enquiry']
+    });
+}
+
+interface APIResponse {
     data: TEnquiry;
     status: number;
     message: string;

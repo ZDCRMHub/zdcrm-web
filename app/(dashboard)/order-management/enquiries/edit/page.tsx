@@ -48,10 +48,10 @@ import { formatCurrency } from "@/utils/currency";
 import { useBooleanStateControl } from "@/hooks";
 import { extractErrorMessage } from "@/utils/errors";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLoading } from "@/contexts";
 import { NewEnquiryFormValues, NewEnquirySchema } from "../misc/utils/schema";
-import { useCreateEnquiry } from "../misc/api";
+import { useCreateEnquiry, useGetEnquiryDetail, useUpdateEnquiry } from "../misc/api";
 import { TEnquiry } from "../misc/types";
 import { useGetOrderDeliveryLocations } from "../../misc/api";
 import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
@@ -59,6 +59,9 @@ import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection"
 
 const NewEnquiryPage = () => {
 
+  const enquiry_id = useSearchParams().get('enquiry_id');
+
+  const { data: enquiryData, isLoading: isLoadingEnquiryData } = useGetEnquiryDetail(enquiry_id ?? '')
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
@@ -99,6 +102,49 @@ const NewEnquiryPage = () => {
     name: "items"
   });
 
+    React.useEffect(() => {
+      if (!isLoadingEnquiryData && !!enquiryData) {
+        form.reset({
+          ...enquiryData,
+          customer: {
+            name: enquiryData.customer.name,
+            phone: enquiryData.customer.phone,
+            email: enquiryData.customer.email
+          },
+          branch: enquiryData.branch.id,
+          delivery: {
+            zone: enquiryData.delivery?.zone as "LM" | "LC" | "LI",
+            method: enquiryData.delivery?.method as "Dispatch" | "Pickup",
+            dispatch: enquiryData.delivery?.dispatch.id.toString(),
+            address: enquiryData.delivery?.address,
+            recipient_name: enquiryData.delivery?.recipient_name,
+            recipient_phone: enquiryData.delivery?.recipient_phone,
+            delivery_date: format(new Date(enquiryData.delivery?.delivery_date), 'yyyy-MM-dd'),
+          },
+          message: enquiryData.message,
+          items: enquiryData.items?.map(item => ({
+            category: item.product?.category.id,
+            product_id: item.product.id,
+            quantity: item.quantity,
+            properties: item.properties.reduce((acc, prop) => ({
+              ...acc,
+              layers: prop.layers.id,
+              toppings: prop.toppings.id,
+              bouquet: prop.bouquet,
+              glass_vase: prop.glass_vase,
+              // whipped_cream_upgrade: prop.whipped_cream_upgrade,
+            }), {}),
+            inventories: item.inventories.map(inventory => ({
+              product_inventory_id: inventory.stock_inventory?.id,
+              product_inventoryy_id: inventory.product_inventory?.id,
+              variations: inventory.variations.map(variation => ({
+                stock_variation_id: variation.id
+              }))
+            }))
+          }))
+        });
+      }
+    }, [enquiryData, isLoadingEnquiryData]);
   console.log(errors)
 
   const addNewItem = () => {
@@ -121,11 +167,11 @@ const NewEnquiryPage = () => {
   } = useBooleanStateControl()
 
   // const router = useRouter()
-  const { mutate, isPending } = useCreateEnquiry()
+  const { mutate, isPending } = useUpdateEnquiry()
   const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
   const onSubmit = async (data: NewEnquiryFormValues) => {
 
-    mutate(data, {
+    mutate({ id: enquiry_id ?? '', data }, {
       onSuccess(data) {
         toast.success("Enquiry created successfully");
         openSuccessModal();
@@ -147,6 +193,10 @@ const NewEnquiryPage = () => {
   }
   console.log(getValues('items'))
 
+
+  if(isLoadingEnquiryData){
+    return <div className="w-full h-full flex items-center justify-center"><Spinner/></div>
+  }
 
 
   return (
@@ -582,8 +632,8 @@ const NewEnquiryPage = () => {
         isModalOpen={isSuccessModalOpen}
         icon={<Box className="text-[#37d67a]" size={60} />}
         customTitleText="Success"
-        heading="Enquiry created successfully"
-        subheading="Enquiry has been created successfully"
+        heading="Enquiry updated successfully"
+        subheading="Enquiry has been updated successfully"
         customConfirmText="View Enquiry"
         customCancelText="Create New Enquiry"
         confirmFn={routeToEnquiryDetails}

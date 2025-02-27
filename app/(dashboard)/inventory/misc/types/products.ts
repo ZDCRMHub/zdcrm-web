@@ -10,8 +10,17 @@ export interface TProductInventoryItem {
   selling_price: string;
   quantity: number;
   inventory_number: string;
-  created_by: number;
+  created_by: Createdby;
+  last_updated_by: Createdby | null;
   create_date: string;
   update_date: string;
+  quantity_sold: number;
 }
 
+interface Createdby {
+  id: number;
+  email: string;
+  name: string;
+  phone: string;
+  image: null;
+}

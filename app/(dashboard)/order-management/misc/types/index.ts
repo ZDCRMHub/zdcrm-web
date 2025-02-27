@@ -15,7 +15,7 @@ export interface TOrder {
   message: string;
   status: "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN";
   payment_status: string;
-  payment_options: string;
+  payment_options: "not_paid_go_ahead" | "paid_website_card" | "paid_naira_transfer" | "paid_pos" | "paid_usd_transfer" | "paid_paypal" | "cash_paid" | "part_payment_cash" | "part_payment_transfer" | "paid_bitcoin" | "not_received_paid" | undefined;
   initial_amount_paid: number | null;
   payment_currency: string;
   payment_proof: string;
@@ -26,13 +26,13 @@ export interface TOrder {
   total_amount: string;
   delivery: TOrderDeliveryInfo;
   items: Item[];
-  discussions: Discussion[];
+  TOrderDiscussions: TOrderDiscussion[];
   part_payments: any[];
   create_date: string;
   update_date: string;
 }
 
-interface Discussion {
+export interface TOrderDiscussion {
   id: number;
   user: Createdby;
   message: string;

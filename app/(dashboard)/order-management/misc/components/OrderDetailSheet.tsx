@@ -325,7 +325,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                   </div>
                   <div className="flex items-center gap-1 text-sm text-[#111827]">
                     <span className="text-sm text-[#687588]">Payment Mode: </span>
-                    <p>{convertKebabAndSnakeToTitleCase(order?.payment_options)}</p>
+                    <p>{convertKebabAndSnakeToTitleCase(order?.payment_options ?? '')}</p>
                   </div>
                 </section>
 
@@ -334,7 +334,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                 {/* ///////////                       PAYMENT DETAILS                     ////////////// */}
                 {/* //////////////////////////////////////////////////////////////////////////////////// */}
                 {
-                  order?.payment_options.startsWith("part_payment") &&
+                  order?.payment_options?.startsWith("part_payment") &&
                   <section className="mt-16 mb-8">
                     <header className="border-b border-b-[#00000021]">
                       <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
@@ -345,10 +345,10 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                     </header>
                     <div className=" space-y-2 text-sm mt-4">
                       {[
-                        ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
-                        [order?.payment_options.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price || 0), 'NGN')],
-                        [order?.payment_options.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
-                        [order?.payment_options.startsWith("part_payment") && "Oustanding Balance",
+                        ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options ?? '')],
+                        [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price || 0), 'NGN')],
+                        [order?.payment_options?.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
+                        [order?.payment_options?.startsWith("part_payment") && "Oustanding Balance",
                         <span className="flex items-center gap-2" key={order?.id}>
                           {
                             formatCurrency(
@@ -575,13 +575,14 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                     <h3 className="font-semibold font-manrope text-lg">
                       Delivery Details
                     </h3>
-                    <Button
+                    <LinkButton
+                    href={`/order-management/orders/edit?order_id=${order?.id}`}
                       variant="ghost"
                       size="sm"
                       onClick={openEditDeliveryDetailsModal}
                     >
                       <EditPenIcon className="h-5 w-5" />
-                    </Button>
+                    </LinkButton>
                   </div>
                   <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
                     {[
