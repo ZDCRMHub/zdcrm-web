@@ -53,6 +53,7 @@ import APIAxios from "@/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PartPaymentsForm from "./PartPaymentsForm";
 import { printNote } from "../utils/print";
+import Link from "next/link";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -353,7 +354,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                         <span className="flex items-center gap-2" key={order?.id}>
                           {
                             formatCurrency(
-                              Number(Number(order?.total_selling_price	?? 0)
+                              Number(Number(order?.total_selling_price ?? 0)
                                 -
                                 (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
                                 -
@@ -409,7 +410,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       <PartPaymentsForm
                         order_id={order?.id || default_order?.id}
                         outstanding_balance={
-                          Number(order?.total_selling_price	|| 0) -
+                          Number(order?.total_selling_price || 0) -
                           (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0) -
                           (order?.initial_amount_paid || 0)
                         }
@@ -426,7 +427,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                 {/* ///////////                         DELIVERY NOTE                     ////////////// */}
                 {/* //////////////////////////////////////////////////////////////////////////////////// */}
                 <section className="mt-16 mb-8">
-                  <header className="border-b border-b-[#00000021]">
+                  <header className="flex items-center justify-between border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
                       <Notepad2 size={19} />
                       Delivery Note
@@ -434,13 +435,14 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                     </p>
 
                     <Button
-                    onClick={()=>printNote(
-                      {
-                        note: order?.delivery.note || '',
-                        orderNumber: order?.order_number,
-                        title: "Order Notes",
-                      }
-                    )}
+                      variant="yellow"
+                      onClick={() => printNote(
+                        {
+                          note: order?.delivery.note || '',
+                          orderNumber: order?.order_number,
+                          title: "Order Notes",
+                        }
+                      )}
                     >
                       Print
                     </Button>
@@ -450,7 +452,11 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       value={order?.delivery.note || "No note"}
                       readOnly
                       containerClassName={cn("w-full", !order?.delivery.note && "text-[#687588] italic")}
-                      rightIcon={<EditPenIcon width={20} height={20} />}
+                      rightIcon={
+                        <Link href={`/order-management/orders/edit?order_id=${order?.id}`} className="">
+                          <EditPenIcon width={20} height={20} />
+                        </Link>
+                      }
                     />
                   </div>
                 </section>
@@ -589,7 +595,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       Delivery Details
                     </h3>
                     <LinkButton
-                    href={`/order-management/orders/edit?order_id=${order?.id}`}
+                      href={`/order-management/orders/edit?order_id=${order?.id}`}
                       variant="ghost"
                       size="sm"
                       onClick={openEditDeliveryDetailsModal}
@@ -621,7 +627,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_selling_price	|| '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

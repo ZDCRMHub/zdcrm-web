@@ -19,6 +19,9 @@ import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl, useDebounce } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import { useUpdatePaymentVerified } from '../api';
+import { useQueryClient } from '@tanstack/react-query';
+import { extractErrorMessage } from '@/utils/errors';
+import toast from 'react-hot-toast';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -62,16 +65,23 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
 
 
     const { mutate, isPending } = useUpdatePaymentVerified(order.id);
-
-    const handlePaymentVerifiedStatus = ()=>{
+    const queryClient = useQueryClient();
+    const handlePaymentVerifiedStatus = () => {
         mutate({ id: order.id, payment_verified: !order?.payment_verified }, {
             onSuccess: () => {
                 console.log('Order payment status updated successfully');
-            }
+                queryClient.invalidateQueries({
+                    queryKey: ['active-orders-list']
+                });
+            },
+            onError(error, variables, context) {
+                 const errMsg = extractErrorMessage(error as unknown as any);
+                 toast.error(errMsg);
+            },
         });
     }
 
-    
+
     return (
         <TableRow>
             <TableCell className='min-w-[150px]'>
@@ -111,7 +121,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     <Checkbox
                         checked={order.payment_verified}
                         disabled={isPending}
-                        onCheckedChange={()=>handlePaymentVerifiedStatus()}
+                        onCheckedChange={() => handlePaymentVerifiedStatus()}
                     />
                     {
                         isPending &&

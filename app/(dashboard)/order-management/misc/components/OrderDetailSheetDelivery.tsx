@@ -47,6 +47,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
+import { printNote } from "../utils/print";
+import Link from "next/link";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -254,19 +256,36 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                 </section>
 
                 <section className="mt-16 mb-8">
-                  <header className="border-b border-b-[#00000021]">
+                  <header className="flex items-center justify-between border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
                       <Notepad2 size={19} />
                       Delivery Note
                       <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                     </p>
+
+                    <Button
+                      variant="yellow"
+                      onClick={() => printNote(
+                        {
+                          note: order?.delivery.note || '',
+                          orderNumber: order?.order_number,
+                          title: "Order Notes",
+                        }
+                      )}
+                    >
+                      Print
+                    </Button>
                   </header>
                   <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
                     <Input
                       value={order?.delivery.note || "No note"}
                       readOnly
                       containerClassName={cn("w-full", !order?.delivery.note && "text-[#687588] italic")}
-                      rightIcon={<EditPenIcon width={20} height={20} />}
+                      rightIcon={
+                        <Link href={`/order-management/orders/edit?order_id=${order?.id}`} className="">
+                          <EditPenIcon width={20} height={20} />
+                        </Link>
+                      }
                     />
                   </div>
                 </section>
@@ -331,7 +350,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                                           className="object-cover rounded-md"
                                         />
                                       </div>
-                                      
+
                                     </header>
 
                                     <section className="flex flex-col justify-between">
@@ -369,14 +388,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                                               })}
                                             </div>
                                           ))}
-                                          {/* {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
-                                                                     key !== 'id' && value && (
-                                                                       <p key={key} className="text-[#111827] font-medium">
-                                                                         <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
-                                                                         {value as string}
-                                                                       </p>
-                                                                     )
-                                                                   ))} */}
+                                          \
                                           {item.inventories[0]?.instruction && (
                                             <p className="text-[#111827] font-medium">
                                               <span className="text-[#687588]">Instructions:</span>{" "}
@@ -430,7 +442,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_selling_price	 || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>

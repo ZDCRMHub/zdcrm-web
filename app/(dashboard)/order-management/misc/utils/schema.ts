@@ -20,7 +20,6 @@ const inventorySchema = z.object({
     instruction: z.string().optional(),
     quantity_used: z.number().optional(),
     variations: z.array(variationSchema).optional(),
-    custom_image: z.string().url().optional(),
 }).nullable();
 
 const itemSchema = z.object({
@@ -29,11 +28,34 @@ const itemSchema = z.object({
     quantity: z.number().min(1),
     inventories: z.array(inventorySchema),
     properties: propertiesSchema,
+    custom_image: z.any().nullable(),
     miscellaneous: z.array(z.object({
         description: z.string().min(1, { message: "Description is required" }),
         cost: z.number().min(1, { message: "Miscellaneous cost is required" })
     })).optional()
 }).superRefine((data, ctx) => {
+    if (!data.custom_image) {
+        throw z.ZodError.create([{
+            path: ['custom_image'],
+            message: 'Please select a file.',
+            code: 'custom',
+        }]);
+    }
+  
+    if (!data.custom_image.type.startsWith('image/')) {
+        throw z.ZodError.create([{
+            path: ['custom_image'],
+            message: 'Please select an image file.',
+            code: 'custom',
+        }]);
+    }
+    if(data.custom_image.size > MAX_FILE_SIZE){
+        throw z.ZodError.create([{
+            path: ['custom_image'],
+            message: 'Please select a file smaller than 10MB.',
+            code: 'custom',
+        }])
+    }
     if (data.product_id && data.product_id == 0) {
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
