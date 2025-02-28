@@ -147,7 +147,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             item?.properties?.whipped_cream_upgrade,
         ]
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || parseInt('0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
             return acc + findItemPrice
         }, 0)
 
@@ -195,7 +195,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         ]
         console.log(allProperties, "PROPS")
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || parseInt('0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
             console.log(findItemPrice, "PRICES")
             return acc + findItemPrice
         }, 0)

@@ -150,7 +150,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             item?.properties?.whipped_cream_upgrade,
         ]
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
             return acc + findItemPrice
         }, 0)
 
@@ -586,19 +586,6 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 }
                             </>
                         }
-
-                        {
-                            isCustomOrder &&
-                            <CustomImagePicker
-                                control={control}
-                                name={`items.${index}.custom_image`}
-                                errors={errors}
-                                hasError={!!errors.items?.[index]?.custom_image}
-                                errorMessage={errors.items?.[index]?.custom_image?.message as string}
-                            />
-                        }
-
-
 
                     </div>
 
