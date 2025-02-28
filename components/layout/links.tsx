@@ -183,6 +183,12 @@ export const linkGroups = [
             requiredPermissions: ["CAN_MANAGE_ORDERS"],
           },
           {
+            link: "/admin/properties",
+            text: "Order Properties",
+            icon: <I3Dcube />,
+            requiredPermissions: ["CAN_MANAGE_ORDERS"],
+          },
+          {
             link: "/admin/admin-roles",
             text: "Admin Roles",
             icon: <Setting2 />,

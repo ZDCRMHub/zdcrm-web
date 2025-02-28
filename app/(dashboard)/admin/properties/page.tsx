@@ -43,12 +43,11 @@ import {
 } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import {
-  useGetAllProducts,
-  useCreateProduct,
-  useUpdateProduct,
+  useGetAllProperties,
+  useCreateProperty,
+  useUpdateProperty,
 } from "./misc/api";
-import { TProductItem } from "./misc/types";
-import { useGetCategories } from "../../inventory/misc/api";
+import { TPropertyItem } from "./misc/types";
 import ErrorModal from "@/components/ui/modal-error";
 import { extractErrorMessage } from "@/utils/errors";
 import { useDebounce } from "@/hooks";
@@ -59,17 +58,20 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<string>("");
   const debouncedSearchText = useDebounce(searchTerm, 300);
-  const [newProduct, setNewProduct] = useState<{
+  const [newProperty, setNewProperty] = useState<{
     name: string;
-    category: string;
+    type: string;
+    cost_price: string;
     selling_price: string;
   }>({
     name: "",
-    category: "",
+    type: "",
+    cost_price: "",
     selling_price: "",
   });
-  const [editingProduct, setEditingProduct] = useState<TProductItem | null>(
+  const [editingProperty, setEditingProperty] = useState<TPropertyItem | null>(
     null
   );
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -77,39 +79,38 @@ const Page = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isInitialLoading, setIsInitialLoading] = useState(true);
-  const { data: categories } = useGetCategories();
-  const createProductMutation = useCreateProduct();
-  const updateProductMutation = useUpdateProduct();
+  const createPropertyMutation = useCreateProperty();
+  const updatePropertyMutation = useUpdateProperty();
 
   const {
-    data: productsData,
-    isLoading: isLoadingProducts,
+    data: propertiesData,
+    isLoading: isLoadingProperties,
     isFetching,
-    error: productsError,
-  } = useGetAllProducts({
-    paginate: true,
+    error: propertiesError,
+  } = useGetAllProperties({
     page: currentPage,
     size: pageSize,
     search: debouncedSearchText || undefined,
+    type: filterType || undefined,
   });
 
   useEffect(() => {
-    if (productsData || productsError) {
+    if (propertiesData || propertiesError) {
       setIsInitialLoading(false);
     }
-  }, [productsData, productsError]);
+  }, [propertiesData, propertiesError]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
 
-  const handleEditClick = (product: TProductItem) => {
-    setEditingProduct(product);
+  const handleEditClick = (property: TPropertyItem) => {
+    setEditingProperty(property);
     setIsSheetOpen(true);
   };
 
-  if (isInitialLoading && isLoadingProducts) {
+  if (isInitialLoading && isLoadingProperties) {
     return (
       <div className="flex items-center justify-center h-full w-full py-[30vh]">
         <Spinner size={18} />
@@ -117,32 +118,43 @@ const Page = () => {
     );
   }
 
-  if (productsError) return <div>Error: {productsError?.message}</div>;
+  if (propertiesError) return <div>Error: {propertiesError?.message}</div>;
 
   const handleCreate = () => {
-    if (!newProduct.name || !newProduct.selling_price) {
+    if (
+      !newProperty.name ||
+      !newProperty.selling_price ||
+      !newProperty.cost_price ||
+      !newProperty.type
+    ) {
       setErrorMessage("Please fill in all required fields");
       setIsErrorModalOpen(true);
       return;
     }
 
-    createProductMutation.mutate(
+    createPropertyMutation.mutate(
       {
-        name: newProduct.name,
-        category: parseInt(newProduct.category),
-        selling_price: parseFloat(newProduct.selling_price),
+        name: newProperty.name,
+        type: newProperty.type,
+        cost_price: parseFloat(newProperty.cost_price),
+        selling_price: parseFloat(newProperty.selling_price),
       },
       {
         onSuccess: () => {
-          setSuccessMessage("Product created successfully");
+          setSuccessMessage("Property created successfully");
           setIsSuccessModalOpen(true);
-          setNewProduct({ name: "", category: "", selling_price: "" });
+          setNewProperty({
+            name: "",
+            type: "",
+            cost_price: "",
+            selling_price: "",
+          });
         },
         onError: (error: unknown) => {
           const errMessage = extractErrorMessage(
             (error as any)?.response?.data as any
           );
-          setErrorMessage(errMessage || "Failed to create product");
+          setErrorMessage(errMessage || "Failed to create property");
           setIsErrorModalOpen(true);
         },
       }
@@ -150,28 +162,30 @@ const Page = () => {
   };
 
   const handleUpdate = () => {
-    if (!editingProduct) return;
+    if (!editingProperty) return;
 
-    updateProductMutation.mutate(
+    updatePropertyMutation.mutate(
       {
-        id: editingProduct.id,
+        id: editingProperty.id,
         data: {
-          name: editingProduct.name,
-          selling_price: parseFloat(editingProduct.selling_price),
-          is_active: editingProduct.is_active,
+          name: editingProperty.name,
+          type: editingProperty.type,
+          cost_price: parseFloat(editingProperty.cost_price),
+          selling_price: parseFloat(editingProperty.selling_price),
+          is_active: editingProperty.is_active,
         },
       },
       {
         onSuccess: () => {
-          setSuccessMessage("Product updated successfully");
+          setSuccessMessage("Property updated successfully");
           setIsSuccessModalOpen(true);
-          setEditingProduct(null);
+          setEditingProperty(null);
         },
         onError: (error: unknown) => {
           const errMessage = extractErrorMessage(
             (error as any)?.response?.data as any
           );
-          setErrorMessage(errMessage || "Failed to update product");
+          setErrorMessage(errMessage || "Failed to update property");
           setIsErrorModalOpen(true);
         },
       }
@@ -179,21 +193,21 @@ const Page = () => {
   };
 
   const handleStatusChange = (id: number, value: boolean) => {
-    updateProductMutation.mutate(
+    updatePropertyMutation.mutate(
       {
         id,
         data: { is_active: value },
       },
       {
         onSuccess: () => {
-          setSuccessMessage("Product status updated successfully");
+          setSuccessMessage("Property status updated successfully");
           setIsSuccessModalOpen(true);
         },
         onError: (error: unknown) => {
           const errMessage = extractErrorMessage(
             (error as any)?.response?.data as any
           );
-          setErrorMessage(errMessage || "Failed to update product status");
+          setErrorMessage(errMessage || "Failed to update property status");
           setIsErrorModalOpen(true);
         },
       }
@@ -201,10 +215,10 @@ const Page = () => {
   };
 
   const renderPaginationItems = () => {
-    if (!productsData) return null;
+    if (!propertiesData) return null;
 
     const items = [];
-    for (let i = 1; i <= productsData.number_of_pages; i++) {
+    for (let i = 1; i <= propertiesData.number_of_pages; i++) {
       items.push(
         <PaginationItem key={i}>
           <PaginationLink
@@ -228,8 +242,8 @@ const Page = () => {
       <section className="mt-7 pb-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A] px-[118px] pt-[35px]">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-medium">Product Management</h1>
-            <p>Manage your products here.</p>
+            <h1 className="text-xl font-medium">Order Properties Management</h1>
+            <p>Manage your order properties here.</p>
           </div>
           <div className="relative">
             <Input
@@ -247,36 +261,59 @@ const Page = () => {
           </div>
         </div>
         <div className="mt-6 flex justify-between items-start">
-          <h2 className="text-2xl font-semibold">Product List</h2>
-          <div className="flex gap-2">
+          <h2 className="text-2xl font-semibold">Property List</h2>
+          <div className="flex items-center gap-4">
+            <Select
+              value={filterType}
+              onValueChange={(value) => {
+                setFilterType(value === "ALL" ? "" : value);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="h-12 w-[200px]">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="ALL">All Types</SelectItem>
+                  <SelectItem value="TOPPING">Topping</SelectItem>
+                  <SelectItem value="LAYER">Layer</SelectItem>
+                  <SelectItem value="WHIPPED_CREAM">Whipped Cream</SelectItem>
+                  <SelectItem value="GLASS_VASE">Glass Vase</SelectItem>
+                  <SelectItem value="BOUQUET">Bouquet</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button className="h-12 flex gap-4 bg-transparent text-sm px-6 text-[#111827] border border-solid rounded-[10px]">
-                  Add New Product
+                  Add New Property
                 </Button>
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle className="text-2xl font-bold pb-8">
-                    {editingProduct ? "Edit Product" : "Add New Product"}
+                    {editingProperty ? "Edit Property" : "Add New Property"}
                   </SheetTitle>
                   <SheetDescription className="flex flex-col gap-3">
-                    <Label htmlFor="product-name" className="text-[#111827]">
-                      Product Name <span className="text-red-500">*</span>
+                    <Label htmlFor="name" className="text-[#111827]">
+                      Property Name <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="product-name"
+                      id="name"
                       value={
-                        editingProduct ? editingProduct.name : newProduct.name
+                        editingProperty
+                          ? editingProperty.name
+                          : newProperty.name
                       }
                       onChange={(e) =>
-                        editingProduct
-                          ? setEditingProduct({
-                              ...editingProduct,
+                        editingProperty
+                          ? setEditingProperty({
+                              ...editingProperty,
                               name: e.target.value,
                             })
-                          : setNewProduct({
-                              ...newProduct,
+                          : setNewProperty({
+                              ...newProperty,
                               name: e.target.value,
                             })
                       }
@@ -284,42 +321,66 @@ const Page = () => {
                     />
 
                     <Label htmlFor="category" className="text-[#111827]">
-                      Category <span className="text-red-500">*</span>
+                      Type <span className="text-red-500">*</span>
                     </Label>
                     <Select
                       value={
-                        editingProduct
-                          ? editingProduct.category.id.toString()
-                          : newProduct.category
+                        editingProperty
+                          ? editingProperty.type
+                          : newProperty.type
                       }
                       onValueChange={(value) =>
-                        editingProduct
-                          ? setEditingProduct({
-                              ...editingProduct,
-                              category:
-                                categories?.find(
-                                  (cat) => cat.id === parseInt(value)
-                                ) || editingProduct.category,
+                        editingProperty
+                          ? setEditingProperty({
+                              ...editingProperty,
+                              type: value,
                             })
-                          : setNewProduct({ ...newProduct, category: value })
+                          : setNewProperty({
+                              ...newProperty,
+                              type: value,
+                            })
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Select a type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {categories?.map((category) => (
-                            <SelectItem
-                              key={category.id}
-                              value={category.id.toString()}
-                            >
-                              {category.name}
-                            </SelectItem>
-                          ))}
+                          <SelectItem value="TOPPING">Topping</SelectItem>
+                          <SelectItem value="LAYER">Layer</SelectItem>
+                          <SelectItem value="WHIPPED_CREAM">
+                            Whipped Cream
+                          </SelectItem>
+                          <SelectItem value="GLASS_VASE">Glass Vase</SelectItem>
+                          <SelectItem value="BOUQUET">Bouquet</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
+
+                    <Label htmlFor="cost-price" className="text-[#111827]">
+                      Cost Price <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="cost-price"
+                      type="number"
+                      value={
+                        editingProperty
+                          ? editingProperty.cost_price
+                          : newProperty.cost_price
+                      }
+                      onChange={(e) =>
+                        editingProperty
+                          ? setEditingProperty({
+                              ...editingProperty,
+                              cost_price: e.target.value,
+                            })
+                          : setNewProperty({
+                              ...newProperty,
+                              cost_price: e.target.value,
+                            })
+                      }
+                      className="h-14"
+                    />
 
                     <Label htmlFor="selling-price" className="text-[#111827]">
                       Selling Price <span className="text-red-500">*</span>
@@ -328,18 +389,18 @@ const Page = () => {
                       id="selling-price"
                       type="number"
                       value={
-                        editingProduct
-                          ? editingProduct.selling_price
-                          : newProduct.selling_price
+                        editingProperty
+                          ? editingProperty.selling_price
+                          : newProperty.selling_price
                       }
                       onChange={(e) =>
-                        editingProduct
-                          ? setEditingProduct({
-                              ...editingProduct,
+                        editingProperty
+                          ? setEditingProperty({
+                              ...editingProperty,
                               selling_price: e.target.value,
                             })
-                          : setNewProduct({
-                              ...newProduct,
+                          : setNewProperty({
+                              ...newProperty,
                               selling_price: e.target.value,
                             })
                       }
@@ -353,10 +414,11 @@ const Page = () => {
                       type="button"
                       className="w-full bg-white text-black border border-solid h-14"
                       onClick={() => {
-                        setEditingProduct(null);
-                        setNewProduct({
+                        setEditingProperty(null);
+                        setNewProperty({
                           name: "",
-                          category: "",
+                          type: "",
+                          cost_price: "",
                           selling_price: "",
                         });
                       }}
@@ -367,16 +429,16 @@ const Page = () => {
                   <Button
                     type="submit"
                     className="w-full bg-[#111827] h-14"
-                    onClick={editingProduct ? handleUpdate : handleCreate}
+                    onClick={editingProperty ? handleUpdate : handleCreate}
                     disabled={
-                      createProductMutation.isPending ||
-                      updateProductMutation.isPending
+                      createPropertyMutation.isPending ||
+                      updatePropertyMutation.isPending
                     }
                   >
-                    {createProductMutation.isPending ||
-                    updateProductMutation.isPending ? (
+                    {createPropertyMutation.isPending ||
+                    updatePropertyMutation.isPending ? (
                       <Spinner className="ml-2" />
-                    ) : editingProduct ? (
+                    ) : editingProperty ? (
                       "Update"
                     ) : (
                       "Create"
@@ -410,29 +472,31 @@ const Page = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[22.9%]">Name</TableHead>
-              <TableHead className="w-[22.9%]">Category</TableHead>
+              <TableHead className="w-[22.9%]">Type</TableHead>
+              <TableHead className="w-[12.8%]">Cost Price</TableHead>
               <TableHead className="w-[12.8%]">Selling Price</TableHead>
               <TableHead className="w-[22.9%] text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {productsData?.data?.map((product: TProductItem) => (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.category.name}</TableCell>
-                <TableCell>{product.selling_price}</TableCell>
+            {propertiesData?.data?.map((property: TPropertyItem) => (
+              <TableRow key={property.id}>
+                <TableCell className="font-medium">{property.name}</TableCell>
+                <TableCell>{property.type}</TableCell>
+                <TableCell>{property.cost_price}</TableCell>
+                <TableCell>{property.selling_price}</TableCell>
                 <TableCell className="text-right flex gap-[10px]">
                   <Select
-                    value={product.is_active ? "active" : "deactive"}
+                    value={property.is_active ? "active" : "deactive"}
                     onValueChange={(value) =>
-                      handleStatusChange(product.id, value === "active")
+                      handleStatusChange(property.id, value === "active")
                     }
                   >
                     <SelectTrigger>
                       <SelectValue
                         placeholder="Select Action"
                         className={
-                          product.is_active
+                          property.is_active
                             ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
                             : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none"
                         }
@@ -449,7 +513,7 @@ const Page = () => {
                   </Select>
                   <div
                     className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
-                    onClick={() => handleEditClick(product)}
+                    onClick={() => handleEditClick(property)}
                   >
                     <MdOutlineModeEdit color="#fff" size={20} />
                   </div>
@@ -467,12 +531,12 @@ const Page = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (productsData?.previous_page) {
-                        setCurrentPage(productsData.previous_page);
+                      if (propertiesData?.previous_page) {
+                        setCurrentPage(propertiesData.previous_page);
                       }
                     }}
                     className={
-                      !productsData?.previous_page
+                      !propertiesData?.previous_page
                         ? "pointer-events-none opacity-50"
                         : ""
                     }
@@ -486,12 +550,12 @@ const Page = () => {
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (productsData?.next_page) {
-                        setCurrentPage(productsData.next_page);
+                      if (propertiesData?.next_page) {
+                        setCurrentPage(propertiesData.next_page);
                       }
                     }}
                     className={
-                      !productsData?.next_page
+                      !propertiesData?.next_page
                         ? "pointer-events-none opacity-50"
                         : ""
                     }
@@ -503,12 +567,14 @@ const Page = () => {
           <div className="flex gap-4 items-center">
             <p className="text-xs text-[#687588] ">
               Showing{" "}
-              {productsData?.data.length ? (currentPage - 1) * pageSize + 1 : 0}{" "}
-              to{" "}
-              {productsData?.data.length
-                ? (currentPage - 1) * pageSize + productsData.data.length
+              {propertiesData?.data.length
+                ? (currentPage - 1) * pageSize + 1
                 : 0}{" "}
-              of {productsData?.count} entries
+              to{" "}
+              {propertiesData?.data.length
+                ? (currentPage - 1) * pageSize + propertiesData.data.length
+                : 0}{" "}
+              of {propertiesData?.count} entries
             </p>
             <Select
               value={pageSize.toString()}
