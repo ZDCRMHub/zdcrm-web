@@ -169,6 +169,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div className='text-sm text-[#494949]'>{paymentStatusEnums[order.payment_status]}({convertKebabAndSnakeToTitleCase(order?.payment_options)})</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>
+                
                 {/* <div>{order.amountUSD ? "$" + order.amountUSD : "-"}</div> */}
                 {/* <div>{order.paymentStatus}</div> */}
                 -

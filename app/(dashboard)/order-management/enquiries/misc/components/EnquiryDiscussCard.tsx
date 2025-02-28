@@ -35,8 +35,8 @@ const EnquiryDiscussCard = ({ discussions, refetch, isExpanded = false, hideOthe
 
     const [isOpen, setIsOpen] = React.useState(isExpanded);
     const { mutate, isPending } = useUpdateEnquiryStatus(enquiry?.id);
+    
     const queryClient = useQueryClient();
-
     const updateEnquiryStatus = (new_status: "STD" | "DEL" | "FND" | "CON") => {
         mutate({ id: enquiry?.id || 0, status: new_status }, {
             onSuccess: () => {
