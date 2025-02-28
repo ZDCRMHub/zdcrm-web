@@ -207,20 +207,25 @@ export const DISPATCH_METHOD_OPTIONS = [
   { value: "Pickup", label: "Pickup" },
 ]
 
-export const ZONES_OPTIONS = [{
-  value: "LM",
-  label: "Lagos Mainland (LM)",
-},
-{
-  value: "LC",
-  label: "Lagos Central (LC)",
-},
-{
-  value: "LI",
-  label: "Lagos Island (LI)",
-},
-{
-  value: "ND",
-  label: "No Destination (ND)",
-},
+export const ZONES_OPTIONS = [
+  {
+    value: "LM",
+    label: "Lagos Mainland",
+  },
+  {
+    value: "LAGOS_CENTRAL",
+    label: "Lagos Central",
+  },
+  {
+    value: "LAGOS_ISLAND",
+    label: "Lagos Island",
+  },
+  {
+    value: "OTHERS",
+    label: "Others",
+  },
+  {
+    value: "NO_DESTINATION",
+    label: "No Destination",
+  },
 ]

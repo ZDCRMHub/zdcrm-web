@@ -16,6 +16,7 @@ import {
   PaginationPrevious,
   PaginationLink,
   PaginationNext,
+  RangeAndCustomDatePicker,
 } from "@/components/ui";
 import StockInventoryTable from "./StockInventoryTable";
 import TabBar from "@/components/TabBar";
@@ -23,6 +24,9 @@ import { ArrowDown2 } from "iconsax-react";
 import { useGetStockCategories, useGetStockInventory } from "../api";
 import NewInventorySheet from "./StockInventoryNew";
 import { useDebounce } from "@/hooks";
+import { subMonths } from "date-fns";
+import { useForm } from "react-hook-form";
+import { DateRange } from "react-day-picker";
 
 export default function StockInventoryDashboard() {
   const [activeTab, setActiveTab] = useState("All Stock Inventory");
@@ -35,13 +39,33 @@ export default function StockInventoryDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
 
   const { data: categories, isLoading: categoriesLoading } = useGetStockCategories();
+  const today = new Date();
+  const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+  const monthsAgo = subMonths(new Date(), 20);
 
+  const { control, watch, setValue } = useForm<{
+    branch?: string;
+    date: DateRange;
+    period: "today" | "week" | "month" | "year" | "custom";
+  }>({
+    defaultValues: {
+      branch: "all",
+      date: {
+        from: monthsAgo,
+        to: tomorrow,
+      },
+      period: 'today',
+    },
+  });
   const { data, isLoading, isFetching, error, refetch } = useGetStockInventory({
     page: currentPage,
     size: pageSize,
     search: debouncedSearchText,
     category: selectedCategory,
     variation: selectedVariation,
+    date_from: watch('date').from?.toISOString().split('T')[0],
+    date_to: watch('date').to?.toISOString().split('T')[0],
+    period: watch('period'),
   });
 
   const tabs = [{ name: "All Stock Inventory", count: data?.count || 0 }];
@@ -107,7 +131,25 @@ export default function StockInventoryDashboard() {
         </div>
         <div className="flex items-center gap-2">
 
-          {
+
+          <RangeAndCustomDatePicker
+            className="max-w-max"
+            variant="light"
+            size="thin"
+            onChange={(value) => {
+              if (value.dateType === 'custom' && value.from && value.to) {
+                setValue('date', { from: value.from, to: value.to });
+                setValue('period', 'custom');
+              } else {
+                setValue('period', value.dateType as "today" | "week" | "month" | "year" | "custom");
+              }
+            }}
+            value={{
+              dateType: watch('period'),
+              from: watch('date').from,
+              to: watch('date').to
+            }}
+          /> {
             (selectedCategory || debouncedSearchText) && (
               <Button
                 variant='outline'

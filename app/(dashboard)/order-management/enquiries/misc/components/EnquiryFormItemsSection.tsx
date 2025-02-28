@@ -150,7 +150,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             item?.properties?.whipped_cream_upgrade,
         ]
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
             return acc + findItemPrice
         }, 0)
 
@@ -198,7 +198,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         ]
         console.log(allProperties, "PROPS")
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
             console.log(findItemPrice, "PRICES")
             return acc + findItemPrice
         }, 0)
@@ -385,11 +385,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id })) || []}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Layers"
+                                                                isLoadingOptions={isLoadingPropertyOptions}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select layers"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.layers}
@@ -404,11 +404,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Topping"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select Topping"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.toppings}
@@ -422,11 +422,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Whipped Cream Upgrade"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select Whipped Cream"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import type { TFormItemSelectionOption } from "./EnquiryFormItemsSection"
 import Image from "next/image"
 import FormError from "@/components/ui/formError"
+import StockVariationSelector from "./StockVariationSelector"
 
 interface StockItemFormEnquiryProps {
   options: TFormItemSelectionOption[]
@@ -153,7 +154,7 @@ const StockItemFormEnquiry: React.FC<StockItemFormEnquiryProps> = ({
                     />
                   ) : null}
                 </div>
-                <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.variation} - ${option.name}`}</p>
+                <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.variation} ${option.category == "Cake" && "inches"} - ${option.name}`}</p>
               </button>
             ))}
           </div>

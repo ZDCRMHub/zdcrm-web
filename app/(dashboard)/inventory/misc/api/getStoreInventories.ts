@@ -18,6 +18,9 @@ interface FetchOptions {
   size?: number;
   search?: string;
   category?: number;
+  period?: "today" | "week" | "month" | "year" | "custom";
+  date_from?: string;
+  date_to?: string;
 }
 
 const fetchStoreInventory = async (options: FetchOptions = {}): Promise<StoreInventoryResponse> => {
@@ -26,6 +29,9 @@ const fetchStoreInventory = async (options: FetchOptions = {}): Promise<StoreInv
   if (options.size) params.append('size', options.size.toString());
   if (options.search) params.append('search', options.search);
   if (options.category) params.append('category', options.category.toString());
+  if (options.period) params.append('period', options.period);
+  if (options.date_from) params.append('date_from', options.date_from);
+  if (options.date_to) params.append('date_to', options.date_to);
 
   const res = await APIAxios.get('/inventory/store-inventories/', { params });
   return res.data;

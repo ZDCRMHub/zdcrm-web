@@ -6,7 +6,7 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 
-import { Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext } from "@/components/ui"
+import { Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationLink, PaginationNext, RangeAndCustomDatePicker } from "@/components/ui"
 import { Button } from '@/components/ui';
 import TabBar from '@/components/TabBar';
 import { useDebounce } from '@/hooks';
@@ -15,6 +15,9 @@ import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
 import ProductsInventoryTable from './ProductsInventoryTable';
 import { useGetProductCategories, useGetProductsInventory } from '../api';
 import NewProductInventorySheet from './ProductsInventoryNew';
+import { useForm } from 'react-hook-form';
+import { subMonths } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 
 
@@ -30,6 +33,25 @@ export default function ProductsInventoryDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedBranch, setSelectedBranch] = useState<number | undefined>();
 
+  const today = new Date();
+  const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+  const monthsAgo = subMonths(new Date(), 20);
+
+
+  const { control, watch, setValue } = useForm<{
+    branch?: string;
+    date: DateRange;
+    period: "today" | "week" | "month" | "year" | "custom";
+  }>({
+    defaultValues: {
+      branch: "all",
+      date: {
+        from: monthsAgo,
+        to: tomorrow,
+      },
+      period: 'today',
+    },
+  });
 
   const { data, isLoading, isFetching, error, refetch } = useGetProductsInventory({
     page: currentPage,
@@ -37,6 +59,9 @@ export default function ProductsInventoryDashboard() {
     search: debouncedSearchText,
     category: selectedCategory,
     branch: selectedBranch,
+    date_from: watch('date').from?.toISOString().split('T')[0],
+    date_to: watch('date').to?.toISOString().split('T')[0],
+    period: watch('period'),
   });
 
 
@@ -111,6 +136,24 @@ export default function ProductsInventoryDashboard() {
             />
           </div>
           <div className='flex items-center gap-2'>
+            <RangeAndCustomDatePicker
+              className="max-w-max"
+              variant="light"
+              size="thin"
+              onChange={(value) => {
+                if (value.dateType === 'custom' && value.from && value.to) {
+                  setValue('date', { from: value.from, to: value.to });
+                  setValue('period', 'custom');
+                } else {
+                  setValue('period', value.dateType as "today" | "week" | "month" | "year" | "custom");
+                }
+              }}
+              value={{
+                dateType: watch('period'),
+                from: watch('date').from,
+                to: watch('date').to
+              }}
+            />
             <NewProductInventorySheet />
             {
               (selectedBranch || selectedCategory || debouncedSearchText) && (

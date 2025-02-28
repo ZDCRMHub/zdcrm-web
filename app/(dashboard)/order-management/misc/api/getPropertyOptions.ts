@@ -37,8 +37,8 @@ interface Datum {
   name: string;
   type: string;
   type_display: string;
-  cost_price: string;
-  selling_price: string;
+  cost_price: number;
+  selling_price: number;
   is_active: boolean;
   create_date: string;
   update_date: string;
