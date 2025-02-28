@@ -8,8 +8,6 @@ import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo, B
 
 
 import { NewOrderFormValues } from "../utils/schema";
-import { PRODUCT_TYPES_OPTIONS } from '@/constants';
-import { Label } from '@/components/ui/label';
 import OrderFormMiscellaneous from './OrderFormMiscellaneous';
 import StockItemFormEnquiry from '../../enquiries/misc/components/StockItemFormEnquiry';
 import OrderFormProductInventorySelector from './OrderFormProductInventorySelector';
@@ -157,7 +155,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         if (!item.category || !item.inventories) {
             return 0;
         } else {
-            const inventoriesIds = item.inventories.map(inv => inv?.stock_inventory_id);
+            const inventoriesIds = item.inventories?.map(inv => inv?.stock_inventory_id);
             const allInventoriesSelected = inventoriesIds.every(inv => inv !== undefined);
             if (!allInventoriesSelected) {
                 return 0;
@@ -250,6 +248,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                             </span>
                         </button>
                         <button
+                            type="button"
                             onClick={() => {
                                 setValue(`items.${index}.is_custom_order`, !isCustomOrder)
                             }}
@@ -382,11 +381,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id, amount: option.selling_price })) || []}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Layers"
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.amount, 'NGN')})`}
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select layers"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.layers}
@@ -401,11 +400,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Topping"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select Topping"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.toppings}
@@ -419,11 +418,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Whipped Cream Upgrade"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select Whipped Cream"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}
@@ -446,11 +445,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Size"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select bouquet"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.bouquet}
@@ -466,11 +465,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'GLASS_VASE').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'GLASS_VASE').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Vase"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select vase"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.glass_vase}

@@ -198,7 +198,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         ]
         console.log(allProperties, "PROPS")
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
             console.log(findItemPrice, "PRICES")
             return acc + findItemPrice
         }, 0)
@@ -251,9 +251,10 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             </span>
                         </button>
                         <button
+                            type="button"
                             onClick={() => {
                                 setValue(`items.${index}.is_custom_order`, !isCustomOrder)
-                             }}
+                            }}
                             className={cn('flex items-center justify-center px-3 py-1.5 bg-[#FFC600] text-[#111827] hover:opacity-90 max-w-max')}
                         >
                             {
@@ -384,11 +385,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id })) || []}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Layers"
+                                                                isLoadingOptions={isLoadingPropertyOptions}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select layers"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.layers}
@@ -403,11 +404,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Topping"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select Topping"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.toppings}
@@ -421,11 +422,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                         control={control}
                                                         render={({ field }) => (
                                                             <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id })) || []}
+                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
                                                                 isLoadingOptions={isLoadingPropertyOptions}
                                                                 label="Whipped Cream Upgrade"
                                                                 valueKey="value"
-                                                                labelKey="label"
                                                                 placeholder="Select Whipped Cream"
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}
@@ -585,19 +586,6 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 }
                             </>
                         }
-
-                        {
-                            isCustomOrder &&
-                            <CustomImagePicker
-                                control={control}
-                                name={`items.${index}.custom_image`}
-                                errors={errors}
-                                hasError={!!errors.items?.[index]?.custom_image}
-                                errorMessage={errors.items?.[index]?.custom_image?.message as string}
-                            />
-                        }
-
-
 
                     </div>
 

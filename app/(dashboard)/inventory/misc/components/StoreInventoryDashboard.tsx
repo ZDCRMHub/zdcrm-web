@@ -12,6 +12,7 @@ import {
   PaginationLink,
   PaginationEllipsis,
   PaginationNext,
+  RangeAndCustomDatePicker,
 } from "@/components/ui";
 import { LinkButton, Button } from "@/components/ui";
 import StoreInventoryTable from "./StoreInventoryTable";
@@ -20,6 +21,9 @@ import { useGetCategories, useGetStoreInventory } from "../api";
 import { useDebounce } from "@/hooks";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import NewStoreInventorySheet from "./StoreInventoryNew";
+import { DateRange } from "react-day-picker";
+import { useForm } from "react-hook-form";
+import { subMonths } from "date-fns";
 
 export default function StoreInventoryDashboard() {
 
@@ -34,12 +38,17 @@ export default function StoreInventoryDashboard() {
 
   const debouncedSearchText = useDebounce(searchText, 300);
 
+
   const { data, isLoading, isFetching, error, refetch } = useGetStoreInventory({
     page: currentPage,
     size: pageSize,
     search: debouncedSearchText,
     category: selectedCategory,
+
   });
+  
+   
+
   const tabs = [{ name: "All Inventory", count: data?.count || 0 }];
   const [activeTab, setActiveTab] = useState(tabs[0].name);
   const handleRefresh = () => {
@@ -76,7 +85,7 @@ export default function StoreInventoryDashboard() {
             onChange={handleSearch}
             rightIcon={<Search className="h-5 w-5 text-[#8B909A]" />}
           />
-{/* 
+          {/* 
           <SelectSingleCombo
             name="filterBy"
             options={categories?.map((category) => ({ value: category.id.toString(), label: category.name })) || []}
@@ -93,6 +102,7 @@ export default function StoreInventoryDashboard() {
 
         </div>
         <div className='flex items-center gap-2'>
+          
           <NewStoreInventorySheet />
 
           {
