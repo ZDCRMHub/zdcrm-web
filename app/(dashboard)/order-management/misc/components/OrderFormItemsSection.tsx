@@ -171,8 +171,6 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                     return { id: variation.stock_variation_id, quantity: variation.quantity, cost_price: selected?.[0]?.cost_price || 0 };
                 }))).flat(2);
 
-                console.log("selectedVariations", selectedVariations);
-                console.log("form items", item);
 
                 const totalVariationCost = selectedVariations.reduce((acc, variation) => {
                     return acc + (Number(variation?.cost_price || '0') * (variation?.quantity || 1));
@@ -223,7 +221,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             }
 
         }
-    }, [watchedItemAtIndex])
+    }, [watchedItemAtIndex, watchedItemAtIndex.properties, watchedItemAtIndex.properties?.toppings])
 
 
 
@@ -250,6 +248,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                             </span>
                         </button>
                         <button
+                            type="button"
                             onClick={() => {
                                 setValue(`items.${index}.is_custom_order`, !isCustomOrder)
                             }}

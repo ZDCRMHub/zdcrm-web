@@ -251,9 +251,10 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             </span>
                         </button>
                         <button
+                            type="button"
                             onClick={() => {
                                 setValue(`items.${index}.is_custom_order`, !isCustomOrder)
-                             }}
+                            }}
                             className={cn('flex items-center justify-center px-3 py-1.5 bg-[#FFC600] text-[#111827] hover:opacity-90 max-w-max')}
                         >
                             {
