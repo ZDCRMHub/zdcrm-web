@@ -101,10 +101,6 @@ const NewOrderPage = () => {
   });
 
   const { control, handleSubmit, formState: { errors }, watch, setValue, getValues, register, reset } = form;
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "items"
-  });
 
   React.useEffect(() => {
     if (!isLoadingOrderData && !!orderData) {

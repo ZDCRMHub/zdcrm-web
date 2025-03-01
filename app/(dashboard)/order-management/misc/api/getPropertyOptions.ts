@@ -20,6 +20,11 @@ export const useGetPropertyOptions = (options: FetchOptions = {}) => {
     queryKey: ['property-options-list', options],
     placeholderData: keepPreviousData,
     queryFn: () => fetchActiveOrders(options),
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 }
 

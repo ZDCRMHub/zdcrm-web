@@ -18,5 +18,10 @@ export const useGetStockCategories = () => {
   return useQuery({
     queryKey: ['stock-categories'],
     queryFn: fetchCategories,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   })
 }
