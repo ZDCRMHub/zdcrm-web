@@ -13,11 +13,14 @@ import { format } from 'date-fns';
 import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
-import { Button, LinkButton, Spinner } from '@/components/ui';
+import { Button, LinkButton, Popover, PopoverContent, PopoverTrigger, Spinner } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
-import { ORDER_STATUS_ENUMS } from '@/constants';
+import { ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
+import { extractErrorMessage } from '@/utils/errors';
+import toast from 'react-hot-toast';
+import { useUpdateOrderStatus } from '../api';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -42,23 +45,7 @@ interface CategoryBadgeProps {
     isActive: boolean;
 }
 
-const CategoryBadge: React.FC<CategoryBadgeProps> = ({ category, isActive }) => {
-    return (
-        <span
-            className={cn(
-                "flex items-center justify-center bg-transparent text-[#A7A7A7] text-sm font-normal rounded-sm h-5 w-5 border border-[#EEEEEE]",
-                isActive && "text-white bg-[#367917] border-transparent"
-            )}
-        >
-            {category}
-        </span>
-    );
-};
-const paymentStatusEnums: Record<string, string> = {
-    'FP': 'Full Payment',
-    'PP': 'Part Payment',
-    'UP': 'Unpaid',
-}
+
 
 interface OrderRowProps {
     order: TOrder;
@@ -72,6 +59,23 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         setTrue: openSheet,
     } = useBooleanStateControl()
 
+    const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
+    const handleStatusUpdate = (new_status: string) => {
+        mutate({ id: order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
+
+            {
+                onSuccess: (data) => {
+                    toast.success("Order status updated successfully");
+                },
+                onError: (error) => {
+                    const errorMessage = extractErrorMessage(error as unknown as any);
+                    toast.error(errorMessage), {
+                        duration: 5000,
+                    };
+                }
+            }
+        );
+    }
 
     return (
         <TableRow>
@@ -95,14 +99,42 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             <TableCell className='min-w-[180px] max-w-[500px]'>{order.delivery.address}</TableCell>
             <TableCell className='min-w-[180px] max-w-[500px]'>{order.delivery.note}</TableCell>
             <TableCell className='min-w-max'>
-                <Badge
-                    className={cn(
-                        ORDER_STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
-                        'rounded-md w-max'
-                    )}
-                >
-                    {ORDER_STATUS_ENUMS[order?.status!]}
-                </Badge>
+                <Popover>
+
+                    <PopoverTrigger className="flex items-center gap-1">
+                        <Badge
+                            className={cn(
+                                ORDER_STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                                'rounded-md w-max'
+                            )}
+                        >
+                            {ORDER_STATUS_ENUMS[order?.status!]}
+                        </Badge>
+                        {
+                            isUpdatingStatus && <Spinner size={18} />
+                        }
+                    </PopoverTrigger>
+                    <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
+                        {
+                            [
+                                { value: "STD", label: "Sent to Dispatch" },
+                                { value: "COM", label: "Delivered" },
+                                { value: "CAN", label: "Cancelled" },
+                            ].map((option) => (
+                                <button
+                                    key={option.value}
+                                    value={option.value}
+                                    onClick={() => handleStatusUpdate(option.value)}
+                                    className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
+                                >
+                                    {option.label}
+                                </button>
+                            ))
+                        }
+                    </PopoverContent>
+                </Popover>
+
+
             </TableCell>
             <TableCell className='min-w-[180px] max-w-[500px]'>
                 {

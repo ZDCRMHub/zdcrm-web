@@ -20,8 +20,15 @@ export const useUpdateProductInventory = () => {
         mutationFn: mutateFn,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['product-inventory-detail', 'product-inventory-histoy']
+                queryKey: ['product-inventory-details'] 
             })
+            queryClient.invalidateQueries({
+                queryKey: ['product-inventory-history'] 
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['product-inventory-list'] 
+            })
+           
         },
     })
 }

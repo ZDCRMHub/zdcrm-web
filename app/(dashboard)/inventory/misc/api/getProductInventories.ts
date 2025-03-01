@@ -39,9 +39,14 @@ const fetchProductInventory = async (options: FetchOptions = {}): Promise<Produc
 
 export const useGetProductsInventory = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['productsInventory', options],
+    queryKey: ['products-inventory-list', options],
     placeholderData: keepPreviousData,
     queryFn: () => fetchProductInventory(options),
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 }
 

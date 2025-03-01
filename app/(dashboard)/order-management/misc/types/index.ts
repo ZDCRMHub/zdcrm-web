@@ -1,13 +1,12 @@
 import { TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
 
-
 export interface TOrder {
   id: number;
   customer: Customer;
   created_by: Createdby;
   approved_by: Createdby |null;
   completed_by: Createdby |null;
-  discount: Createdby |null;
+  discount: any;
   order_number: string;
   enquiry_channel: string;
   enquiry_occasion: string;
@@ -18,7 +17,7 @@ export interface TOrder {
   payment_options: "not_paid_go_ahead" | "paid_website_card" | "paid_naira_transfer" | "paid_pos" | "paid_usd_transfer" | "paid_paypal" | "cash_paid" | "part_payment_cash" | "part_payment_transfer" | "paid_bitcoin" | "not_received_paid" | undefined;
   initial_amount_paid: number | null;
   payment_currency: string;
-  payment_proof: string;
+  payment_proof: string| null;
   payment_verified: boolean;
   amount_paid_in_usd: number | null;
   payment_receipt_name: string;
@@ -39,7 +38,6 @@ export interface TOrderDiscussion {
   message: string;
   create_date: string;
 }
-
 interface Item {
   id: number;
   product: Product;
@@ -56,24 +54,24 @@ interface Item {
 
 interface Property {
   id: number;
-  layers: Layers;
-  layers_cost_at_order: string;
-  layers_selling_at_order: string;
-  toppings: Layers;
-  toppings_cost_at_order: string;
-  toppings_selling_at_order: string;
-  glass_vase: null;
-  glass_vase_cost_at_order: null;
-  glass_vase_selling_at_order: null;
-  bouquet: null;
-  bouquet_cost_at_order: null;
-  bouquet_selling_at_order: null;
-  whipped_cream: Layers;
-  whipped_cream_cost_at_order: string;
-  whipped_cream_selling_at_order: string;
+  layers: PropertyItem | null;
+  layers_cost_at_order: string | null;
+  layers_selling_at_order: string | null;
+  toppings: PropertyItem | null;
+  toppings_cost_at_order: string | null;
+  toppings_selling_at_order: string | null;
+  glass_vase: PropertyItem | null;
+  glass_vase_cost_at_order: string;
+  glass_vase_selling_at_order: string;
+  bouquet: PropertyItem | null;
+  bouquet_cost_at_order: string;
+  bouquet_selling_at_order: string;
+  whipped_cream: PropertyItem | null;
+  whipped_cream_cost_at_order: string | null;
+  whipped_cream_selling_at_order: string | null;
 }
 
-interface Layers {
+interface PropertyItem {
   id: number;
   name: string;
   type: string;
@@ -84,7 +82,6 @@ interface Layers {
   create_date: string;
   update_date: string;
 }
-
 interface Inventory {
   id: number;
   stock_inventory: Stockinventory | null;
@@ -153,6 +150,7 @@ interface Product {
 
 
 export interface TOrderDeliveryInfo {
+  // dispatch: Dispatch;
   id: number;
   zone: string;
   note: string;
@@ -164,11 +162,11 @@ export interface TOrderDeliveryInfo {
   recipient_name: string;
   recipient_phone: string;
   status: "PND" | "CAN" | "DIS" | "DSC" | "DEL";
-  driver_name: null;
-  driver_phone: null;
-  tracking_link: null;
-  delivery_platform: null;
-  fee: null;
+  driver_name: string | null;
+  driver_phone: string | null;
+  tracking_link: string | null;
+  delivery_platform: string | null;
+  fee: string | null;
   is_custom_delivery: boolean;
 }
 

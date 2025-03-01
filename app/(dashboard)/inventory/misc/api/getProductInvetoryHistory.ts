@@ -41,7 +41,7 @@ const fetchDetails = async (id: string | number): Promise<RootObject> => {
 
 export const useGetProductInventoryHistory = (id?: string | number) => {
     return useQuery({
-        queryKey: ['product-inventory-histoy', id],
+        queryKey: ['product-inventory-history', id],
         queryFn: () => fetchDetails(id!),
         enabled: !!id
     })

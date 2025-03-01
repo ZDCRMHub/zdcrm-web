@@ -35,27 +35,30 @@ const itemSchema = z.object({
         cost: z.number().min(1, { message: "Miscellaneous cost is required" })
     })).optional()
 }).superRefine((data, ctx) => {
-    if (!data.custom_image) {
-        throw z.ZodError.create([{
-            path: ['custom_image'],
-            message: 'Please select a file.',
-            code: 'custom',
-        }]);
-    }
-  
-    if (!data.custom_image.type.startsWith('image/')) {
-        throw z.ZodError.create([{
-            path: ['custom_image'],
-            message: 'Please select an image file.',
-            code: 'custom',
-        }]);
-    }
-    if(data.custom_image.size > MAX_FILE_SIZE){
-        throw z.ZodError.create([{
-            path: ['custom_image'],
-            message: 'Please select a file smaller than 10MB.',
-            code: 'custom',
-        }])
+    if (data.is_custom_order) {
+
+        if (!data.custom_image) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select a file.',
+                code: 'custom',
+            }]);
+        }
+
+        if (!data.custom_image.type.startsWith('image/')) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select an image file.',
+                code: 'custom',
+            }]);
+        }
+        if (data.custom_image.size > MAX_FILE_SIZE) {
+            throw z.ZodError.create([{
+                path: ['custom_image'],
+                message: 'Please select a file smaller than 10MB.',
+                code: 'custom',
+            }])
+        }
     }
     if (data.product_id && data.product_id == 0) {
         ctx.addIssue({
@@ -111,7 +114,7 @@ export const NewOrderSchema = z.object({
         phone: z.string().min(1, { message: "Customer's phone number is required" }),
         email: z.string().optional()
     }),
-    
+
     delivery: z.object({
         zone: z.enum(["LM", "LC", "LI", "ND"], { message: "Delivery zone is required" }),
         note: z.string().optional(),
@@ -152,8 +155,8 @@ export const NewOrderSchema = z.object({
     amount_paid_in_usd: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
     initial_amount_paid: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
 }).superRefine((data, ctx) => {
-    
-    if(data.payment_options !== 'not_paid_go_ahead') {
+
+    if (data.payment_options !== 'not_paid_go_ahead') {
         if (!data.payment_proof) {
             throw z.ZodError.create([{
                 path: ['payment_proof'],
@@ -175,7 +178,7 @@ export const NewOrderSchema = z.object({
                 code: 'custom',
             }]);
         }
-        if(data.payment_proof.size > MAX_FILE_SIZE){
+        if (data.payment_proof.size > MAX_FILE_SIZE) {
             throw z.ZodError.create([{
                 path: ['payment_proof'],
                 message: 'Please select a file smaller than 10MB.',

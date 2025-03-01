@@ -79,17 +79,7 @@ const NewEnquiryPage = () => {
       },
       enquiry_channel: "",
       enquiry_occasion: "",
-      items: [
-        {
-          category: categories?.[0].id,
-          product_id: products?.[0].id,
-          quantity: 1,
-          properties: {},
-          inventories: [{
-            variations: [],
-          }],
-        }
-      ],
+      items: [],
     }
   });
 
@@ -135,7 +125,7 @@ const NewEnquiryPage = () => {
           ...item,
           custom_image,
         }
-      }) 
+      })
     ) : [];
     const dataToSubmit = {
       ...data,
@@ -529,30 +519,41 @@ const NewEnquiryPage = () => {
               </AccordionTrigger>
               <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
                 <section className="flex items-center justify-between gap-10">
-                  <Controller
-                    name="branch"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectSingleCombo
-                        {...field}
-                        name='branch'
-                        value={field.value?.toString() || ''}
-                        options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                        valueKey='value'
-                        className="!h-10 min-w-40"
-                        labelKey="label"
-                        placeholder='Select Branch'
-                        onChange={(value) => field.onChange(Number(value))}
-                        isLoadingOptions={branchesLoading}
-                        hasError={!!errors.branch}
-                        errorMessage={errors.branch?.message}
-                      />
-                    )}
-                  />
+                  {
+                    (!!watch('items') && !!watch('items')?.length) &&
+                    <Controller
+                      name="branch"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectSingleCombo
+                          {...field}
+                          name='branch'
+                          value={field.value?.toString() || ''}
+                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                          valueKey='value'
+                          className="!h-10 min-w-40"
+                          labelKey="label"
+                          placeholder='Select Branch'
+                          onChange={(value) => field.onChange(Number(value))}
+                          isLoadingOptions={branchesLoading}
+                          hasError={!!errors.branch}
+                          errorMessage={errors.branch?.message}
+                        />
+                      )}
+                    />
+                  }
+                  {
+                    !watch('items')?.length &&
+                    <div className="w-full h-48 flex items-center justify-center">
+                      <Button size="inputButton" onClick={addNewItem} className="w-full max-w-[300px]" type="button">
+                        Add Item
+                      </Button>
+                    </div>
+                  }
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
-                    fields.map((_, index) => {
+                    watch('items')?.map((_, index) => {
                       return (
                         <EnquiryFormItemsSection
                           key={index}

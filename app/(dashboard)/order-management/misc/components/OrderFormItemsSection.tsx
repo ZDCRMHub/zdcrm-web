@@ -239,15 +239,6 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                             Item {index + 1}
                         </div>
                         <button
-                            onClick={() => deleteItems(index)}
-                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max', watchedItems?.length && watchedItems?.length < 2 && "hidden")}
-                        >
-                            <TrashIcon size={20} />
-                            <span className="sr-only">
-                                Remove
-                            </span>
-                        </button>
-                        <button
                             type="button"
                             onClick={() => {
                                 setValue(`items.${index}.is_custom_order`, !isCustomOrder)
@@ -260,6 +251,15 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                     "+ Custom Order"
                             }
 
+                        </button>
+                        <button
+                            onClick={() => deleteItems(index)}
+                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max')}
+                        >
+                            <TrashIcon size={20} />
+                            <span className="sr-only">
+                                Remove
+                            </span>
                         </button>
                     </div>
 
