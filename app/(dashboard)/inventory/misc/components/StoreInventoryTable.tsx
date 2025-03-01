@@ -91,7 +91,7 @@ const StoreInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoading
             <TableHead>Stock Quantity</TableHead>
             <TableHead>Cost Price/Unit</TableHead>
             <TableHead>Last Updated</TableHead>
-            <TableHead>Updated By</TableHead>
+            {/* <TableHead>Updated By</TableHead> */}
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>

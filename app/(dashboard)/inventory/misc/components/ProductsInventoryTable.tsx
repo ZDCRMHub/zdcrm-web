@@ -132,7 +132,7 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoad
                     <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
                         <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
                     </div>
-                </div>
+                </div> 
                 <section className='flex items-center gap-2 shrink-0 px-5 -translate-y-full'>
                     <Button
                         className="z-10 h-7 w-7"
