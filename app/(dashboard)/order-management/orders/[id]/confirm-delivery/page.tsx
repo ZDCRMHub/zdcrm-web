@@ -4,7 +4,7 @@ import React from 'react';
 import { ArrowLeft2, UserOctagon } from 'iconsax-react';
 import { useParams, useRouter } from 'next/navigation';
 
-import { Button, Card, Input, LinkButton, Spinner } from '@/components/ui';
+import { AmountInput, Button, Card, Input, LinkButton, Spinner } from '@/components/ui';
 import { Separator } from '@/components/ui/separator';
 
 import { useGetOrderDetail, useUpdateDriverDetails } from '../../../misc/api';
@@ -23,7 +23,7 @@ const deliveryFormSchema = z.object({
   driver_name: z.string().min(1, 'Driver Name is required'),
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
-  delivery_expense: z.number().optional(),
+  delivery_expense: z.number(),
   tracking_link: z.string({ message: "Enter a valid url" }).url().min(1, 'Tracking Link is required'),
 });
 
@@ -183,6 +183,16 @@ console.log(errors)
             hasError={!!errors.delivery_platform}
             errorMessage={errors.delivery_platform?.message}
             defaultValue={order?.delivery?.delivery_platform ?? ""}
+          />
+          <AmountInput
+            label='Delivery Expense *'
+            type='text'
+            placeholder='Enter delivery expense'
+            className='w-full focus:border min-w-[350px] text-xs'
+            {...register('delivery_expense')}
+            hasError={!!errors.delivery_expense}
+            errorMessage={errors.delivery_expense?.message}
+            // defaultValue={order?.delivery?.delivery_expense}
           />
           
           <Input

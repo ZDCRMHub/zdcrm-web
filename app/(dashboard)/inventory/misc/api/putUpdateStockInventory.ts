@@ -20,10 +20,13 @@ export const useUpdateStockInventory = () => {
         mutationFn: mutateFn,
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ['stock-inventory-details'] 
+                queryKey: ['stock-inventory-details']
             })
             queryClient.invalidateQueries({
-                queryKey: ['stock-inventory-history'] 
+                queryKey: ['stock-inventory-history']
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['stock-inventory-list']
             })
         },
     })

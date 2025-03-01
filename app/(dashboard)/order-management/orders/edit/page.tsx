@@ -101,10 +101,6 @@ const NewOrderPage = () => {
   });
 
   const { control, handleSubmit, formState: { errors }, watch, setValue, getValues, register, reset } = form;
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "items"
-  });
 
   React.useEffect(() => {
     if (!isLoadingOrderData && !!orderData) {
@@ -125,7 +121,11 @@ const NewOrderPage = () => {
           address: orderData.delivery?.address,
           recipient_name: orderData.delivery?.recipient_name,
           recipient_phone: orderData.delivery?.recipient_phone,
-          delivery_date: format(new Date(orderData.delivery?.delivery_date), 'yyyy-MM-dd'),
+          delivery_date: orderData.delivery?.delivery_date,
+          delivery_time: orderData.delivery?.delivery_time,
+          note: orderData.delivery?.note,
+          fee: parseInt(orderData.delivery?.fee || '0'),
+          is_custom_delivery: orderData.delivery?.is_custom_delivery,
         },
         message: orderData.message,
         items: orderData.items?.map(item => ({
@@ -134,10 +134,10 @@ const NewOrderPage = () => {
           quantity: item.quantity,
           properties: item.properties.reduce((acc, prop) => ({
             ...acc,
-            layers: prop.layers.id,
-            toppings: prop.toppings.id,
-            bouquet: prop.bouquet,
-            glass_vase: prop.glass_vase,
+            layers: prop.layers?.id.toString(),
+            toppings: prop.toppings?.id.toString(),
+            bouquet: prop.bouquet?.id.toString(),
+            glass_vase: prop.glass_vase?.id.toString(),
             // whipped_cream_upgrade: prop.whipped_cream_upgrade,
           }), {}),
           inventories: item.inventories.map(inventory => ({
@@ -159,7 +159,6 @@ const NewOrderPage = () => {
       });
     }
   }, [orderData, isLoadingOrderData]);
-  console.log(errors)
   console.log(errors)
 
   const addNewItem = () => {
@@ -613,33 +612,37 @@ const NewOrderPage = () => {
               </AccordionTrigger>
               <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
                 <section className="flex items-center justify-between gap-10">
-                  <Controller
-                    name="branch"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectSingleCombo
-                        {...field}
-                        name='branch'
-                        value={field.value?.toString() || ''}
-                        options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                        valueKey='value'
-                        className="!h-10 min-w-40"
-                        labelKey="label"
-                        placeholder='Select Branch'
-                        onChange={(value) => field.onChange(Number(value))}
-                        isLoadingOptions={branchesLoading}
-                        hasError={!!errors.branch}
-                        errorMessage={errors.branch?.message}
-                      />
-                    )}
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={addNewItem}
-                    type="button"
-                  >
-                    + Add Item
-                  </Button>
+                  {
+                    (!!watch('items') && !!watch('items')?.length) &&
+                    <Controller
+                      name="branch"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectSingleCombo
+                          {...field}
+                          name='branch'
+                          value={field.value?.toString() || ''}
+                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                          valueKey='value'
+                          className="!h-10 min-w-40"
+                          labelKey="label"
+                          placeholder='Select Branch'
+                          onChange={(value) => field.onChange(Number(value))}
+                          isLoadingOptions={branchesLoading}
+                          hasError={!!errors.branch}
+                          errorMessage={errors.branch?.message}
+                        />
+                      )}
+                    />
+                  }
+                  {
+                    !watch('items')?.length &&
+                    <div className="w-full h-48 flex items-center justify-center">
+                      <Button size="inputButton" onClick={addNewItem} className="w-full max-w-[300px]" type="button">
+                        Add Item
+                      </Button>
+                    </div>
+                  }
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
