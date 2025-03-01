@@ -132,12 +132,6 @@ const NewOrderPage = () => {
   const { uploadToCloudinary } = useCloudinary()
   const { isUploading } = useLoading();
   const [createdOrder, setCreatedOrder] = React.useState<TOrder | null>(null);
-  const {
-    state: isSuccessModalOpen,
-    setTrue: openSuccessModal,
-    setFalse: closeSuccessModal,
-  } = useBooleanStateControl()
-
 
   const { mutate, isPending } = useCreateOrder()
   const onSubmit = async (data: NewOrderFormValues) => {
@@ -151,7 +145,7 @@ const NewOrderPage = () => {
     const processedItems = await Promise.all(
       data.items.map(async (item) => {
         let custom_image: string | undefined
-        if (item.custom_image) {
+        if (item.custom_image && item.is_custom_order) {
           const uploadResult = await uploadToCloudinary(item.custom_image)
           custom_image = uploadResult.secure_url
         }
@@ -171,7 +165,7 @@ const NewOrderPage = () => {
       onSuccess(data) {
         toast.success("Created successfully");
         router.push(`/order-management/orders/${data.data.id}/order-summary`)
-        setCreatedOrder(data?.data);
+        // setCreatedOrder(data?.data);
       },
       onError(error: unknown) {
         const errMessage = extractErrorMessage((error as any)?.response?.data as any);
@@ -180,13 +174,6 @@ const NewOrderPage = () => {
     })
   };
 
-  const routeToOrderDetails = () => {
-    router.push(`/order-management/orders/${createdOrder?.id}`);
-  }
-
-  const resetForm = () => {
-    reset();
-  }
   const isCustomDelivery = watch(`delivery.is_custom_delivery`);
   const toggleCustomDelivery = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
@@ -547,37 +534,41 @@ const NewOrderPage = () => {
               </AccordionTrigger>
               <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
                 <section className="flex items-center justify-between gap-10">
-                  <Controller
-                    name="branch"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectSingleCombo
-                        {...field}
-                        name='branch'
-                        value={field.value?.toString() || ''}
-                        options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                        valueKey='value'
-                        className="!h-10 min-w-40"
-                        labelKey="label"
-                        placeholder='Select Branch'
-                        onChange={(value) => field.onChange(Number(value))}
-                        isLoadingOptions={branchesLoading}
-                        hasError={!!errors.branch}
-                        errorMessage={errors.branch?.message}
-                      />
-                    )}
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={addNewItem}
-                    type="button"
-                  >
-                    + Add Item
-                  </Button>
+                  {
+                    (!!watch('items') && !!watch('items')?.length) &&
+                    <Controller
+                      name="branch"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectSingleCombo
+                          {...field}
+                          name='branch'
+                          value={field.value?.toString() || ''}
+                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                          valueKey='value'
+                          className="!h-10 min-w-40"
+                          labelKey="label"
+                          placeholder='Select Branch'
+                          onChange={(value) => field.onChange(Number(value))}
+                          isLoadingOptions={branchesLoading}
+                          hasError={!!errors.branch}
+                          errorMessage={errors.branch?.message}
+                        />
+                      )}
+                    />
+                  }
+                  {
+                    !watch('items')?.length &&
+                    <div className="w-full h-48 flex items-center justify-center">
+                      <Button size="inputButton" onClick={addNewItem} className="w-full max-w-[300px]" type="button">
+                        Add Item
+                      </Button>
+                    </div>
+                  }
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
                   {
-                    fields.map((_, index) => {
+                    watch('items')?.map((_, index) => {
                       return (
                         <OrderFormItemsSection
                           key={index}
@@ -764,19 +755,6 @@ const NewOrderPage = () => {
         </form>
       </Form>
 
-
-      <ConfirmActionModal
-        isModalOpen={isSuccessModalOpen}
-        icon={<ShoppingBag className="text-[#37d67a]" size={60} />}
-        customTitleText="Success"
-        heading="Order created successfully"
-        subheading="Order has been created successfully"
-        customConfirmText="View Order"
-        customCancelText="Create New Order"
-        confirmFn={routeToOrderDetails}
-        closeModal={closeSuccessModal}
-        cancelAction={resetForm}
-      />
     </div>
   );
 };

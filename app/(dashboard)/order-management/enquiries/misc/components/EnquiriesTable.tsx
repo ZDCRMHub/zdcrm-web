@@ -242,7 +242,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                               <PopoverTrigger className="flex items-center gap-1">
                                 <Badge
                                   className={cn(
-                                    ORDER_STATUS_COLORS[enquiry.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                                    ORDER_STATUS_COLORS[enquiry.status] || 'bg-[#E7F7EF] text-[#0CAF60]',
                                     'rounded-md w-max'
                                   )}
                                 >
@@ -257,7 +257,6 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                                   [
                                     { label: "Started Discussion", value: "STD" },
                                     { label: "Finalized Discussion", value: "FND" },
-                                    { label: "Deleted", value: "DEL" }
                                   ].map((option) => (
                                     <button
                                       key={option.value}

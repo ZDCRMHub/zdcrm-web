@@ -14,7 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBooleanStateControl } from '@/hooks';
 import { formatCurrency } from '@/utils/currency';
-import { formatTimeString } from '@/utils/strings';
+import { convertKebabAndSnakeToTitleCase, formatTimeString } from '@/utils/strings';
 import { extractErrorMessage, formatAxiosErrorMessage } from '@/utils/errors';
 
 import OrderSummarySkeleton from './OrderSummarySkeleton';
@@ -222,14 +222,23 @@ export default function OrderSummary() {
                                       </p>
                                     )}
                                   </div>
-                                  {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
-                                    key !== 'id' && value && (
-                                      <p key={key} className="text-[#111827] font-medium">
-                                        <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
-                                        {value as string}
-                                      </p>
-                                    )
+                                  {item.properties.map((property, index) => (
+                                    <div key={index}>
+                                      {Object.entries(property).map(([key, value]) => {
+                                        if (key === "id" || !value) return null
+                                        if (key.includes("at_order")) return null
+
+                                        const displayValue = typeof value === "object" && value !== null ? value.name : value
+
+                                        return (
+                                          <p key={key} className="text-[#111827] font-medium">
+                                            <span className="text-[#687588]">{convertKebabAndSnakeToTitleCase(key)}:</span> {displayValue}
+                                          </p>
+                                        )
+                                      })}
+                                    </div>
                                   ))}
+
                                   {item.inventories[0]?.instruction && (
                                     <p className="text-[#111827] font-medium">
                                       <span className="text-[#687588]">Instructions:</span>{" "}

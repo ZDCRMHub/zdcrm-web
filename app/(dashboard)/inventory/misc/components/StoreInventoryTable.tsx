@@ -43,7 +43,7 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
       </TableCell>
       <TableCell>{product.cost_price}</TableCell>
       <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
-      <TableCell>{product.created_by}</TableCell>
+      <TableCell>{product.created_by.name}</TableCell>
       <TableCell>
         <LinkButton
           href={`/inventory/store/${product.id}`}

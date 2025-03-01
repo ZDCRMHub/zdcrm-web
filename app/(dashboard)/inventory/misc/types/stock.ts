@@ -44,7 +44,7 @@ interface Variation {
   update_date: string;
 }
 
-interface Createdby {
+export interface Createdby {
   id: number;
   email: string;
   name: string;

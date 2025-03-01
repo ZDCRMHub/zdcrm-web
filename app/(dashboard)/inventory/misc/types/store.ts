@@ -1,4 +1,5 @@
 import { TBranch } from ".";
+import { Createdby } from "./stock";
 
 export interface TStoreInventoryItem {
     id: number;
@@ -7,7 +8,7 @@ export interface TStoreInventoryItem {
     image_one: string;
     cost_price: string;
     quantity: number;
-    created_by: number;
+    created_by: Createdby;
     create_date: string;
     update_date: string;
   }

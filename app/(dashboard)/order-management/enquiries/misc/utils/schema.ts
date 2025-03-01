@@ -113,7 +113,6 @@ const optionalItemSchema = z.object({
     ).optional(),
 }).refine((data) => {
     if (data.is_custom_order) {
-
         if (!data.custom_image) {
             throw z.ZodError.create([{
                 path: ['custom_image'],
@@ -166,7 +165,7 @@ export const NewEnquirySchema = z.object({
     enquiry_occasion: z.string().optional(),
     branch: z.number({ message: "Select a branch" }).optional(),
     message: z.string().optional(),
-    items: z.array(optionalItemSchema).min(1, { message: "At least one item is required" }).optional(),
+    items: z.array(optionalItemSchema).optional(),
 })
 
 export const ConvertiblEnquirySchema = z.object({

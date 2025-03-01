@@ -53,11 +53,11 @@ interface Item {
 
 interface Property {
   id: number;
-  layers: Layers;
-  toppings: Layers;
-  glass_vase: null;
-  whipped_cream: Layers;
-  bouquet: null;
+  layers: Layers | null;
+  toppings: Layers | null;
+  glass_vase: Layers | null;
+  whipped_cream: Layers | null;
+  bouquet: Layers | null;
 }
 
 interface Layers {

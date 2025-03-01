@@ -15,7 +15,7 @@ const CompleteOrderPage = () => {
 
     const router = useRouter();
     const goBack = () => {
-        router.back();
+        router.push('./confirm-delivery');
     }
 
     const onDelivered = () => {
