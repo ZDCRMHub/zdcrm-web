@@ -182,7 +182,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     }, [watchedItemAtIndex]);
 
     const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
-        const item = items?.[0];
+        const item = watchedItemAtIndex;
         if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
@@ -388,6 +388,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                                 valueKey="value"
                                                                 placeholder="Select layers"
                                                                 {...field}
+                                                                allowDisselect
                                                                 hasError={!!errors.items?.[index]?.properties?.layers}
                                                                 errorMessage={errors.items?.[index]?.properties?.layers?.message as string}
 
@@ -407,6 +408,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                                 valueKey="value"
                                                                 placeholder="Select Topping"
                                                                 {...field}
+                                                                allowDisselect
                                                                 hasError={!!errors.items?.[index]?.properties?.toppings}
                                                                 errorMessage={errors.items?.[index]?.properties?.toppings?.message as string}
 
@@ -425,6 +427,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                                 valueKey="value"
                                                                 placeholder="Select Whipped Cream"
                                                                 {...field}
+                                                                allowDisselect
                                                                 hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}
                                                                 errorMessage={errors.items?.[index]?.properties?.whipped_cream_upgrade?.message as string}
 
