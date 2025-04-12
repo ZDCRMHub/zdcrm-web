@@ -14,7 +14,7 @@ const AllProviders = ({ children }: { children: React.ReactNode }) => {
         <CloudinaryLoadingProvider>
           <Suspense
             fallback={
-              <div className="flex itemsc-center justify-center h-screen w-screen">
+              <div className="flex items-center justify-center h-screen w-screen">
                 <Spinner />
               </div>}>
             {children}

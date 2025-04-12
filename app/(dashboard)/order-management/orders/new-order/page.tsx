@@ -316,6 +316,75 @@ const NewOrderPage = () => {
             </AccordionItem>
 
 
+
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////                  ORDER INFORMATION                  ///////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            <AccordionItem value="order-information">
+              <AccordionTrigger className="py-4">
+                <div className="flex items-center gap-5">
+                  <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
+                    <img src="/img/book.svg" alt="" width={24} height={24} />
+                  </div>
+                  <p className="text-custom-blue font-medium">Order Details</p>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
+                <section className="flex items-center justify-between gap-10">
+                  {
+                    (!!watch('items') && !!watch('items')?.length) &&
+                    <Controller
+                      name="branch"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectSingleCombo
+                          {...field}
+                          name='branch'
+                          value={field.value?.toString() || ''}
+                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                          valueKey='value'
+                          className="!h-10 min-w-40"
+                          labelKey="label"
+                          placeholder='Select Branch'
+                          onChange={(value) => field.onChange(Number(value))}
+                          isLoadingOptions={branchesLoading}
+                          hasError={!!errors.branch}
+                          errorMessage={errors.branch?.message}
+                        />
+                      )}
+                    />
+                  }
+                  {
+                    !watch('items')?.length &&
+                    <div className="w-full h-48 flex items-center justify-center">
+                      <Button size="inputButton" onClick={addNewItem} className="w-full max-w-[300px]" type="button">
+                        Add Item
+                      </Button>
+                    </div>
+                  }
+                </section>
+                <section className="flex flex-col gap-y-12 lg:gap-y-20">
+                  {
+                    watch('items')?.map((_, index) => {
+                      return (
+                        <OrderFormItemsSection
+                          key={index}
+                          index={index}
+                          control={control}
+                          watch={watch}
+                          errors={errors}
+                          register={register}
+                          setValue={setValue}
+                          addNewItem={addNewItem}
+                        />
+                      )
+                    })
+                  }
+                </section>
+              </AccordionContent>
+            </AccordionItem>
+
+
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                 DELIVERY INFORMATION                ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -519,73 +588,6 @@ const NewOrderPage = () => {
               </AccordionContent>
             </AccordionItem>
 
-
-            {/* /////////////////////////////////////////////////////////////////////////////// */}
-            {/* /////////////                  ORDER INFORMATION                  ///////////// */}
-            {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="order-information">
-              <AccordionTrigger className="py-4">
-                <div className="flex items-center gap-5">
-                  <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
-                    <img src="/img/book.svg" alt="" width={24} height={24} />
-                  </div>
-                  <p className="text-custom-blue font-medium">Order Details</p>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
-                <section className="flex items-center justify-between gap-10">
-                  {
-                    (!!watch('items') && !!watch('items')?.length) &&
-                    <Controller
-                      name="branch"
-                      control={control}
-                      render={({ field }) => (
-                        <SelectSingleCombo
-                          {...field}
-                          name='branch'
-                          value={field.value?.toString() || ''}
-                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                          valueKey='value'
-                          className="!h-10 min-w-40"
-                          labelKey="label"
-                          placeholder='Select Branch'
-                          onChange={(value) => field.onChange(Number(value))}
-                          isLoadingOptions={branchesLoading}
-                          hasError={!!errors.branch}
-                          errorMessage={errors.branch?.message}
-                        />
-                      )}
-                    />
-                  }
-                  {
-                    !watch('items')?.length &&
-                    <div className="w-full h-48 flex items-center justify-center">
-                      <Button size="inputButton" onClick={addNewItem} className="w-full max-w-[300px]" type="button">
-                        Add Item
-                      </Button>
-                    </div>
-                  }
-                </section>
-                <section className="flex flex-col gap-y-12 lg:gap-y-20">
-                  {
-                    watch('items')?.map((_, index) => {
-                      return (
-                        <OrderFormItemsSection
-                          key={index}
-                          index={index}
-                          control={control}
-                          watch={watch}
-                          errors={errors}
-                          register={register}
-                          setValue={setValue}
-                          addNewItem={addNewItem}
-                        />
-                      )
-                    })
-                  }
-                </section>
-              </AccordionContent>
-            </AccordionItem>
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}

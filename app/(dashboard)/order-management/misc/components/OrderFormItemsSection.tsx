@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useFieldArray, UseFormWatch, Control, UseFormSetValue, FieldErrors } from "react-hook-form";
-import { TrashIcon } from 'lucide-react';
+import { TrashIcon, XIcon } from 'lucide-react';
 
 import { useGetCategories, useGetProducts, useGetProductsInventory, useGetStockInventory } from '@/app/(dashboard)/inventory/misc/api';
 import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo, Button } from '@/components/ui';
@@ -17,6 +17,7 @@ import { formatCurrency } from '@/utils/currency';
 import { cn } from '@/lib/utils';
 import { useGetPropertyOptions } from '../api';
 import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
+import SelectMultiCombo from '@/components/ui/selectMultipleSpecialCombo';
 
 
 interface OrderItemsSectionProps {
@@ -179,7 +180,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                 return ((totalVariationCost + propertiesCost) * item.quantity) + miscCost;
             }
         }
-    }, [watchedItemAtIndex]);
+    }, [propertyOptions?.data]);
 
     const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
         const item = watchedItemAtIndex;
@@ -221,10 +222,11 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             }
 
         }
-    }, [watchedItemAtIndex])
+    }, [watchedItemAtIndex, propertyOptions?.data])
 
 
-
+    const [mockFlavor, setMockFlavor] = useState<Array<{ name: string; quantity: number }>>([]);
+    const [mockSize, setMockSize] = useState<string>('')
 
 
     return (
@@ -309,36 +311,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 />
                             )}
                         />
-                        <div>
-                            <label htmlFor="">Quantity</label>
-                            <div className="flex items-center justify-start gap-2 h-14">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newQuantity = watch('items')?.[index].quantity - 1;
-                                        if (newQuantity >= 1) {
-                                            setValue(`items.${index}.quantity`, newQuantity);
-                                        }
-                                    }}
-                                    className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
-                                >
-                                    -
-                                </button>
-                                <span className="w-9 text-center">
-                                    {watch('items')?.[index].quantity}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newQuantity = watch('items')?.[index].quantity + 1;
-                                        setValue(`items.${index}.quantity`, newQuantity);
-                                    }}
-                                    className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
+
                         {
                             selectedCategory &&
                             <>
@@ -352,10 +325,10 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
                                     isStockInventory &&
                                     <>
-                                        < StockItemFormEnquiry
+                                        {/* < StockItemFormEnquiry
                                             options={productVariations}
                                             onChange={handleProductVariationChange}
-                                            label="Stock"
+                                            label="Size"
                                             // value={watch(`items.${index}.product_id`)?.toString() || ''}
 
                                             disabled={!selectedCategory || (!productsLoading && productsFetching && !products?.length)}
@@ -363,19 +336,43 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                 (!productsLoading && !products?.length) ?
                                                     'No products found' :
                                                     selectedCategory ?
-                                                        'Select stock   ' :
+                                                        // 'Select inventory' :
+                                                        'Select size' :
                                                         'Select category first'
                                             }
                                             isLoadingOptions={productsLoading}
                                             hasError={!!errors.items?.[index]?.inventories}
                                             errorMessage={errors.items?.[index]?.inventories?.message}
-                                        />
-
+                                        /> */}
 
 
                                         {
+                                            (categoryName === 'Cake' || categoryName === 'Cupcake') && (
+                                                <>
+                                                    <SelectSingleCombo
+                                                        name="size"
+                                                        options={[
+                                                            { name: "6 Inches", value: "6" },
+                                                            { name: "8 Inches", value: "8" },
+                                                            { name: "10 Inches", value: "10" }
+                                                        ]}
+                                                        isLoadingOptions={isLoadingPropertyOptions}
+                                                        label="Size"
+                                                        labelKey={'name'}
+                                                        valueKey="value"
+                                                        value={mockSize}
+                                                        onChange={setMockSize}
+                                                        placeholder="Select size"
+                                                        allowDisselect
+
+                                                    />
+                                                </>
+                                            )
+                                        }
+                                        {
                                             categoryName === 'Cake' && (
                                                 <>
+
                                                     <Controller
                                                         name={`items.${index}.properties.layers`}
                                                         control={control}
@@ -395,6 +392,76 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                             />
                                                         )}
                                                     />
+                                                    <div>
+                                                        <SelectMultiCombo
+                                                            name="flavour"
+                                                            options={[
+                                                                { name: "Chocolate", value: "Chocolate" },
+                                                                { name: "Vanilla", value: "Vanilla" },
+                                                                { name: "Red Velvet", value: "Red Velvet" },
+                                                            ]}
+                                                            onChange={(new_values) => setMockFlavor((prev) => {
+                                                                const newFlavors = new_values.filter(
+                                                                    (flavor) => !prev.some((item) => item.name === flavor)
+                                                                );
+
+                                                                const updatedFlavors = prev.filter((item) =>
+                                                                    new_values.includes(item.name)
+                                                                );
+
+                                                                return [
+                                                                    ...updatedFlavors,
+                                                                    ...newFlavors.map((flavor) => ({ name: flavor, quantity: 1 })),
+                                                                ];
+                                                            })}
+                                                            value={mockFlavor.map((item) => item.name)}
+                                                            isLoadingOptions={isLoadingPropertyOptions}
+                                                            label="Flavour"
+                                                            labelKey="name"
+                                                            valueKey="value"
+                                                            placeholder="Select flavour"
+                                                            showValues={false}
+                                                        />
+                                                        <div className="flex items-center gap-x-4 gap-y-1.5 flex-wrap">
+
+                                                            {
+                                                                mockFlavor.map((item, index) => (
+                                                                    <div key={index} className="flex items-center gap-2 mt-2 bg-primary text-white px-2 py-1 rounded-md">
+                                                                        <span>{item.name}</span>
+                                                                        <input
+                                                                            type="number"
+                                                                            value={item.quantity}
+                                                                            onChange={(e) => {
+                                                                                const newQuantity = parseInt(e.target.value);
+                                                                                if (newQuantity >= 1) {
+                                                                                    setMockFlavor((prev) =>
+                                                                                        prev.map((flavor, i) =>
+                                                                                            i === index ? { ...flavor, quantity: newQuantity } : flavor
+                                                                                        )
+                                                                                    );
+                                                                                }
+                                                                            }}
+                                                                            className="w-16 border border-none outline-none !p-0 px-1 rounded-sm !h-6 text-xs text-primary appearance-none"
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setMockFlavor((prev) =>
+                                                                                    prev.filter((_, i) => i !== index)
+                                                                                );
+                                                                            }}
+                                                                            className="text-white hover:text-red-500"
+                                                                        >
+                                                                            <XIcon size={15} />
+                                                                        </button>
+                                                                    </div>
+
+                                                                ))
+                                                            }
+                                                        </div>
+
+                                                    </div>
+
 
                                                     <Controller
                                                         name={`items.${index}.properties.toppings`}
@@ -596,6 +663,37 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 errorMessage={errors.items?.[index]?.custom_image?.message as string}
                             />
                         }
+
+                        <div>
+                            <label htmlFor="">Quantity</label>
+                            <div className="flex items-center justify-start gap-2 h-14">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newQuantity = watch('items')?.[index].quantity - 1;
+                                        if (newQuantity >= 1) {
+                                            setValue(`items.${index}.quantity`, newQuantity);
+                                        }
+                                    }}
+                                    className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
+                                >
+                                    -
+                                </button>
+                                <span className="w-9 text-center">
+                                    {watch('items')?.[index].quantity}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newQuantity = watch('items')?.[index].quantity + 1;
+                                        setValue(`items.${index}.quantity`, newQuantity);
+                                    }}
+                                    className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        </div>
 
                     </div>
 

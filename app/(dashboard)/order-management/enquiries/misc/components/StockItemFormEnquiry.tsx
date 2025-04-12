@@ -71,7 +71,8 @@ const StockItemFormEnquiry: React.FC<StockItemFormEnquiryProps> = ({
     if (disabled) return "Select a category first"
     if (selectedItems.length === 0) return placeholder
     if (selectedItems.length === 1)
-      return `${selectedItems[0].name} - ${selectedItems[0].variation} (${selectedItems[0].quantity})`
+      // return `${selectedItems[0].name} - ${selectedItems[0].variation} (${selectedItems[0].quantity})`
+      return `${selectedItems[0].variation} (${selectedItems[0].quantity})`
     return `${selectedItems.length} items selected`
   }
 
@@ -154,7 +155,8 @@ const StockItemFormEnquiry: React.FC<StockItemFormEnquiryProps> = ({
                     />
                   ) : null}
                 </div>
-                <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.variation} ${option.category == "Cake" && "inches"} - ${option.name}`}</p>
+                <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.variation} ${option.category == "Cake" && "inches"}`}</p>
+                {/* <p className="text-[0.75rem] pt-1.5 max-w-[130px]">{`${option.variation} ${option.category == "Cake" && "inches"} - ${option.name}`}</p> */}
               </button>
             ))}
           </div>
