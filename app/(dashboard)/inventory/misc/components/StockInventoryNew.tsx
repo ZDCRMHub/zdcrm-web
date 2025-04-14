@@ -311,7 +311,7 @@ export default function NewInventorySheet() {
                                                 // label="Flavor"
                                                 label="Size"
                                                 // placeholder='Flavour'
-                                                placeholder='size'
+                                                placeholder='sizex'
                                                 hasError={!!errors.variations?.[index]?.flavour}
                                                 errorMessage={errors.variations?.[index]?.flavour?.message}
                                             />

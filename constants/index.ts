@@ -109,7 +109,7 @@ export const ENQUIRY_PAYMENT_OPTIONS = [
 
 export const ORDER_STATUS_OPTIONS = [
   { value: "PND", label: "Pending" },
-  { value: "SOA", label: "SOA" },
+  { value: "SOA", label: "Start Order Arrangement" },
   { value: "SOR", label: "Sorted" },
   { value: "STD", label: "Sent to Dispatch" },
   { value: "COM", label: "Delivered" },
@@ -120,7 +120,6 @@ export const CATEGORIES_ENUMS: Record<string, string> = {
   "Cake": "C",
   "Flower": "F",
   "Cupcake": "CC",
-
   "Wine": "W",
   "Teddy Bear": "TB",
   "Gift Card": "GC",
@@ -134,7 +133,7 @@ export const CATEGORIES_ENUMS: Record<string, string> = {
 }
 export const ORDER_STATUS_ENUMS: Record<string, string> = {
   "PND": "PENDING",
-  "SOA": "SOA",
+  "SOA": "START ORDER ARRANGEMENT",
   "SOR": "SORTED",
   "STD": "SENT TO DELIVERY",
   "COM": "DELIVERED",

@@ -187,7 +187,7 @@ export const ConvertiblEnquirySchema = z.object({
     }),
     enquiry_channel: z.string().min(1, { message: "Enquiry channel is required" }),
     social_media_details: z.string().optional(),
-    enquiry_occasion: z.string().min(1, { message: "Enquiry occasion is required" }),
+    enquiry_occasion: z.string().optional(),
     branch: z.number({ message: "Select a branch" }),
     message: z.string().optional(),
     items: z.array(itemSchema).min(1, { message: "At least one item is required" }),

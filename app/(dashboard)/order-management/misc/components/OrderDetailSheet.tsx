@@ -595,7 +595,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       Delivery Details
                     </h3>
                     <LinkButton
-                      href={`/order-management/orders/edit?order_id=${order?.id}`}
+                      href={`/order-management/orders/edit?order_id=${order?.id}#delivery-information-section`}
                       variant="ghost"
                       size="sm"
                       onClick={openEditDeliveryDetailsModal}
