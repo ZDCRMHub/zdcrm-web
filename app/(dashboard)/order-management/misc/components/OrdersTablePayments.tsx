@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { FilterSearch, Tag } from 'iconsax-react';
-import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 
 import {
     Table,
@@ -14,7 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
-import { Button, Checkbox, LinkButton, Spinner } from '@/components/ui';
+import { Button, Checkbox, ConfirmActionModal, LinkButton, Spinner } from '@/components/ui';
 import { useBooleanStateControl, useDebounce } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import { useQueryClient } from '@tanstack/react-query';
@@ -62,6 +62,11 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         setFalse: closeSheet,
         setTrue: openSheet,
     } = useBooleanStateControl()
+    const {
+        state: isConfirmPaymentVerificationModalOpen,
+        setFalse: closeConfirmPaymentVerificationModal,
+        setTrue: openConfirmPaymentVerificationModal,
+    } = useBooleanStateControl()
 
 
     const { mutate, isPending } = useUpdatePaymentVerified(order.id);
@@ -73,10 +78,11 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 queryClient.invalidateQueries({
                     queryKey: ['active-orders-list']
                 });
+                closeConfirmPaymentVerificationModal();
             },
             onError(error) {
-                 const errMsg = extractErrorMessage(error as unknown as any);
-                 toast.error(errMsg);
+                const errMsg = extractErrorMessage(error as unknown as any);
+                toast.error(errMsg);
             },
         });
     }
@@ -118,11 +124,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
 
             <TableCell className=' uppercase'>
                 <div className="flex items-center gap-1.5">
-                    <Checkbox
-                        checked={order.payment_verified}
-                        disabled={isPending}
-                        onCheckedChange={() => handlePaymentVerifiedStatus()}
-                    />
+                    <div
+                        className="flex items-center justify-center h-6 w-6 shrink-0 rounded-lg border-2 border-blue-600 cursor-pointer "
+                        onClick={openConfirmPaymentVerificationModal}
+                    >
+                        {
+                            order.payment_verified && <div className="flex items-center justify-center text-current !bg-transparent">
+                                <Check className={cn("h-4 w-4 stroke-[3] text-blue-600")} />
+
+                            </div>
+                        }
+                    </div>
+                   
                     {
                         isPending &&
                         <Spinner size={16} />
@@ -146,6 +159,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     closeSheet={closeSheet}
                 />
             </TableCell>
+
+
+            <ConfirmActionModal
+                isModalOpen={isConfirmPaymentVerificationModalOpen}
+                closeModal={closeConfirmPaymentVerificationModal}
+                subheading={order.payment_verified ? 'Unverifying payment will remove the verification status from this order.' : 'Verifying payment will add the verification status to this order.'}
+                confirmFn={handlePaymentVerifiedStatus}
+                isConfirming={isPending}
+                cancelAction={closeConfirmPaymentVerificationModal}
+                heading='Confirm Payment Verification'
+                customConfirmText={order.payment_verified ? 'Unverify Payment' : 'Verify Payment'}
+            />
         </TableRow>
     );
 };

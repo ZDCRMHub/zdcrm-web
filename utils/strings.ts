@@ -133,11 +133,13 @@ export function maskString(
   useOriginalLength: boolean,
   fixedLength?: number
 ): string {
-  const length = input.length;
+  if(!input) return input;
+  const length = input?.length;
   const totalMaskLength = useOriginalLength ? length - 2 * visibleChars : fixedLength! - 2 * visibleChars;
   
   if (totalMaskLength < 0) {
-    throw new Error("Fixed length must be greater than twice the visible character count.");
+    // throw new Error("Fixed length must be greater than twice the visible character count.");
+    return input;
   }
   
   const mask = "*".repeat(totalMaskLength);

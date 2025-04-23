@@ -278,20 +278,27 @@ export default function NewInventorySheet() {
                                     />
                                 )}
                                 {watch('category') === 9 && (
-                                    <Controller
-                                        name={`variations.${index}.color`}
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                {...field}
-                                                value={field.value || ''}
-                                                label="Colour"
-                                                placeholder='Colour'
-                                                hasError={!!errors.variations?.[index]?.color}
-                                                errorMessage={errors.variations?.[index]?.color?.message}
-                                            />
-                                        )}
-                                    />
+                                    <>
+                                        <Controller
+                                            name={`variations.${index}.color`}
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input
+                                                    {...field}
+                                                    value={field.value || ''}
+                                                    label="Bouquet Size"
+                                                    // label="Colour"
+                                                    // placeholder='Colour'
+                                                    placeholder="Bouquet size"
+                                                    hasError={!!errors.variations?.[index]?.color}
+                                                    errorMessage={errors.variations?.[index]?.color?.message}
+                                                />
+                                            )}
+                                        />
+                                        <AmountInput
+                                            label="Maximum number of flowers"
+                                        />
+                                    </>
                                 )}
                                 {watch('category') === 10 && (
                                     <Controller
@@ -301,9 +308,10 @@ export default function NewInventorySheet() {
                                             <Input
                                                 {...field}
                                                 value={field.value || ''}
-                                                label="Flavor"
-
-                                                placeholder='Flavour'
+                                                // label="Flavor"
+                                                label="Size"
+                                                // placeholder='Flavour'
+                                                placeholder='sizex'
                                                 hasError={!!errors.variations?.[index]?.flavour}
                                                 errorMessage={errors.variations?.[index]?.flavour?.message}
                                             />
@@ -316,7 +324,7 @@ export default function NewInventorySheet() {
                                     render={({ field }) => (
                                         <AmountInput
                                             {...field}
-                                            value={field.value ?? ''}
+                                            value={field.value}
                                             label="Selling Price"
                                             placeholder='Selling Price'
                                             hasError={!!errors.variations?.[index]?.selling_price}

@@ -29,6 +29,8 @@ interface SelectProps<T extends Record<string, any>> {
   labelKey: keyof T;
   maxSelections?: number;
   placeHolderClass?: string;
+  isSpecial?: boolean
+  showValues?: boolean
 }
 
 const SelectMultiCombo = <T extends Record<string, any>>({
@@ -52,6 +54,8 @@ const SelectMultiCombo = <T extends Record<string, any>>({
   triggerColor,
   maxSelections,
   placeHolderClass,
+  isSpecial = true,
+  showValues = true
 }: SelectProps<T>) => {
   const [open, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
@@ -129,7 +133,10 @@ const SelectMultiCombo = <T extends Record<string, any>>({
                   placeHolderClass
                 )}>
                   {value.length > 0
-                    ? getOptionLabel(value[0])
+                    ?
+                    <>
+                    {`${getOptionLabel(value[0])}${!isSpecial && value.length > 1 ? ` (+${value.length - 1})` : ''}`}
+                    </> 
                     : placeholder}
                 </span>
                 <svg
@@ -151,24 +158,25 @@ const SelectMultiCombo = <T extends Record<string, any>>({
               </Button>
             </PopoverTrigger>
 
-            {value.length > 1 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {value.slice(1).map((value) => (
-                  <span
-                    key={value}
-                    className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-custom-blue text-white rounded-md"
-                  >
-                    {getOptionLabel(value)}
-                    <button
-                      onClick={() => removeValue(value)}
-                      className="hover:bg-blue-200 rounded-full p-0.5"
+            {
+              (value.length > 1 && showValues) && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {value.slice(isSpecial ? 1 : 0).map((value) => (
+                    <span
+                      key={value}
+                      className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-custom-blue text-white rounded-md"
                     >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
+                      {getOptionLabel(value)}
+                      <button
+                        onClick={() => removeValue(value)}
+                        className="hover:bg-blue-200 rounded-full p-0.5"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
           </div>
 
           <PopoverContent className={cn("p-0", triggerRef?.current && `min-w-max`)} style={{ width }}>

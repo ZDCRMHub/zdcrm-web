@@ -50,6 +50,7 @@ interface SelectProps<T> extends VariantProps<typeof buttonVariants> {
   searchKey?: keyof T
   showSelectedValue?: boolean;
   placeHolderClass?: string;
+  allowDisselect?: boolean;
 }
 
 const SelectSingleCombo = <T extends object>({
@@ -78,6 +79,7 @@ const SelectSingleCombo = <T extends object>({
   showSelectedValue = true,
   variant = "inputButton",
   size = "inputButton",
+  allowDisselect = false
 }: SelectProps<T>) => {
   const [isOpen, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
@@ -115,6 +117,12 @@ const SelectSingleCombo = <T extends object>({
   const handleSelect = (currentValue: string | boolean) => {
     const selectedOption = options?.find(option => String(option[valueKey]) == String(currentValue));
     const selectedValue = selectedOption ? String(selectedOption[valueKey]) : '';
+
+    if (selectedValue === value && allowDisselect) {
+      onChange('');
+      setOpen(false);
+      return;
+    }
     onChange(selectedValue);
     setOpen(false);
   }
