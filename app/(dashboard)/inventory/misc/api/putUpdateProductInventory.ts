@@ -4,12 +4,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 type Props = {
     id: number;
     data: {
-        cost_price: string | number;
         quantity: number;
     }
 }
-const mutateFn = async ({ id, data }: Props) => {
+const mutateFn2 = async ({ id, data }: Props) => {
     const res = await APIAxios.put(`/inventory/${id}/update-product-inventory/`, data)
+    return res.data
+}
+const mutateFn = async ({ id, data }: Props) => {
+    const res = await APIAxios.put(`/inventory/${id}/update-product-inventory-variation/`, data)
     return res.data
 }
 

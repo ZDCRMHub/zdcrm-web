@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useGetPropertyOptions } from '../api';
 import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 import SelectMultiCombo from '@/components/ui/selectMultipleSpecialCombo';
+import ProductSelector from './ProductSelector';
 
 
 interface OrderItemsSectionProps {
@@ -135,7 +136,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     ) || [];
 
 
-    const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
+   const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
         const item = items?.[0];
         if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
@@ -180,10 +181,10 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                 return ((totalVariationCost + propertiesCost) * item.quantity) + miscCost;
             }
         }
-    }, [propertyOptions?.data]);
+    }, [watchedItemAtIndex]);
 
     const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
-        const item = watchedItemAtIndex;
+        const item = items?.[0];
         if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
@@ -196,33 +197,13 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         ]
         console.log(allProperties, "PROPS")
         const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price || '0')
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
             console.log(findItemPrice, "PRICES")
             return acc + findItemPrice
         }, 0)
 
-        if (!item.category || !item.inventories.length) {
-            return 0;
-        }
-        else {
-            const inventoriesIds = item.inventories.map(inv =>
-                inv?.product_inventory_id
-            )
-            const allInventoriesSelected = inventoriesIds.every((inv) => inv !== undefined);
-            if (!allInventoriesSelected) {
-                return 0;
-            }
-            else {
-                const itemInventories = inventories?.filter(inv => inventoriesIds.includes(inv.id));
-                console.log("itemInventories", itemInventories)
-
-                return itemInventories?.reduce((acc, inv) => {
-                    return acc + (Number(inv.cost_price) * item.quantity);
-                }, miscCost + propertiesCost);
-            }
-
-        }
-    }, [watchedItemAtIndex, propertyOptions?.data])
+        return miscCost + propertiesCost
+    }, [watchedItemAtIndex])
 
 
     const [mockFlavor, setMockFlavor] = useState<Array<{ name: string; quantity: number }>>([]);
@@ -289,12 +270,13 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                             name={`items.${index}.product_id`}
                             control={control}
                             render={({ field }) => (
-                                <SelectSingleCombo
+                                <ProductSelector
                                     {...field}
-                                    value={watch(`items.${index}.product_id`)?.toString() || field.value?.toString() || ''}
-                                    options={products?.map(prod => ({ label: prod.name, value: prod.id.toString() })) || []}
-                                    valueKey='value'
-                                    labelKey="label"
+                                    productId={field.value?.toString() || ''}
+                                    variationId={watch(`items.${index}.product_variation_id`) || ''}
+                                    setProductId={(value) => { setValue(`items.${index}.product_id`, Number(value)); }}
+                                    setVariationId={(value) => setValue(`items.${index}.product_variation_id`, value)}
+                                    options={products|| []}
                                     label="Product Name"
                                     disabled={!selectedCategory || (!productsLoading && !products?.length)}
                                     placeholder={
@@ -304,7 +286,6 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                 'Select product' :
                                                 'Select category first'
                                     }
-                                    onChange={(value) => field.onChange(parseInt(value))}
                                     isLoadingOptions={productsLoading}
                                     hasError={!!errors.items?.[index]?.product_id}
                                     errorMessage={errors.items?.[index]?.product_id?.message}
@@ -325,25 +306,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
                                     isStockInventory &&
                                     <>
-                                        {/* < StockItemFormEnquiry
-                                            options={productVariations}
-                                            onChange={handleProductVariationChange}
-                                            label="Size"
-                                            // value={watch(`items.${index}.product_id`)?.toString() || ''}
-
-                                            disabled={!selectedCategory || (!productsLoading && productsFetching && !products?.length)}
-                                            placeholder={
-                                                (!productsLoading && !products?.length) ?
-                                                    'No products found' :
-                                                    selectedCategory ?
-                                                        // 'Select inventory' :
-                                                        'Select size' :
-                                                        'Select category first'
-                                            }
-                                            isLoadingOptions={productsLoading}
-                                            hasError={!!errors.items?.[index]?.inventories}
-                                            errorMessage={errors.items?.[index]?.inventories?.message}
-                                        /> */}
+                                      
 
 
                                         {
@@ -611,7 +574,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                             {
                                                 watchedInventories.map((_, invIndex) =>
 
-                                                    <>
+                                                    <React.Fragment key={invIndex}>
                                                         <OrderFormProductInventorySelector
                                                             inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
                                                             setInventoryId={(inventoryId) => {
@@ -643,7 +606,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                             )}
                                                         />
 
-                                                    </>
+                                                    </React.Fragment>
                                                 )
                                             }
                                         </React.Fragment>

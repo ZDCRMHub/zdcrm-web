@@ -168,6 +168,7 @@ const NewOrderPage = () => {
       {
         category: categories?.[0].id || 1,
         product_id: products?.[0].id || 0,
+        product_variation_id: '',
         quantity: 1,
         properties: {},
         inventories: [{

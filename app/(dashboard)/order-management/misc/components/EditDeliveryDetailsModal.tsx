@@ -76,7 +76,7 @@ const EditDeliveryDetailsModal: React.FC<ModalProps> = ({
   };
 
   return (
-    <Dialog open={isModalOpen}>
+    <Dialog open={isModalOpen} modal onOpenChange={closeModal}>
       <DialogContent
         onPointerDownOutside={closeModal}
         className="p-0 !rounded-2xl w-full md:w-[85vw] max-w-[1024px]"
@@ -261,7 +261,6 @@ const EditDeliveryDetailsModal: React.FC<ModalProps> = ({
           </Button>
           <Button
             className="h-14 w-[200px]"
-            onClick={form.handleSubmit(onSubmit)}
             variant="default"
           >
             Save

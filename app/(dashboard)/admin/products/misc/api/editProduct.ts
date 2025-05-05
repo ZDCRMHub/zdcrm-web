@@ -2,15 +2,10 @@ import { APIAxios } from "@/utils/axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 
-interface UpdateProduct {
-    name?: string
-    is_active?: boolean
-    selling_price?: number
-}
 
 interface UpdateProductParams {
     id: number
-    data: UpdateProduct
+    data: any
 }
 
 const updateProduct = async ({ id, data }: UpdateProductParams) => {

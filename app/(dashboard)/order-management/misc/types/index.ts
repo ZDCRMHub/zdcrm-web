@@ -1,16 +1,17 @@
 import { TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
 
+
 export interface TOrder {
   id: number;
   customer: Customer;
   created_by: Createdby;
-  approved_by: Createdby |null;
-  completed_by: Createdby |null;
+  approved_by: Createdby | null;
+  completed_by: Createdby | null;
   discount: any;
   order_number: string;
   enquiry_channel: string;
   enquiry_occasion: string;
-  branch: Branch;
+  branch: Branch;  
   message: string;
   status: "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN";
   payment_status: string;
@@ -31,6 +32,102 @@ export interface TOrder {
   create_date: string;
   update_date: string;
 }
+
+
+interface Item {
+  id: number;
+  product: Product;
+  product_variation: Productvariation;
+  quantity: number;
+  miscellaneous: Miscellaneou[];
+  inventories: Inventory[];
+  custom_image: null;
+  create_date: string;
+  update_date: string;
+  price_at_order: string;
+  is_sorted: boolean;
+  properties: Property[];
+}
+
+interface Inventory {
+  id: number;
+  stock_inventory: Stockinventory | null;
+  product_inventory: Stockinventory | null;
+  message: string;
+  instruction: string;
+  variations: Variation[];
+}
+
+interface Variation {
+  id: number;
+  variation_details: Variationdetails;
+  quantity: number;
+  price_at_order: null;
+  selling_price_at_order: null;
+}
+
+interface Variationdetails {
+  id: number;
+  size: string;
+  color: string | null;
+  flavour: string | null;
+  quantity: number;
+  last_updated_by: Createdby | number;
+  create_date: string;
+  update_date: string;
+}
+
+interface Stockinventory {
+  id: number;
+  name: string;
+  category: TProductCategory;
+  image_one: string | null;
+  inventory_number: string;
+}
+
+interface Miscellaneou {
+  id: number;
+  description: string;
+  cost: string;
+}
+
+export interface Productvariation {
+  id: number;
+  size: string;
+  layer: string;
+  max_flowers: null;
+  cost_price: string;
+  selling_price: string;
+  quantity: number;
+  recently_updated_by: Createdby;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  category: TProductCategory;
+  image: string;
+}
+
+
+
+interface Createdby {
+  id: number;
+  email: string;
+  name: string;
+  phone: string;
+  image: null;
+}
+
+interface Customer {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+}
+
+
+// 
 
 export interface TOrderDiscussion {
   id: number;
@@ -82,55 +179,8 @@ interface PropertyItem {
   create_date: string;
   update_date: string;
 }
-interface Inventory {
-  id: number;
-  stock_inventory: Stockinventory | null;
-  product_inventory: Productinventory | null;
-  quantity_used: null | number;
-  message: null | string;
-  instruction: null | string;
-  variations: Variation[];
-  price_at_order: null | string;
-  selling_price_at_order: null | string;
-}
 
-interface Variation {
-  id: number;
-  variation_details: Variationdetails;
-  quantity: number;
-  price_at_order: string;
-  selling_price_at_order: string;
-}
 
-interface Variationdetails {
-  id: number;
-  size: string;
-  color: null;
-  flavour: null;
-  selling_price: string;
-  cost_price: string;
-  quantity: number;
-  last_updated_by: number;
-  create_date: string;
-  update_date: string;
-}
-
-interface Productinventory {
-  id: number;
-  name: string;
-  category: TProductCategory;
-  image_one: string;
-  cost_price: string;
-  inventory_number: string;
-}
-
-interface Stockinventory {
-  id: number;
-  name: string;
-  category: TProductCategory;
-  image_one: string;
-  inventory_number: string;
-}
 
 interface Miscellaneou {
   id: number;
@@ -150,7 +200,6 @@ interface Product {
 
 
 export interface TOrderDeliveryInfo {
-  // dispatch: Dispatch;
   id: number;
   zone: string;
   note: string;

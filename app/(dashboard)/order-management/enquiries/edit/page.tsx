@@ -98,6 +98,7 @@ const NewEnquiryPage = () => {
         items: enquiryData.items?.map(item => ({
           category: item.product?.category.id,
           product_id: item.product.id,
+          product_variation_id: item.product_variation?.id.toString(),
           quantity: item.quantity,
           properties: item.properties.reduce((acc, prop) => ({
             ...acc,
@@ -128,6 +129,7 @@ const NewEnquiryPage = () => {
     append({
       category: categories?.[0].id || 1,
       product_id: products?.[0].id || 0,
+      product_variation_id: '',
       quantity: 1,
       properties: {},
       inventories: [{

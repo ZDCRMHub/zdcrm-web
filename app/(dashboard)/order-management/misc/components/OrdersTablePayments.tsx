@@ -92,6 +92,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         <TableRow>
             <TableCell className='min-w-[150px]'>
                 <div>{order.order_number}</div>
+                <div className='text-[0.825rem] text-gray-500 truncate'>{order.created_by.name}</div>
             </TableCell>
             <TableCell className=''>
                 <div>{order.customer?.name}</div>
@@ -113,8 +114,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 </Badge>
             </TableCell>
             <TableCell className='min-w-max'>
-                <div className='font-bold'>{convertNumberToNaira(Number(order.total_production_cost) || 0)}</div>
-                <div className='text-sm text-[#494949]'>{order.payment_status}</div>
+                <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
+                <div className='text-sm text-[#494949]'>{paymentStatusEnums[order.payment_status as keyof typeof paymentStatusEnums] || 'Unknown Status'}</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>
                 {

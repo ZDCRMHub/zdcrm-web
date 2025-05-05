@@ -26,16 +26,14 @@ import { useGetStockCategories } from '../api';
 
 
 
-
 const variationSchema = z.object({
     size: z.string().optional(),
     color: z.string().optional(),
     flavour: z.string().optional(),
-
-    cost_price: z.number().min(1, { message: 'Cost price is required' }),
-    selling_price: z.number().min(1, { message: 'Selling price is required' }),
     quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
 });
+
+
 const MAX_FILE_SIZE = 1000000;
 
 const schema = z.object({
@@ -97,7 +95,8 @@ export default function NewInventorySheet() {
         resolver: zodResolver(schema),
         defaultValues: {
             image_one: null,
-            variations: [{ selling_price: 0, cost_price: 0, }],
+            category: 8,
+            variations: [{ size: '4', quantity: 1 },],
         },
     });
 
@@ -231,6 +230,7 @@ export default function NewInventorySheet() {
                                 />
                             )}
                         />
+
                         <Controller
                             name="category"
                             control={control}
@@ -253,127 +253,99 @@ export default function NewInventorySheet() {
 
 
 
-                        {fields.map((field, index) => (
-                            <div key={field.id} className="space-y-4">
-                                <h3 className="font-semibold">Variation {index + 1}</h3>
-                                {watch('category') === 8 && (
-                                    <Controller
-                                        name={`variations.${index}.size`}
-                                        control={control}
-                                        render={({ field }) => (
-
-                                            <SelectSingleCombo
-                                                options={
-                                                    PRODUCT_TYPES_OPTIONS.Cakes.sizes
-                                                }
-                                                label="Size"
-                                                valueKey="value"
-                                                labelKey="label"
-                                                placeholder="Select Size"
-                                                {...field}
-                                                hasError={!!errors.variations?.[index]?.size}
-                                                errorMessage={errors.variations?.[index]?.size?.message as string}
-                                            />
-                                        )}
-                                    />
-                                )}
-                                {watch('category') === 9 && (
-                                    <>
+                        {
+                            fields.map((field, index) => (
+                                <div key={field.id} className="space-y-4">
+                                    <h3 className="font-semibold">Variation {index + 1}</h3>
+                                    {watch('category') === 8 ? (
                                         <Controller
-                                            name={`variations.${index}.color`}
+                                            name={`variations.${index}.size`}
+                                            control={control}
+                                            render={({ field }) => (
+
+                                                <SelectSingleCombo
+                                                    options={
+                                                        PRODUCT_TYPES_OPTIONS.Cakes.sizes
+                                                    }
+                                                    label="Size"
+                                                    valueKey="value"
+                                                    labelKey="label"
+                                                    placeholder="Select Size"
+                                                    {...field}
+                                                    hasError={!!errors.variations?.[index]?.size}
+                                                    errorMessage={errors.variations?.[index]?.size?.message as string}
+                                                />
+                                            )}
+                                        />
+                                    )
+                                        :
+                                        <Controller
+                                            name={`variations.${index}.size`}
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Input
+                                                    {...field}
+                                                    label="Size"
+                                                    value={field.value}
+                                                    placeholder='Item size'
+                                                    hasError={!!errors.variations?.[index]?.size}
+                                                    errorMessage={errors.variations?.[index]?.size?.message as string}
+
+                                                />
+
+                                            )}
+                                        />
+                                    }
+
+                                    {watch('category') === 10 && (
+                                        <Controller
+                                            name={`variations.${index}.flavour`}
                                             control={control}
                                             render={({ field }) => (
                                                 <Input
                                                     {...field}
                                                     value={field.value || ''}
-                                                    label="Bouquet Size"
-                                                    // label="Colour"
-                                                    // placeholder='Colour'
-                                                    placeholder="Bouquet size"
-                                                    hasError={!!errors.variations?.[index]?.color}
-                                                    errorMessage={errors.variations?.[index]?.color?.message}
+                                                    // label="Flavor"
+                                                    label="Size"
+                                                    // placeholder='Flavour'
+                                                    placeholder='sizex'
+                                                    hasError={!!errors.variations?.[index]?.flavour}
+                                                    errorMessage={errors.variations?.[index]?.flavour?.message}
                                                 />
                                             )}
                                         />
-                                        <AmountInput
-                                            label="Maximum number of flowers"
-                                        />
-                                    </>
-                                )}
-                                {watch('category') === 10 && (
+                                    )}
+
                                     <Controller
-                                        name={`variations.${index}.flavour`}
+                                        name={`variations.${index}.quantity`}
                                         control={control}
                                         render={({ field }) => (
-                                            <Input
+                                            <AmountInput
                                                 {...field}
-                                                value={field.value || ''}
-                                                // label="Flavor"
-                                                label="Size"
-                                                // placeholder='Flavour'
-                                                placeholder='sizex'
-                                                hasError={!!errors.variations?.[index]?.flavour}
-                                                errorMessage={errors.variations?.[index]?.flavour?.message}
+                                                {...register(`variations.${index}.quantity`, { valueAsNumber: true })}
+                                                type="number"
+                                                label="Quantity"
+                                                placeholder='Quantity'
+                                                pattern="^[0-9]*$"
+                                                hasError={!!errors.variations?.[index]?.quantity}
+                                                errorMessage={errors.variations?.[index]?.quantity?.message}
+                                            // onChange={(e) => field.onChange(Number(e.target.value))}
                                             />
                                         )}
                                     />
-                                )}
-                                <Controller
-                                    name={`variations.${index}.selling_price`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <AmountInput
-                                            {...field}
-                                            value={field.value}
-                                            label="Selling Price"
-                                            placeholder='Selling Price'
-                                            hasError={!!errors.variations?.[index]?.selling_price}
-                                            errorMessage={errors.variations?.[index]?.selling_price?.message}
-                                        />
+                                    {index > 0 && (
+                                        <Button type="button" onClick={() => remove(index)} variant="outline">
+                                            Remove Variation
+                                        </Button>
                                     )}
-                                />
-                                <Controller
-                                    name={`variations.${index}.cost_price`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <AmountInput
-                                            {...field}
-                                            value={field.value ?? ''}
-                                            label="Cost Price"
-                                            placeholder='Cost Price'
-                                            hasError={!!errors.variations?.[index]?.cost_price}
-                                            errorMessage={errors.variations?.[index]?.cost_price?.message}
-                                        />
-                                    )}
-                                />
-                                <Controller
-                                    name={`variations.${index}.quantity`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Input
-                                            {...field}
-                                            {...register(`variations.${index}.quantity`, { valueAsNumber: true })}
-                                            type="number"
-                                            label="Quantity"
-                                            placeholder='Quantity'
-                                            pattern="^[0-9]*$"
-                                            hasError={!!errors.variations?.[index]?.quantity}
-                                            errorMessage={errors.variations?.[index]?.quantity?.message}
-                                        // onChange={(e) => field.onChange(Number(e.target.value))}
-                                        />
-                                    )}
-                                />
-                                {index > 0 && (
-                                    <Button type="button" onClick={() => remove(index)} variant="outline">
-                                        Remove Variation
-                                    </Button>
-                                )}
-                            </div>
-                        ))}
+                                </div>
+                            ))
+                        }
+
 
                         <Button
                             type="button"
-                            onClick={() => append({ selling_price: 0, cost_price: 0, quantity: 1 })}
+                            onClick={() => append({ quantity: 1, size: "" })}
                             variant="outline"
                         >
                             Add Variation

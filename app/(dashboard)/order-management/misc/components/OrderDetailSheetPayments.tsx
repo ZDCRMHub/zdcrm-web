@@ -362,7 +362,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     isEditingPaymentDetails && <PartPaymentsForm
                       order_id={order?.id || default_order?.id}
                       outstanding_balance={
-                        Number(order?.total_selling_price	 || 0) -
+                        Number(order?.total_amount	 || 0) -
                         (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0) -
                         (order?.initial_amount_paid || 0)
                       }
@@ -497,7 +497,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                                       <p className="font-medium text-[#194A7A]">
                                         Amount:{" "}
                                         <span className="font-bold">
-                                          {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
+                                          {formatCurrency(Number(item.product_variation.selling_price) || 0, 'NGN')}
                                           {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
                                         </span>
                                       </p>

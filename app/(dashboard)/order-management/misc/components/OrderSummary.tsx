@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { format } from 'date-fns';
 
-import { Input, Button, LinkButton, Form, SelectSingleCombo, Spinner, AmountInput } from '@/components/ui';
+import { Input, Button, LinkButton, Form, SelectSingleCombo, Spinner, AmountInput, Textarea } from '@/components/ui';
 import { Card, CardContent } from '@/components/ui/card';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useBooleanStateControl } from '@/hooks';
@@ -92,6 +92,8 @@ export default function OrderSummary() {
       }
     );
   }
+
+  const [isCustomDiscount, setIsCustomDiscount] = useState(false)
 
   React.useEffect(() => {
     if (!!watch('custom_discount_amount')) {
@@ -268,7 +270,7 @@ export default function OrderSummary() {
                               <p className="font-medium text-[#194A7A]">
                                 Amount:{" "}
                                 <span className="font-bold">
-                                  {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
+                                  {formatCurrency(Number(item.product_variation.selling_price || 0), 'NGN')}
                                 </span>
                               </p>
                             </section>
@@ -299,31 +301,58 @@ export default function OrderSummary() {
                         </h3>
                       </header>
                       <div>
-                        <SelectSingleCombo
-                          name='discount_id'
-                          className='max-w-[350px]'
-                          value={form.watch('discount_id')}
-                          onChange={(value) => form.setValue('discount_id', value)}
-                          label='Discount Type'
-                          labelKey={(item) => `${item.label} - ${formatCurrency(Number(item.amount), 'NGN')}`}
-                          valueKey={'value'}
-                          placeholder='Select discount type'
-                          options={discounts?.data?.map((discount) => ({
-                            label: discount.type,
-                            value: discount.id.toString(),
-                            amount: discount.amount
-                          }))}
-                          isLoadingOptions={isLoadingDiscounts}
-                        />
+                        <div className="flex gap-4 items-center ">
+                          {
+                            !isCustomDiscount &&
+                            <SelectSingleCombo
+                              name='discount_id'
+                              className='max-w-[350px]'
+                              value={form.watch('discount_id')}
+                              onChange={(value) => form.setValue('discount_id', value)}
+                              label='Discount Type'
+                              labelKey={(item) => `${item.label} - ${formatCurrency(Number(item.amount), 'NGN')}`}
+                              valueKey={'value'}
+                              placeholder='Select discount type'
+                              options={discounts?.data?.map((discount) => ({
+                                label: discount.type,
+                                value: discount.id.toString(),
+                                amount: discount.amount
+                              }))}
+                              isLoadingOptions={isLoadingDiscounts}
+                            />
+                          }
+                          <Button
+                            onClick={() => setIsCustomDiscount((prev) => !prev)}
+                            className="mt-6 !h-12"
+                            type="button"
+                          >
+                            {
+                              isCustomDiscount ?
+                                "Use Regular Discounts" :
+                                "Enter Custom Amount"
+                            }
+                          </Button>
+                        </div>
 
-                        <AmountInput
-                          label="Discount Amount"
-                          className='max-w-[350px]'
-                          hasError={!!errors.custom_discount_amount}
-                          errorMessage={errors.custom_discount_amount?.message}
-                          placeholder="Enter discount amount"
-                          {...register('custom_discount_amount')}
-                        />
+                        {
+                          isCustomDiscount &&
+                          <div className="space-y-5">
+                            <AmountInput
+                              label="Discount Amount"
+                              className='max-w-[350px]'
+                              hasError={!!errors.custom_discount_amount}
+                              errorMessage={errors.custom_discount_amount?.message}
+                              placeholder="Enter discount amount"
+                              {...register('custom_discount_amount')}
+                            />
+                            <Textarea
+                              className='max-w-[350px]'
+                              placeholder='Enter discount reason'
+                              label="Discount Reason"
+                            // {...register('custom_discount_reason')}
+                            />
+                          </div>
+                        }
                         <Button
                           type="button"
                           className='flex items-center gap-1 mt-4 text-[#d8636d] bg-red-100'
@@ -337,7 +366,7 @@ export default function OrderSummary() {
                       <div className='mt-16 w-[300px] self-end'>
                         <p className='font-medium mt-2 text-[#8B909A]'>
                           Subtotal (NGN):
-                          {formatCurrency(Number(order?.total_production_cost) - Number(order?.delivery.dispatch?.delivery_price || '0'), "NGN")}
+                          {formatCurrency(Number(order?.total_amount) - Number(order?.delivery.dispatch?.delivery_price || '0'), "NGN")}
                         </p>
                         <p className='font-medium mt-2 text-[#8B909A]'>Delivery Fee: {formatCurrency(Number(order?.delivery.dispatch?.delivery_price) || 0, "NGN")}</p>
                         <p className='font-medium mt-2 text-red-500'>Discount: -{formatCurrency(Number(watch('custom_discount_amount') || selectedDiscountAmount) || 0, "NGN")}</p>
@@ -345,7 +374,7 @@ export default function OrderSummary() {
                           Total (NGN):
                           {
                             formatCurrency(
-                              Number(order?.total_production_cost) -
+                              Number(order?.total_amount) -
                               (watch('custom_discount_amount') || (Number(discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount) || 0)),
                               "NGN")
                           }
@@ -362,7 +391,7 @@ export default function OrderSummary() {
                   <CardContent className='p-0'>
                     <div className='flex justify-between items-center mb-4 border-b py-3 px-6'>
                       <h2 className='font-semibold'>Delivery Details</h2>
-                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
+                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}#delivery-information-section`} variant='unstyled' size='sm'>
                         <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>
@@ -411,7 +440,7 @@ export default function OrderSummary() {
 
                     <div className='flex justify-between items-center mb-4 px-6 py-3 border-b'>
                       <h2 className='font-semibold'>Delivery Note</h2>
-                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}`} variant='unstyled' size='sm'>
+                      <LinkButton href={`/order-management/orders/edit?order_id=${order?.id}#delivery-information-section`} variant='unstyled' size='sm'>
                         <Edit2 className='w-5 h-5 text-[#A0AEC0]' />
                       </LinkButton>
                     </div>

@@ -83,6 +83,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                 ...prevItems,
                 category: selectedCategory,
                 product_id: 0,
+                product_variation_id: '',
                 properties: {},
                 quantity: 1,
                 inventories: [{ variations: [] },]
@@ -186,33 +187,29 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         }
     }, [watchedItemAtIndex]);
 
-    const calculateProductItemAmount = (items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
-        const item = items[0];
+
+    const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
+        const item = items?.[0];
+        if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
         const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
+        const allProperties = [
+            item?.properties?.bouquet,
+            item?.properties?.layers,
+            item?.properties?.glass_vase,
+            item?.properties?.toppings,
+            item?.properties?.whipped_cream_upgrade,
+        ]
+        console.log(allProperties, "PROPS")
+        const propertiesCost = allProperties.reduce((acc, item) => {
+            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
+            console.log(findItemPrice, "PRICES")
+            return acc + findItemPrice
+        }, 0)
 
-        if (!item.category || !item.inventories.length) {
-            return 0;
-        }
-        else {
-            const inventoriesIds = item.inventories.map(inv =>
-                inv?.product_inventory_id
-            )
-            const allInventoriesSelected = inventoriesIds.every((inv) => inv !== undefined);
-            if (!allInventoriesSelected) {
-                return 0;
-            }
-            else {
-                const itemInventories = inventories.filter(inv => inventoriesIds.includes(inv.id));
-                console.log("itemInventories", itemInventories)
+        return miscCost + propertiesCost
+    }, [watchedItemAtIndex])
 
-                return itemInventories.reduce((acc, inv) => {
-                    return acc + (Number(inv.cost_price) * item.quantity);
-                }, miscCost);
-            }
-
-        }
-    }
 
 
 
