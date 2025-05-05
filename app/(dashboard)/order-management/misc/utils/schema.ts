@@ -25,6 +25,7 @@ const inventorySchema = z.object({
 const itemSchema = z.object({
     category: z.number({ message: "Category is required" }),
     product_id: z.number({ message: "Product Name is required" }),
+    product_variation_id: z.string().min(1, { message: "Product Variation is required" }),
     quantity: z.number().min(1),
     inventories: z.array(inventorySchema),
     properties: propertiesSchema,
@@ -116,6 +117,7 @@ export const NewOrderSchema = z.object({
     }),
 
     delivery: z.object({
+        residence_type: z.string({ required_error: "Delivery type is required" }),
         zone: z.enum(["LM", "LC", "LI", "ND"], { message: "Delivery zone is required" }),
         note: z.string().optional(),
         delivery_time: z.string(),

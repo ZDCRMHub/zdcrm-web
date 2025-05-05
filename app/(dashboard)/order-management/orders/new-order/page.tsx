@@ -54,6 +54,7 @@ import { useCreateOrder, useGetOrderDeliveryLocations } from "../../misc/api";
 import { TOrder } from "../../misc/types";
 import { useRouter } from "next/navigation";
 import { useLoading } from "@/contexts";
+import Link from "next/link";
 
 
 const NewOrderPage = () => {
@@ -82,6 +83,7 @@ const NewOrderPage = () => {
         {
           category: categories?.[0].id,
           product_id: products?.[0].id,
+          product_variation_id: '',
           quantity: 1,
           properties: {},
           inventories: [{
@@ -107,6 +109,7 @@ const NewOrderPage = () => {
     append({
       category: categories?.[0].id || 1,
       product_id: products?.[0].id || 0,
+      product_variation_id: '',
       quantity: 1,
       properties: {},
       inventories: [{
@@ -178,6 +181,8 @@ const NewOrderPage = () => {
   const toggleCustomDelivery = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
+  const watchedPhoneNumber = watch('customer.phone')
+
 
 
   console.log(getValues('items'))
@@ -238,6 +243,9 @@ const NewOrderPage = () => {
                             {...field}
                           />
                         </FormControl>
+                        {
+                          watchedPhoneNumber.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                        }
                       </FormItem>
                     )}
                   />
@@ -400,24 +408,26 @@ const NewOrderPage = () => {
               <AccordionContent className="pt-5">
                 {
                   watch('delivery.method') === "Dispatch" &&
-                  <FormField
-                    control={control}
-                    name="delivery.address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            className=""
-                            label="Delivery Address"
-                            {...field}
-                            hasError={!!errors.delivery?.address}
-                            errorMessage={errors.delivery?.address?.message}
-                            placeholder="Enter delivery address"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <>
+                    <FormField
+                      control={control}
+                      name="delivery.address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              className=""
+                              label="Delivery Address"
+                              {...field}
+                              hasError={!!errors.delivery?.address}
+                              errorMessage={errors.delivery?.address?.message}
+                              placeholder="Enter delivery address"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </>
                 }
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
                   <FormField
@@ -537,6 +547,28 @@ const NewOrderPage = () => {
                       </FormItem>
                     )}
                   />
+
+                  {
+
+                    watch('delivery.method') === "Dispatch" &&
+                    <FormField
+                      control={control}
+                      name="delivery.residence_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              label="Residence Type"
+                              hasError={!!errors.delivery?.residence_type}
+                              errorMessage={errors.delivery?.residence_type?.message}
+                              placeholder="Enter residence type"
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  }
                   <FormField
                     control={control}
                     name="delivery.delivery_date"

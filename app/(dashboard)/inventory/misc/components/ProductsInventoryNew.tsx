@@ -3,7 +3,7 @@ import * as z from "zod";
 import toast from "react-hot-toast";
 import { Add, Book } from "iconsax-react";
 import { Plus, User, X } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AmountInput, Button, SelectSingleCombo } from "@/components/ui";
@@ -27,51 +27,50 @@ import useCloudinary from "@/hooks/useCloudinary";
 
 import CustomImagePicker from "./CustomImagePicker";
 import { useGetProductCategories } from "../api";
+import { PRODUCT_TYPES_OPTIONS } from "@/constants";
+
+
+
+const variationSchema = z.object({
+  size: z.string().min(1, { message: 'Size is required' }),
+  quantity: z.number().int().positive({ message: 'Quantity must be a positive integer' }),
+});
 
 const MAX_FILE_SIZE = 1000000;
 
 const schema = z.object({
-  name: z.string().min(1, { message: "Item name is required" }).max(255),
+  name: z.string().min(1, { message: 'Item name is required' }).max(255),
   category: z.number(),
   branch: z.number(),
-  quantity: z
-    .number()
-    .int()
-    .positive({ message: "Quantity must be a positive integer" }),
-  cost_price: z.number().min(1, { message: "Cost price is required" }),
-  selling_price: z.number().min(1, { message: "Selling price is required" }),
-  image_one: z
-    .any()
-    .nullable()
-    .refine(
-      (file) => {
-        if (!file) {
-          throw z.ZodError.create([
-            {
-              path: ["image_one"],
-              message: "Please select a file.",
-              code: "custom",
-            },
-          ]);
-        }
-        if (!file.type.startsWith("image/")) {
-          throw z.ZodError.create([
-            {
-              path: ["image_one"],
-              message: "Please select an image file.",
-              code: "custom",
-            },
-          ]);
-        }
-        return file.size <= MAX_FILE_SIZE;
-      },
-      {
-        message: "Max image size is 10MB.",
+  image_one: z.any().nullable().refine(
+    file => {
+      if (!file) {
+        throw z.ZodError.create([{
+          path: ['image_one'],
+          message: 'Please select a file.',
+          code: 'custom',
+        }]);
       }
-    ),
-});
+      if (!file.type.startsWith('image/')) {
+        throw z.ZodError.create([{
+          path: ['image_one'],
+          message: 'Please select an image file.',
+          code: 'custom',
+        }]);
+      }
+      return file.size <= MAX_FILE_SIZE;
+    },
+
+    {
+      message: 'Max image size is 10MB.',
+    }
+  ),
+  variations: z.array(variationSchema).min(1, { message: 'At least one variation is required' })
+
+})
 
 type FormType = z.infer<typeof schema>;
+
 
 const createProductInventory = async (data: FormType) => {
   console.log(data);
@@ -86,16 +85,22 @@ export default function NewProductInventorySheet() {
     handleSubmit,
     formState: { errors, isDirty },
     setValue,
+    watch,
     reset,
   } = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      category: undefined,
-      branch: undefined,
       image_one: null,
+      category: 1,
+      variations: [{ size: '4', quantity: 1 },],
     },
   });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variations",
+  });
+
 
   const { data: categories, isLoading: categoriesLoading } =
     useGetProductCategories();
@@ -114,7 +119,11 @@ export default function NewProductInventorySheet() {
   const { mutate: createProductInvetory, isPending: isCreating } = useMutation({
     mutationFn: createProductInventory,
     onSuccess: () => {
-      reset();
+      reset({
+        image_one: null,
+        category: 8,
+        variations: [{ size: '4', quantity: 1 },],
+      });
       setValue("image_one", null);
       toast.success("Product Inventory created successfully");
       queryClient.invalidateQueries({ queryKey: ["productsInventory"] });
@@ -165,10 +174,8 @@ export default function NewProductInventorySheet() {
 
           <Separator />
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="grow flex flex-col gap-8 px-8 py-10"
-          >
+
+          <form onSubmit={handleSubmit(onSubmit)} className='grow flex flex-col gap-8 px-8 py-10'>
             <CustomImagePicker
               control={control}
               name="image_one"
@@ -182,14 +189,14 @@ export default function NewProductInventorySheet() {
               render={({ field }) => (
                 <Input
                   {...field}
-                  label="Product Name"
-                  value={field.value?.toString() ?? ""}
-                  placeholder="Item name"
+                  value={field.value?.toString() ?? ''}
+                  placeholder='Item name'
                   hasError={!!errors.name}
                   errorMessage={errors.name?.message}
                 />
               )}
             />
+
 
             <Controller
               name="branch"
@@ -197,18 +204,12 @@ export default function NewProductInventorySheet() {
               render={({ field }) => (
                 <SelectSingleCombo
                   {...field}
-                  name="branch"
-                  value={field.value?.toString() || ""}
-                  options={
-                    branches?.data?.map((bra) => ({
-                      label: bra.name,
-                      value: bra.id.toString(),
-                    })) || []
-                  }
-                  valueKey="value"
+                  name='branch'
+                  value={field.value?.toString() || ''}
+                  options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                  valueKey='value'
                   labelKey="label"
-                  label="Branch"
-                  placeholder="Select Branch"
+                  placeholder='Select Branch'
                   onChange={(value) => field.onChange(Number(value))}
                   isLoadingOptions={branchesLoading}
                   hasError={!!errors.branch}
@@ -216,24 +217,19 @@ export default function NewProductInventorySheet() {
                 />
               )}
             />
+
             <Controller
               name="category"
               control={control}
               render={({ field }) => (
                 <SelectSingleCombo
                   {...field}
-                  name="branch"
-                  value={field.value?.toString() || ""}
-                  options={
-                    categories?.map((bra) => ({
-                      label: bra.name,
-                      value: bra.id.toString(),
-                    })) || []
-                  }
-                  valueKey="value"
+                  name='category'
+                  value={field.value?.toString() || ''}
+                  options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
+                  valueKey='value'
                   labelKey="label"
-                  label="Category"
-                  placeholder="Select Category"
+                  placeholder='Category'
                   onChange={(value) => field.onChange(Number(value))}
                   isLoadingOptions={categoriesLoading}
                   hasError={!!errors.category}
@@ -242,58 +238,72 @@ export default function NewProductInventorySheet() {
               )}
             />
 
-            <Controller
-              name={`cost_price`}
-              control={control}
-              render={({ field }) => (
-                <AmountInput
-                  {...field}
-                  label="Cost Price"
-                  value={field.value ?? ""}
-                  placeholder="Cost Price"
-                  hasError={!!errors.selling_price}
-                  errorMessage={errors.selling_price?.message}
-                />
-              )}
-            />
-            <Controller
-              name={`selling_price`}
-              control={control}
-              render={({ field }) => (
-                <AmountInput
-                  {...field}
-                  label="Selling Price"
-                  value={field.value ?? ""}
-                  placeholder="Selling Price"
-                  hasError={!!errors.selling_price}
-                  errorMessage={errors.selling_price?.message}
-                />
-              )}
-            />
 
-            <Input
-              type="number"
-              placeholder="Quantity"
-              hasError={!!errors.quantity}
-              errorMessage={errors.quantity?.message}
-              pattern="^[0-9]*$"
-              {...register("quantity", { valueAsNumber: true })}
-              // onChange={(e) => setValue('quantity', parseInt(e.target.value) || 0)}
-            />
+            {
+              fields.map((field, index) => (
+                <div key={field.id} className="space-y-4">
+                  <h3 className="font-semibold">Variation {index + 1}</h3>
+
+                  <Controller
+                    name={`variations.${index}.size`}
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        label="Size"
+                        value={field.value}
+                        placeholder='Item size'
+                        hasError={!!errors.variations?.[index]?.size}
+                        errorMessage={errors.variations?.[index]?.size?.message as string}
+
+                      />
+
+                    )}
+                  />
+
+
+
+
+                  <Controller
+                    name={`variations.${index}.quantity`}
+                    control={control}
+                    render={({ field }) => (
+                      <AmountInput
+                        {...field}
+                        {...register(`variations.${index}.quantity`, { valueAsNumber: true })}
+                        type="number"
+                        label="Quantity"
+                        placeholder='Quantity'
+                        pattern="^[0-9]*$"
+                        hasError={!!errors.variations?.[index]?.quantity}
+                        errorMessage={errors.variations?.[index]?.quantity?.message}
+                      // onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    )}
+                  />
+                  {index > 0 && (
+                    <Button type="button" onClick={() => remove(index)} variant="outline">
+                      Remove Variation
+                    </Button>
+                  )}
+                </div>
+              ))
+            }
+
+            <Button
+              type="button"
+              onClick={() => append({ quantity: 1, size: "" })}
+              variant="outline"
+            >
+              Add Variation
+            </Button>
 
             <div className="flex items-center gap-4 mt-auto">
               <SheetClose asChild>
-                <Button type="button" className="h-14 w-full" variant="outline">
-                  Cancel
-                </Button>
+                <Button type="button" className='h-14 w-full' variant="outline">Cancel</Button>
               </SheetClose>
-              <Button
-                type="submit"
-                className="h-14 w-full"
-                variant="black"
-                disabled={!isDirty || isCreating || isUploading}
-              >
-                {isCreating || isUploading ? "Saving..." : "Save Record"}
+              <Button type="submit" className='h-14 w-full' variant="black" disabled={!isDirty || isCreating || isUploading}>
+                {(isCreating || isUploading) ? 'Saving...' : 'Save Record'}
               </Button>
             </div>
           </form>

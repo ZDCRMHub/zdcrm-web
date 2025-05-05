@@ -20,7 +20,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({  label, className, hasError, errorMessage, errorMessageClass, showCharacterCount, currentLength, maxLength, ...props }, ref) => {
 
     return (
-      <div className={cn("flex flex-col gap-y-3")}>
+      <div className={cn("flex flex-col gap-2")}>
         {
           label && (
             <Label className="text-sm text-muted-foreground" htmlFor={label}>

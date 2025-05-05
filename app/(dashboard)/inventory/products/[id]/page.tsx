@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useParams, useRouter, } from "next/navigation";
+import { useParams, useRouter, useSearchParams, } from "next/navigation";
 import { MoveLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { useGetProductInventoryDetails, useGetProductInventoryHistory } from "../../misc/api";
 import { ProductsInventoryHistoryTable, ProductsInventoryUpdateModal } from "../../misc/components";
 import { useBooleanStateControl } from "@/hooks";
+import { TProductVariation } from "../../misc/types/products";
+import { SelectSingleCombo } from "@/components/ui";
 
 
 const InventoryDetailsPage = () => {
   const product_id = useParams().id as string;
+  const variation_id = useSearchParams().get('variation') as string;
 
   const router = useRouter();
 
@@ -25,15 +28,20 @@ const InventoryDetailsPage = () => {
 
 
   const { data, isLoading, isFetching, refetch: refetchData } = useGetProductInventoryDetails(product_id)
-  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch:refetchHistory } = useGetProductInventoryHistory(product_id)
-  const [selectedVariant, setSelectedVariant] = useState<string | undefined>(undefined);
+  const [selectedVariant, setSelectedVariant] = useState<TProductVariation | undefined>(undefined);
+  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch: refetchHistory } = useGetProductInventoryHistory(selectedVariant?.id || variation_id)
 
+  React.useEffect(() => {
+    if (variation_id && data && !isLoading) {
+      setSelectedVariant(data?.variations.find(variation => variation.id.toString() == variation_id) || data?.variations[0]);
+    }
+  }, [variation_id, data, isLoading]);
   const refetch = () => {
     refetchData();
     refetchHistory();
   }
 
-  
+
   return (
     <section className="mx-16 mt-8">
       <div className="flex gap-6">
@@ -43,13 +51,26 @@ const InventoryDetailsPage = () => {
         <h1 className="uppercase text-xl font-bold">{data?.name}</h1>
       </div>
 
+      <SelectSingleCombo
+        options={data?.variations.map(variation => ({ value: variation.id.toString(), label: variation.size })) || []}
+        value={selectedVariant?.id.toString()}
+        onChange={(value) => {
+          setSelectedVariant(data?.variations.find(variation => variation.id.toString() == value));
+        }}
+        labelKey={'label'}
+        valueKey={'value'}
+        name="variation"
+        placeholder="Select Variation"
+        size="thin"
+        containerClass="max-w-[500px]"
+      />
 
       <div className="mt-10 flex ">
         <div className="p-8 bg-[#F6F6F6] rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
           <p className="text-2xl font-medium text-center mb-3">Stock</p>
           <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-4">
             <p className="text-[18px] uppercase">Quantity at hand</p>
-            <p className="text-2xl text-[#113770] font-bold">{data?.quantity}</p>
+            <p className="text-2xl text-[#113770] font-bold">{selectedVariant?.quantity}</p>
             <Button className="bg-[#1E1E1E] rounded-none text-sm w-[161px]" onClick={openUpdateModal}>
               Adjust Stock
             </Button>
@@ -71,12 +92,14 @@ const InventoryDetailsPage = () => {
       </section>
 
 
+
       {
-        data &&
+        selectedVariant &&
         <ProductsInventoryUpdateModal
           isModalOpen={isUpdateModalOpen}
           closeModal={closeUpdateModal}
-          product={data}
+          product={data!}
+          variation={selectedVariant}
           refetch={refetch}
         />
       }

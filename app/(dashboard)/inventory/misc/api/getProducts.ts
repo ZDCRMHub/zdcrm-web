@@ -1,6 +1,7 @@
 import { APIAxios } from "@/utils/axios"
 import { useQuery } from "@tanstack/react-query"
 import { TProductCategory } from "../types";
+import { Createdby } from "../types/stock";
 
 
 interface FetchOptions {
@@ -28,11 +29,28 @@ interface RootObject {
   message: null;
 }
 
-interface ProductsAPIReponse {
+
+
+export interface ProductsAPIReponse {
   id: number;
   name: string;
   category: TProductCategory;
+  external_id: string;
+  is_active: boolean;
+  image: string;
+  variations: Variation[];
+  created_by: null;
   create_date: string;
   update_date: string;
 }
 
+interface Variation {
+  id: number;
+  size: string;
+  layer: null;
+  max_flowers: null;
+  cost_price: string;
+  selling_price: string;
+  quantity: number;
+  recently_updated_by: Createdby;
+}

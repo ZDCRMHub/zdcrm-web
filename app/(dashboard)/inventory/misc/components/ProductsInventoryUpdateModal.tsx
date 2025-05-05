@@ -20,33 +20,35 @@ import {
     Input,
 } from "@/components/ui";
 
-import { TProductInventoryItem } from '../types/products';
+import { TProductInventoryItem, TProductVariation } from '../types/products';
 import FormError from '@/components/ui/formError';
 import { useUpdateProductInventory } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/icons/core';
 
-const productInventorySchema = z.object({
+const UpdateproductInventorySchema = z.object({
     quantity: z.number().int().nonnegative(),
-    cost_price: z.number().min(1, { message: 'Cost price is required' }),
-    selling_price: z.number().min(1, { message: 'Selling price is required' }),
+    // name: z.string().min(1, { message: 'Name is required' }),
 });
+type UpdateProductInventorySchemaType = z.infer<typeof UpdateproductInventorySchema>;
 interface ProductsInventoryUpdateModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
     refetch: () => void;
     product: TProductInventoryItem
+    variation: TProductVariation
+
 }
 
-const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch }) => {
-    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm({
+const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch, variation }) => {
+    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm<{
+        quantity: number;
+    }>({
         defaultValues: {
-            quantity: product.quantity,
-            cost_price: parseInt(product.cost_price),
-            selling_price: parseInt(product.selling_price || '0'),
+            quantity: variation.quantity,
         },
-        resolver: zodResolver(productInventorySchema)
+        resolver: zodResolver(UpdateproductInventorySchema)
     })
 
     const quantityMinus = () => {
@@ -59,16 +61,9 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
     }
 
     const { mutate, isPending } = useUpdateProductInventory()
-    const submit = (data: { quantity: number; cost_price: number }) => {
-        if (isNaN(data.cost_price)) {
-            alert("Cost price cannot be NaN");
-            setError("cost_price", {
-                type: "manual",
-                message: "Cost price cannot be NaN"
-            })
-            return;
-        }
-        mutate({ data, id: product.id },
+    const submit = (data: UpdateProductInventorySchemaType) => {
+
+        mutate({ data, id: variation.id },
             {
                 onSuccess: () => {
                     refetch();
@@ -110,7 +105,7 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                             <div className="flex gap-3">
                                 <p className="text-xs">
                                     Stocked Product:{" "}
-                                    <span className="font-semibold">{product.quantity}</span>
+                                    <span className="font-semibold">{variation.quantity}</span>
                                 </p>
                             </div>
                         </div>
@@ -137,36 +132,9 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                             )
                         }
                     </div>
-                   
-                   
-                    <Controller
-                            name={`cost_price`}
-                            control={control}
-                            render={({ field }) => (
-                                <AmountInput
-                                    {...field}
-                                    label="Cost Price"
-                                    value={field.value ?? ''}
-                                    placeholder='Cost Price'
-                                    hasError={!!errors.selling_price}
-                                    errorMessage={errors.selling_price?.message}
-                                />
-                            )}
-                        />
-                        <Controller
-                            name={`selling_price`}
-                            control={control}
-                            render={({ field }) => (
-                                <AmountInput
-                                    {...field}
-                                    label="Selling Price"
-                                    value={field.value ?? ''}
-                                    placeholder='Selling Price'
-                                    hasError={!!errors.selling_price}
-                                    errorMessage={errors.selling_price?.message}
-                                />
-                            )}
-                        />
+
+
+
 
                     <DialogFooter className="p-2">
                         <Button

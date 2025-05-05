@@ -1,5 +1,5 @@
 import { TBranch, TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
-import { TOrderDeliveryInfo } from "../../../misc/types";
+import { Productvariation, TOrderDeliveryInfo } from "../../../misc/types";
 
 export interface TEnquiry {
   id: number;
@@ -42,6 +42,7 @@ export interface TEnquiryDiscussion {
 interface Item {
   id: number;
   product: Product;
+  product_variation: Productvariation;
   quantity: number;
   miscellaneous: Miscellaneou[];
   inventories: Inventory[];

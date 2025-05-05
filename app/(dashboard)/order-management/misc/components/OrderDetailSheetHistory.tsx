@@ -456,7 +456,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                       <p className="font-medium text-[#194A7A]">
                                         Amount:{" "}
                                         <span className="font-bold">
-                                          {formatCurrency(Number(item.price_at_order) || 0, 'NGN')}
+                                          {formatCurrency(Number(item.product_variation.selling_price) || 0, 'NGN')}
                                           {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
                                         </span>
                                       </p>

@@ -24,7 +24,7 @@ export const convertNumberToNaira = (
 
 
 
-export function formatCurrency(amount: number, currency: 'NGN' | 'USD'): string {
+export function formatCurrency(amount: number, currency: 'NGN' | 'USD' = 'NGN'): string {
   const locale = currency === 'NGN' ? 'en-NG' : 'en-US';
   return new Intl.NumberFormat(locale, {
     style: 'currency',

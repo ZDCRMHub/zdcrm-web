@@ -35,13 +35,13 @@ interface Updatedby {
 }
 
 const fetchDetails = async (id: string | number): Promise<RootObject> => {
-    const res = await APIAxios.get(`/inventory/${id}/product-inventory-history`)
+    const res = await APIAxios.get(`/inventory/${id}/product-inventory-variation-history`)
     return res.data
 }
 
 export const useGetProductInventoryHistory = (id?: string | number) => {
     return useQuery({
-        queryKey: ['product-inventory-history', id],
+        queryKey: ['product-inventory-variation-history', id],
         queryFn: () => fetchDetails(id!),
         enabled: !!id
     })

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Controller, useFieldArray, UseFormWatch, Control, UseFormSetValue, FieldErrors } from "react-hook-form";
-import { TrashIcon } from 'lucide-react';
+import { TrashIcon, XIcon } from 'lucide-react';
 
 import { useGetCategories, useGetProducts, useGetProductsInventory, useGetStockInventory } from '@/app/(dashboard)/inventory/misc/api';
 import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo, Button } from '@/components/ui';
@@ -19,6 +19,8 @@ import StockItemFormEnquiry from './StockItemFormEnquiry';
 import { cn } from '@/lib/utils';
 import { useGetPropertyOptions } from '../../../misc/api';
 import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
+import { ProductSelector } from '../../../misc/components';
+import SelectMultiCombo from '@/components/ui/selectMultipleSpecialCombo';
 
 
 interface EnquiryFormItemsSectionProps {
@@ -203,29 +205,11 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             return acc + findItemPrice
         }, 0)
 
-        if (!item.category || !item.inventories.length) {
-            return 0;
-        }
-        else {
-            const inventoriesIds = item.inventories.map(inv =>
-                inv?.product_inventory_id
-            )
-            const allInventoriesSelected = inventoriesIds.every((inv) => inv !== undefined);
-            if (!allInventoriesSelected) {
-                return 0;
-            }
-            else {
-                const itemInventories = inventories?.filter(inv => inventoriesIds.includes(inv.id));
-                console.log("itemInventories", itemInventories)
-
-                return itemInventories?.reduce((acc, inv) => {
-                    return acc + (Number(inv.cost_price) * item.quantity);
-                }, miscCost + propertiesCost);
-            }
-
-        }
+        return miscCost + propertiesCost
     }, [watchedItemAtIndex])
 
+        const [mockFlavor, setMockFlavor] = useState<Array<{ name: string; quantity: number }>>([]);
+        const [mockSize, setMockSize] = useState<string>('')
 
 
 
@@ -267,327 +251,420 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
 
                     </div>
 
-                    <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
-                        <Controller
-                            name={`items.${index}.category`}
-                            control={control}
-                            render={({ field }) => (
-                                <SelectSingleCombo
-                                    {...field}
-                                    value={field.value ? field.value.toString() : ''}
-                                    label="Category"
-                                    options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
-                                    valueKey='value'
-                                    labelKey="label"
-                                    placeholder='Category'
-                                    onChange={(value) => field.onChange(parseInt(value))}
-                                    isLoadingOptions={categoriesLoading}
-                                    hasError={!!errors.items?.[index]?.category}
-                                    errorMessage={errors.items?.[index]?.category?.message}
-                                />
-                            )}
-                        />
-                        <Controller
-                            name={`items.${index}.product_id`}
-                            control={control}
-                            render={({ field }) => (
-                                <SelectSingleCombo
-                                    {...field}
-                                    value={watch(`items.${index}.product_id`)?.toString() || field.value?.toString() || ''}
-                                    options={products?.map(prod => ({ label: prod.name, value: prod.id.toString() })) || []}
-                                    valueKey='value'
-                                    labelKey="label"
-                                    label="Product Name"
-                                    disabled={!selectedCategory || (!productsLoading && !products?.length)}
-                                    placeholder={
-                                        (!productsLoading && !products?.length) ?
-                                            'No products found' :
-                                            selectedCategory ?
-                                                'Select product' :
-                                                'Select category first'
-                                    }
-                                    onChange={(value) => field.onChange(parseInt(value))}
-                                    isLoadingOptions={productsLoading}
-                                    hasError={!!errors.items?.[index]?.product_id}
-                                    errorMessage={errors.items?.[index]?.product_id?.message}
-                                />
-                            )}
-                        />
-                        <div>
-                            <label htmlFor="">Quantity</label>
-                            <div className="flex items-center justify-start gap-2 h-14">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newQuantity = (watch('items')?.[index]?.quantity ?? 0) - 1;
-                                        if (newQuantity >= 1) {
-                                            setValue(`items.${index}.quantity`, newQuantity);
-                                        }
-                                    }}
-                                    className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
-                                >
-                                    -
-                                </button>
-                                <span className="w-9 text-center">
-                                    {watch('items')?.[index].quantity}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newQuantity = (watch('items')?.[index]?.quantity ?? 0) + 1;
-                                        setValue(`items.${index}.quantity`, newQuantity);
-                                    }}
-                                    className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                        {
-                            selectedCategory &&
-                            <>
-
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {/* /////////////                    STOCK INVENTORY                 //////////////// */}
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {
-
-                                    isStockInventory &&
-                                    <>
-                                        < StockItemFormEnquiry
-                                            options={productVariations}
-                                            onChange={handleProductVariationChange}
-                                            label="Stock"
-                                            // value={watch(`items.${index}.product_id`)?.toString() || ''}
-
-                                            disabled={!selectedCategory || (!productsLoading && productsFetching && !products?.length)}
-                                            placeholder={
-                                                (!productsLoading && !products?.length) ?
-                                                    'No products found' :
-                                                    selectedCategory ?
-                                                        'Select stock   ' :
-                                                        'Select category first'
-                                            }
-                                            isLoadingOptions={productsLoading}
-                                            hasError={!!errors.items?.[index]?.inventories}
-                                            errorMessage={errors.items?.[index]?.inventories?.message}
-                                        />
-
-
-
-                                        {
-                                            categoryName === 'Cake' && (
-                                                <>
-                                                    <Controller
-                                                        name={`items.${index}.properties.layers`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                label="Layers"
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
-                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
-                                                                valueKey="value"
-                                                                placeholder="Select layers"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.layers}
-                                                                errorMessage={errors.items?.[index]?.properties?.layers?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
-
-                                                    <Controller
-                                                        name={`items.${index}.properties.toppings`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
-                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Topping"
-                                                                valueKey="value"
-                                                                placeholder="Select Topping"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.toppings}
-                                                                errorMessage={errors.items?.[index]?.properties?.toppings?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
-                                                    <Controller
-                                                        name={`items.${index}.properties.whipped_cream_upgrade`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
-                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Whipped Cream Upgrade"
-                                                                valueKey="value"
-                                                                placeholder="Select Whipped Cream"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}
-                                                                errorMessage={errors.items?.[index]?.properties?.whipped_cream_upgrade?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
-
-
-                                                </>
-
-                                            )
-                                        }
-                                        {
-                                            categoryName === 'Flower' && (
-                                                <>
-                                                    <Controller
-                                                        name={`items.${index}.properties.bouquet`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id })) || []}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Size"
-                                                                valueKey="value"
-                                                                labelKey="label"
-                                                                placeholder="Select bouquet"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.bouquet}
-                                                                errorMessage={errors.items?.[index]?.properties?.bouquet?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
-
-
-                                                    <Controller
-                                                        name={`items.${index}.properties.glass_vase`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'GLASS_VASE').map(option => ({ label: option.name, value: option.id })) || []}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Vase"
-                                                                valueKey="value"
-                                                                labelKey="label"
-                                                                placeholder="Select vase"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.glass_vase}
-                                                                errorMessage={errors.items?.[index]?.properties?.glass_vase?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
-
-
-                                                </>
-
-                                            )
-                                        }
-
-
-                                        <FormField
-                                            control={control}
-                                            name={`items.${index}.inventories.${0}.instruction`}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input
-                                                            label="Instruction"
-                                                            placeholder='Enter instruction'
-                                                            {...field}
-                                                            hasError={!!errors.items?.[index]?.inventories?.[0]?.instruction}
-                                                            errorMessage={errors.items?.[index]?.inventories?.[0]?.instruction?.message}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-                                        {
-                                            (categoryName === 'Cake' || categoryName === 'Cupcake') &&
-                                            <FormField
-                                                control={control}
-                                                name={`items.${index}.inventories.${0}.message`}
-                                                render={({ field }) => (
-                                                    <FormItem className='col-span-full'>
-                                                        <FormControl>
-                                                            <Input
-                                                                label="Message on Cake"
-                                                                placeholder='Enter message'
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.inventories?.[0]?.message}
-                                                                errorMessage={errors.items?.[index]?.inventories?.[0]?.message as string}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        }
-
-
-                                    </>
-
-                                }
-
-
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {/* /////////////                    PRODUCT INVENTORY                 //////////////// */}
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {
-                                    !isStockInventory && !isComboItem && fields.map((_, invIndex) => (
-                                        <>
-                                            {
-                                                watchedInventories.map((_, invIndex) =>
-
-                                                    <>
-                                                        <EnquiryFormProductInventorySelector
-                                                            inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
-                                                            setInventoryId={(inventoryId) => {
-                                                                setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
-                                                            }}
-                                                            options={productsInvetories?.data!}
-                                                            disabled={productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
-                                                            isLoadingOptions={productInventoriesLoading}
-                                                            isFetchingOptions={productInventoriesFetching}
-                                                            errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
-                                                            hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
-                                                        />
-
-                                                        <FormField
-                                                            control={control}
-                                                            name={`items.${index}.inventories.${0}.instruction`}
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormControl>
-                                                                        <Input
-                                                                            label="Instruction"
-                                                                            placeholder='Enter instruction'
-                                                                            {...field}
-                                                                            hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.instruction}
-                                                                            errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.instruction?.message}
-                                                                        />
-                                                                    </FormControl>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-
-                                                    </>
-                                                )
-                                            }
-                                        </>
-
-                                    ))
-                                }
-                            </>
-                        }
-
-                    </div>
+                  
+                                      <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+                                          <Controller
+                                              name={`items.${index}.category`}
+                                              control={control}
+                                              render={({ field }) => (
+                                                  <SelectSingleCombo
+                                                      {...field}
+                                                      value={field.value ? field.value.toString() : ''}
+                                                      label="Category"
+                                                      options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
+                                                      valueKey='value'
+                                                      labelKey="label"
+                                                      placeholder='Category'
+                                                      onChange={(value) => field.onChange(parseInt(value))}
+                                                      isLoadingOptions={categoriesLoading}
+                                                      hasError={!!errors.items?.[index]?.category}
+                                                      errorMessage={errors.items?.[index]?.category?.message}
+                                                  />
+                                              )}
+                                          />
+                                          <Controller
+                                              name={`items.${index}.product_id`}
+                                              control={control}
+                                              render={({ field }) => (
+                                                  <ProductSelector
+                                                      {...field}
+                                                      productId={field.value?.toString() || ''}
+                                                      variationId={watch(`items.${index}.product_variation_id`) || ''}
+                                                      setProductId={(value) => { setValue(`items.${index}.product_id`, Number(value)); }}
+                                                      setVariationId={(value) => setValue(`items.${index}.product_variation_id`, value)}
+                                                      options={products|| []}
+                                                      label="Product Name"
+                                                      disabled={!selectedCategory || (!productsLoading && !products?.length)}
+                                                      placeholder={
+                                                          (!productsLoading && !products?.length) ?
+                                                              'No products found' :
+                                                              selectedCategory ?
+                                                                  'Select product' :
+                                                                  'Select category first'
+                                                      }
+                                                      isLoadingOptions={productsLoading}
+                                                      hasError={!!errors.items?.[index]?.product_id}
+                                                      errorMessage={errors.items?.[index]?.product_id?.message}
+                                                  />
+                                              )}
+                                          />
+                  
+                                          {
+                                              selectedCategory &&
+                                              <>
+                  
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {/* /////////////                    STOCK INVENTORY                 //////////////// */}
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {
+                  
+                                                      isStockInventory &&
+                                                      <>
+                                                        
+                  
+                  
+                                                          {
+                                                              (categoryName === 'Cake' || categoryName === 'Cupcake') && (
+                                                                  <>
+                                                                      <SelectSingleCombo
+                                                                          name="size"
+                                                                          options={[
+                                                                              { name: "6 Inches", value: "6" },
+                                                                              { name: "8 Inches", value: "8" },
+                                                                              { name: "10 Inches", value: "10" }
+                                                                          ]}
+                                                                          isLoadingOptions={isLoadingPropertyOptions}
+                                                                          label="Size"
+                                                                          labelKey={'name'}
+                                                                          valueKey="value"
+                                                                          value={mockSize}
+                                                                          onChange={setMockSize}
+                                                                          placeholder="Select size"
+                                                                          allowDisselect
+                  
+                                                                      />
+                                                                  </>
+                                                              )
+                                                          }
+                                                          {
+                                                              categoryName === 'Cake' && (
+                                                                  <>
+                  
+                                                                      <Controller
+                                                                          name={`items.${index}.properties.layers`}
+                                                                          control={control}
+                                                                          render={({ field }) => (
+                                                                              <SelectSingleCombo
+                                                                                  options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id, amount: option.selling_price })) || []}
+                                                                                  isLoadingOptions={isLoadingPropertyOptions}
+                                                                                  label="Layers"
+                                                                                  labelKey={(item) => `${item.label} (${formatCurrency(item.amount, 'NGN')})`}
+                                                                                  valueKey="value"
+                                                                                  placeholder="Select layers"
+                                                                                  {...field}
+                                                                                  allowDisselect
+                                                                                  hasError={!!errors.items?.[index]?.properties?.layers}
+                                                                                  errorMessage={errors.items?.[index]?.properties?.layers?.message as string}
+                  
+                                                                              />
+                                                                          )}
+                                                                      />
+                                                                      <div>
+                                                                          <SelectMultiCombo
+                                                                              name="flavour"
+                                                                              options={[
+                                                                                  { name: "Chocolate", value: "Chocolate" },
+                                                                                  { name: "Vanilla", value: "Vanilla" },
+                                                                                  { name: "Red Velvet", value: "Red Velvet" },
+                                                                              ]}
+                                                                              onChange={(new_values) => setMockFlavor((prev) => {
+                                                                                  const newFlavors = new_values.filter(
+                                                                                      (flavor) => !prev.some((item) => item.name === flavor)
+                                                                                  );
+                  
+                                                                                  const updatedFlavors = prev.filter((item) =>
+                                                                                      new_values.includes(item.name)
+                                                                                  );
+                  
+                                                                                  return [
+                                                                                      ...updatedFlavors,
+                                                                                      ...newFlavors.map((flavor) => ({ name: flavor, quantity: 1 })),
+                                                                                  ];
+                                                                              })}
+                                                                              value={mockFlavor.map((item) => item.name)}
+                                                                              isLoadingOptions={isLoadingPropertyOptions}
+                                                                              label="Flavour"
+                                                                              labelKey="name"
+                                                                              valueKey="value"
+                                                                              placeholder="Select flavour"
+                                                                              showValues={false}
+                                                                          />
+                                                                          <div className="flex items-center gap-x-4 gap-y-1.5 flex-wrap">
+                  
+                                                                              {
+                                                                                  mockFlavor.map((item, index) => (
+                                                                                      <div key={index} className="flex items-center gap-2 mt-2 bg-primary text-white px-2 py-1 rounded-md">
+                                                                                          <span>{item.name}</span>
+                                                                                          <input
+                                                                                              type="number"
+                                                                                              value={item.quantity}
+                                                                                              onChange={(e) => {
+                                                                                                  const newQuantity = parseInt(e.target.value);
+                                                                                                  if (newQuantity >= 1) {
+                                                                                                      setMockFlavor((prev) =>
+                                                                                                          prev.map((flavor, i) =>
+                                                                                                              i === index ? { ...flavor, quantity: newQuantity } : flavor
+                                                                                                          )
+                                                                                                      );
+                                                                                                  }
+                                                                                              }}
+                                                                                              className="w-16 border border-none outline-none !p-0 px-1 rounded-sm !h-6 text-xs text-primary appearance-none"
+                                                                                          />
+                                                                                          <button
+                                                                                              type="button"
+                                                                                              onClick={() => {
+                                                                                                  setMockFlavor((prev) =>
+                                                                                                      prev.filter((_, i) => i !== index)
+                                                                                                  );
+                                                                                              }}
+                                                                                              className="text-white hover:text-red-500"
+                                                                                          >
+                                                                                              <XIcon size={15} />
+                                                                                          </button>
+                                                                                      </div>
+                  
+                                                                                  ))
+                                                                              }
+                                                                          </div>
+                  
+                                                                      </div>
+                  
+                  
+                                                                      <Controller
+                                                                          name={`items.${index}.properties.toppings`}
+                                                                          control={control}
+                                                                          render={({ field }) => (
+                                                                              <SelectSingleCombo
+                                                                                  options={propertyOptions?.data.filter(option => option.type === 'TOPPING').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                                  labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
+                                                                                  isLoadingOptions={isLoadingPropertyOptions}
+                                                                                  label="Topping"
+                                                                                  valueKey="value"
+                                                                                  placeholder="Select Topping"
+                                                                                  {...field}
+                                                                                  allowDisselect
+                                                                                  hasError={!!errors.items?.[index]?.properties?.toppings}
+                                                                                  errorMessage={errors.items?.[index]?.properties?.toppings?.message as string}
+                  
+                                                                              />
+                                                                          )}
+                                                                      />
+                                                                      <Controller
+                                                                          name={`items.${index}.properties.whipped_cream_upgrade`}
+                                                                          control={control}
+                                                                          render={({ field }) => (
+                                                                              <SelectSingleCombo
+                                                                                  options={propertyOptions?.data.filter(option => option.type === 'WHIPPED_CREAM').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                                  labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
+                                                                                  isLoadingOptions={isLoadingPropertyOptions}
+                                                                                  label="Whipped Cream Upgrade"
+                                                                                  valueKey="value"
+                                                                                  placeholder="Select Whipped Cream"
+                                                                                  {...field}
+                                                                                  allowDisselect
+                                                                                  hasError={!!errors.items?.[index]?.properties?.whipped_cream_upgrade}
+                                                                                  errorMessage={errors.items?.[index]?.properties?.whipped_cream_upgrade?.message as string}
+                  
+                                                                              />
+                                                                          )}
+                                                                      />
+                  
+                  
+                                                                  </>
+                  
+                                                              )
+                                                          }
+                                                          {
+                                                              categoryName === 'Flower' && (
+                                                                  <>
+                                                                      <Controller
+                                                                          name={`items.${index}.properties.bouquet`}
+                                                                          control={control}
+                                                                          render={({ field }) => (
+                                                                              <SelectSingleCombo
+                                                                                  options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                                  labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
+                                                                                  isLoadingOptions={isLoadingPropertyOptions}
+                                                                                  label="Size"
+                                                                                  valueKey="value"
+                                                                                  placeholder="Select bouquet"
+                                                                                  {...field}
+                                                                                  hasError={!!errors.items?.[index]?.properties?.bouquet}
+                                                                                  errorMessage={errors.items?.[index]?.properties?.bouquet?.message as string}
+                  
+                                                                              />
+                                                                          )}
+                                                                      />
+                  
+                  
+                                                                      <Controller
+                                                                          name={`items.${index}.properties.glass_vase`}
+                                                                          control={control}
+                                                                          render={({ field }) => (
+                                                                              <SelectSingleCombo
+                                                                                  options={propertyOptions?.data.filter(option => option.type === 'GLASS_VASE').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
+                                                                                  labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
+                                                                                  isLoadingOptions={isLoadingPropertyOptions}
+                                                                                  label="Vase"
+                                                                                  valueKey="value"
+                                                                                  placeholder="Select vase"
+                                                                                  {...field}
+                                                                                  hasError={!!errors.items?.[index]?.properties?.glass_vase}
+                                                                                  errorMessage={errors.items?.[index]?.properties?.glass_vase?.message as string}
+                  
+                                                                              />
+                                                                          )}
+                                                                      />
+                  
+                  
+                                                                  </>
+                  
+                                                              )
+                                                          }
+                  
+                  
+                                                          <FormField
+                                                              control={control}
+                                                              name={`items.${index}.inventories.${0}.instruction`}
+                                                              render={({ field }) => (
+                                                                  <FormItem>
+                                                                      <FormControl>
+                                                                          <Input
+                                                                              label="Instruction"
+                                                                              placeholder='Enter instruction'
+                                                                              {...field}
+                                                                              hasError={!!errors.items?.[index]?.inventories?.[0]?.instruction}
+                                                                              errorMessage={errors.items?.[index]?.inventories?.[0]?.instruction?.message}
+                                                                          />
+                                                                      </FormControl>
+                                                                  </FormItem>
+                                                              )}
+                                                          />
+                                                          {
+                                                              (categoryName === 'Cake' || categoryName === 'Cupcake') &&
+                                                              <FormField
+                                                                  control={control}
+                                                                  name={`items.${index}.inventories.${0}.message`}
+                                                                  render={({ field }) => (
+                                                                      <FormItem className='col-span-full'>
+                                                                          <FormControl>
+                                                                              <Input
+                                                                                  label="Message on Cake"
+                                                                                  placeholder='Enter message'
+                                                                                  {...field}
+                                                                                  hasError={!!errors.items?.[index]?.inventories?.[0]?.message}
+                                                                                  errorMessage={errors.items?.[index]?.inventories?.[0]?.message as string}
+                                                                              />
+                                                                          </FormControl>
+                                                                      </FormItem>
+                                                                  )}
+                                                              />
+                                                          }
+                  
+                  
+                                                      </>
+                  
+                                                  }
+                  
+                  
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {/* /////////////                    PRODUCT INVENTORY                 //////////////// */}
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {/* /////////////////////////////////////////////////////////////////////////////////// */}
+                                                  {
+                                                      !isStockInventory && !isComboItem && fields.map((_, invIndex) => (
+                                                          <React.Fragment key={invIndex}>
+                                                              {
+                                                                  watchedInventories.map((_, invIndex) =>
+                  
+                                                                      <React.Fragment key={invIndex}>
+                                                                          <EnquiryFormProductInventorySelector
+                                                                              inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
+                                                                              setInventoryId={(inventoryId) => {
+                                                                                  setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
+                                                                              }}
+                                                                              options={productsInvetories?.data!}
+                                                                              disabled={productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
+                                                                              isLoadingOptions={productInventoriesLoading}
+                                                                              isFetchingOptions={productInventoriesFetching}
+                                                                              errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
+                                                                              hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
+                                                                          />
+                  
+                                                                          <FormField
+                                                                              control={control}
+                                                                              name={`items.${index}.inventories.${0}.instruction`}
+                                                                              render={({ field }) => (
+                                                                                  <FormItem>
+                                                                                      <FormControl>
+                                                                                          <Input
+                                                                                              label="Instruction"
+                                                                                              placeholder='Enter instruction'
+                                                                                              {...field}
+                                                                                              hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.instruction}
+                                                                                              errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.instruction?.message}
+                                                                                          />
+                                                                                      </FormControl>
+                                                                                  </FormItem>
+                                                                              )}
+                                                                          />
+                  
+                                                                      </React.Fragment>
+                                                                  )
+                                                              }
+                                                          </React.Fragment>
+                  
+                                                      ))
+                                                  }
+                                              </>
+                                          }
+                  
+                                          {
+                                              isCustomOrder &&
+                                              <CustomImagePicker
+                                                  control={control}
+                                                  name={`items.${index}.custom_image`}
+                                                  errors={errors}
+                                                  hasError={!!errors.items?.[index]?.custom_image}
+                                                  errorMessage={errors.items?.[index]?.custom_image?.message as string}
+                                              />
+                                          }
+                  
+                                          <div>
+                                              <label htmlFor="">Quantity</label>
+                                              <div className="flex items-center justify-start gap-2 h-14">
+                                                  <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                          const newQuantity = (watch('items')?.[index].quantity || 0) - 1;
+                                                          if (newQuantity >= 1) {
+                                                              setValue(`items.${index}.quantity`, newQuantity);
+                                                          }
+                                                      }}
+                                                      className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
+                                                  >
+                                                      -
+                                                  </button>
+                                                  <span className="w-9 text-center">
+                                                      {watch('items')?.[index].quantity}
+                                                  </span>
+                                                  <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                          const newQuantity = (watch('items')?.[index].quantity ||  0) + 1;
+                                                          setValue(`items.${index}.quantity`, newQuantity);
+                                                      }}
+                                                      className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
+                                                  >
+                                                      +
+                                                  </button>
+                                              </div>
+                                          </div>
+                  
+                                      </div>
 
 
                     <EnquiryFormMiscellaneous
