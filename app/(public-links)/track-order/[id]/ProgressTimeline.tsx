@@ -32,8 +32,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
 
     const currentStep = steps.findIndex(step => step.status === currentStatus);
 
-
-
+    
 
     const isDelivered = currentStatus === "DELIVERED" || currentStatus === "DELIVERED_CL";
     const isCancelled = currentStatus === "CANCELLED";
