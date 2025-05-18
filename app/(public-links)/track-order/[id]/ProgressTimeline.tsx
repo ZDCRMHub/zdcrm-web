@@ -8,7 +8,7 @@ import { TOrder } from '@/app/(dashboard)/order-management/misc/types';
 interface Props {
     orderId: number;
     orderNumber: string;
-    currentStatus: "PND" | "DIS" | "DSC" | "DEL" | "CAN";
+    currentStatus: "PENDING" | "DISPATCHED" | "DISPATCHED_CL" | "DELIVERED" | "DELIVERED_CL" | "CANCELLED";
     onDelivered?: () => void;
     order: TOrder;
 }
@@ -35,8 +35,8 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
 
 
 
-    const isDelivered = currentStatus === "DEL";
-    const isCancelled = currentStatus === "CAN";
+    const isDelivered = currentStatus === "DELIVERED" || currentStatus === "DELIVERED_CL";
+    const isCancelled = currentStatus === "CANCELLED";
 
     return (
         <div className="bg-[#194A7A] text-white w-full max-w-[800px] pb-6 rounded-xl space-y-6">
