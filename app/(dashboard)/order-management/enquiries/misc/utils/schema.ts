@@ -51,13 +51,6 @@ const itemSchema = z.object({
                 path: [`inventories.properties.toppings`]
             });
         }
-        if (!data.properties.layers) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Layers must be provided for Cakes",
-                path: [`inventories.properties.layers`]
-            });
-        }
     }
     data.inventories.forEach((inventory, index) => {
         if (inventory === null) return; // Skip validation for null inventories
@@ -159,6 +152,7 @@ export const NewEnquirySchema = z.object({
         address: z.string().optional(),
         recipient_name: z.string().optional(),
         recipient_phone: z.string().optional(),
+        recipient_alternative_phone: z.string().optional(),
         fee: z.number().optional(),
         is_custom_delivery: z.boolean().optional(),
 

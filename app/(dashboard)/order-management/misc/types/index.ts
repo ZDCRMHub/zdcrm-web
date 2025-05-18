@@ -210,7 +210,9 @@ export interface TOrderDeliveryInfo {
   address: string;
   recipient_name: string;
   recipient_phone: string;
-  status: "PND" | "CAN" | "DIS" | "DSC" | "DEL";
+  recipient_alternative_phone: string;
+  residence_type: string;
+  status: "PENDING" | "DISPATCHED" | "DISPATCHED_CL" | "DELIVERED" | "DELIVERED_CL" | "CANCELLED";
   driver_name: string | null;
   driver_phone: string | null;
   tracking_link: string | null;

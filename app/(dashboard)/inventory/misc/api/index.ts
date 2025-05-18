@@ -13,6 +13,9 @@ export { useGetProductInventoryDetails } from './getProductInvetoryDetails';
 export { useGetProductInventoryHistory } from './getProductInvetoryHistory';
 export { useGetStockInventoryHistory } from './getStockInventoryHistory';
 export { useGetStoreInventoryHistory } from './getStoreInventoryHistory';
+
 export { useUpdateProductInventory } from './putUpdateProductInventory';
+export { useUpdateProductInventoryName } from './putUpdateProductInventory';
 export { useUpdateStockInventory } from './putUpdateStockInventory';
+export { useUpdateStockInventoryName } from './putUpdateStockInventory';
 export { useUpdateStoreInventory } from './putUpdateStoreInventory';

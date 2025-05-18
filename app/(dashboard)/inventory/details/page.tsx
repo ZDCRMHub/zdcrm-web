@@ -282,7 +282,7 @@ const InventoryDetailsPage = () => {
                 <TableHead className="w-[15%]">
                   <div className="flex gap-3 justify-center items-center">
                     <TbCubePlus size={20} />
-                    Quantity Used
+                    Quantity Out
                   </div>
                 </TableHead>
                 <TableHead className="w-[15%]">

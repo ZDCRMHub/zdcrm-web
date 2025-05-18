@@ -42,12 +42,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { formatCurrency } from "@/utils/currency"
 import useCloudinary from "@/hooks/useCloudinary"
 import { useGetCategories } from "../../inventory/misc/api"
+import { SmallSpinner } from "@/icons/core"
 
 
 interface ProductFormValues {
   name: string
   category_id: number
-  category_name: string 
+  category_name: string
   external_id: string
   is_active: boolean
   image: {
@@ -64,7 +65,6 @@ interface ProductFormValues {
   }[]
 }
 
-// Add the missing API hooks for variations
 const useEditVariation = () => {
   const queryClient = useQueryClient()
 
@@ -148,7 +148,7 @@ const Page = () => {
     defaultValues: {
       name: "",
       category_id: 0,
-      category_name: "", 
+      category_name: "",
       external_id: "",
       is_active: true,
       image: {
@@ -253,7 +253,7 @@ const Page = () => {
 
   // Helper function to determine category type
   const getCategoryType = (categoryName: string): "Cake" | "Flower" | "Other" => {
-    if (categoryName.toLowerCase().includes("cake")) return "Cake"
+    if (categoryName.toLowerCase() =="cake") return "Cake"
     if (categoryName.toLowerCase().includes("flower")) return "Flower"
     return "Other"
   }
@@ -295,7 +295,7 @@ const Page = () => {
               data.variations.forEach((variation) => {
                 // Determine if it's a cake or flower based on the category
                 const categoryName = data.category_name
-                const isCake = categoryName.toLowerCase().includes("cake")
+                const isCake = categoryName.toLowerCase() == "cake"
                 const isFlower = categoryName.toLowerCase().includes("flower")
 
                 // If variation has an ID, it's an existing one to update
@@ -342,7 +342,7 @@ const Page = () => {
         const variationsData = data.variations.map((item) => {
           // Determine if it's a cake or flower based on the category
           const categoryName = data.category_name
-          const isCake = categoryName.toLowerCase().includes("cake")
+          const isCake = categoryName.toLowerCase() == "cake"
           const isFlower = categoryName.toLowerCase().includes("flower")
 
           return {
@@ -527,7 +527,7 @@ const Page = () => {
                       )}
                     />
 
-               
+
                     <FormField
                       control={form.control}
                       name="image"
@@ -603,7 +603,7 @@ const Page = () => {
                       {fields.map((field, index) => {
                         // Get the category name to determine if it's a cake or flower
                         const categoryName = form.watch("category_name")
-                        const isCake = categoryName.toLowerCase().includes("cake")
+                        const isCake = categoryName.toLowerCase() =="cake"
                         const isFlower = categoryName.toLowerCase().includes("flower")
 
                         return (
@@ -783,7 +783,9 @@ const Page = () => {
                         <div key={variation.id} className="flex items-center justify-between border rounded p-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">{variation.size}</span>
+                              <span className="font-medium">{variation.size}
+                                {product.category.name == "Cake" && " inches"}
+                              </span>
                               <span className="text-sm text-muted-foreground">
                                 {variation.layer && `Layer: ${variation.layer}`}
                                 {variation.max_flowers !== null &&
@@ -889,7 +891,12 @@ const Page = () => {
                                             Cancel
                                           </Button>
                                         </SheetClose>
-                                        <Button type="submit">Save Changes</Button>
+                                        <Button type="submit">
+                                          Save Changes
+                                          {
+                                            updateProductMutation.isPending && <SmallSpinner className="ml-2" />
+                                          }
+                                        </Button>
                                       </SheetFooter>
                                     </form>
                                   </Form>

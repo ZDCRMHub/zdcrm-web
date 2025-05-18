@@ -9,7 +9,6 @@ import { Checkbox, FormControl, FormField, FormItem, Input, SelectSingleCombo, B
 
 import { NewOrderFormValues } from "../utils/schema";
 import OrderFormMiscellaneous from './OrderFormMiscellaneous';
-import StockItemFormEnquiry from '../../enquiries/misc/components/StockItemFormEnquiry';
 import OrderFormProductInventorySelector from './OrderFormProductInventorySelector';
 import { TProductInventoryItem } from '@/app/(dashboard)/inventory/misc/types/products';
 import { TStockInventoryItem } from '@/app/(dashboard)/inventory/misc/types/stock';
@@ -18,7 +17,8 @@ import { cn } from '@/lib/utils';
 import { useGetPropertyOptions } from '../api';
 import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 import SelectMultiCombo from '@/components/ui/selectMultipleSpecialCombo';
-import ProductSelector from './ProductSelector';
+import ProductSelector from './OrderFormProductSelector';
+import OrderFormStockInventorySelector from './OrderFormStockInventorySelector';
 
 
 interface OrderItemsSectionProps {
@@ -90,53 +90,14 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         branch: watch('branch'),
     });
 
-    const { data: stockInvetories, isLoading: stockLoading, isFetching: stockFetching, error: stockError, refetch: refetchStockInventory } = useGetStockInventory({
+    const { data: stockInvetories, isLoading: stockInventoriesLoading, isFetching: stockInventoriesFetching, error: stockError, refetch: refetchStockInventory } = useGetStockInventory({
         page: 1,
         size: 20000000000000,
         category: Number(watchedItems[index]?.category),
     });
-    const handleProductVariationChange = (selectedItems: Array<TFormItemSelectionOption & { quantity: number }>) => {
-        const newInventories = selectedItems.reduce((acc: any[], item) => {
-            const existingInventory = acc.find(inv => inv.stock_inventory_id === item.stock_inventory_id);
-            if (existingInventory) {
-                existingInventory.variations.push({
-                    stock_variation_id: item.id,
-                    quantity: item.quantity
-                });
-            } else {
-                acc.push({
-                    stock_inventory_id: item.stock_inventory_id,
-                    variations: [{
-                        stock_variation_id: item.id,
-                        quantity: item.quantity
-                    }],
-                    properties: {}
-                });
-            }
-            return acc;
-        }, []);
-        if (newInventories.length == 0) {
-            newInventories.push({
-                variations: [],
-                properties: {}
-            });
-        }
-        setValue(`items.${index}.inventories`, newInventories);
-    };
-
-    const productVariations = stockInvetories?.data?.flatMap(product =>
-        product.variations.map(variation => ({
-            id: variation.id,
-            stock_inventory_id: product.id,
-            product_image: product.image_one,
-            name: product.name,
-            variation: variation.size || variation.color || variation.flavour,
-            category: product.category.name
-        }))
-    ) || [];
 
 
-   const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
+    const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
         const item = items?.[0];
         if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
@@ -181,7 +142,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                 return ((totalVariationCost + propertiesCost) * item.quantity) + miscCost;
             }
         }
-    }, [watchedItemAtIndex]);
+    }, [propertyOptions?.data]);
 
     const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
         const item = items?.[0];
@@ -203,11 +164,9 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         }, 0)
 
         return miscCost + propertiesCost
-    }, [watchedItemAtIndex])
+    }, [propertyOptions?.data])
 
 
-    const [mockFlavor, setMockFlavor] = useState<Array<{ name: string; quantity: number }>>([]);
-    const [mockSize, setMockSize] = useState<string>('')
 
 
     return (
@@ -272,12 +231,13 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                             render={({ field }) => (
                                 <ProductSelector
                                     {...field}
+                                    category={categoryName}
                                     productId={field.value?.toString() || ''}
                                     variationId={watch(`items.${index}.product_variation_id`) || ''}
                                     setProductId={(value) => { setValue(`items.${index}.product_id`, Number(value)); }}
                                     setVariationId={(value) => setValue(`items.${index}.product_variation_id`, value)}
-                                    options={products|| []}
-                                    label="Product Name"
+                                    options={products || []}
+                                    label="Product"
                                     disabled={!selectedCategory || (!productsLoading && !products?.length)}
                                     placeholder={
                                         (!productsLoading && !products?.length) ?
@@ -302,129 +262,50 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 {/* /////////////                    STOCK INVENTORY                 //////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
+
+
+
+
                                 {
 
                                     isStockInventory &&
                                     <>
-                                      
 
 
                                         {
-                                            (categoryName === 'Cake' || categoryName === 'Cupcake') && (
-                                                <>
-                                                    <SelectSingleCombo
-                                                        name="size"
-                                                        options={[
-                                                            { name: "6 Inches", value: "6" },
-                                                            { name: "8 Inches", value: "8" },
-                                                            { name: "10 Inches", value: "10" }
-                                                        ]}
-                                                        isLoadingOptions={isLoadingPropertyOptions}
-                                                        label="Size"
-                                                        labelKey={'name'}
-                                                        valueKey="value"
-                                                        value={mockSize}
-                                                        onChange={setMockSize}
-                                                        placeholder="Select size"
-                                                        allowDisselect
+                                            fields.map((_, invIndex) => (
+                                                <React.Fragment key={invIndex}>
+                                                    {
+                                                        watchedInventories.map((_, invIndex) =>
 
-                                                    />
-                                                </>
-                                            )
+                                                            <React.Fragment key={invIndex}>
+                                                                <OrderFormStockInventorySelector
+                                                                    inventoryId={watch(`items.${index}.inventories.${invIndex}.stock_inventory_id`)}
+                                                                    setInventoryId={(inventoryId) => {
+                                                                        setValue(`items.${index}.inventories.${invIndex}.stock_inventory_id`, inventoryId);
+                                                                    }}
+                                                                    category={categoryName}
+                                                                    options={stockInvetories?.data!}
+                                                                    disabled={stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
+                                                                    isLoadingOptions={stockInventoriesLoading}
+                                                                    isFetchingOptions={stockInventoriesFetching}
+                                                                    errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id?.message}
+                                                                    hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id}
+                                                                />
+
+
+
+                                                            </React.Fragment>
+                                                        )
+                                                    }
+                                                </React.Fragment>
+
+                                            ))
                                         }
+
                                         {
                                             categoryName === 'Cake' && (
                                                 <>
-
-                                                    <Controller
-                                                        name={`items.${index}.properties.layers`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'LAYER').map(option => ({ label: option.name, value: option.id, amount: option.selling_price })) || []}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Layers"
-                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.amount, 'NGN')})`}
-                                                                valueKey="value"
-                                                                placeholder="Select layers"
-                                                                {...field}
-                                                                allowDisselect
-                                                                hasError={!!errors.items?.[index]?.properties?.layers}
-                                                                errorMessage={errors.items?.[index]?.properties?.layers?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
-                                                    <div>
-                                                        <SelectMultiCombo
-                                                            name="flavour"
-                                                            options={[
-                                                                { name: "Chocolate", value: "Chocolate" },
-                                                                { name: "Vanilla", value: "Vanilla" },
-                                                                { name: "Red Velvet", value: "Red Velvet" },
-                                                            ]}
-                                                            onChange={(new_values) => setMockFlavor((prev) => {
-                                                                const newFlavors = new_values.filter(
-                                                                    (flavor) => !prev.some((item) => item.name === flavor)
-                                                                );
-
-                                                                const updatedFlavors = prev.filter((item) =>
-                                                                    new_values.includes(item.name)
-                                                                );
-
-                                                                return [
-                                                                    ...updatedFlavors,
-                                                                    ...newFlavors.map((flavor) => ({ name: flavor, quantity: 1 })),
-                                                                ];
-                                                            })}
-                                                            value={mockFlavor.map((item) => item.name)}
-                                                            isLoadingOptions={isLoadingPropertyOptions}
-                                                            label="Flavour"
-                                                            labelKey="name"
-                                                            valueKey="value"
-                                                            placeholder="Select flavour"
-                                                            showValues={false}
-                                                        />
-                                                        <div className="flex items-center gap-x-4 gap-y-1.5 flex-wrap">
-
-                                                            {
-                                                                mockFlavor.map((item, index) => (
-                                                                    <div key={index} className="flex items-center gap-2 mt-2 bg-primary text-white px-2 py-1 rounded-md">
-                                                                        <span>{item.name}</span>
-                                                                        <input
-                                                                            type="number"
-                                                                            value={item.quantity}
-                                                                            onChange={(e) => {
-                                                                                const newQuantity = parseInt(e.target.value);
-                                                                                if (newQuantity >= 1) {
-                                                                                    setMockFlavor((prev) =>
-                                                                                        prev.map((flavor, i) =>
-                                                                                            i === index ? { ...flavor, quantity: newQuantity } : flavor
-                                                                                        )
-                                                                                    );
-                                                                                }
-                                                                            }}
-                                                                            className="w-16 border border-none outline-none !p-0 px-1 rounded-sm !h-6 text-xs text-primary appearance-none"
-                                                                        />
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => {
-                                                                                setMockFlavor((prev) =>
-                                                                                    prev.filter((_, i) => i !== index)
-                                                                                );
-                                                                            }}
-                                                                            className="text-white hover:text-red-500"
-                                                                        >
-                                                                            <XIcon size={15} />
-                                                                        </button>
-                                                                    </div>
-
-                                                                ))
-                                                            }
-                                                        </div>
-
-                                                    </div>
-
 
                                                     <Controller
                                                         name={`items.${index}.properties.toppings`}
@@ -531,6 +412,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                             {...field}
                                                             hasError={!!errors.items?.[index]?.inventories?.[0]?.instruction}
                                                             errorMessage={errors.items?.[index]?.inventories?.[0]?.instruction?.message}
+                                                            optional
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -550,6 +432,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.inventories?.[0]?.message}
                                                                 errorMessage={errors.items?.[index]?.inventories?.[0]?.message as string}
+                                                                optional
                                                             />
                                                         </FormControl>
                                                     </FormItem>

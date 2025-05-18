@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import Image from 'next/image';
 import { AddCircle, Hashtag, MinusCirlce } from 'iconsax-react';
@@ -21,17 +21,17 @@ import {
 } from "@/components/ui";
 
 import FormError from '@/components/ui/formError';
-import { useUpdateStockInventory } from '../api';
+import { useUpdateStockInventory, useUpdateStockInventoryName } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/icons/core';
 import { TStockInventoryItem, TStockVariation } from '../types/stock';
+import { useRouter } from 'next/navigation';
 
 const stockInventorySchema = z.object({
+    name: z.string().min(1, { message: 'Name is required' }),
     quantity: z.number().int().nonnegative(),
-    cost_price: z.number().min(1, { message: 'Cost price is required' }),
-       selling_price: z.number().min(1, { message: 'Selling price is required' }),
-   });
+});
 interface StockInventoryUpdateModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
@@ -40,16 +40,17 @@ interface StockInventoryUpdateModalProps {
     variation: TStockVariation
 
 }
-
+type updateStockInventoryFormType = z.infer<typeof stockInventorySchema>
 const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ isModalOpen, closeModal, variation, stock, refetch }) => {
-    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm({
+    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm<updateStockInventoryFormType>({
         defaultValues: {
             quantity: variation.quantity,
-            cost_price: parseInt(variation.cost_price),
-            selling_price: parseInt(variation.selling_price),
+            name: stock.name
         },
         resolver: zodResolver(stockInventorySchema)
     })
+
+    const router = useRouter();
 
     const quantityMinus = () => {
         const prevQuantity = watch('quantity') || 0
@@ -60,22 +61,33 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
         setValue('quantity', prevQuantity + 1)
     }
 
+    const { mutate: updateName, isPending: isUpdatingName } = useUpdateStockInventoryName()
     const { mutate, isPending } = useUpdateStockInventory()
-    const submit = (data: { quantity: number; cost_price: number }) => {
-        if (isNaN(data.cost_price)) {
-            alert("Cost price cannot be NaN");
-            setError("cost_price", {
-                type: "manual",
-                message: "Cost price cannot be NaN"
-            })
-            return;
-        }
-        mutate({ data, id: variation.id },
+    const submit = (data: updateStockInventoryFormType) => {
+        updateName(
+            { id: stock.id, data: { name: data.name } },
             {
                 onSuccess: () => {
-                    refetch()
-                    toast.success("stock inventory updated successfully")
-                    closeModal()
+                    toast.success("stock name updated successfully")
+                    mutate({
+                        data: {
+                            quantity: data.quantity,
+                        },
+                        id: variation.id
+                    },
+                        {
+                            onSuccess: () => {
+                                refetch()
+                                toast.success("stock inventory updated successfully")
+                                router.replace(`/inventory/stock/${stock.id}?variation=${variation.id}`)
+                                closeModal()
+                            },
+                            onError: (error) => {
+                                const erMessage = extractErrorMessage(error)
+                                toast.error(erMessage)
+                            }
+                        }
+                    )
                 },
                 onError: (error) => {
                     const erMessage = extractErrorMessage(error)
@@ -83,7 +95,13 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                 }
             }
         )
+
     }
+
+    useEffect(() => {
+        setValue('quantity', variation.quantity)
+        setValue('name', stock.name)
+    }, [variation])
 
 
 
@@ -92,9 +110,7 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
         <Dialog open={isModalOpen} onOpenChange={closeModal} modal>
 
             <DialogContent className=" max-w-[596px] ">
-                {/* <DialogClose className="absolute right-8">
-                    <IoIosClose size={30} />
-                </DialogClose> */}
+
                 <DialogHeader className="">
                     <DialogTitle className="text-xl font-semibold uppercase">
                         stock adjustment
@@ -111,15 +127,24 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                             className="rounded-xl text-xs"
                         />
                         <div className="flex flex-col gap-2">
-                            <h3 className="uppercase font-bold">{stock.name} - {variation.size || variation.flavour || variation.color}</h3>
+                            <h3 className="uppercase font-bold">{stock.name} - {variation.size || variation.flavour || variation.color} {stock.category.name == "Cake" && " inches"}</h3>
+
                             <div className="flex gap-3">
                                 <p className="text-xs">
-                                    Stocked stock:{" "}
+                                    Stocked quantity:{" "}
                                     <span className="font-semibold">{variation.quantity}</span>
                                 </p>
                             </div>
                         </div>
                     </div>
+                    <Input
+                        label="Product Name"
+                        className="font-medium text-sm appearance-none w-full"
+                        {...register('name')}
+                        placeholder='Product Name'
+                        hasError={!!errors.name}
+                        errorMessage={errors.name?.message}
+                    />
                     <div>
                         <p className="text-xs">Quantity</p>
                         <div className="grid grid-cols-[max-content,1fr,max-content] items-center border border-solid border-[#E1E1E1] py-3 px-[18px] gap-4 mt-2">
@@ -143,47 +168,20 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                         }
                     </div>
 
-                    <Controller
-                        name={`cost_price`}
-                        control={control}
-                        render={({ field }) => (
-                            <AmountInput
-                                {...field}
-                                label="Cost Price"
-                                value={field.value ?? ''}
-                                placeholder='Cost Price'
-                                hasError={!!errors.selling_price}
-                                errorMessage={errors.selling_price?.message}
-                            />
-                        )}
-                    />
-                    <Controller
-                        name={`selling_price`}
-                        control={control}
-                        render={({ field }) => (
-                            <AmountInput
-                                {...field}
-                                label="Selling Price"
-                                value={field.value ?? ''}
-                                placeholder='Selling Price'
-                                hasError={!!errors.selling_price}
-                                errorMessage={errors.selling_price?.message}
-                            />
-                        )}
-                    />
+
 
                     <DialogFooter className="p-2">
                         <Button
                             type="submit"
                             id='FORM'
-                            disabled={isPending}
+                            disabled={isPending || isUpdatingName}
                             className="bg-[#17181C] mt-10 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                         >
                             {
-                                isPending  ? "Saving Changes" : "Save Changes"
+                                isUpdatingName || isPending ? "Saving Changes" : "Save Changes"
                             }
                             {
-                                isPending && <Spinner color='white' />
+                                isUpdatingName || isPending && <Spinner color='white' />
                             }
                         </Button>
                     </DialogFooter>

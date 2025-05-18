@@ -75,21 +75,23 @@ const NewEnquiryPage = () => {
         delivery_date: format(new Date(), 'yyyy-MM-dd'),
         address: "",
         recipient_name: "",
-        recipient_phone: ""
+        recipient_phone: "",
+        recipient_alternative_phone: "",
+        residence_type: "",
       },
       enquiry_channel: "",
       enquiry_occasion: "",
       items: [
-        {
-          category: categories?.[0].id,
-          product_id: products?.[0].id,
-          product_variation_id: '',
-          quantity: 1,
-          properties: {},
-          inventories: [{
-            variations: [],
-          }],
-        }
+        // {
+        //   category: categories?.[0].id,
+        //   product_id: products?.[0].id,
+        //   product_variation_id: '',
+        //   quantity: 1,
+        //   properties: {},
+        //   inventories: [{
+        //     variations: [],
+        //   }],
+        // }
       ],
     }
   });
@@ -242,6 +244,7 @@ const NewEnquiryPage = () => {
                             errorMessage={errors.customer?.email?.message}
                             placeholder="Enter customer email"
                             {...field}
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -261,6 +264,7 @@ const NewEnquiryPage = () => {
                           {...field}
                           hasError={!!errors.enquiry_occasion}
                           errorMessage={errors.enquiry_occasion?.message}
+                          optional
                         />
                       </FormItem>
                     )}
@@ -295,6 +299,7 @@ const NewEnquiryPage = () => {
                             errorMessage={errors.social_media_details?.message}
                             placeholder="Enter social media details"
                             {...field}
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -333,6 +338,7 @@ const NewEnquiryPage = () => {
                             hasError={!!errors.delivery?.address}
                             errorMessage={errors.delivery?.address?.message}
                             placeholder="Enter delivery address"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -352,6 +358,7 @@ const NewEnquiryPage = () => {
                             hasError={!!errors.delivery?.recipient_name}
                             errorMessage={errors.delivery?.recipient_name?.message}
                             placeholder="Enter recipient name"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -369,6 +376,25 @@ const NewEnquiryPage = () => {
                             hasError={!!errors.delivery?.recipient_phone}
                             errorMessage={errors.delivery?.recipient_phone?.message}
                             placeholder="Enter recipient name"
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_alternative_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Recipient's Alt Phone Number"
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_alternative_phone}
+                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
+                            placeholder="Enter recipient alternative phone number"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -388,6 +414,7 @@ const NewEnquiryPage = () => {
                           placeholder="Select delivery method"
                           hasError={!!errors.delivery?.method}
                           errorMessage={errors.delivery?.method?.message}
+                          optional
                         />
                       </FormItem>
                     )}
@@ -420,6 +447,7 @@ const NewEnquiryPage = () => {
                           placeholder="Select delivery zone"
                           hasError={!!errors.delivery?.zone}
                           errorMessage={errors.delivery?.zone?.message}
+                          optional
                         />
                       </FormItem>
                     )}
@@ -437,6 +465,7 @@ const NewEnquiryPage = () => {
                               hasError={!!errors.delivery?.fee}
                               errorMessage={errors.delivery?.fee?.message}
                               placeholder="Enter delivery fee"
+                              optional
                             />
                             :
                             <SelectSingleCombo
@@ -451,6 +480,7 @@ const NewEnquiryPage = () => {
                               placeholder="Select dispatch location"
                               hasError={!!errors.delivery?.dispatch}
                               errorMessage={errors.delivery?.dispatch?.message}
+                              optional
                             />
                         }
                         <button
@@ -465,6 +495,29 @@ const NewEnquiryPage = () => {
                       </FormItem>
                     )}
                   />
+
+                  {
+
+                    watch('delivery.method') === "Dispatch" &&
+                    <FormField
+                      control={control}
+                      name="delivery.residence_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              label="Residence Type"
+                              hasError={!!errors.delivery?.residence_type}
+                              errorMessage={errors.delivery?.residence_type?.message}
+                              placeholder="Enter residence type"
+                              optional
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  }
                   <FormField
                     control={control}
                     name="delivery.delivery_date"
@@ -475,6 +528,7 @@ const NewEnquiryPage = () => {
                           value={field.value ? new Date(field.value) : new Date()}
                           onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
                           placeholder="Select delivery date"
+                          optional
                         />
                         {
                           errors.delivery?.delivery_date &&
@@ -486,11 +540,12 @@ const NewEnquiryPage = () => {
                   />
 
                   <TimePicker
-                    label="Delivery Time"
+                    label="Dispatch Time"
                     control={control}
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
+                    optional
 
                   // placeholder="Select delivery date"
                   />
@@ -506,6 +561,7 @@ const NewEnquiryPage = () => {
                             hasError={!!errors.delivery?.note}
                             errorMessage={errors.delivery?.note?.message}
                             placeholder="Enter delivery note"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -607,6 +663,7 @@ const NewEnquiryPage = () => {
                   errorMessage={errors.message?.message as string}
                   placeholder="Enter message on Enquiry"
                   {...register("message")}
+                  optional
                 />
               </AccordionContent>
             </AccordionItem>

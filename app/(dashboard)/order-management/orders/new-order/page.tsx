@@ -3,11 +3,10 @@ import React from "react";
 import Image from "next/image";
 import {
   Controller,
-  FieldErrors,
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import { Money, TruckTime, ShoppingBag } from "iconsax-react";
+import { Money, TruckTime } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
@@ -26,12 +25,9 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
   Form,
   TimePicker,
-  SelectMultipleSpecialCombo,
   Spinner,
-  ConfirmActionModal,
 } from "@/components/ui";
 import {
   DISPATCH_METHOD_OPTIONS,
@@ -45,7 +41,6 @@ import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import { useGetCategories, useGetProducts } from "@/app/(dashboard)/inventory/misc/api";
 import FormError from "@/components/ui/formError";
 import { formatCurrency } from "@/utils/currency";
-import { useBooleanStateControl } from "@/hooks";
 import { extractErrorMessage } from "@/utils/errors";
 
 import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
@@ -75,7 +70,9 @@ const NewOrderPage = () => {
         delivery_date: format(new Date(), 'yyyy-MM-dd'),
         address: "",
         recipient_name: "",
-        recipient_phone: ""
+        recipient_phone: "",
+        recipient_alternative_phone: "",
+        residence_type: "",
       },
       enquiry_channel: "",
       enquiry_occasion: "",
@@ -130,7 +127,7 @@ const NewOrderPage = () => {
     } else {
       setValue('payment_status', 'UP')
     }
-  }, [selectedPaymentOption])
+  }, [selectedPaymentOption, setValue])
 
   const { uploadToCloudinary } = useCloudinary()
   const { isUploading } = useLoading();
@@ -261,6 +258,7 @@ const NewOrderPage = () => {
                             errorMessage={errors.customer?.email?.message}
                             placeholder="Enter customer email"
                             {...field}
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -280,6 +278,7 @@ const NewOrderPage = () => {
                           {...field}
                           hasError={!!errors.enquiry_occasion}
                           errorMessage={errors.enquiry_occasion?.message}
+                          optional
                         />
                       </FormItem>
                     )}
@@ -313,6 +312,7 @@ const NewOrderPage = () => {
                             hasError={!!errors.social_media_details}
                             errorMessage={errors.social_media_details?.message}
                             placeholder="Enter social media details"
+                            optional
                             {...field}
                           />
                         </FormControl>
@@ -458,7 +458,25 @@ const NewOrderPage = () => {
                             {...field}
                             hasError={!!errors.delivery?.recipient_phone}
                             errorMessage={errors.delivery?.recipient_phone?.message}
-                            placeholder="Enter recipient name"
+                            placeholder="Enter recipient phone number"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_alternative_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Recipient's Alt Phone Number"
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_alternative_phone}
+                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
+                            placeholder="Enter recipient alternative phone number"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -562,6 +580,7 @@ const NewOrderPage = () => {
                               hasError={!!errors.delivery?.residence_type}
                               errorMessage={errors.delivery?.residence_type?.message}
                               placeholder="Enter residence type"
+                              optional
                               {...field}
                             />
                           </FormControl>
@@ -590,7 +609,7 @@ const NewOrderPage = () => {
                   />
 
                   <TimePicker
-                    label="Delivery Time"
+                    label="Dispatch Time"
                     control={control}
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}
@@ -610,6 +629,7 @@ const NewOrderPage = () => {
                             hasError={!!errors.delivery?.note}
                             errorMessage={errors.delivery?.note?.message}
                             placeholder="Enter delivery note"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -644,6 +664,7 @@ const NewOrderPage = () => {
                   errorMessage={errors.message?.message as string}
                   placeholder="Enter message on order"
                   {...register("message")}
+                  optional
                 />
               </AccordionContent>
             </AccordionItem>
@@ -745,28 +766,33 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  <FilePicker
-                    onFileSelect={(file) => setValue("payment_proof", file!)}
-                    hasError={!!errors.payment_proof}
-                    errorMessage={errors.payment_proof?.message as string}
-                    maxSize={10}
-                    label="Upload Payment Proof"
-                  />
-                  <Controller
-                    name="payment_receipt_name"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        label="Payment Receipt Name"
-                        id="payment_receipt_name"
-                        placeholder="Enter name in payment receipt"
-                        className="col-span-3"
-                        {...field}
-                        hasError={!!errors.payment_receipt_name}
-                        errorMessage={errors.payment_receipt_name?.message}
+                  {
+                    watch('payment_options') !== "not_paid_go_ahead" &&
+                    <>
+                      <FilePicker
+                        onFileSelect={(file) => setValue("payment_proof", file!)}
+                        hasError={!!errors.payment_proof}
+                        errorMessage={errors.payment_proof?.message as string}
+                        maxSize={10}
+                        label="Upload Payment Proof"
                       />
-                    )}
-                  />
+                      <Controller
+                        name="payment_receipt_name"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            label="Payment Receipt Name"
+                            id="payment_receipt_name"
+                            placeholder="Enter name in payment receipt"
+                            className="col-span-3"
+                            {...field}
+                            hasError={!!errors.payment_receipt_name}
+                            errorMessage={errors.payment_receipt_name?.message}
+                          />
+                        )}
+                      />
+                    </>
+                  }
                 </div>
               </AccordionContent>
             </AccordionItem>

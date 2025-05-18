@@ -20,6 +20,7 @@ interface FilePickerProps {
     variant?: 'default' | 'preview'
     hasError?: boolean
     errorMessage?: string
+    optional?: boolean
 
 }
 
@@ -32,7 +33,8 @@ export default function FilePicker({
     className,
     variant = 'default',
     hasError,
-    errorMessage
+    errorMessage,
+    optional = false
 }: FilePickerProps) {
     const [dragActive, setDragActive] = useState(false)
     const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -89,7 +91,11 @@ export default function FilePicker({
         <div className={cn("w-full", className)}>
             {
                 label &&
-                <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">{label || title}</Label>
+                <Label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">{label || title}
+                    {
+                        !optional && <span className="text-red-500"> *</span>
+                    }
+                </Label>
             }
             <div
                 className={cn(

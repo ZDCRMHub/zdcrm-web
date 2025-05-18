@@ -6,4 +6,4 @@ export { default as OrdersDashboardPayments } from './OrdersDashboardPayments';
 export { default as OrdersDashboardHistory } from './OrdersDashboardHistory';
 export { default as OrdersDashboardDelivery } from './OrdersDashboardDelivery';
 export { default as ClientHistoryDashboard } from './ClientHistoryDashboard';
-export { default as ProductSelector } from './ProductSelector';
+export { default as ProductSelector } from './OrderFormProductSelector';

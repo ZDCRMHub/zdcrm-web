@@ -30,6 +30,7 @@ export function generateCustomLabel(item: any, format: CustomLabelFormat): strin
 interface SelectProps extends VariantProps<typeof buttonVariants> {
     productId: string;
     variationId: string;
+    category: string
     setProductId: (value: string) => void;
     setVariationId: (value: string) => void;
     options: ProductsAPIReponse[] | undefined;
@@ -56,6 +57,7 @@ interface SelectProps extends VariantProps<typeof buttonVariants> {
 const ProductSelector = ({
     productId,
     variationId,
+    category,
     setProductId,
     setVariationId,
     options,
@@ -87,7 +89,7 @@ const ProductSelector = ({
         if (!options || isLoadingOptions) return [];
         return options?.map((product) =>
             product.variations.map((variation) => ({
-                label: `${product.name} - ${variation.size}`,
+                label: `${product.name} - ${variation.size} ${category == "Cake" ? "inches" : ""} ${category == "Cake" ? "- " + variation.layer + " layers" : ""}`,
                 product_id: product.id,
                 product_variation_id: variation.id,
             }))
@@ -133,8 +135,9 @@ const ProductSelector = ({
 
     const getLabel = (option?: ProductsAPIReponse) => {
         if (!option) return "Select Product"
+        const selectedVariation = option?.variations?.find((variation) => variation.id === Number(variationId))
         if (showSelectedValue) {
-            return `${option.name} - ${option?.variations?.find((variation) => variation.id === Number(variationId))?.size}` || "Select Product"
+            return `${option.name} - ${selectedVariation?.size} ${category == "Cake" ? "inches" : ""} ${category == "Cake" ? "- " + selectedVariation?.layer + " layers" : ""}` || "Select Product"
         } else {
             return option?.name || "Select Product"
         }
@@ -151,6 +154,7 @@ const ProductSelector = ({
                         label && (
                             <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={name || "gbo"}>
                                 {label}
+                                <span className="text-red-400 font-medium"> *</span>
                             </Label>
                         )
                     }

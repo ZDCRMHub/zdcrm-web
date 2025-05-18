@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowDown2, Calendar, Category2, NotificationStatus, } from 'iconsax-react';
+import { ArrowDown2, Calendar, Category2, Money, NotificationStatus, } from 'iconsax-react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Search,
@@ -18,7 +18,7 @@ import { LinkButton, Button } from '@/components/ui';
 import TabBar from '@/components/TabBar';
 import { useGetCategories } from '@/app/(dashboard)/inventory/misc/api';
 import { useDebounce } from '@/hooks';
-import { ORDER_STATUS_OPTIONS } from '@/constants';
+import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_OPTIONS } from '@/constants';
 
 import { useGetOrders } from '../api';
 import OrdersTablePayments from './OrdersTablePayments';
@@ -35,6 +35,11 @@ export default function OrdersDashboardPayments() {
   const [pageSize, setPageSize] = useState(10);
   const defaultStatuses = 'PND,SOA,SOR,STD,COM'
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>(defaultStatuses);
+  const defaultPaymentStatuses = "not_paid_go_ahead,paid_website_card,paid_naira_transfer,paid_pos,paid_usd_transfer,paid_paypal,cash_paid,part_payment_cash,part_payment_transfer,paid_bitcoin,not_received_paid";
+  const [selectedPaymentStatuses, setSelectedPaymentStatuses] = useState<string | undefined>(defaultPaymentStatuses);
+  const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
+  const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
+
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
@@ -56,7 +61,8 @@ export default function OrdersDashboardPayments() {
     category: selectedCategory,
     start_date: watch('date').from?.toISOString().split('T')[0],
     end_date: watch('date').to ? new Date((watch('date').to as Date).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
-
+    payment_status: selectedPaymentStatuses,
+    order_number: debouncedOrderNumber,
   })
 
   const handleRefresh = () => {
@@ -84,6 +90,8 @@ export default function OrdersDashboardPayments() {
       from: monthsAgo,
       to: tomorrow,
     });
+    setFilteredOrderNumber("");
+    setSelectedPaymentStatuses(defaultPaymentStatuses);
   }
 
 
@@ -161,28 +169,26 @@ export default function OrdersDashboardPayments() {
 
                   <MenubarSub>
                     <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
-                      <NotificationStatus size={18} />Status
+                      <Money size={18} />Payment Status
                       {
-                        ((selectedStatuses && selectedStatuses !== defaultStatuses)) &&
+                        ((selectedPaymentStatuses && selectedPaymentStatuses !== defaultPaymentStatuses)) &&
                         <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
                       }
                     </MenubarSubTrigger>
                     <MenubarSubContent>
                       {
-                        ORDER_STATUS_OPTIONS.map((status, index) => {
+                        ENQUIRY_PAYMENT_OPTIONS.map((status, index) => {
                           return (
                             <React.Fragment key={index}>
-                              {
-                                status.value !== "CAN" &&
-                                <MenubarItem
-                                  onClick={() => handleStatusChange(status.value)}
-                                >
-                                  {
-                                    selectedStatuses === status.value && <Check className='mr-2 h-4 w-4' />
-                                  }
-                                  {status.label}
-                                </MenubarItem>
-                              }
+                              <MenubarItem
+                                onClick={() => handleStatusChange(status.value)}
+                              >
+                                {
+                                  selectedPaymentStatuses === status.value && <Check className='mr-2 h-4 w-4' />
+                                }
+                                {status.label}
+                              </MenubarItem>
+
                             </React.Fragment>
                           )
                         })
@@ -205,7 +211,7 @@ export default function OrdersDashboardPayments() {
                 </Button>
               )
             }
-        
+
             <Button
               variant='outline'
               className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
@@ -216,9 +222,17 @@ export default function OrdersDashboardPayments() {
           </div>
         </section>
         <div className="text-sm text-gray-600 my-2">
-          Showing orders {" "}
+          Showing
+          {
+            !selectedCategory && !debouncedSearchText && (!selectedStatuses || selectedStatuses === defaultStatuses) 
+            && (!selectedPaymentStatuses || selectedPaymentStatuses === defaultPaymentStatuses) 
+            && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
+          }
+          orders {" "}
           <p className='inline-block font-medium text-black'>
             {selectedStatuses && selectedStatuses !== defaultStatuses && ` with statuses: ${selectedStatuses.split(',').map(s => ORDER_STATUS_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
+            {selectedPaymentStatuses && selectedPaymentStatuses !== defaultPaymentStatuses && ` with payment statuses: ${selectedPaymentStatuses.split(',').map(s => ENQUIRY_PAYMENT_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
+            {debouncedSearchText && ` with search text: ${debouncedSearchText},`}
             {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
             {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
           </p>

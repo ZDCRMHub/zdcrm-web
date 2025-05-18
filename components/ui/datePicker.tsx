@@ -25,6 +25,7 @@ interface SingleDatePickerProps {
     align?: 'center' | 'end' | 'start' | undefined;
     continueWithSelectedDate?: boolean;
     defaultDate?: Date;
+    optional?: boolean;
 }
 
 const currentYear = new Date().getFullYear();
@@ -40,6 +41,7 @@ export function SingleDatePicker({
     align = 'end',
     continueWithSelectedDate = true,
     defaultDate,
+    optional
 }: SingleDatePickerProps) {
     const [date, setDate] = React.useState<Date | undefined>(defaultDate);
     const [open, setOpen] = React.useState(false);
@@ -52,6 +54,9 @@ export function SingleDatePicker({
                     label && (
                         <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={id || label}>
                             {label}
+                            {
+                                !optional && <span className="text-red-400 font-medium"> *</span>
+                            }
                         </Label>
                     )
                 }

@@ -10,7 +10,8 @@ import { useGetProductInventoryDetails, useGetProductInventoryHistory } from "..
 import { ProductsInventoryHistoryTable, ProductsInventoryUpdateModal } from "../../misc/components";
 import { useBooleanStateControl } from "@/hooks";
 import { TProductVariation } from "../../misc/types/products";
-import { SelectSingleCombo } from "@/components/ui";
+import { SelectSingleCombo, Skeleton } from "@/components/ui";
+import Image from "next/image";
 
 
 const InventoryDetailsPage = () => {
@@ -40,6 +41,9 @@ const InventoryDetailsPage = () => {
     refetchData();
     refetchHistory();
   }
+  const itemCategory = data?.category.name
+  const inventoryImage = data?.image_one || `/img/placeholders/${itemCategory}.svg`
+
 
 
   return (
@@ -65,18 +69,45 @@ const InventoryDetailsPage = () => {
         containerClass="max-w-[500px]"
       />
 
-      <div className="mt-10 flex ">
-        <div className="p-8 bg-[#F6F6F6] rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
-          <p className="text-2xl font-medium text-center mb-3">Stock</p>
-          <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-4">
-            <p className="text-[18px] uppercase">Quantity at hand</p>
-            <p className="text-2xl text-[#113770] font-bold">{selectedVariant?.quantity}</p>
-            <Button className="bg-[#1E1E1E] rounded-none text-sm w-[161px]" onClick={openUpdateModal}>
-              Adjust Stock
-            </Button>
+      <section className="grid md:grid-cols-2 max-w-4xl gap-6 mt-10">
+        <article className=" flex ">
+          <div className="p-8 bg-[#F6F6F6] rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
+
+            <p className="text-2xl font-medium text-center mb-3">Inventory</p>
+            <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-1 ">
+              <div className="relative flex items-center justify-center gap-2 width-[120px] h-[120px] shrink-0 mx-auto">
+                {
+                  isLoading ?
+                    <Skeleton className="w-full h-[120px] rounded-[20px]" />
+                    :
+                    <Image
+                      src={inventoryImage}
+                      alt={data?.name as string}
+                      className="object-cover text-xs rounded-[20px]"
+                      width={120}
+                      height={120}
+                      priority
+                    />
+                }
+              </div>
+              <p className="flex items-center text-2xl text-[#113770] font-bold">{data?.name}</p>
+              <p className="text-2xl text-[#113770] font-bold">
+                {selectedVariant?.size}
+              </p>
+              <div className="bg-white rounded-[20px] items-center flex flex-col gap-2 mt-4 ">
+                <p className="text-base !uppercase">
+                  Quantity at hand:{" "}
+                  <span className="text-[1.25rem] text-[#113770] font-bold">{selectedVariant?.quantity}</span>
+                </p>
+                <Button className="bg-[#1E1E1E] rounded-none text-sm w-[161px]" onClick={openUpdateModal}>
+                  Adjust Stock
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </article>
+
+      </section>
 
 
       <section className="mt-16">

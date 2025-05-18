@@ -33,6 +33,7 @@ interface SelectProps<T> extends VariantProps<typeof buttonVariants> {
   labelKey: keyof T;
   showSelectedValue?: boolean;
   placeHolderClass?: string;
+  optional?: boolean;
 }
 
 const SelectSingleSimple = <T extends object>({
@@ -59,6 +60,7 @@ const SelectSingleSimple = <T extends object>({
   showSelectedValue = true,
   variant = "inputButton",
   size = "inputButton",
+  optional
 }: SelectProps<T>) => {
   const [isOpen, setOpen] = React.useState(false)
 
@@ -88,6 +90,9 @@ const SelectSingleSimple = <T extends object>({
           {label && (
             <Label className={cn("text-sm text-[#0F172B] font-poppins font-medium", labelClass)} htmlFor={name || "gbo"}>
               {label}
+              {
+                !optional && <span className="text-red-400 font-medium"> *</span>
+              }
             </Label>
           )}
           <PopoverTrigger asChild>

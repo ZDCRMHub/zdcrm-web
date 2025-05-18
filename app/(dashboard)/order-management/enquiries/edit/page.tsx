@@ -487,7 +487,7 @@ const NewEnquiryPage = () => {
                   />
 
                   <TimePicker
-                    label="Delivery Time"
+                    label="Dispatch Time"
                     control={control}
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}

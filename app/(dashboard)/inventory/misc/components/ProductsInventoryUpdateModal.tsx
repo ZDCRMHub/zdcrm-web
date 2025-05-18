@@ -1,6 +1,6 @@
 'use client'
-import React from 'react'
-import { Controller, useForm } from 'react-hook-form';
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form';
 import Image from 'next/image';
 import { AddCircle, Hashtag, MinusCirlce } from 'iconsax-react';
 import * as z from 'zod';
@@ -22,14 +22,14 @@ import {
 
 import { TProductInventoryItem, TProductVariation } from '../types/products';
 import FormError from '@/components/ui/formError';
-import { useUpdateProductInventory } from '../api';
+import { useUpdateProductInventory, useUpdateProductInventoryName } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/icons/core';
 
 const UpdateproductInventorySchema = z.object({
+    name: z.string().min(1, { message: 'Name is required' }),
     quantity: z.number().int().nonnegative(),
-    // name: z.string().min(1, { message: 'Name is required' }),
 });
 type UpdateProductInventorySchemaType = z.infer<typeof UpdateproductInventorySchema>;
 interface ProductsInventoryUpdateModalProps {
@@ -42,11 +42,10 @@ interface ProductsInventoryUpdateModalProps {
 }
 
 const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch, variation }) => {
-    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm<{
-        quantity: number;
-    }>({
+    const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm<UpdateProductInventorySchemaType>({
         defaultValues: {
             quantity: variation.quantity,
+            name: product.name,
         },
         resolver: zodResolver(UpdateproductInventorySchema)
     })
@@ -60,15 +59,32 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
         setValue('quantity', prevQuantity + 1)
     }
 
+    const { mutate: updateName, isPending: isUpdatingName } = useUpdateProductInventoryName()
     const { mutate, isPending } = useUpdateProductInventory()
     const submit = (data: UpdateProductInventorySchemaType) => {
-
-        mutate({ data, id: variation.id },
+        updateName(
+            { id: product.id, data: { name: data.name } },
             {
                 onSuccess: () => {
-                    refetch();
-                    toast.success("Product inventory updated successfully")
-                    closeModal()
+                    toast.success("product name updated successfully")
+                    mutate({
+                        data: {
+                            quantity: data.quantity,
+                        },
+                        id: variation.id
+                    },
+                        {
+                            onSuccess: () => {
+                                refetch()
+                                toast.success("Product inventory updated successfully")
+                                closeModal()
+                            },
+                            onError: (error) => {
+                                const erMessage = extractErrorMessage(error)
+                                toast.error(erMessage)
+                            }
+                        }
+                    )
                 },
                 onError: (error) => {
                     const erMessage = extractErrorMessage(error)
@@ -77,6 +93,12 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
             }
         )
     }
+
+    useEffect(() => {
+        setValue('quantity', variation.quantity)
+        setValue('name', product.name)
+    }, [variation])
+
 
 
 
@@ -87,7 +109,7 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
             <DialogContent className=" max-w-[596px] ">
                 <DialogHeader className="">
                     <DialogTitle className="text-xl font-semibold uppercase">
-                        stock adjustment
+                        product adjustment
                     </DialogTitle>
                 </DialogHeader>
 
@@ -101,15 +123,23 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                             className="rounded-xl"
                         />
                         <div className="flex flex-col gap-2">
-                            <h3 className="uppercase font-bold">{product.name}</h3>
+                            <h3 className="uppercase font-bold">{product.name} - {variation.size} {product.category.name == "Cake" && " inches"}</h3>
                             <div className="flex gap-3">
                                 <p className="text-xs">
-                                    Stocked Product:{" "}
+                                    Stocked quantity:{" "}
                                     <span className="font-semibold">{variation.quantity}</span>
                                 </p>
                             </div>
                         </div>
                     </div>
+                    <Input
+                        label="Product Name"
+                        className="font-medium text-sm appearance-none w-full"
+                        {...register('name')}
+                        placeholder='Product Name'
+                        hasError={!!errors.name}
+                        errorMessage={errors.name?.message}
+                    />
                     <div>
                         <p className="text-xs">Quantity</p>
                         <div className="grid grid-cols-[max-content,1fr,max-content] items-center border border-solid border-[#E1E1E1] py-3 px-[18px] gap-4 mt-2">
@@ -140,12 +170,14 @@ const ProductsInventoryUpdateModal: React.FC<ProductsInventoryUpdateModalProps> 
                         <Button
                             type="submit"
                             id='FORM'
-                            disabled={isPending}
+                            disabled={isPending || isUpdatingName}
                             className="bg-[#17181C] mt-10 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                         >
-                            Save Changes
                             {
-                                isPending && <Spinner />
+                                isUpdatingName || isPending ? "Saving Changes" : "Save Changes"
+                            }
+                            {
+                                isUpdatingName || isPending && <Spinner color='white' />
                             }
                         </Button>
                     </DialogFooter>

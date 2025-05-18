@@ -107,6 +107,8 @@ export const ENQUIRY_PAYMENT_OPTIONS = [
   { value: "not_received_paid", label: "Not Received (Paid)" },
 ];
 
+// export const ENQUIRY_PAYMENT_VALUES = ";
+
 export const ORDER_STATUS_OPTIONS = [
   { value: "PND", label: "Pending" },
   { value: "SOA", label: "Start Order Arrangement" },
@@ -114,6 +116,15 @@ export const ORDER_STATUS_OPTIONS = [
   { value: "STD", label: "Sent to Dispatch" },
   { value: "COM", label: "Delivered" },
   { value: "CAN", label: "Cancelled" },
+]
+export const ORDER_DELIVERY_STATUS_OPTIONS = [
+
+  { value: "PENDING", label: "Pending" },
+  { value: "DISPATCHED", label: "Dispatched" },
+  { value: "DISPATCHED_CL", label: "Dispatched Client Notified" },
+  { value: "DELIVERED", label: "Delivered" },
+  { value: "DELIVERED_CL", label: "Delivered Client Notified" },
+  { value: "CANCELLED", label: "Cancelled" },
 ]
 
 export const CATEGORIES_ENUMS: Record<string, string> = {

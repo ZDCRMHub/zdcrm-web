@@ -24,7 +24,7 @@ const deliveryFormSchema = z.object({
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
   delivery_expense: z.number(),
-  tracking_link: z.string({ message: "Enter a valid url" }).url().min(1, 'Tracking Link is required'),
+  tracking_link: z.string().url().optional(),
 });
 
 export type DeliveryDriverFormType = z.infer<typeof deliveryFormSchema>;
@@ -60,7 +60,7 @@ const OrdeManagementDelivery = () => {
     console.log(data);
   }
 
-console.log(errors)
+  console.log(errors)
 
   if (isLoading) {
     return <OrderManagementDeliverySkeleton />;
@@ -107,6 +107,10 @@ console.log(errors)
             <p className="text-[0.92rem] text-[#111827] font-medium">{order?.delivery.address}</p>
           </div>
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
+            <h3 className='text-sm text-gray-500 font-manrope'>Residence type</h3>
+            <p className="text-[0.92rem] text-[#111827] font-medium">{order?.delivery.residence_type}</p>
+          </div>
+          <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
             <h3 className='text-sm text-gray-500 font-manrope'>Delivery Location</h3>
             <p className="text-[0.92rem] text-[#111827] font-medium">
               {order?.delivery.dispatch?.location}{" "}
@@ -141,6 +145,13 @@ console.log(errors)
             <h3 className='text-sm text-gray-500 font-manrope'>Phone number</h3>
             <p className="text-[0.92rem] text-[#111827] font-medium">{order?.delivery.recipient_phone}</p>
           </div>
+          {
+            !!order?.delivery.recipient_alternative_phone &&
+            <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
+              <h3 className='text-sm text-gray-500 font-manrope'>Alternative number</h3>
+              <p className="text-[0.92rem] text-[#111827] font-medium">{order?.delivery.recipient_alternative_phone}</p>
+            </div>
+          }
           <div className='grid grid-cols-[0.5fr,1fr] items-center gap-5'>
             <h3 className='text-sm text-gray-500 font-manrope'>Primary address</h3>
             <p className="text-[0.92rem] text-[#111827] font-medium">{order?.delivery.address}</p>
@@ -192,9 +203,9 @@ console.log(errors)
             {...register('delivery_expense')}
             hasError={!!errors.delivery_expense}
             errorMessage={errors.delivery_expense?.message}
-            // defaultValue={order?.delivery?.delivery_expense}
+          // defaultValue={order?.delivery?.delivery_expense}
           />
-          
+
           <Input
             label='Tracking Link *'
             type='text'
@@ -204,6 +215,7 @@ console.log(errors)
             hasError={!!errors.tracking_link}
             errorMessage={errors.tracking_link?.message}
             defaultValue={order?.delivery?.tracking_link ?? ""}
+            optional
           />
           <Button
             type='submit'

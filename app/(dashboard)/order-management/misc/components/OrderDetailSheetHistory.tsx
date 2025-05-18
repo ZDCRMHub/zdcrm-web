@@ -240,6 +240,15 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                             />
                             <span>{order?.delivery.recipient_phone}</span>
                           </p>
+                          <p className="flex items-center gap-2 text-sm">
+                            <Phone
+                              size={20}
+                              className="text-[#FFC600] flex-shrink-0"
+                            />
+                            <span>
+                              {order?.delivery.recipient_phone}
+                            </span>
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -376,15 +385,15 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                           {
                             order?.items.map((item, index: number) => {
                               const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
-                              const placeHolderImage = item.inventories[0]?.stock_inventory?.image_one || item.inventories[0]?.product_inventory?.image_one || `/img/placeholders/${itemCategory}.svg`
-
+                              const itemImage = item.product.image || `/img/placeholders/${itemCategory}.svg`
+                              
                               return (
                                 <article key={item.id} className="flex border rounded-2xl p-6">
                                   <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
                                     <header className="flex items-start justify-between">
                                       <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
                                         <Image
-                                          src={placeHolderImage}
+                                          src={itemImage}
                                           alt={item.product.name}
                                           fill
                                           className="object-cover rounded-md"
@@ -491,6 +500,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     {[
                       ["Delivery Method", order?.delivery.method],
                       ["Primary address", order?.delivery.address],
+                      ["Residence Type", order?.delivery.residence_type],
                       ["Delivery Location", `${order?.delivery.dispatch?.location} - ${formatCurrency(Number(order?.delivery.dispatch?.delivery_price || '0'), 'NGN')}`],
                       ["Delivery Zone", order?.delivery.zone],
                       ["Dispatch Time", order?.delivery.delivery_time],
@@ -511,7 +521,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       Total(NGN)
                     </span>
                     <span className="text-[#111827] font-semibold text-lg font-poppins">
-                      {formatCurrency(parseInt(order?.total_selling_price || '0'), 'NGN')}
+                      {formatCurrency(parseInt(order?.total_amount || '0'), 'NGN')}
                     </span>
                   </p>
                 </section>
