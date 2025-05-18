@@ -174,9 +174,18 @@ export default function OrderSummary() {
                       </span>
                     </p>
                   </div>
-                  <p className='text-sm text-[#687588] font-medium'>
-                    Order Occasion: <span className='text-base font-semibold text-[#194A7A]'>{order?.enquiry_occasion}</span>
-                  </p>
+                  <div>
+                    <p className='text-sm text-[#687588] font-medium'>
+                      Order Occasion: <span className='text-base font-semibold text-[#194A7A]'>{order?.enquiry_occasion}</span>
+                    </p>
+                    <p className='text-sm text-gray-500 mt-2'>
+                      Recipient Alternative Number: {" "}
+                      <span className="text-[#194A7A] text-base font-semibold">
+                        {order?.delivery.recipient_alternative_phone}
+                      </span>
+                    </p>
+                  </div>
+
                 </div>
               </article>
             </section>
@@ -195,8 +204,7 @@ export default function OrderSummary() {
                             <header className="flex items-start justify-between">
                               <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
                                 <Image
-                                  src={item.inventories[0]?.stock_inventory?.image_one || item.inventories[0]?.product_inventory?.image_one || placeHolderImage}
-                                  //  src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage }
+                                  src={item.product.image || placeHolderImage}
                                   alt={item.product.name}
                                   fill
                                   className="object-cover rounded-md"
@@ -261,16 +269,17 @@ export default function OrderSummary() {
                             </section>
 
                             <section className="flex items-center justify-between pt-1 border-t">
-                              {/* <p className="text-[#111827] font-medium text-sm">
+                              <p className="text-[#111827] font-medium text-sm">
                                 <span className="text-[#687588] italic font-light text-[0.8rem]">
                                   Production Cost:{" "}
                                 </span>
-                                {formatCurrency(Number(item.price_at_order || 0), 'NGN')}
-                              </p> */}
-                              <p className="font-medium text-[#194A7A]">
-                                Amount:{" "}
-                                <span className="font-bold">
                                   {formatCurrency(Number(item.product_variation.selling_price || 0), 'NGN')}
+                                
+                              </p>
+                              <p className="font-medium text-[#194A7A]">
+                                Total Amount:{" "}
+                                <span className="font-bold">
+                                  {formatCurrency(Number(item.product.selling_price || 0), 'NGN')}
                                 </span>
                               </p>
                             </section>
@@ -406,6 +415,12 @@ export default function OrderSummary() {
                         Primary address:{' '}
                         <span className='font-semibold text-[#111827] font-manrope'>
                           {order?.delivery.address}
+                        </span>
+                      </p>
+                      <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">
+                        Residence Type:{' '}
+                        <span className='font-semibold text-[#111827] font-manrope'>
+                          {order?.delivery.residence_type}
                         </span>
                       </p>
                       <p className="grid grid-cols-[subgrid] col-span-2 text-[#687588]">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowDown2, Calendar, Category2, NotificationStatus, } from 'iconsax-react';
+import { ArrowDown2, Bag, Calendar, Category2, NotificationStatus, } from 'iconsax-react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Search,
@@ -35,6 +35,8 @@ export default function OrdersDashboard() {
   const [pageSize, setPageSize] = useState(10);
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>('PND,SOA,SOR');
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
+  const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
   }>({
@@ -55,7 +57,7 @@ export default function OrdersDashboard() {
     category: selectedCategory,
     start_date: watch('date').from?.toISOString().split('T')[0],
     end_date: watch('date').to ? new Date((watch('date').to as Date).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
-
+    order_number: debouncedOrderNumber,
   })
 
   const handleRefresh = () => {
@@ -83,6 +85,7 @@ export default function OrdersDashboard() {
       from: monthsAgo,
       to: tomorrow,
     });
+    setFilteredOrderNumber("");
   }
 
 
@@ -110,6 +113,30 @@ export default function OrdersDashboard() {
                   }
                 </MenubarTrigger>
                 <MenubarContent>
+
+                  <MenubarSub>
+                    <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                      <Bag size={18} />Order Number
+                      {
+                        filteredOrderNumber?.trim() !== '' &&
+                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                     <Input
+                        type='text'
+                        placeholder='Search by order number'
+                        className='w-full focus:border min-w-[350px] text-xs !h-10'
+                        value={filteredOrderNumber}
+                        onChange={(e) => {
+
+                          setFilteredOrderNumber(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                      />
+
+                    </MenubarSubContent>
+                  </MenubarSub>
 
                   <MenubarSub>
                     <MenubarSubTrigger className="py-3 flex items-center gap-2">

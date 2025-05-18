@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowDown2, Calendar, Category2, NotificationStatus, } from 'iconsax-react';
+import { ArrowDown2, Bag, Calendar, Category2, NotificationStatus, } from 'iconsax-react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Search,
@@ -18,10 +18,9 @@ import { LinkButton, Button } from '@/components/ui';
 import TabBar from '@/components/TabBar';
 import { useGetCategories } from '@/app/(dashboard)/inventory/misc/api';
 import { useDebounce } from '@/hooks';
-import { ORDER_STATUS_OPTIONS } from '@/constants';
+import { ORDER_DELIVERY_STATUS_OPTIONS, ORDER_STATUS_OPTIONS } from '@/constants';
 
 import { useGetOrders } from '../api';
-import OrdersTableHistory from './OrdersTableHistory';
 import OrdersTableDelivery from './OrdersTableDelivery';
 
 
@@ -34,8 +33,12 @@ export default function OrdersDashboardDelivery() {
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const defaultStatuses = 'STD'
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
+  const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
+  const defaultDeliveryStatuses = "PENDING,DISPATCHED,DISPATCHED_CL,DELIVERED,DELIVERED_CL,CANCELLED"
+  const [selectedDeliveryStatuses, setSelectedDeliveryStatuses] = useState<string | undefined>(defaultDeliveryStatuses);
+
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
   }>({
@@ -56,6 +59,8 @@ export default function OrdersDashboardDelivery() {
     category: selectedCategory,
     start_date: watch('date').from?.toISOString().split('T')[0],
     end_date: watch('date').to ? new Date((watch('date').to as Date).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
+    order_number: debouncedOrderNumber,
+    delivery_status: selectedDeliveryStatuses,
 
   })
 
@@ -71,6 +76,11 @@ export default function OrdersDashboardDelivery() {
     setCurrentPage(1);
   };
 
+  const handleStatusChange = (status: string) => {
+    setSelectedDeliveryStatuses(status);
+    setCurrentPage(1);
+  }
+
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSearchText("");
@@ -79,6 +89,8 @@ export default function OrdersDashboardDelivery() {
       from: monthsAgo,
       to: tomorrow,
     });
+    setFilteredOrderNumber('');
+    setSelectedDeliveryStatuses(defaultDeliveryStatuses);
   }
 
 
@@ -106,7 +118,29 @@ export default function OrdersDashboardDelivery() {
                   }
                 </MenubarTrigger>
                 <MenubarContent>
+                  <MenubarSub>
+                    <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                      <Bag size={18} />Order Number
+                      {
+                        filteredOrderNumber?.trim() !== '' &&
+                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      <Input
+                        type='text'
+                        placeholder='Filter by order number'
+                        className='w-full focus:border min-w-[350px] text-xs !h-10'
+                        value={filteredOrderNumber}
+                        onChange={(e) => {
 
+                          setFilteredOrderNumber(e.target.value);
+                          setCurrentPage(1);
+                        }}
+                      />
+
+                    </MenubarSubContent>
+                  </MenubarSub>
                   <MenubarSub>
                     <MenubarSubTrigger className="py-3 flex items-center gap-2">
                       <Calendar size={18} />Date Range
@@ -153,13 +187,42 @@ export default function OrdersDashboardDelivery() {
                       }
                     </MenubarSubContent>
                   </MenubarSub>
+
+                  <MenubarSub>
+                    <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
+                      <NotificationStatus size={18} />Delivery Status
+                      {
+                        ((selectedDeliveryStatuses && selectedDeliveryStatuses !== defaultDeliveryStatuses)) &&
+                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      {
+                        ORDER_DELIVERY_STATUS_OPTIONS.map((status, index) => {
+                          return (
+                            <React.Fragment key={index}>
+                              <MenubarItem
+                                onClick={() => handleStatusChange(status.value)}
+                              >
+                                {
+                                  selectedDeliveryStatuses === status.value && <Check className='mr-2 h-4 w-4' />
+                                }
+                                {status.label}
+                              </MenubarItem>
+
+                            </React.Fragment>
+                          )
+                        })
+                      }
+                    </MenubarSubContent>
+                  </MenubarSub>
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
           </div>
           <div className='flex items-center gap-2'>
             {
-              (selectedCategory || debouncedSearchText) && (
+              (selectedCategory || debouncedSearchText || selectedDeliveryStatuses !== defaultDeliveryStatuses) && (
                 <Button
                   variant='outline'
                   className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
@@ -169,7 +232,7 @@ export default function OrdersDashboardDelivery() {
                 </Button>
               )
             }
-            
+
             <Button
               variant='outline'
               className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
@@ -181,9 +244,20 @@ export default function OrdersDashboardDelivery() {
         </div>
 
         <div className="text-sm text-gray-600 mb-4">
-          Showing orders {" "}
+          Showing
+           {
+            !selectedCategory && !debouncedSearchText && (!selectedDeliveryStatuses || selectedDeliveryStatuses === defaultDeliveryStatuses) && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
+          }
+           orders {" "}
           <p className='inline-block font-medium text-black'>
             {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
+            {selectedDeliveryStatuses && selectedDeliveryStatuses !== defaultDeliveryStatuses && ` with delivery statuses: ${ 
+              selectedDeliveryStatuses.split(',').map((status) => {
+                const statusObj = ORDER_DELIVERY_STATUS_OPTIONS.find((s) => s.value === status);
+                return statusObj ? statusObj.label : status;
+              }).join(', ')
+            },`}
+            {debouncedSearchText && ` with search text: ${debouncedSearchText},`}
             {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
           </p>
         </div>

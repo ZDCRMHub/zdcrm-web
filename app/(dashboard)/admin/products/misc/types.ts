@@ -99,7 +99,7 @@ export interface PaginatedResponse<T> {
       // Check each variation individually and add specific path errors
       data.variations.forEach((variation, index) => {
         // For cake category, validate layer
-        if (data.category_name?.toLowerCase().includes("cake")) {
+        if (data.category_name?.toLowerCase() =="cake") {
           if (!variation.layer || variation.layer.trim() === "") {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,

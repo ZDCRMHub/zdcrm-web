@@ -31,6 +31,7 @@ interface SelectProps<T extends Record<string, any>> {
   placeHolderClass?: string;
   isSpecial?: boolean
   showValues?: boolean
+  optional?: boolean
 }
 
 const SelectMultiCombo = <T extends Record<string, any>>({
@@ -55,7 +56,8 @@ const SelectMultiCombo = <T extends Record<string, any>>({
   maxSelections,
   placeHolderClass,
   isSpecial = true,
-  showValues = true
+  showValues = true,
+  optional
 }: SelectProps<T>) => {
   const [open, setOpen] = React.useState(false)
   const [optionsToDisplay, setOptionsToDisplay] = React.useState<T[] | undefined>(options)
@@ -110,6 +112,9 @@ const SelectMultiCombo = <T extends Record<string, any>>({
           {label && (
             <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={name || "gbo"}>
               {label}
+              {
+                !optional && <span className="text-red-400 font-medium"> *</span>
+              }
             </Label>
           )}
 

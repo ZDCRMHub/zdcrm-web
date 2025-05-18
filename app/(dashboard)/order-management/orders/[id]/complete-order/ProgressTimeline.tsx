@@ -10,17 +10,19 @@ import { TOrder } from '../../../misc/types';
 interface Props {
     orderId: number;
     orderNumber: string;
-    currentStatus: "PND" | "DIS" | "DSC" | "DEL" | "CAN";
+    currentStatus: "PENDING" | "DISPATCHED" | "DISPATCHED_CL" | "DELIVERED" | "DELIVERED_CL" | "CANCELLED";
     onDelivered?: () => void;
     order: TOrder;
 }
 
 const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, order }: Props) => {
     const steps = [
-        { label: "Pending", status: "PND" },
-        { label: "Sent to dispatch", status: "DIS" },
-        { label: "Dispatch to client", status: "DSC" },
-        { label: "Delivered", status: "DEL" },
+        { label: "Pending", status: "PENDING " },
+        { label: "Sent to dispatch", status: "DISPATCHED" },
+        { label: "Dispatched client notified", status: "DISPATCHED_CL" },
+        { label: "Delivered", status: "DELIVERED" },
+        { label: "Delivered client notified", status: "DELIVERED_CL" },
+        { label: "Cancelled", status: "CANCELLED" },
     ];
 
     const {
@@ -34,7 +36,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
     const currentStep = steps.findIndex(step => step.status === currentStatus);
 
     useEffect(() => {
-        if (currentStatus === "DEL" && onDelivered) {
+        if (currentStatus === "DELIVERED" && onDelivered) {
             onDelivered();
         }
     }, [currentStatus, onDelivered]);
@@ -43,8 +45,8 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
         updateStatus({ id: orderId, status });
     };
 
-    const isDelivered = currentStatus === "DEL";
-    const isCancelled = currentStatus === "CAN";
+    const isDelivered = currentStatus === "DELIVERED" || currentStatus === "DELIVERED_CL";
+    const isCancelled = currentStatus === "CANCELLED";
 
     return (
         <div className="bg-[#194A7A] text-white w-full max-w-[800px] pb-6 rounded-xl space-y-6">
@@ -102,7 +104,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
                     </Button>
                 ))}
                 {
-                    order?.delivery.status === "DEL" &&
+                   ( order?.delivery.status === "DELIVERED" ||  order?.delivery.status === "DELIVERED_CL") &&
                     <Button
                         className={cn("px-4 py-1.5 text-sm rounded transition-all duration-[2s]")}
                         onClick={openAddDeliveryNoteModal}

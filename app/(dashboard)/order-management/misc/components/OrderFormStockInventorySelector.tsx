@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Image from 'next/image';
 import { SearchIcon } from 'lucide-react';
@@ -6,12 +6,12 @@ import { SearchIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { TProductInventoryItem } from '@/app/(dashboard)/inventory/misc/types/products';
 import FormError from '@/components/ui/formError';
+import { TStockInventoryItem } from '@/app/(dashboard)/inventory/misc/types/stock';
 
 
-interface OrderFormProductInventorySelectorProps {
-    options: TProductInventoryItem[];
+interface OrderFormStockInventorySelectorProps {
+    options: TStockInventoryItem[];
     inventoryId?: number
     setInventoryId: (inventoryId: number) => void;
     isLoadingOptions?: boolean;
@@ -19,9 +19,10 @@ interface OrderFormProductInventorySelectorProps {
     disabled?: boolean;
     hasError: boolean
     errorMessage?: string
+    category:string
 }
 
-const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelectorProps> = ({
+const OrderFormStockInventorySelector: React.FC<OrderFormStockInventorySelectorProps> = ({
     options,
     isLoadingOptions,
     isFetchingOptions,
@@ -29,15 +30,17 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
     inventoryId,
     setInventoryId,
     hasError,
-    errorMessage
+    errorMessage,
+    category
 }) => {
+    // const [selectedInventory, setSelectedInventory] = useState<TStockInventoryItem | null>(null);
 
     const [open, setOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const [selectedInventory, setSelectedInventory] = useState<TProductInventoryItem | null>(null);
+    const [selectedInventory, setSelectedInventory] = useState<TStockInventoryItem | null>(null);
     const [filteredOptions, setFilteredOptions] = useState(options);
 
-    const handleInventoryChange = (inventory: TProductInventoryItem | null) => {
+    const handleInventoryChange = (inventory: TStockInventoryItem | null) => {
         setSelectedInventory(inventory);
         setInventoryId(inventory?.id || 0);
     };
@@ -51,7 +54,7 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
         );
     }, [searchText, options]);
 
-    const handleSelect = (inventory: TProductInventoryItem) => {
+    const handleSelect = (inventory: TStockInventoryItem) => {
         setSelectedInventory(inventory);
         handleInventoryChange(inventory);
         setOpen(false);
@@ -64,7 +67,15 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
             <Popover open={open} onOpenChange={setOpen}>
                 <div className="flex flex-col gap-2">
                     <Label className="text-sm text-[#0F172B] font-poppins font-medium">
-                        Stock
+                        {
+                            category == "Cake" ? "Flavour"
+                            :
+                            category == "Cupcake" ? "Size"
+                            :
+                            category == "Flowers" ? "Colour"
+                            :
+                            "Stock"
+                        }
                     </Label>
                     <PopoverTrigger asChild>
                         <Button
@@ -162,4 +173,4 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
     );
 };
 
-export default OrderFormProductInventorySelector;
+export default OrderFormStockInventorySelector;

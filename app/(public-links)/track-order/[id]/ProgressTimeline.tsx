@@ -15,10 +15,12 @@ interface Props {
 
 const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, order }: Props) => {
     const steps = [
-        { label: "Pending", status: "PND" },
-        { label: "Sent to dispatch", status: "DIS" },
-        { label: "Dispatch to client", status: "DSC" },
-        { label: "Delivered", status: "DEL" },
+        { status: "PENDING", label: "Pending" },
+        { status: "DISPATCHED", label: "Dispatched" },
+        { status: "DISPATCHED_CL", label: "Dispatched Client Notified" },
+        { status: "DELIVERED", label: "Delivered" },
+        { status: "DELIVERED_CL", label: "Delivered Client Notified" },
+        { status: "CANCELLED", label: "Cancelled" },
     ];
 
     const {
@@ -31,7 +33,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
     const currentStep = steps.findIndex(step => step.status === currentStatus);
 
 
- 
+
 
     const isDelivered = currentStatus === "DEL";
     const isCancelled = currentStatus === "CAN";
@@ -90,7 +92,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
                     </div>
                 ))}
                 {
-                    order?.delivery.status === "DEL" &&
+                    order?.delivery.status === "DELIVERED" &&
                     <Button
                         className={cn("px-4 py-1.5 text-sm rounded transition-all duration-[2s]")}
                         onClick={openAddDeliveryNoteModal}
@@ -102,7 +104,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
                 }
             </div>
 
-          
+
         </div>
     );
 };

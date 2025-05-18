@@ -16,10 +16,11 @@ export interface InputProps
   containerClassName?: string
   label?: string
   footer?: React.ReactNode
+  optional?: boolean
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, containerClassName, type, hasError, leftIcon, leftIconContainerClass, rightIcon, errorMessageClass, label, footer, ...props }, ref) => {
+  ({ className, containerClassName, type, hasError, leftIcon, leftIconContainerClass, rightIcon, errorMessageClass, label, footer, optional, ...props }, ref) => {
     const [show, setShow] = React.useState(false)
     const inputType = show ? "text" : "password"
 
@@ -30,6 +31,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           label && (
             <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={label}>
               {label}
+              {
+                !optional && <span className="text-red-400 font-medium"> *</span>
+              }
             </Label>
           )
         }
@@ -97,79 +101,79 @@ type AmountInputProps = Omit<InputProps, "value" | "onChange"> & {
 
 export const AmountInput = React.forwardRef<HTMLInputElement, AmountInputProps>(
   ({ value, onChange, onBlur, name, ...props }, ref) => {
-      const [displayValue, setDisplayValue] = React.useState(() => formatNumber(value ? Number(value) : 0))
+    const [displayValue, setDisplayValue] = React.useState(() => formatNumber(value ? Number(value) : 0))
 
-      const handleChange = React.useCallback(
-          (e: React.ChangeEvent<HTMLInputElement>) => {
-              const rawValue = e.target.value.replace(/[^0-9]/g, "")
-              const numericValue = Number(rawValue)
+    const handleChange = React.useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value.replace(/[^0-9]/g, "")
+        const numericValue = Number(rawValue)
 
-              if (!isNaN(numericValue)) {
-                  const formattedValue = formatNumber(numericValue)
-                  setDisplayValue(formattedValue)
-                  if (onChange) {
-                      onChange({
-                          target: {
-                              name: name || "",
-                              value: numericValue,
-                          },
-                      } as unknown as React.ChangeEvent<HTMLInputElement>)
-                  }
-              } else {
-                  setDisplayValue("")
-                  if (onChange) {
-                      onChange({
-                          target: {
-                              name: name || "",
-                              value: "",
-                          },
-                      } as unknown as React.ChangeEvent<HTMLInputElement>)
-                  }
-              }
-          },
-          [onChange, name],
-      )
-
-      const handleBlur = React.useCallback(
-          (e: React.FocusEvent<HTMLInputElement>) => {
-              const numericValue = Number(e.target.value.replace(/[^0-9]/g, ""))
-              if (!isNaN(numericValue)) {
-                  const formattedValue = formatNumber(numericValue)
-                  setDisplayValue(formattedValue)
-                  if (onBlur) {
-                      // Create a new event with the numeric value
-                      const syntheticEvent = {
-                          ...e,
-                          target: {
-                              ...e.target,
-                              value: numericValue.toString(),
-                          },
-                      }
-                      onBlur(syntheticEvent)
-                  }
-              }
-          },
-          [onBlur],
-      )
-
-      React.useEffect(() => {
-          if (value !== undefined) {
-              setDisplayValue(formatNumber(Number(value)))
+        if (!isNaN(numericValue)) {
+          const formattedValue = formatNumber(numericValue)
+          setDisplayValue(formattedValue)
+          if (onChange) {
+            onChange({
+              target: {
+                name: name || "",
+                value: numericValue,
+              },
+            } as unknown as React.ChangeEvent<HTMLInputElement>)
           }
-      }, [value])
+        } else {
+          setDisplayValue("")
+          if (onChange) {
+            onChange({
+              target: {
+                name: name || "",
+                value: "",
+              },
+            } as unknown as React.ChangeEvent<HTMLInputElement>)
+          }
+        }
+      },
+      [onChange, name],
+    )
 
-      return (
-          <Input
-              {...props}
-              ref={ref}
-              name={name}
-              value={displayValue}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              type="text"
-              inputMode="numeric"
-          />
-      )
+    const handleBlur = React.useCallback(
+      (e: React.FocusEvent<HTMLInputElement>) => {
+        const numericValue = Number(e.target.value.replace(/[^0-9]/g, ""))
+        if (!isNaN(numericValue)) {
+          const formattedValue = formatNumber(numericValue)
+          setDisplayValue(formattedValue)
+          if (onBlur) {
+            // Create a new event with the numeric value
+            const syntheticEvent = {
+              ...e,
+              target: {
+                ...e.target,
+                value: numericValue.toString(),
+              },
+            }
+            onBlur(syntheticEvent)
+          }
+        }
+      },
+      [onBlur],
+    )
+
+    React.useEffect(() => {
+      if (value !== undefined) {
+        setDisplayValue(formatNumber(Number(value)))
+      }
+    }, [value])
+
+    return (
+      <Input
+        {...props}
+        ref={ref}
+        name={name}
+        value={displayValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        type="text"
+        inputMode="numeric"
+      />
+    )
   },
 )
 

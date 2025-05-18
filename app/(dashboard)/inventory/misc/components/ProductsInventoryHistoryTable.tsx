@@ -22,17 +22,17 @@ interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ product }) => {
     return (
         <TableRow>
-            <TableCell>{product.id}</TableCell>
+             <TableCell className="">{formatDate(
+                new Date(product.create_date),
+                'dd/MMM/yyyy'
+            )}</TableCell>     
             <TableCell className="">{product.quantity_before}</TableCell>
             <TableCell className="">{product.quantity_changed}</TableCell>
             <TableCell className="">{product.quantity_after}</TableCell>
             <TableCell className="">{product.order_number || "-"}</TableCell>
             <TableCell className="">{product.action_display}</TableCell>
             <TableCell className="">{product.updated_by.name}</TableCell>
-            <TableCell className="">{formatDate(
-                new Date(product.create_date),
-                'dd/MMM/yyyy'
-            )}</TableCell>         
+               
            
         </TableRow>
     );
@@ -140,15 +140,13 @@ const ProductsInventoryHistoryTable: React.FC<ProductsInventoryHistoryTableTable
                     <Table>
                         <TableHeader>
                             <TableRow>
-                       
-                                <TableHead>#</TableHead>
-                                <TableHead>Quantity Before</TableHead>
-                                <TableHead>Quantity Used</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>In Stock</TableHead>
+                                <TableHead>Quantity Out</TableHead>
                                 <TableHead>Quantity After</TableHead>
                                 <TableHead>Order Number</TableHead>
                                 <TableHead>Type of Stock Update</TableHead>
                                 <TableHead>Staff Name</TableHead>
-                                <TableHead>Last Updated</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

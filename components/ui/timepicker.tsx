@@ -22,6 +22,7 @@ interface CustomTimePickerProps {
   errorMessage?: string
   errorMessageClass?: string
   containerClassName?: string
+  optional?: boolean
 }
 
 const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>(function CustomTimePicker({
@@ -33,6 +34,7 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
   errorMessage,
   errorMessageClass,
   containerClassName,
+  optional
 }: CustomTimePickerProps, ref) {
   const {
     field: { value, onChange },
@@ -110,6 +112,9 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
       {label && (
         <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={name}>
           {label}
+          {
+            !optional && <span className="text-red-400 font-medium"> *</span>
+          }
         </Label>
       )}
       <Popover>

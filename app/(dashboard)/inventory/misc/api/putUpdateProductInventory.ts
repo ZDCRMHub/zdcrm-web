@@ -7,7 +7,15 @@ type Props = {
         quantity: number;
     }
 }
-const mutateFn2 = async ({ id, data }: Props) => {
+type UpdateProductInventoryNameProps = {
+    id: number;
+    data: {
+        name: string;
+    }
+}
+
+
+const updateName = async ({ id, data }: UpdateProductInventoryNameProps) => {
     const res = await APIAxios.put(`/inventory/${id}/update-product-inventory/`, data)
     return res.data
 }
@@ -16,6 +24,25 @@ const mutateFn = async ({ id, data }: Props) => {
     return res.data
 }
 
+export const useUpdateProductInventoryName = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationKey: ['product-inventory-naem-update'],
+        mutationFn: updateName,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['product-inventory-details'] 
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['product-inventory-history'] 
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['product-inventory-list'] 
+            })
+           
+        },
+    })
+}
 export const useUpdateProductInventory = () => {
     const queryClient = useQueryClient()
     return useMutation({
