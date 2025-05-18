@@ -54,7 +54,7 @@ const CompleteOrderPage = () => {
                     <ProgressTimeline
                         orderId={order?.id}
                         orderNumber={order?.order_number}
-                        currentStatus={order?.delivery.status as "PND" | "DIS" | "DSC" | "DEL" | "CAN"}
+                        currentStatus={order?.delivery.status}
                         onDelivered={onDelivered}
                         order={order!}
                     />
