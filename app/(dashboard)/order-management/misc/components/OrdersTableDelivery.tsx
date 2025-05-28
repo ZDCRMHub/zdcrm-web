@@ -17,7 +17,7 @@ import { Button, LinkButton, Popover, PopoverContent, PopoverTrigger, Spinner } 
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
-import { ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
+import { ORDER_DELIVERY_STATUS_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { useUpdateOrderStatus } from '../api';
@@ -39,13 +39,14 @@ export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
     STD: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
 };
 
-
-interface CategoryBadgeProps {
-    category: string;
-    isActive: boolean;
-}
-
-
+export const ORDER_DELIVERY_STATUS_COLORS: Record<string, StatusColor> = {
+    PENDING: 'bg-purple-100 hover:bg-purple-100 text-purple-800',   
+    DISPATCHED: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
+    DISPATCHED_CL: 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
+    DELIVERED: 'bg-green-100 hover:bg-green-100 text-green-800',
+    DELIVERED_CL: 'bg-gray-100 hover:bg-gray-100 text-gray-800',
+    CANCELLED: 'bg-red-100 hover:bg-red-100 text-red-800',
+};
 
 interface OrderRowProps {
     order: TOrder;
@@ -104,17 +105,17 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     <PopoverTrigger className="flex items-center gap-1">
                         <Badge
                             className={cn(
-                                ORDER_STATUS_COLORS[order.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
+                                ORDER_DELIVERY_STATUS_COLORS[order.delivery.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
                                 'rounded-md w-max'
                             )}
                         >
-                            {ORDER_STATUS_ENUMS[order?.status!]}
+                            {ORDER_DELIVERY_STATUS_ENUMS[order?.delivery.status!]}
                         </Badge>
                         {
                             isUpdatingStatus && <Spinner size={18} />
                         }
                     </PopoverTrigger>
-                    <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
+                    {/* <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
                         {
                             [
                                 { value: "STD", label: "Sent to Dispatch" },
@@ -131,7 +132,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                                 </button>
                             ))
                         }
-                    </PopoverContent>
+                    </PopoverContent> */}
                 </Popover>
 
 

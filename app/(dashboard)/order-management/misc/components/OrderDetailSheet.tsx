@@ -89,7 +89,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
           toast.success("Order status updated successfully");
           refetchDetailsAndList();
           if (new_status == "STD") {
-            router.push("/order-management/delivery")
+            router.push(`/order-management/orders/${default_order?.id}/confirm-delivery`)
           }
           else if (new_status == "COM" || new_status == "CAN") {
             router.push("/order-management/order-history")

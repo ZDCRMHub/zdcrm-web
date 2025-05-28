@@ -41,7 +41,6 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
           )}
         </div>
       </TableCell>
-      <TableCell>{product.cost_price}</TableCell>
       <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
       <TableCell>{product.created_by.name}</TableCell>
       <TableCell>
@@ -89,7 +88,6 @@ const StoreInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoading
           <TableRow>
             <TableHead>Product Name</TableHead>
             <TableHead>Stock Quantity</TableHead>
-            <TableHead>Cost Price/Unit</TableHead>
             <TableHead>Last Updated</TableHead>
             {/* <TableHead>Updated By</TableHead> */}
             <TableHead></TableHead>

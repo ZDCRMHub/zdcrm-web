@@ -165,7 +165,7 @@ const OrdeManagementDelivery = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col space-y-8 p-5 rounded-2xl'>
           <Input
-            label='Driver Name*'
+            label='Driver Name'
             type='text'
             placeholder='Enter driver name'
             className='w-full focus:border min-w-[350px] text-xs'
@@ -175,7 +175,7 @@ const OrdeManagementDelivery = () => {
             defaultValue={order?.delivery?.driver_name ?? ""}
           />
           <Input
-            label='Phone Number *'
+            label='Phone Number'
             type='text'
             placeholder='Enter driver phone number'
             className='w-full focus:border min-w-[350px] text-xs'
@@ -186,7 +186,7 @@ const OrdeManagementDelivery = () => {
           />
 
           <Input
-            label='Delivery Platform *'
+            label='Delivery Platform'
             type='text'
             placeholder='Enter delivery platform'
             className='w-full focus:border min-w-[350px] text-xs'
@@ -196,18 +196,17 @@ const OrdeManagementDelivery = () => {
             defaultValue={order?.delivery?.delivery_platform ?? ""}
           />
           <AmountInput
-            label='Delivery Expense *'
+            label='Delivery Expense'
             type='text'
             placeholder='Enter delivery expense'
             className='w-full focus:border min-w-[350px] text-xs'
             {...register('delivery_expense')}
             hasError={!!errors.delivery_expense}
             errorMessage={errors.delivery_expense?.message}
-          // defaultValue={order?.delivery?.delivery_expense}
           />
 
           <Input
-            label='Tracking Link *'
+            label='Tracking Link'
             type='text'
             placeholder='Enter tracking link e.g. https://zuzutracker.com/Ioh7MvW'
             className='w-full focus:border min-w-[350px] text-xs'

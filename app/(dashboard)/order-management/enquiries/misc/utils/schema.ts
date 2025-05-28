@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MAX_FILE_SIZE } from "../../../misc/utils/schema";
+import { ZONES_OPTIONS } from "@/constants";
 
 const propertiesSchema = z.object({
     layers: z.string().optional(),
@@ -141,7 +142,10 @@ export const NewEnquirySchema = z.object({
         email: z.string().optional()
     }),
     delivery: z.object({
-        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        zone: z.enum(
+            ZONES_OPTIONS.map(zone => zone.value) as [string, ...string[]],
+            { message: "Delivery zone is required" }
+        ),
         note: z.string().optional(),
         delivery_time: z.string().optional(),
         // residence_type: z.enum(["Home", "Office "], { message: "Delivery type is required" }).optional(),

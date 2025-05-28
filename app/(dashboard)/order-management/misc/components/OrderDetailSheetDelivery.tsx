@@ -252,7 +252,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                   <header className="flex items-center justify-between border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
                       <Notepad2 size={19} />
-                      Delivery Note
+                      Message on Order
                       <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                     </p>
 
@@ -260,7 +260,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       variant="yellow"
                       onClick={() => printNote(
                         {
-                          note: order?.delivery.note || '',
+                          note: order?.message || '',
                           orderNumber: order?.order_number,
                           title: "Order Notes",
                         }

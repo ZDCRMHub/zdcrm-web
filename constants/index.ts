@@ -153,6 +153,15 @@ export const ORDER_STATUS_ENUMS: Record<string, string> = {
 }
 
 
+export const ORDER_DELIVERY_STATUS_ENUMS: Record<string, string> = {
+  "PENDING": "PENDING",
+  "DISPATCHED": "DISPATCHED",
+  "DISPATCHED_CL": "DISPATCHED CLIENT NOTIFIED",
+  "DELIVERED": "DELIVERED",
+  "DELIVERED_CL": "DELIVERED CLIENT NOTIFIED",
+  "CANCELLED": "CANCELLED",
+}
+
 
 
 export const PRODUCT_CATEGORIES_OPTIONS = [
@@ -223,19 +232,19 @@ export const ZONES_OPTIONS = [
     label: "Lagos Mainland",
   },
   {
-    value: "LAGOS_CENTRAL",
+    value: "LC",
     label: "Lagos Central",
   },
   {
-    value: "LAGOS_ISLAND",
+    value: "LI",
     label: "Lagos Island",
   },
   {
-    value: "OTHERS",
+    value: "OT",
     label: "Others",
   },
   {
-    value: "NO_DESTINATION",
+    value: "ND",
     label: "No Destination",
   },
 ]

@@ -38,13 +38,7 @@ const itemSchema = z.object({
 }).superRefine((data, ctx) => {
     if (data.is_custom_order) {
 
-        if (!data.custom_image) {
-            throw z.ZodError.create([{
-                path: ['custom_image'],
-                message: 'Please select a file.',
-                code: 'custom',
-            }]);
-        }
+
 
         if (!data.custom_image.type.startsWith('image/')) {
             throw z.ZodError.create([{
@@ -111,8 +105,14 @@ export const NewOrderSchema = z.object({
     }),
 
     delivery: z.object({
-        residence_type: z.string({ required_error: "Delivery type is required" }),
-        zone: z.enum(["LM", "LC", "LI", "ND"], { message: "Delivery zone is required" }),
+    residence_type: z.string({ required_error: "Delivery type is required" }),
+        zone: z.enum([
+            "LM",
+            "LC",
+            "LI",
+            "OT",
+            "ND"
+        ], { message: "Delivery zone is required" }),
         note: z.string().optional(),
         delivery_time: z.string(),
         delivery_date: z.string({ message: "Delivery date is required" }),
