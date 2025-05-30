@@ -12,6 +12,7 @@ const fetchAllProducts = async (
   if (params.size) queryParams.append("size", params.size.toString());
   if (params.search) queryParams.append("search", params.search);
   if (params.category) queryParams.append("category", params.category);
+  if (params.branch) queryParams.append("branch", params.branch.toString());
   if (params.is_active !== undefined)
     queryParams.append("is_active", params.is_active.toString());
 

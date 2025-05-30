@@ -22,18 +22,19 @@ interface OrderRowProps {
 const OrderRow: React.FC<OrderRowProps> = ({ product }) => {
     return (
         <TableRow>
-             <TableCell className="">{formatDate(
+            <TableCell className="">{formatDate(
                 new Date(product.create_date),
                 'dd/MMM/yyyy'
-            )}</TableCell>     
+            )}</TableCell>
+            <TableCell className="">{product.action_display}</TableCell>
             <TableCell className="">{product.quantity_before}</TableCell>
-            <TableCell className="">{product.quantity_changed}</TableCell>
+            <TableCell className="">{product.quantity_changed.toString().includes("-") ? 0 : product.quantity_changed}</TableCell>
+            <TableCell className="">{product.quantity_changed.toString().includes("-") ? product.quantity_changed : 0}</TableCell>
             <TableCell className="">{product.quantity_after}</TableCell>
             <TableCell className="">{product.order_number || "-"}</TableCell>
-            <TableCell className="">{product.action_display}</TableCell>
             <TableCell className="">{product.updated_by.name}</TableCell>
-               
-           
+
+
         </TableRow>
     );
 };
@@ -104,7 +105,7 @@ const ProductsInventoryHistoryTable: React.FC<ProductsInventoryHistoryTableTable
 
     return (
         <div className="relative h-[93%]">
-             <div className="flex items-center gap-4 h-3">
+            <div className="flex items-center gap-4 h-3">
                 <div className={cn('overflow-hidden rounded-full mb-1 grow')}>
                     <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
                         <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
@@ -141,11 +142,12 @@ const ProductsInventoryHistoryTable: React.FC<ProductsInventoryHistoryTableTable
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Date</TableHead>
-                                <TableHead>In Stock</TableHead>
+                                <TableHead>Type of Stock Update</TableHead>
+                                <TableHead>Quantity Before</TableHead>
+                                <TableHead>Quantity In</TableHead>
                                 <TableHead>Quantity Out</TableHead>
                                 <TableHead>Quantity After</TableHead>
                                 <TableHead>Order Number</TableHead>
-                                <TableHead>Type of Stock Update</TableHead>
                                 <TableHead>Staff Name</TableHead>
                             </TableRow>
                         </TableHeader>

@@ -101,8 +101,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
     });
 
 
-
-    const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
+    const calcucateItemAmount = React.useCallback((items: TOrderFormItem) => {
         const item = items?.[0];
         if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
@@ -119,57 +118,19 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             return acc + findItemPrice
         }, 0)
 
-
-        if (!item.category || !item.inventories) {
-            return 0;
-        } else {
-            const inventoriesIds = item.inventories?.map(inv => inv?.stock_inventory_id);
-            const allInventoriesSelected = inventoriesIds.every(inv => inv !== undefined);
-            if (!allInventoriesSelected) {
-                return 0;
-            } else {
-                const itemInventories = inventories?.filter(inv => inventoriesIds.includes(inv.id));
-
-                const selectedVariations = items.map(item => item.inventories.map(inv => inv?.variations?.map(variation => {
-                    const selected = itemInventories?.flatMap(inv =>
-                        inv.variations.find(varr => variation.stock_variation_id == varr.id)
-                    );
-                    return { id: variation.stock_variation_id, quantity: variation.quantity, cost_price: selected?.[0]?.cost_price || 0 };
-                }))).flat(2);
-
-                console.log("selectedVariations", selectedVariations);
-                console.log("form items", item);
-
-                const totalVariationCost = selectedVariations.reduce((acc, variation) => {
-                    return acc + (Number(variation?.cost_price || '0') * (variation?.quantity || 1));
-                }, 0);
-
-                return ((totalVariationCost + propertiesCost) * item.quantity) + miscCost;
-            }
+        const selectedProduct = products?.find(product => product.id === item.product_id);
+        if (!item.category || !selectedProduct) {
+            return ((0 + propertiesCost) * item.quantity) + miscCost;
         }
-    }, [propertyOptions?.data]);
+        else {
+            const initialCostPrice = Number(selectedProduct?.variations?.find(variation => variation.id.toString() === item.product_variation_id)?.cost_price) || 0;
+            return ((initialCostPrice + propertiesCost) * item.quantity) + miscCost;
+        }
 
-    const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
-        const item = items?.[0];
-        if (!item) return 0;
-        const miscellaneous = item.miscellaneous || [];
-        const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
-        const allProperties = [
-            item?.properties?.bouquet,
-            item?.properties?.layers,
-            item?.properties?.glass_vase,
-            item?.properties?.toppings,
-            item?.properties?.whipped_cream_upgrade,
-        ]
-        console.log(allProperties, "PROPS")
-        const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
-            console.log(findItemPrice, "PRICES")
-            return acc + findItemPrice
-        }, 0)
 
-        return miscCost + propertiesCost
-    }, [propertyOptions?.data])
+    }, [propertyOptions?.data, products]);
+
+
 
     const [mockFlavor, setMockFlavor] = useState<Array<{ name: string; quantity: number }>>([]);
     const [mockSize, setMockSize] = useState<string>('')
@@ -567,14 +528,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             <span>Amount: </span>
                             <span>
                                 {
-                                    formatCurrency(
-                                        isStockInventory ?
-                                            calcucateStockItemAmount([watch(`items.${index}`)], stockInvetories?.data!)
-                                            :
-                                            isProductInventory ?
-                                                calculateProductItemAmount([watch(`items.${index}`)], productsInvetories?.data!)
-                                                :
-                                                0, "NGN")
+                                    formatCurrency(calcucateItemAmount([watch(`items.${index}`)]), "NGN")
                                 }
                             </span>
                         </p>

@@ -6,7 +6,7 @@ import { SearchIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { TProductInventoryItem } from '@/app/(dashboard)/inventory/misc/types/products';
+import { TProductInventoryItem, TProductVariation } from '@/app/(dashboard)/inventory/misc/types/products';
 import FormError from '@/components/ui/formError';
 
 
@@ -34,12 +34,16 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
 
     const [open, setOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
-    const [selectedInventory, setSelectedInventory] = useState<TProductInventoryItem | null>(null);
+    const [selectedInventory, setSelectedInventory] = useState<TProductInventoryItem | null>(null)
+    const [selectedVariation, setSelectedVariation] = useState<TProductVariation | null>(null);
     const [filteredOptions, setFilteredOptions] = useState(options);
 
-    const handleInventoryChange = (inventory: TProductInventoryItem | null) => {
-        setSelectedInventory(inventory);
-        setInventoryId(inventory?.id || 0);
+    const handleInventoryChange = (variation: TProductVariation | null) => {
+        setSelectedVariation(variation);
+        const selectedOption = options.find(option => option.variations.find(vari => vari.id === variation?.id));
+        setInventoryId(selectedOption?.id || 0);
+
+        // setInventoryId(variation?.id || 0);
     };
 
 
@@ -51,9 +55,11 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
         );
     }, [searchText, options]);
 
-    const handleSelect = (inventory: TProductInventoryItem) => {
-        setSelectedInventory(inventory);
-        handleInventoryChange(inventory);
+    const handleSelect = (variation: TProductVariation) => {
+        setSelectedVariation(variation);
+        const selectedOption = options.find(option => option.variations.find(vari => vari.id === variation.id));
+        setSelectedInventory(selectedOption || null);
+        handleInventoryChange(variation);
         setOpen(false);
     };
 
@@ -86,8 +92,8 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
                                         :
                                         options?.length === 0 ?
                                             "No inventory found" :
-                                            selectedInventory ?
-                                                selectedInventory.name
+                                            selectedVariation ?
+                                                `${selectedInventory?.name} - ${selectedVariation.size}`
                                                 :
                                                 "Select inventory"
                                 }
@@ -126,31 +132,38 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
                             <div className="grid grid-cols-2 xl:grid-cols-3 min-w-max h-max min-h-[16rem] max-h-[30rem] overflow-scroll overflow-y-auto">
                                 {
                                     filteredOptions?.map((option) => (
-                                        <button
-                                            className={cn("text-xs relative flex !flex-col select-none items-center rounded-md p-4 outline-none aria-selected:bg-blue-100/70 aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                                                "text-sm min-w-[150px] aspect-square w-max"
-                                            )}
-                                            key={option.id}
-                                            onClick={() => handleSelect(option)}
+                                        <>
 
-                                        >
-                                            <div className="relative bg-white-grey w-[150px] aspect-square rounded-xl">
-                                                {
-                                                    typeof option.image_one === 'string' ?
-                                                        <Image
-                                                            src={option.image_one as string}
-                                                            alt={option.name as string}
-                                                            className="w-full h-full object-cover text-xs"
-                                                            fill
-                                                        />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
-                                            <p className="text-[0.75rem] text-[#194A7A] pt-3 max-w-[130px]">
-                                                {option.name}
-                                            </p>
-                                        </button>
+                                            {
+                                                option.variations.map((variation) => (
+                                                    <button
+                                                        key={variation.id}
+                                                        className={cn(
+                                                            'flex flex-col items-center gap-2 p-2 hover:bg-gray-100 transition-colors',
+                                                            selectedVariation?.id === variation.id && 'bg-gray-200'
+                                                        )}
+                                                        onClick={() => handleSelect(variation)}
+                                                    >
+                                                        <div className="relative bg-white-grey w-[150px] aspect-square rounded-xl">
+                                                            {
+                                                                typeof option.image_one === 'string' ?
+                                                                    <Image
+                                                                        src={option.image_one as string}
+                                                                        alt={option.name as string}
+                                                                        className="w-full h-full object-cover text-xs"
+                                                                        fill
+                                                                    />
+                                                                    :
+                                                                    null
+                                                            }
+                                                        </div>
+
+                                                        <span className="text-xs">{option.name} - {variation.size}</span>
+                                                    </button>
+                                                ))
+                                            }
+
+                                        </>
                                     ))
                                 }
                             </div>

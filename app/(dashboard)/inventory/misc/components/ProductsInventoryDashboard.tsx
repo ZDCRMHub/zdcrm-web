@@ -121,6 +121,7 @@ export default function ProductsInventoryDashboard() {
               triggerColor='#8B909A'
               showSelectedValue={false}
             />
+            
             <SelectSingleCombo
               name='category-filter'
               options={categories?.map((category) => ({ value: category.id.toString(), label: category.name })) || []}

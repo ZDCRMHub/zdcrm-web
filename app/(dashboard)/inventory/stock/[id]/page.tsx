@@ -12,6 +12,7 @@ import { useBooleanStateControl } from "@/hooks";
 import { TStockVariation } from "../../misc/types/stock";
 import { SelectSingleCombo, Skeleton } from "@/components/ui";
 import Image from "next/image";
+import { useGetAllUsers } from "@/app/(dashboard)/admin/employees-role/misc/api";
 
 
 const InventoryDetailsPage = () => {
@@ -35,7 +36,12 @@ const InventoryDetailsPage = () => {
 
   const { data, isLoading, isFetching, refetch: refetchData } = useGetStockInventoryDetails(product_id)
   const [selectedVariant, setSelectedVariant] = useState<TStockVariation | undefined>(data?.variations.find(variation => variation.id.toString() == variation_id) || data?.variations[0]);
-  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch: refetchHistory } = useGetStockInventoryHistory(selectedVariant?.id)
+  const [selectedEmployee, setSelectedEmployee] = useState<string | undefined>("all");
+  const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch: refetchHistory } = useGetStockInventoryHistory(selectedVariant?.id, {
+    updated_by: selectedEmployee,
+  })
+  const { data: allEmployees } = useGetAllUsers()
+
 
   React.useEffect(() => {
     if (variation_id && data && !isLoading) {
@@ -118,7 +124,36 @@ const InventoryDetailsPage = () => {
 
 
       <section className="mt-16">
-        <h3 className="uppercase mb-[18px]">stock history</h3>
+        <header className= "flex items-center justify-between mb-6">
+          <h3 className="uppercase mb-[18px]">
+            stock history
+            <span className="text-sm text-[#8B909A] ml-2">Stock history for {data?.name} - {selectedVariant?.size || selectedVariant?.flavour || selectedVariant?.color} {data?.category.name == "Cake" ? "inches" : ""}</span>
+          </h3>
+
+          <div className="flex items-center gap-4 ">
+            <Button variant="outline" size="sm" onClick={refetch}>
+              Refresh
+            </Button>
+
+            {/* filtyer by employees */}
+            <SelectSingleCombo
+              options={[{ label: "All Employees", value: "all" }, ...(allEmployees?.data.map(employee => ({ value: employee.id, label: employee.name })) || [])]}
+              value={selectedEmployee}
+              onChange={(value) => {
+                setSelectedEmployee(value);
+                refetchHistory();
+              }}
+              labelKey={'label'}
+              valueKey={'value'}
+              name="employee"
+              placeholder="Filter by Employee"
+              containerClass="max-w-[300px] !h-9 !text-xs"
+              className="h-9"
+              size="sm"
+              
+            />
+          </div>
+        </header>
         <div className="px-6 bg-white md:p-10 rounded-[20px] border border-solid border-[#FCF0F2] mb-14">
           <ProductsInventoryHistoryTable
             data={historyData?.data!}

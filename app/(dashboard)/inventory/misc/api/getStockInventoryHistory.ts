@@ -33,16 +33,28 @@ interface Updatedby {
   phone: string;
   image: null;
 }
+interface TFetchOptions {
+  updated_by?: number | string;
+  action?: string;
+}
+const fetchDetails = async (id: string | number, fetchOptions?: TFetchOptions): Promise<RootObject> => {
 
-const fetchDetails = async (id: string | number): Promise<RootObject> => {
-    const res = await APIAxios.get(`/inventory/${id}/stock-variation-history`)
-    return res.data
+  const params = new URLSearchParams();
+  if (fetchOptions?.updated_by) {
+    if (fetchOptions.updated_by !== "all") params.append('updated_by', fetchOptions.updated_by.toString())
+  };
+  if (fetchOptions?.action) params.append('action', fetchOptions.action.toString());
+
+  const res = await APIAxios.get(`/inventory/${id}/stock-variation-history`, {
+    params
+  })
+  return res.data
 }
 
-export const useGetStockInventoryHistory = (id?: string | number) => {
-    return useQuery({
-        queryKey: ['stock-inventory-history', id],
-        queryFn: () => fetchDetails(id!),
-        enabled: !!id
-    })
+export const useGetStockInventoryHistory = (id?: string | number, fetchOptions?: TFetchOptions) => {
+  return useQuery({
+    queryKey: ['stock-inventory-history', id],
+    queryFn: () => fetchDetails(id!, fetchOptions),
+    enabled: !!id
+  })
 }

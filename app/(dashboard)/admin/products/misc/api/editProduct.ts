@@ -26,3 +26,26 @@ export const useUpdateProduct = () => {
     })
 }
 
+
+interface UpdateProductVariationStatusParams {
+    id: number
+}
+
+const updateProductVariationStatus = async ({ id }: UpdateProductVariationStatusParams) => {
+  const res = await APIAxios.put(`/inventory/${id}/toggle-product-variation-status/`)
+  return res.data?.data
+}
+
+export const useUpdateProductVariationStatus = () => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationKey: ['UPDATE_PRODUCT_VARTION_STATUS'],
+        mutationFn: updateProductVariationStatus,
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['GET_ALL_PRODUCTS']
+            })
+        },
+    })
+}
+
