@@ -1,41 +1,36 @@
 export const printNote = (options: {
-  note: string;
-  title?: string;
-  orderNumber?: string;
-  additionalInfo?: Record<string, string>;
+  note: string
+  title?: string
+  orderNumber?: string
+  additionalInfo?: Record<string, string>
 }) => {
-  const {
-    note,
-    title = "Note",
-    orderNumber,
-    additionalInfo = {}
-  } = options;
-  
+  const { note, title = "Note", orderNumber, additionalInfo = {} } = options
+
   // Create a new window for printing
-  const printWindow = window.open('', '_blank');
-  
+  const printWindow = window.open("", "_blank")
+
   if (!printWindow) {
-    alert('Please allow popups to print notes');
-    return;
+    alert("Please allow popups to print notes")
+    return
   }
-  
+
   // Format the current date
-  const currentDate = new Date().toLocaleDateString();
-  
+  const currentDate = new Date().toLocaleDateString()
+
   // Create the content to print
-  const noteContent = note || "No note provided";
-  
+  const noteContent = note || "No note provided"
+
   // Generate additional info HTML if provided
-  const additionalInfoHTML = Object.entries(additionalInfo).map(([key, value]) =>
-    `<div class="info-row"><strong>${key}:</strong> ${value}</div>`
-  ).join('');
-  
+  const additionalInfoHTML = Object.entries(additionalInfo)
+    .map(([key, value]) => `<div class="info-row"><strong>${key}:</strong> ${value}</div>`)
+    .join("")
+
   // Write the HTML content to the new window
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
       <head>
-        <title>${title}${orderNumber ? ` - Order #${orderNumber}` : ''}</title>
+        <title>${title}${orderNumber ? ` - Order #${orderNumber}` : ""}</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
@@ -128,6 +123,7 @@ export const printNote = (options: {
             background-color: #f9fafb;
             flex-wrap: wrap;
             gap: 4px;
+            position: relative;
           }
           .toolbar-button {
             width: 32px;
@@ -141,6 +137,10 @@ export const printNote = (options: {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+          }
+          .toolbar-button:hover {
+            background-color: #f3f4f6;
           }
           .toolbar-button.active {
             background-color: #e5e7eb;
@@ -151,24 +151,31 @@ export const printNote = (options: {
             background-color: #e5e7eb;
             margin: 0 4px;
           }
-          .color-button {
-            position: relative;
-          }
-          .color-dropdown {
+          .dropdown {
             position: absolute;
             top: 100%;
             left: 0;
             background: white;
             border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 8px;
+            padding: 4px;
             display: none;
-            z-index: 10;
-            width: 150px;
+            z-index: 1000;
+            min-width: 120px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 2px;
           }
-          .color-dropdown.show {
+          .dropdown.show {
             display: block;
+          }
+          .dropdown-item {
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 2px;
+            white-space: nowrap;
+          }
+          .dropdown-item:hover {
+            background-color: #f3f4f6;
           }
           .color-option {
             width: 24px;
@@ -177,6 +184,7 @@ export const printNote = (options: {
             border-radius: 2px;
             cursor: pointer;
             display: inline-block;
+            border: 1px solid #ddd;
           }
           .ProseMirror {
             padding: 16px;
@@ -204,21 +212,22 @@ export const printNote = (options: {
             }
             .tiptap-toolbar, 
             .button-container,
-            .footer {
+            .footer,
+            .no-print {
               display: none !important;
             }
           }
         </style>
       </head>
       <body>
-        <div class="header">
-          <h2>${title}${orderNumber ? ` - Order #${orderNumber}` : ''}</h2>
+        <div class="header no-print">
+          <h2>${title}${orderNumber ? ` - Order #${orderNumber}` : ""}</h2>
           <p>Date: ${currentDate}</p>
         </div>
         
         <div id="editor-container" class="note-container"></div>
         
-        ${additionalInfoHTML ? `<div class="additional-info">${additionalInfoHTML}</div>` : ''}
+        ${additionalInfoHTML ? `<div class="additional-info">${additionalInfoHTML}</div>` : ""}
         
         <div class="footer">
           <p>This document was automatically generated.</p>
@@ -234,6 +243,8 @@ export const printNote = (options: {
         </div>
         
         <script>
+          let currentEditor = null;
+          
           // A simplified version of RTE for the print preview window
           document.addEventListener('DOMContentLoaded', function() {
             // Initialize a basic RTE
@@ -243,126 +254,180 @@ export const printNote = (options: {
             const toolbar = document.createElement('div');
             toolbar.className = 'tiptap-toolbar';
             
-            // Define toolbar buttons with Font Awesome icons
-            const buttons = [
-              { id: 'bold', icon: 'fa-bold', title: 'Bold' },
-              { id: 'italic', icon: 'fa-italic', title: 'Italic' },
-              { id: 'underline', icon: 'fa-underline', title: 'Underline' },
-              { separator: true },
-              { id: 'align-left', icon: 'fa-align-left', title: 'Align Left' },
-              { id: 'align-center', icon: 'fa-align-center', title: 'Align Center' },
-              { id: 'align-right', icon: 'fa-align-right', title: 'Align Right' },
-              { separator: true },
-              { id: 'bullet-list', icon: 'fa-list-ul', title: 'Bullet List' },
-              { id: 'ordered-list', icon: 'fa-list-ol', title: 'Ordered List' },
-              { separator: true },
-              { id: 'text-color', icon: 'fa-palette', title: 'Text Color', isColorPicker: true }
-            ];
-            
             // Create the editor content area
             const contentArea = document.createElement('div');
-            contentArea.className = 'tiptap-editor';
-            contentArea.contentEditable = true;
             contentArea.className = 'ProseMirror';
+            contentArea.contentEditable = true;
             contentArea.innerHTML = \`${noteContent}\`;
+            currentEditor = contentArea;
             
-            // Color options
-            const textColors = [
-              { color: '#000000', name: 'Black' },
-              { color: '#FF0000', name: 'Red' },
-              { color: '#0000FF', name: 'Blue' },
-              { color: '#008000', name: 'Green' },
-              { color: '#FFA500', name: 'Orange' },
-              { color: '#800080', name: 'Purple' },
-              { color: '#A52A2A', name: 'Brown' },
-              { color: '#808080', name: 'Gray' }
+            // Font size button
+            const fontSizeBtn = createToolbarButton('fa-text-height', 'Font Size');
+            const fontSizeDropdown = document.createElement('div');
+            fontSizeDropdown.className = 'dropdown';
+            
+            const fontSizes = [
+              { label: '10px', value: '10px' },
+              { label: '12px', value: '12px' },
+              { label: '14px', value: '14px' },
+              { label: '16px', value: '16px' },
+              { label: '18px', value: '18px' },
+              { label: '20px', value: '20px' },
+              { label: '24px', value: '24px' },
+              { label: '28px', value: '28px' },
+              { label: '32px', value: '32px' },
+              { label: '36px', value: '36px' }
             ];
             
-            // Add buttons to toolbar
-            buttons.forEach(btn => {
-              if (btn.separator) {
-                const sep = document.createElement('div');
-                sep.className = 'toolbar-separator';
-                toolbar.appendChild(sep);
-              } else {
-                const button = document.createElement('button');
-                button.className = 'toolbar-button';
-                if (btn.isColorPicker) button.className += ' color-button';
-                
-                button.setAttribute('type', 'button');
-                button.title = btn.title;
-                
-                // Create icon element
-                const icon = document.createElement('i');
-                icon.className = 'fas ' + btn.icon;
-                button.appendChild(icon);
-                
-                button.id = 'btn-' + btn.id;
-                
-                if (btn.isColorPicker) {
-                  // Create color dropdown
-                  const dropdown = document.createElement('div');
-                  dropdown.className = 'color-dropdown';
-                  
-                  textColors.forEach(colorOption => {
-                    const colorBtn = document.createElement('div');
-                    colorBtn.className = 'color-option';
-                    colorBtn.style.backgroundColor = colorOption.color;
-                    colorBtn.title = colorOption.name;
-                    colorBtn.onclick = function() {
-                      document.execCommand('foreColor', false, colorOption.color);
-                      dropdown.classList.remove('show');
-                    };
-                    dropdown.appendChild(colorBtn);
-                  });
-                  
-                  button.appendChild(dropdown);
-                  
-                  // Toggle dropdown visibility
-                  button.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    dropdown.classList.toggle('show');
-                  });
-                  
-                  // Close dropdown when clicking elsewhere
-                  document.addEventListener('click', function() {
-                    dropdown.classList.remove('show');
-                  });
-                } else {
-                  // Add basic formatting functionality
-                  button.addEventListener('click', function() {
-                    document.execCommand(getCommand(btn.id), false, null);
-                    
-                    // Toggle active state for alignment buttons
-                    if (btn.id.startsWith('align-')) {
-                      const alignButtons = toolbar.querySelectorAll('button[id^="btn-align-"]');
-                      alignButtons.forEach(btn => btn.classList.remove('active'));
-                      button.classList.add('active');
-                    } else if (!btn.id.includes('list')) {
-                      // Toggle active state for other buttons except lists
-                      button.classList.toggle('active');
-                    }
-                  });
-                }
-                
-                toolbar.appendChild(button);
-              }
+            fontSizes.forEach(size => {
+              const item = document.createElement('div');
+              item.className = 'dropdown-item';
+              item.textContent = size.label;
+              item.style.fontSize = size.value;
+              item.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                applyFontSize(size.value);
+                fontSizeDropdown.classList.remove('show');
+              });
+              fontSizeDropdown.appendChild(item);
             });
             
-            // Helper function to map buttons to execCommand actions
-            function getCommand(id) {
-              const commands = {
-                'bold': 'bold',
-                'italic': 'italic',
-                'underline': 'underline',
-                'align-left': 'justifyLeft',
-                'align-center': 'justifyCenter',
-                'align-right': 'justifyRight',
-                'bullet-list': 'insertUnorderedList',
-                'ordered-list': 'insertOrderedList'
-              };
-              return commands[id] || id;
+            fontSizeBtn.appendChild(fontSizeDropdown);
+            fontSizeBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              closeAllDropdowns();
+              fontSizeDropdown.classList.toggle('show');
+            });
+            
+            toolbar.appendChild(fontSizeBtn);
+            toolbar.appendChild(createSeparator());
+            
+            // Other buttons
+            toolbar.appendChild(createFormatButton('fa-bold', 'Bold', 'bold'));
+            toolbar.appendChild(createFormatButton('fa-italic', 'Italic', 'italic'));
+            toolbar.appendChild(createFormatButton('fa-underline', 'Underline', 'underline'));
+            toolbar.appendChild(createSeparator());
+            
+            toolbar.appendChild(createFormatButton('fa-align-left', 'Align Left', 'justifyLeft'));
+            toolbar.appendChild(createFormatButton('fa-align-center', 'Align Center', 'justifyCenter'));
+            toolbar.appendChild(createFormatButton('fa-align-right', 'Align Right', 'justifyRight'));
+            toolbar.appendChild(createSeparator());
+            
+            toolbar.appendChild(createFormatButton('fa-list-ul', 'Bullet List', 'insertUnorderedList'));
+            toolbar.appendChild(createFormatButton('fa-list-ol', 'Ordered List', 'insertOrderedList'));
+            toolbar.appendChild(createSeparator());
+            
+            // Color picker
+            const colorBtn = createToolbarButton('fa-palette', 'Text Color');
+            const colorDropdown = document.createElement('div');
+            colorDropdown.className = 'dropdown';
+            colorDropdown.style.width = '160px';
+            
+            const colors = [
+              '#000000', '#FF0000', '#0000FF', '#008000', 
+              '#FFA500', '#800080', '#A52A2A', '#808080'
+            ];
+            
+            colors.forEach(color => {
+              const colorOption = document.createElement('div');
+              colorOption.className = 'color-option';
+              colorOption.style.backgroundColor = color;
+              colorOption.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                document.execCommand('foreColor', false, color);
+                colorDropdown.classList.remove('show');
+              });
+              colorDropdown.appendChild(colorOption);
+            });
+            
+            colorBtn.appendChild(colorDropdown);
+            colorBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              closeAllDropdowns();
+              colorDropdown.classList.toggle('show');
+            });
+            
+            toolbar.appendChild(colorBtn);
+            
+            // Helper functions
+            function createToolbarButton(iconClass, title) {
+              const button = document.createElement('button');
+              button.className = 'toolbar-button';
+              button.title = title;
+              button.type = 'button';
+              
+              const icon = document.createElement('i');
+              icon.className = 'fas ' + iconClass;
+              button.appendChild(icon);
+              
+              return button;
             }
+            
+            function createFormatButton(iconClass, title, command) {
+              const button = createToolbarButton(iconClass, title);
+              button.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                document.execCommand(command, false, null);
+              });
+              return button;
+            }
+            
+            function createSeparator() {
+              const sep = document.createElement('div');
+              sep.className = 'toolbar-separator';
+              return sep;
+            }
+            
+            function applyFontSize(size) {
+              const selection = window.getSelection();
+              if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                if (!range.collapsed) {
+                  // Text is selected
+                  const span = document.createElement('span');
+                  span.style.fontSize = size;
+                  try {
+                    range.surroundContents(span);
+                  } catch (e) {
+                    // If surroundContents fails, extract and wrap content
+                    const contents = range.extractContents();
+                    span.appendChild(contents);
+                    range.insertNode(span);
+                  }
+                  selection.removeAllRanges();
+                  const newRange = document.createRange();
+                  newRange.selectNodeContents(span);
+                  selection.addRange(newRange);
+                } else {
+                  // No text selected, set font size for future typing
+                  document.execCommand('fontSize', false, '3');
+                  const fontElements = currentEditor.querySelectorAll('font[size="3"]');
+                  const lastFont = fontElements[fontElements.length - 1];
+                  if (lastFont) {
+                    lastFont.style.fontSize = size;
+                    lastFont.removeAttribute('size');
+                  }
+                }
+              }
+            }
+            
+            function closeAllDropdowns() {
+              document.querySelectorAll('.dropdown.show').forEach(dropdown => {
+                dropdown.classList.remove('show');
+              });
+            }
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(e) {
+              if (!e.target.closest('.toolbar-button')) {
+                closeAllDropdowns();
+              }
+            });
             
             // Create editor container with toolbar
             const editorWrapper = document.createElement('div');
@@ -386,9 +451,9 @@ export const printNote = (options: {
         </script>
       </body>
     </html>
-  `);
-  
+  `)
+
   // Close document writing and focus the window
-  printWindow.document.close();
-  printWindow.focus();
-};
+  printWindow.document.close()
+  printWindow.focus()
+}
