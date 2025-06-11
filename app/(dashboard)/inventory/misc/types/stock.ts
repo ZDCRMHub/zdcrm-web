@@ -29,21 +29,6 @@ export interface TStockVariation {
   update_date: string;
 }
 
-
-
-interface Variation {
-  id: number;
-  size: null | string;
-  color: null | string;
-  flavour: null;
-  selling_price: string;
-  cost_price: string;
-  quantity: number;
-  last_updated_by: number;
-  create_date: string;
-  update_date: string;
-}
-
 export interface Createdby {
   id: number;
   email: string;

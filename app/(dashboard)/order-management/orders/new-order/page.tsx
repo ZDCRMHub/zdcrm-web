@@ -109,9 +109,7 @@ const NewOrderPage = () => {
       product_variation_id: '',
       quantity: 1,
       properties: {},
-      inventories: [{
-        variations: [],
-      }],
+      inventories: [],
     });
   };
 

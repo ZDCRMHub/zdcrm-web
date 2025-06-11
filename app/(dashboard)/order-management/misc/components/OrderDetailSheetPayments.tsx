@@ -380,6 +380,15 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     />
                   }
 
+                  {
+                    order?.payment_proof &&
+                    <div className="mt-4">
+                      <p className="text-[#687588] font-manrope text-sm mb-2">Payment Proof:</p>
+                      <a href={order?.payment_proof} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        View Payment Proof
+                      </a>
+                    </div>
+                  }
 
                 </section>
 

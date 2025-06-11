@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFieldArray, UseFormWatch, Control, UseFormSetValue, FieldErrors } from "react-hook-form";
 import { TrashIcon, XIcon } from 'lucide-react';
 
@@ -18,7 +18,7 @@ import { useGetPropertyOptions } from '../api';
 import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 import SelectMultiCombo from '@/components/ui/selectMultipleSpecialCombo';
 import ProductSelector from './OrderFormProductSelector';
-import OrderFormStockInventorySelector from './OrderFormStockInventorySelector';
+import OrderFormStockInventorySelector, { orderItemType } from './OrderFormStockInventorySelector';
 
 
 interface OrderItemsSectionProps {
@@ -66,7 +66,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
         control,
         name: `items`
     });
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove, } = useFieldArray({
         control,
         name: `items.${index}.inventories`
     });
@@ -123,10 +123,17 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             const initialCostPrice = Number(selectedProduct?.variations?.find(variation => variation.id.toString() === item.product_variation_id)?.cost_price) || 0;
             return ((initialCostPrice + propertiesCost) * item.quantity) + miscCost;
         }
-
-
     }, [propertyOptions?.data, products]);
 
+
+    useEffect(() => {
+        setValue(`items.${index}.inventories`, [{
+            message: '',
+            instruction: '',
+            quantity_used: 0,
+            variations: [],
+        }]);
+    }, [selectedCategory])
 
 
 
@@ -208,13 +215,41 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                 'Select product' :
                                                 'Select category first'
                                     }
-                                    isLoadingOptions={productsLoading}
+                                    isLoadingOptions={productsLoading || productsFetching}
                                     hasError={!!errors.items?.[index]?.product_id}
                                     errorMessage={errors.items?.[index]?.product_id?.message}
                                 />
                             )}
                         />
 
+
+                        {
+                            isStockInventory ?
+                                <OrderFormStockInventorySelector
+                                    inventories={watch(`items.${index}.inventories`)}
+                                    setInventories={(inventories) => setValue(`items.${index}.inventories`, inventories as orderItemType['inventories'])}
+                                    options={stockInvetories?.data!}
+                                    disabled={stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
+                                    isLoadingOptions={stockInventoriesLoading}
+                                    isFetchingOptions={stockInventoriesFetching}
+                                    errorMessage={errors.items?.[index]?.message}
+                                    hasError={!!errors.items?.[index]}
+                                />
+                                :
+                                isProductInventory ?
+                                    <OrderFormProductInventorySelector
+                                        inventories={watch(`items.${index}.inventories`)}
+                                        setInventories={(inventories) => setValue(`items.${index}.inventories`, inventories as orderItemType['inventories'])}
+                                        options={productsInvetories?.data!}
+                                        disabled={productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
+                                        isLoadingOptions={productInventoriesLoading}
+                                        isFetchingOptions={productInventoriesFetching}
+                                        errorMessage={errors.items?.[index]?.inventories?.message}
+                                        hasError={!!errors.items?.[index]?.inventories}
+                                    />
+                                    :
+                                    null
+                        }
                         {
                             selectedCategory &&
                             <>
@@ -224,47 +259,10 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 {/* /////////////                    STOCK INVENTORY                 //////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
-
-
-
-
                                 {
 
                                     isStockInventory &&
                                     <>
-
-
-                                        {
-                                            fields.map((_, invIndex) => (
-                                                <React.Fragment key={invIndex}>
-                                                    {
-                                                        watchedInventories.map((_, invIndex) =>
-
-                                                            <React.Fragment key={invIndex}>
-                                                                <OrderFormStockInventorySelector
-                                                                    inventoryId={watch(`items.${index}.inventories.${invIndex}.stock_inventory_id`)}
-                                                                    setInventoryId={(inventoryId) => {
-                                                                        setValue(`items.${index}.inventories.${invIndex}.stock_inventory_id`, inventoryId);
-                                                                    }}
-                                                                    category={categoryName}
-                                                                    options={stockInvetories?.data!}
-                                                                    disabled={stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
-                                                                    isLoadingOptions={stockInventoriesLoading}
-                                                                    isFetchingOptions={stockInventoriesFetching}
-                                                                    errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id?.message}
-                                                                    hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id}
-                                                                />
-
-
-
-                                                            </React.Fragment>
-                                                        )
-                                                    }
-                                                </React.Fragment>
-
-                                            ))
-                                        }
-
                                         {
                                             categoryName === 'Cake' && (
                                                 <>
@@ -310,7 +308,6 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
 
                                                 </>
-
                                             )
                                         }
                                         {
@@ -357,7 +354,6 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
 
 
                                                 </>
-
                                             )
                                         }
 
@@ -413,51 +409,24 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 {/* /////////////                    PRODUCT INVENTORY                 //////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {
-                                    !isStockInventory && !isComboItem && fields.map((_, invIndex) => (
-                                        <React.Fragment key={invIndex}>
-                                            {
-                                                watchedInventories.map((_, invIndex) =>
 
-                                                    <React.Fragment key={invIndex}>
-                                                        <OrderFormProductInventorySelector
-                                                            inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
-                                                            setInventoryId={(inventoryId) => {
-                                                                setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
-                                                            }}
-                                                            options={productsInvetories?.data!}
-                                                            disabled={productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
-                                                            isLoadingOptions={productInventoriesLoading}
-                                                            isFetchingOptions={productInventoriesFetching}
-                                                            errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
-                                                            hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
-                                                        />
-
-                                                        <FormField
-                                                            control={control}
-                                                            name={`items.${index}.inventories.${0}.instruction`}
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormControl>
-                                                                        <Input
-                                                                            label="Instruction"
-                                                                            placeholder='Enter instruction'
-                                                                            {...field}
-                                                                            hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.instruction}
-                                                                            errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.instruction?.message}
-                                                                        />
-                                                                    </FormControl>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-
-                                                    </React.Fragment>
-                                                )
-                                            }
-                                        </React.Fragment>
-
-                                    ))
-                                }
+                                <FormField
+                                    control={control}
+                                    name={`items.${index}.inventories.${0}.instruction`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    label="Instruction"
+                                                    placeholder='Enter instruction'
+                                                    {...field}
+                                                    hasError={!!errors.items?.[index]?.inventories}
+                                                    errorMessage={errors.items?.[index]?.inventories?.message}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                             </>
                         }
 

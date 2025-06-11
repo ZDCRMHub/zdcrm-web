@@ -9,9 +9,19 @@ const propertiesSchema = z.object({
 }).optional();
 
 const variationSchema = z.object({
-    stock_variation_id: z.number(),
+    stock_variation_id: z.number().optional(),
+    product_inventory_variation_id: z.number().optional(),
     quantity: z.number().min(1)
-});
+}).superRefine((data, ctx) => {
+    if (!data.stock_variation_id && !data.product_inventory_variation_id) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Either stock variation ID or product inventory variation ID is required",
+            path: ['stock_variation_id', 'product_inventory_variation_id']
+        });
+    }
+    return true;
+})
 
 const inventorySchema = z.object({
     stock_inventory_id: z.number().optional(),
@@ -19,10 +29,10 @@ const inventorySchema = z.object({
     message: z.string().optional(),
     instruction: z.string().optional(),
     quantity_used: z.number().optional(),
-    variations: z.array(variationSchema).optional(),
+    variations: z.array(variationSchema),
 }).nullable();
 
-const itemSchema = z.object({
+export const orderItemSchema = z.object({
     category: z.number({ message: "Category is required" }),
     product_id: z.number({ message: "Product Name is required" }),
     product_variation_id: z.string().min(1, { message: "Product Variation is required" }),
@@ -130,7 +140,7 @@ export const NewOrderSchema = z.object({
     enquiry_occasion: z.string().optional(),
     branch: z.number({ message: "Select a branch" }),
     message: z.string().optional(),
-    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),
+    items: z.array(orderItemSchema).min(1, { message: "At least one item is required" }),
     payment_status: z.enum(["UP", "FP", "PP"]),
     payment_options: z.enum([
         "not_paid_go_ahead",
