@@ -27,7 +27,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
   })
   const splittedPaymentStatuses = options.payment_status?.split(',')
   splittedPaymentStatuses && splittedPaymentStatuses.forEach(status => {
-    params.append('payment_status', status)
+    params.append('payment_options', status)
   })
   
   if (options.page) params.append('page', options.page.toString());
