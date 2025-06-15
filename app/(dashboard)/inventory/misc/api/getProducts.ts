@@ -6,10 +6,12 @@ import { Createdby } from "../types/stock";
 
 interface FetchOptions {
   category?: number;
+  branch?: number | string;
 }
 const fetchProducts = async (options: FetchOptions = {}): Promise<ProductsAPIReponse[]> => {
   const params = new URLSearchParams();
   if (options.category) params.append('category', options.category.toString());
+  if (options.branch) params.append('category', options.branch.toString());
   const res = await APIAxios.get('/inventory/products/', { params })
   return res.data.data
 }

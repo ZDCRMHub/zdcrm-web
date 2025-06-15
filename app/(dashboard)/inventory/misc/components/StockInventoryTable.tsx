@@ -62,7 +62,6 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
               )}
             </div>
           </TableCell>
-          <TableCell>{variation.cost_price}</TableCell>
           <TableCell>
            {variation.quantity_sold}
           </TableCell>
@@ -117,7 +116,6 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoadi
             <TableHead>Stock Item</TableHead>
             <TableHead>Variation</TableHead>
             <TableHead>Stock Quantity</TableHead>
-            <TableHead>Cost Price/Unit</TableHead>
             <TableHead>Quantity Sold</TableHead>
             <TableHead>Last Updated</TableHead>
             <TableHead></TableHead>

@@ -33,16 +33,27 @@ interface Updatedby {
   phone: string;
   image: null;
 }
+interface TFetchOptions {
+  updated_by?: number | string;
+  action?: string;
+}
 
-const fetchDetails = async (id: string | number): Promise<RootObject> => {
-    const res = await APIAxios.get(`/inventory/${id}/product-inventory-variation-history`)
+const fetchDetails = async (id: string | number, fetchOptions?: TFetchOptions): Promise<RootObject> => {
+    const params = new URLSearchParams();
+  if (fetchOptions?.updated_by) {
+    if (fetchOptions.updated_by !== "all") params.append('updated_by', fetchOptions.updated_by.toString())
+  };
+  if (fetchOptions?.action) params.append('action', fetchOptions.action.toString());
+
+    const res = await APIAxios.get(`/inventory/${id}/product-inventory-variation-history`, {
+        params})
     return res.data
 }
 
-export const useGetProductInventoryHistory = (id?: string | number) => {
+export const useGetProductInventoryHistory = (id?: string | number, fetchOptions?: TFetchOptions) => {
     return useQuery({
         queryKey: ['product-inventory-variation-history', id],
-        queryFn: () => fetchDetails(id!),
+        queryFn: () => fetchDetails(id!, fetchOptions),
         enabled: !!id
     })
 }

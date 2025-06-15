@@ -83,11 +83,11 @@ const NewEnquiryPage = () => {
         enquiry_channel: enquiryData.enquiry_channel,
         enquiry_occasion: enquiryData.enquiry_occasion,
         social_media_details: enquiryData.social_media_details,
-        branch: enquiryData.branch.id,
+        branch: enquiryData.branch?.id,
         delivery: {
-          zone: enquiryData.delivery?.zone as "LM" | "LC" | "LI",
+          zone: enquiryData.delivery?.zone as "LM" | "LC" | "LI" | "ND" | "OT",
           method: enquiryData.delivery?.method as "Dispatch" | "Pickup",
-          dispatch: enquiryData.delivery?.dispatch.id.toString(),
+          dispatch: enquiryData.delivery?.dispatch?.id.toString(),
           address: enquiryData.delivery?.address,
           recipient_name: enquiryData.delivery?.recipient_name,
           recipient_phone: enquiryData.delivery?.recipient_phone,
@@ -184,7 +184,12 @@ const NewEnquiryPage = () => {
   const resetForm = () => {
     reset();
   }
-  console.log(getValues('items'))
+    const isCustomDelivery = watch(`delivery.is_custom_delivery`);
+  const toggleCustomDelivery = () => {
+    setValue('delivery.is_custom_delivery', !isCustomDelivery);
+  }
+
+  // console.log(getValues('items'))
 
 
   if (isLoadingEnquiryData || !enquiryData) {
@@ -327,198 +332,6 @@ const NewEnquiryPage = () => {
 
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            {/* /////////////                 DELIVERY INFORMATION                ///////////// */}
-            {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="delivery-information">
-              <AccordionTrigger className="py-4 flex">
-                <div className="flex items-center gap-5 text-[#194A7A]">
-                  <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
-                    <TruckTime className="text-custom-blue" stroke="#194a7a" size={18} />
-                  </div>
-                  <h3 className="text-custom-blue font-medium">Delivery Details</h3>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="pt-5">
-                {
-                  watch('delivery.method') === "Dispatch" &&
-                  <FormField
-                    control={control}
-                    name="delivery.address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            className=""
-                            label="Delivery Address"
-                            {...field}
-                            hasError={!!errors.delivery?.address}
-                            errorMessage={errors.delivery?.address?.message}
-                            placeholder="Enter delivery address"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                }
-                <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
-                  <FormField
-                    control={control}
-                    name="delivery.recipient_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Recipient's Name"
-                            {...field}
-                            hasError={!!errors.delivery?.recipient_name}
-                            errorMessage={errors.delivery?.recipient_name?.message}
-                            placeholder="Enter recipient name"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.recipient_phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Recipient's Phone Number"
-                            {...field}
-                            hasError={!!errors.delivery?.recipient_phone}
-                            errorMessage={errors.delivery?.recipient_phone?.message}
-                            placeholder="Enter recipient name"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.method"
-                    render={({ field }) => (
-                      <FormItem>
-                        <SelectSingleCombo
-                          label="Delivery Method"
-                          options={DISPATCH_METHOD_OPTIONS}
-                          {...field}
-                          valueKey={"value"}
-                          labelKey={"label"}
-                          placeholder="Select delivery method"
-                          hasError={!!errors.delivery?.method}
-                          errorMessage={errors.delivery?.method?.message}
-                        />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name="delivery.zone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <SelectSingleCombo
-                          label="Delivery Zone"
-                          options={[
-                            {
-                              value: "LM",
-                              label: "Lagos Mainland (LM)",
-                            },
-                            {
-                              value: "LC",
-                              label: "Lagos Central (LC)",
-                            },
-                            {
-                              value: "LI",
-                              label: "Lagos Island (LI)",
-                            },
-                          ]}
-                          {...field}
-                          valueKey={"value"}
-                          labelKey={"label"}
-                          placeholder="Select delivery zone"
-                          hasError={!!errors.delivery?.zone}
-                          errorMessage={errors.delivery?.zone?.message}
-                        />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.dispatch"
-                    render={({ field }) => (
-                      <FormItem>
-                        <SelectSingleCombo
-                          label="Dispatch Location"
-                          {...field}
-                          value={field.value?.toString() || ''}
-                          isLoadingOptions={dispatchLocationsLoading}
-                          options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                          valueKey={"value"}
-                          // labelKey={"label"}
-                          labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                          placeholder="Select dispatch location"
-                          hasError={!!errors.delivery?.dispatch}
-                          errorMessage={errors.delivery?.dispatch?.message}
-                        />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.delivery_date"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <SingleDatePicker
-                          label="Delivery Date"
-                          value={field.value ? new Date(field.value) : new Date()}
-                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
-                          placeholder="Select delivery date"
-                        />
-                        {
-                          errors.delivery?.delivery_date &&
-                          <FormError errorMessage={errors.delivery?.delivery_date?.message as string}
-                          />
-                        }
-                      </FormItem>
-                    )}
-                  />
-
-                  <TimePicker
-                    label="Dispatch Time"
-                    control={control}
-                    name="delivery.delivery_time"
-                    hasError={!!errors.delivery?.delivery_time}
-                    errorMessage={errors.delivery?.delivery_time?.message}
-
-                  // placeholder="Select delivery date"
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.note"
-                    render={({ field }) => (
-                      <FormItem className="md:col-span-2">
-                        <FormControl>
-                          <Input
-                            label="Delivery Note"
-                            {...field}
-                            hasError={!!errors.delivery?.note}
-                            errorMessage={errors.delivery?.note?.message}
-                            placeholder="Enter delivery note"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-
-            {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                  Enquiry INFORMATION                  ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             <AccordionItem value="Enquiry-information">
@@ -583,7 +396,275 @@ const NewEnquiryPage = () => {
                   }
                 </section>
               </AccordionContent>
+
+
+
             </AccordionItem>
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+            {/* /////////////                 DELIVERY INFORMATION                ///////////// */}
+            {/* /////////////////////////////////////////////////////////////////////////////// */}
+
+            <AccordionItem value="delivery-information">
+              <AccordionTrigger className="py-4 flex">
+                <div className="flex items-center gap-5 text-[#194A7A]">
+                  <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
+                    <TruckTime className="text-custom-blue" stroke="#194a7a" size={18} />
+                  </div>
+                  <h3 className="text-custom-blue font-medium">Delivery Details</h3>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pt-5">
+                {
+                  watch('delivery.method') === "Dispatch" &&
+                  <FormField
+                    control={control}
+                    name="delivery.address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            className=""
+                            label="Delivery Address"
+                            {...field}
+                            hasError={!!errors.delivery?.address}
+                            errorMessage={errors.delivery?.address?.message}
+                            placeholder="Enter delivery address"
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                }
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Recipient's Name"
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_name}
+                            errorMessage={errors.delivery?.recipient_name?.message}
+                            placeholder="Enter recipient name"
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Recipient's Phone Number"
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_phone}
+                            errorMessage={errors.delivery?.recipient_phone?.message}
+                            placeholder="Enter recipient name"
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_alternative_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Recipient's Alt Phone Number"
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_alternative_phone}
+                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
+                            placeholder="Enter recipient alternative phone number"
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.method"
+                    render={({ field }) => (
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Delivery Method"
+                          options={DISPATCH_METHOD_OPTIONS}
+                          {...field}
+                          valueKey={"value"}
+                          labelKey={"label"}
+                          placeholder="Select delivery method"
+                          hasError={!!errors.delivery?.method}
+                          errorMessage={errors.delivery?.method?.message}
+                          optional
+                        />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={control}
+                    name="delivery.zone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <SelectSingleCombo
+                          label="Delivery Zone"
+                          options={[
+                            {
+                              value: "LM",
+                              label: "Lagos Mainland (LM)",
+                            },
+                            {
+                              value: "LC",
+                              label: "Lagos Central (LC)",
+                            },
+                            {
+                              value: "LI",
+                              label: "Lagos Island (LI)",
+                            },
+                          ]}
+                          {...field}
+                          valueKey={"value"}
+                          labelKey={"label"}
+                          placeholder="Select delivery zone"
+                          hasError={!!errors.delivery?.zone}
+                          errorMessage={errors.delivery?.zone?.message}
+                          optional
+                        />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.dispatch"
+                    render={({ field }) => (
+                      <FormItem>
+                        {
+                          isCustomDelivery ?
+                            <Input
+                              label="Delivery Fee"
+                              {...register('delivery.fee', { valueAsNumber: true })}
+                              hasError={!!errors.delivery?.fee}
+                              errorMessage={errors.delivery?.fee?.message}
+                              placeholder="Enter delivery fee"
+                              optional
+                            />
+                            :
+                            <SelectSingleCombo
+                              label="Dispatch Location"
+                              {...field}
+                              value={field.value?.toString() || ''}
+                              isLoadingOptions={dispatchLocationsLoading}
+                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                              valueKey={"value"}
+                              // labelKey={"label"}
+                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                              placeholder="Select dispatch location"
+                              hasError={!!errors.delivery?.dispatch}
+                              errorMessage={errors.delivery?.dispatch?.message}
+                              optional
+                            />
+                        }
+                        <button
+                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                          onClick={toggleCustomDelivery}
+                          type="button"
+                        >
+                          {
+                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                          }
+                        </button>
+                      </FormItem>
+                    )}
+                  />
+
+                  {
+
+                    watch('delivery.method') === "Dispatch" &&
+                    <FormField
+                      control={control}
+                      name="delivery.residence_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              label="Residence Type"
+                              hasError={!!errors.delivery?.residence_type}
+                              errorMessage={errors.delivery?.residence_type?.message}
+                              placeholder="Enter residence type"
+                              optional
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  }
+                  <FormField
+                    control={control}
+                    name="delivery.delivery_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <SingleDatePicker
+                          label="Delivery Date"
+                          value={field.value ? new Date(field.value) : new Date()}
+                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
+                          placeholder="Select delivery date"
+                          optional
+                        />
+                        {
+                          errors.delivery?.delivery_date &&
+                          <FormError errorMessage={errors.delivery?.delivery_date?.message as string}
+                          />
+                        }
+                      </FormItem>
+                    )}
+                  />
+
+                  <TimePicker
+                    label="Dispatch Time"
+                    control={control}
+                    name="delivery.delivery_time"
+                    hasError={!!errors.delivery?.delivery_time}
+                    errorMessage={errors.delivery?.delivery_time?.message}
+                    optional
+
+                  // placeholder="Select delivery date"
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.note"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormControl>
+                          <Input
+                            label="Delivery Note"
+                            {...field}
+                            hasError={!!errors.delivery?.note}
+                            errorMessage={errors.delivery?.note?.message}
+                            placeholder="Enter delivery note"
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+
+
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}

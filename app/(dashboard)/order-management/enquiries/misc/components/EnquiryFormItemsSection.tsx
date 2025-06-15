@@ -21,7 +21,7 @@ import { useGetPropertyOptions } from '../../../misc/api';
 import CustomImagePicker from '@/app/(dashboard)/inventory/misc/components/CustomImagePicker';
 import { ProductSelector } from '../../../misc/components';
 import SelectMultiCombo from '@/components/ui/selectMultipleSpecialCombo';
-import OrderFormStockInventorySelector from '../../../misc/components/OrderFormStockInventorySelector';
+import OrderFormStockInventorySelector, { enquiryItemType } from '../../../misc/components/OrderFormStockInventorySelector';
 import OrderFormProductInventorySelector from '../../../misc/components/OrderFormProductInventorySelector';
 
 
@@ -75,6 +75,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         control,
         name: `items.${index}.inventories`
     });
+    const selectedBranch = watch('branch');
     const selectedCategory = watch(`items.${index}.category`);
     const categoryName = categories?.find(cat => cat.id === Number(selectedCategory))?.name || '';
     const matchedCategory = categories?.find(cat => cat.id === Number(selectedCategory));
@@ -101,8 +102,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
     });
 
 
-
-    const calcucateStockItemAmount = React.useCallback((items: TOrderFormItem, inventories: TStockInventoryItem[]) => {
+    const calcucateItemAmount = React.useCallback((items: TOrderFormItem) => {
         const item = items?.[0];
         if (!item) return 0;
         const miscellaneous = item.miscellaneous || [];
@@ -119,85 +119,33 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             return acc + findItemPrice
         }, 0)
 
-
-        if (!item.category || !item.inventories) {
-            return 0;
-        } else {
-            const inventoriesIds = item.inventories?.map(inv => inv?.stock_inventory_id);
-            const allInventoriesSelected = inventoriesIds.every(inv => inv !== undefined);
-            if (!allInventoriesSelected) {
-                return 0;
-            } else {
-                const itemInventories = inventories?.filter(inv => inventoriesIds.includes(inv.id));
-
-                const selectedVariations = items.map(item => item.inventories.map(inv => inv?.variations?.map(variation => {
-                    const selected = itemInventories?.flatMap(inv =>
-                        inv.variations.find(varr => variation.stock_variation_id == varr.id)
-                    );
-                    return { id: variation.stock_variation_id, quantity: variation.quantity, cost_price: selected?.[0]?.cost_price || 0 };
-                }))).flat(2);
-
-                console.log("selectedVariations", selectedVariations);
-                console.log("form items", item);
-
-                const totalVariationCost = selectedVariations.reduce((acc, variation) => {
-                    return acc + (Number(variation?.cost_price || '0') * (variation?.quantity || 1));
-                }, 0);
-
-                return ((totalVariationCost + propertiesCost) * item.quantity) + miscCost;
-            }
+        const selectedProduct = products?.find(product => product.id === item.product_id);
+        if (!item.category || !selectedProduct) {
+            return ((0 + propertiesCost) * item.quantity) + miscCost;
         }
-    }, [propertyOptions?.data]);
+        else {
+            const initialCostPrice = Number(selectedProduct?.variations?.find(variation => variation.id.toString() === item.product_variation_id)?.cost_price) || 0;
+            return ((initialCostPrice + propertiesCost) * item.quantity) + miscCost;
+        }
 
-    const calculateProductItemAmount = React.useCallback((items: TOrderFormItem, inventories: TProductInventoryItem[]) => {
-        const item = items?.[0];
-        if (!item) return 0;
-        const miscellaneous = item.miscellaneous || [];
-        const miscCost = miscellaneous.reduce((acc, misc) => acc + misc.cost, 0);
-        const allProperties = [
-            item?.properties?.bouquet,
-            item?.properties?.layers,
-            item?.properties?.glass_vase,
-            item?.properties?.toppings,
-            item?.properties?.whipped_cream_upgrade,
-        ]
-        console.log(allProperties, "PROPS")
-        const propertiesCost = allProperties.reduce((acc, item) => {
-            const findItemPrice = parseInt(propertyOptions?.data.find(prop => prop.id.toString() == item)?.selling_price.toString() || '0')
-            console.log(findItemPrice, "PRICES")
-            return acc + findItemPrice
-        }, 0)
 
-        return miscCost + propertiesCost
-    }, [propertyOptions?.data])
+    }, [propertyOptions?.data, products]);
 
-    const [mockFlavor, setMockFlavor] = useState<Array<{ name: string; quantity: number }>>([]);
-    const [mockSize, setMockSize] = useState<string>('')
+
+
 
 
 
     return (
         <>
+
             {
                 !!watchedItemAtIndex &&
                 <div className="rounded-md mb-10">
                     <div className="flex items-center gap-2 mb-4 ">
-
-                        <div
-                            className='flex items-center justify-center px-4 py-1.5 bg-yellow-500 max-w-max'
-                        >
+                        <div className='flex items-center justify-center px-4 py-1.5 bg-yellow-500 max-w-max'>
                             Item {index + 1}
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => deleteItems(index)}
-                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max')}
-                        >
-                            <TrashIcon size={20} />
-                            <span className="sr-only">
-                                Remove
-                            </span>
-                        </button>
                         <button
                             type="button"
                             onClick={() => {
@@ -212,9 +160,16 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             }
 
                         </button>
-
+                        <button
+                            onClick={() => deleteItems(index)}
+                            className={cn('flex items-center justify-center px-3 py-1.5 bg-red-500 text-white max-w-max')}
+                        >
+                            <TrashIcon size={20} />
+                            <span className="sr-only">
+                                Remove
+                            </span>
+                        </button>
                     </div>
-
 
                     <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
                         <Controller
@@ -228,11 +183,13 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                     options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
-                                    placeholder='Category'
                                     onChange={(value) => field.onChange(parseInt(value))}
                                     isLoadingOptions={categoriesLoading}
                                     hasError={!!errors.items?.[index]?.category}
                                     errorMessage={errors.items?.[index]?.category?.message}
+                                    placeholder={!watch('branch') ? 'Select branch first' : 'Select category'}
+                                    disabled={!watch('branch')}
+
                                 />
                             )}
                         />
@@ -241,14 +198,14 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                             control={control}
                             render={({ field }) => (
                                 <ProductSelector
-                                    category={categoryName}
                                     {...field}
+                                    category={categoryName}
                                     productId={field.value?.toString() || ''}
                                     variationId={watch(`items.${index}.product_variation_id`) || ''}
                                     setProductId={(value) => { setValue(`items.${index}.product_id`, Number(value)); }}
                                     setVariationId={(value) => setValue(`items.${index}.product_variation_id`, value)}
                                     options={products || []}
-                                    label="Product Name"
+                                    label="Product"
                                     disabled={!selectedCategory || (!productsLoading && !products?.length)}
                                     placeholder={
                                         (!productsLoading && !products?.length) ?
@@ -257,13 +214,42 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                 'Select product' :
                                                 'Select category first'
                                     }
-                                    isLoadingOptions={productsLoading}
+                                    isLoadingOptions={productsLoading || productsFetching}
                                     hasError={!!errors.items?.[index]?.product_id}
                                     errorMessage={errors.items?.[index]?.product_id?.message}
                                 />
                             )}
                         />
 
+
+                        {
+                            isStockInventory ?
+                                <OrderFormStockInventorySelector
+                                    inventories={watch(`items.${index}.inventories`)}
+                                    setInventories={(inventories) => setValue(`items.${index}.inventories`, inventories as enquiryItemType['inventories'])}
+                                    options={stockInvetories?.data!}
+                                    disabled={!watch('branch') || !watch(`items.${index}.category`) || stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
+                                    isLoadingOptions={stockInventoriesLoading}
+                                    isFetchingOptions={stockInventoriesFetching}
+                                    errorMessage={errors.items?.[index]?.message}
+                                    hasError={!!errors.items?.[index]}
+                                />
+                                :
+                                isProductInventory ?
+                                    <OrderFormProductInventorySelector
+                                        inventories={watch(`items.${index}.inventories`)}
+                                        setInventories={(inventories) => setValue(`items.${index}.inventories`, inventories as enquiryItemType['inventories'])}
+                                        options={productsInvetories?.data!}
+                                        disabled={!watch('branch') || !watch(`items.${index}.category`) || productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
+                                        isLoadingOptions={productInventoriesLoading}
+                                        isFetchingOptions={productInventoriesFetching}
+                                        errorMessage={errors.items?.[index]?.inventories?.message}
+                                        hasError={!!errors.items?.[index]?.inventories}
+
+                                    />
+                                    :
+                                    null
+                        }
                         {
                             selectedCategory &&
                             <>
@@ -273,48 +259,10 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 {/* /////////////                    STOCK INVENTORY                 //////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
-
-
-
-
                                 {
-
-
 
                                     isStockInventory &&
                                     <>
-
-                                        {
-                                            fields.map((_, invIndex) => (
-                                                <React.Fragment key={invIndex}>
-                                                    {
-                                                        watchedInventories.map((_, invIndex) =>
-
-                                                            <React.Fragment key={invIndex}>
-                                                                <OrderFormStockInventorySelector
-                                                                    inventoryId={watch(`items.${index}.inventories.${invIndex}.stock_inventory_id`)}
-                                                                    setInventoryId={(inventoryId) => {
-                                                                        setValue(`items.${index}.inventories.${invIndex}.stock_inventory_id`, inventoryId);
-                                                                    }}
-                                                                    category={categoryName}
-                                                                    options={stockInvetories?.data!}
-                                                                    disabled={stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
-                                                                    isLoadingOptions={stockInventoriesLoading}
-                                                                    isFetchingOptions={stockInventoriesFetching}
-                                                                    errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id?.message}
-                                                                    hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.stock_inventory_id}
-                                                                />
-
-
-
-                                                            </React.Fragment>
-                                                        )
-                                                    }
-                                                </React.Fragment>
-
-                                            ))
-                                        }
-
                                         {
                                             categoryName === 'Cake' && (
                                                 <>
@@ -360,7 +308,6 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
 
 
                                                 </>
-
                                             )
                                         }
                                         {
@@ -407,7 +354,6 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
 
 
                                                 </>
-
                                             )
                                         }
 
@@ -424,6 +370,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                             {...field}
                                                             hasError={!!errors.items?.[index]?.inventories?.[0]?.instruction}
                                                             errorMessage={errors.items?.[index]?.inventories?.[0]?.instruction?.message}
+                                                            optional
                                                         />
                                                     </FormControl>
                                                 </FormItem>
@@ -443,6 +390,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                                 {...field}
                                                                 hasError={!!errors.items?.[index]?.inventories?.[0]?.message}
                                                                 errorMessage={errors.items?.[index]?.inventories?.[0]?.message as string}
+                                                                optional
                                                             />
                                                         </FormControl>
                                                     </FormItem>
@@ -461,51 +409,24 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 {/* /////////////                    PRODUCT INVENTORY                 //////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
-                                {
-                                    !isStockInventory && !isComboItem && fields.map((_, invIndex) => (
-                                        <React.Fragment key={invIndex}>
-                                            {
-                                                watchedInventories.map((_, invIndex) =>
 
-                                                    <React.Fragment key={invIndex}>
-                                                        <OrderFormProductInventorySelector
-                                                            inventoryId={watch(`items.${index}.inventories.${invIndex}.product_inventory_id`)}
-                                                            setInventoryId={(inventoryId) => {
-                                                                setValue(`items.${index}.inventories.${invIndex}.product_inventory_id`, inventoryId);
-                                                            }}
-                                                            options={productsInvetories?.data!}
-                                                            disabled={productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
-                                                            isLoadingOptions={productInventoriesLoading}
-                                                            isFetchingOptions={productInventoriesFetching}
-                                                            errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id?.message}
-                                                            hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.product_inventory_id}
-                                                        />
-
-                                                        <FormField
-                                                            control={control}
-                                                            name={`items.${index}.inventories.${0}.instruction`}
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormControl>
-                                                                        <Input
-                                                                            label="Instruction"
-                                                                            placeholder='Enter instruction'
-                                                                            {...field}
-                                                                            hasError={!!errors.items?.[index]?.inventories?.[invIndex]?.instruction}
-                                                                            errorMessage={errors.items?.[index]?.inventories?.[invIndex]?.instruction?.message}
-                                                                        />
-                                                                    </FormControl>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-
-                                                    </React.Fragment>
-                                                )
-                                            }
-                                        </React.Fragment>
-
-                                    ))
-                                }
+                                <FormField
+                                    control={control}
+                                    name={`items.${index}.inventories.${0}.instruction`}
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input
+                                                    label="Instruction"
+                                                    placeholder='Enter instruction'
+                                                    {...field}
+                                                    hasError={!!errors.items?.[index]?.inventories}
+                                                    errorMessage={errors.items?.[index]?.inventories?.message}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                             </>
                         }
 
@@ -526,7 +447,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newQuantity = (watch('items')?.[index].quantity || 0) - 1;
+                                        const newQuantity = (watch('items')?.[index]?.quantity || 0) - 1;
                                         if (newQuantity >= 1) {
                                             setValue(`items.${index}.quantity`, newQuantity);
                                         }
@@ -541,7 +462,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newQuantity = (watch('items')?.[index].quantity || 0) + 1;
+                                        const newQuantity = (watch('items')?.[index]?.quantity || 0) + 1;
                                         setValue(`items.${index}.quantity`, newQuantity);
                                     }}
                                     className="flex items-center justify-center border border-[#0F172B] text-lg text-center p-2 leading-3"
@@ -561,20 +482,15 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                         errors={errors}
                     />
 
+
+
                     <footer className="flex items-center justify-between border-t pt-2 mt-4">
                         <p className='flex items-center gap-1.5 font-semibold text-2xl text-custom-blue'>
 
                             <span>Amount: </span>
                             <span>
                                 {
-                                    formatCurrency(
-                                        isStockInventory ?
-                                            calcucateStockItemAmount([watch(`items.${index}`)], stockInvetories?.data!)
-                                            :
-                                            isProductInventory ?
-                                                calculateProductItemAmount([watch(`items.${index}`)], productsInvetories?.data!)
-                                                :
-                                                0, "NGN")
+                                    formatCurrency(calcucateItemAmount([watch(`items.${index}`)]), "NGN")
                                 }
                             </span>
                         </p>

@@ -261,7 +261,6 @@ export default function OrdersDashboardDelivery() {
             {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
           </p>
         </div>
-
       </header>
 
 

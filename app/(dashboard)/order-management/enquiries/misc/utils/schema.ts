@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MAX_FILE_SIZE } from "../../../misc/utils/schema";
+import { ZONES_OPTIONS } from "@/constants";
 
 const propertiesSchema = z.object({
     layers: z.string().optional(),
@@ -10,9 +11,20 @@ const propertiesSchema = z.object({
 }).optional();
 
 const variationSchema = z.object({
-    stock_variation_id: z.number(),
+    stock_variation_id: z.number().optional(),
+    product_inventory_variation_id: z.number().optional(),
     quantity: z.number().min(1)
-});
+}).superRefine((data, ctx) => {
+    if (data.stock_variation_id == null && data.product_inventory_variation_id == null) {
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Either stock variation ID or product inventory variation ID is required",
+            path: ['stock_variation_id', 'product_inventory_variation_id']
+        });
+    }
+    return true;
+})
+
 
 const inventorySchema = z.object({
     stock_inventory_id: z.number().optional(),
@@ -24,7 +36,7 @@ const inventorySchema = z.object({
     custom_image: z.string().url().optional(),
 }).nullable();
 
-const itemSchema = z.object({
+const ItemSchema = z.object({
     category: z.number({ message: "Category is required" }),
     product_id: z.number({ message: "Product Name is required" }),
     product_variation_id: z.string().min(1, { message: "Product Variation is required" }),
@@ -75,29 +87,26 @@ const itemSchema = z.object({
 
     });
 });
-const optionalItemSchema = z.object({
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const enquiryItemSchema = z.object({
     category: z.number({ message: "Category is required" }),
     product_id: z.number({ message: "Product Name is required" }),
     product_variation_id: z.string().min(1, { message: "Product Variation is required" }),
     quantity: z.number().min(1),
+    inventories: z.array(inventorySchema).optional(),
     properties: propertiesSchema,
-    inventories: z.array(
-        z.object({
-            message: z.string().optional(),
-            stock_inventory_id: z.number().optional(),
-            product_inventory_id: z.number().optional(),
-            instruction: z.string().optional(),
-            quantity_used: z.number().optional(),
-            variations: z
-                .array(
-                    z.object({
-                        stock_variation_id: z.number(),
-                        quantity: z.number(),
-                    }),
-                )
-                .optional(),
-        }),
-    ),
     custom_image: z.any().nullable(),
     is_custom_order: z.boolean().optional(),
     miscellaneous: z.array(
@@ -141,7 +150,10 @@ export const NewEnquirySchema = z.object({
         email: z.string().optional()
     }),
     delivery: z.object({
-        zone: z.enum(["LM", "LC", "LI"], { message: "Delivery zone is required" }),
+        zone: z.enum(
+            ZONES_OPTIONS.map(zone => zone.value) as [string, ...string[]],
+            { message: "Delivery zone is required" }
+        ),
         note: z.string().optional(),
         delivery_time: z.string().optional(),
         // residence_type: z.enum(["Home", "Office "], { message: "Delivery type is required" }).optional(),
@@ -163,7 +175,7 @@ export const NewEnquirySchema = z.object({
     enquiry_occasion: z.string().optional(),
     branch: z.number({ message: "Select a branch" }).optional(),
     message: z.string().optional(),
-    items: z.array(optionalItemSchema).optional(),
+    items: z.array(enquiryItemSchema).optional(),
 })
 
 export const ConvertiblEnquirySchema = z.object({
@@ -188,7 +200,7 @@ export const ConvertiblEnquirySchema = z.object({
     enquiry_occasion: z.string().optional(),
     branch: z.number({ message: "Select a branch" }),
     message: z.string().optional(),
-    items: z.array(itemSchema).min(1, { message: "At least one item is required" }),
+    items: z.array(ItemSchema).min(1, { message: "At least one item is required" }),
 }).superRefine((data, ctx) => {
 
     if (data.delivery.method === "Dispatch" && (!data.delivery.address || !data.delivery.address.trim().length)) {

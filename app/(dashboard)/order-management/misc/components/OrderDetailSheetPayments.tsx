@@ -297,7 +297,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     <p>{convertKebabAndSnakeToTitleCase(order?.payment_options)}</p>
                   </div>
                 </section>
-
+1234567890
                 <section className="mt-16 mb-8">
                   <header className="border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
@@ -310,13 +310,13 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     {[
                       ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
                       // ["Amount Paid(USD)", order?.amoun],
-                      [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price || 0), 'NGN')],
+                      [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_amount || 0), 'NGN')],
                       [order?.payment_options?.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
                       [order?.payment_options?.startsWith("part_payment") && "Oustanding Balance",
                       <span className="flex items-center gap-2" key={order?.id}>
                         {
                           formatCurrency(
-                            Number(Number(order?.total_selling_price ?? 0)
+                            Number(Number(order?.total_amount ?? 0)
                               -
                               (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
                               -
@@ -380,6 +380,15 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     />
                   }
 
+                  {
+                    order?.payment_proof &&
+                    <div className="mt-4">
+                      <p className="text-[#687588] font-manrope text-sm mb-2">Payment Proof:</p>
+                      <a href={order?.payment_proof} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        View Payment Proof
+                      </a>
+                    </div>
+                  }
 
                 </section>
 

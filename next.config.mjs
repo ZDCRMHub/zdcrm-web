@@ -40,6 +40,11 @@ const nextConfig = {
                 hostname: 'example.com',
                 pathname: '/**',
               },
+              {
+                protocol: 'https',
+                hostname: 'www.example.com',
+                pathname: '/**',
+              },
         ]
     }
 };

@@ -74,7 +74,7 @@ export default function OrderSummary() {
     }
   }
 
-  const selectedDiscountAmount = discounts?.data.find((discount) => discount.id.toString() == watch('discount_id'))?.amount || 0;
+  const selectedDiscountAmount = discounts?.data.find((discount) => discount.id.toString() === String(watch('discount_id')))?.amount || 0;
   const handleStatusUpdate = () => {
     updateStatus({ id: order_id, status: "SOA" as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
       {
@@ -103,7 +103,7 @@ export default function OrderSummary() {
 
   React.useEffect(() => {
     if (!!watch('discount_id')) {
-      setValue('custom_discount_amount', 0)
+      setValue('custom_discount_amount', 0 as number);
     }
   }, [watch('discount_id')])
 
@@ -273,13 +273,32 @@ export default function OrderSummary() {
                                 <span className="text-[#687588] italic font-light text-[0.8rem]">
                                   Production Cost:{" "}
                                 </span>
-                                  {formatCurrency(Number(item.product_variation.selling_price || 0), 'NGN')}
-                                
+                                {formatCurrency(Number(item.product_variation.selling_price || 0), 'NGN')}
+
                               </p>
                               <p className="font-medium text-[#194A7A]">
                                 Total Amount:{" "}
                                 <span className="font-bold">
-                                  {formatCurrency(Number(item.product.selling_price || 0), 'NGN')}
+                                  {
+                                    formatCurrency(
+                                      (
+                                        Number(item.product_variation.selling_price || 0) +
+                                        item.miscellaneous
+                                          .map(misc => Number(misc.cost) || 0)
+                                          .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
+                                        item.properties.reduce((acc, property) => {
+                                          const value =
+                                            Number(property.bouquet_selling_at_order || 0) +
+                                            Number(property.glass_vase_selling_at_order || 0) +
+                                            Number(property.toppings_selling_at_order || 0) +
+                                            Number(property.layers_selling_at_order || 0) +
+                                            Number(property.whipped_cream_selling_at_order || 0);
+                                          return acc + value;
+                                        }, 0)
+                                      ) * Number(item.quantity || 0),
+                                      'NGN'
+                                    )
+                                  }
                                 </span>
                               </p>
                             </section>
@@ -365,7 +384,7 @@ export default function OrderSummary() {
                         <Button
                           type="button"
                           className='flex items-center gap-1 mt-4 text-[#d8636d] bg-red-100'
-                          onClick={() => setValue('discount_id', '')}
+                          onClick={() => setValue('discount_id', undefined)}
                         >
                           <Trash className='w-5 h-5 text-[#d8636d]' />
 

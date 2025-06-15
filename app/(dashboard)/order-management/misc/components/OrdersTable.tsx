@@ -22,6 +22,7 @@ import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/co
 import { useUpdateOrderStatus } from '../api';
 import toast from 'react-hot-toast';
 import { extractErrorMessage } from '@/utils/errors';
+import { useRouter } from 'next/navigation';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -75,13 +76,18 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         setFalse: closeSheet,
         setTrue: openSheet,
     } = useBooleanStateControl()
+
+    const router = useRouter()
     const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
     const handleStatusUpdate = (new_status: string) => {
         mutate({ id: order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
-
             {
                 onSuccess: (data) => {
                     toast.success("Order status updated successfully");
+                    if (new_status == "STD") {
+                        router.push(`/order-management/orders/${order?.id}/confirm-delivery`)
+
+                    }
                 },
                 onError: (error) => {
                     const errorMessage = extractErrorMessage(error as unknown as any);
@@ -168,7 +174,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div className='text-sm text-[#494949]'>{paymentStatusEnums[order.payment_status]}({convertKebabAndSnakeToTitleCase(order?.payment_options)})</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>
-                
+
                 {/* <div>{order.amountUSD ? "$" + order.amountUSD : "-"}</div> */}
                 {/* <div>{order.paymentStatus}</div> */}
                 -

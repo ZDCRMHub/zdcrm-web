@@ -44,7 +44,7 @@ const ProductItemFormEnquiry = ({
 
     <>
       {
-        watchedInventories.map((_, invIndex) =>
+        watchedInventories?.map((_, invIndex) =>
 
           <>
             <ProductItemSelector

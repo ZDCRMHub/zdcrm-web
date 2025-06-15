@@ -16,7 +16,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { IoChevronUp } from "react-icons/io5"
-import { Spinner, SuccessModal } from "@/components/ui"
+import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui"
 import {
   Sheet,
   SheetClose,
@@ -43,9 +43,12 @@ import { formatCurrency } from "@/utils/currency"
 import useCloudinary from "@/hooks/useCloudinary"
 import { useGetCategories } from "../../inventory/misc/api"
 import { SmallSpinner } from "@/icons/core"
+import { useGetAllBranches } from "../branches/misc/api"
+import { useUpdateProductVariationStatus } from "./misc/api/editProduct"
 
 
 interface ProductFormValues {
+  branch: string
   name: string
   category_id: number
   category_name: string
@@ -107,7 +110,10 @@ const useAddVariation = () => {
   })
 }
 
+
 const Page = () => {
+  const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
+
   // Boolean states
   const isSheetOpen = useBooleanStateControl(false)
   const isSuccessModal = useBooleanStateControl(false)
@@ -128,6 +134,7 @@ const Page = () => {
   const { data: categories } = useGetCategories()
   const createProductMutation = useCreateProduct()
   const updateProductMutation = useUpdateProduct()
+  const { mutate: updateVariationStatus, isPending:isUpdatingVariationStatus } = useUpdateProductVariationStatus()
 
   const {
     data: productsData,
@@ -146,6 +153,7 @@ const Page = () => {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
+      branch: "all",
       name: "",
       category_id: 0,
       category_name: "",
@@ -175,6 +183,7 @@ const Page = () => {
 
   // Watch for category changes to update category_name
   const selectedCategoryId = form.watch("category_id")
+  const selectedBranch = form.watch("branch")
 
   // Update category_name when category_id changes
   useEffect(() => {
@@ -253,7 +262,7 @@ const Page = () => {
 
   // Helper function to determine category type
   const getCategoryType = (categoryName: string): "Cake" | "Flower" | "Other" => {
-    if (categoryName.toLowerCase() =="cake") return "Cake"
+    if (categoryName.toLowerCase() == "cake") return "Cake"
     if (categoryName.toLowerCase().includes("flower")) return "Flower"
     return "Other"
   }
@@ -281,6 +290,7 @@ const Page = () => {
         external_id: data.external_id,
         is_active: data.is_active,
         image: imageUrl,
+        branch: data.branch
       }
 
       if (editingProductId) {
@@ -380,15 +390,14 @@ const Page = () => {
     }
   }
 
-  const handleStatusChange = (id: number, value: boolean) => {
-    updateProductMutation.mutate(
+  const handleVariationStatusChange = (id: number, value: boolean) => {
+    updateVariationStatus(
       {
-        id,
-        data: { is_active: value },
+        id
       },
       {
         onSuccess: () => {
-          setSuccessMessage("Product status updated successfully")
+          setSuccessMessage("Product variation status updated successfully")
           isSuccessModal.setTrue()
         },
         onError: (error: unknown) => {
@@ -435,7 +444,7 @@ const Page = () => {
 
   return (
     <>
-      <section className="mt-7 pb-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A] px-[118px] pt-[35px]">
+      <section className="mt-7 pb-7 mx-10 rounded-xl bg-white border-[1px] border-[#0F172B1A] px-[20px] pt-[35px]">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-2">
             <h1 className="text-xl font-medium">Product Management</h1>
@@ -470,6 +479,22 @@ const Page = () => {
 
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
+                    <SelectSingleCombo
+                      name='branch'
+                      label="Branch"
+                      options={branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []}
+                      value={selectedBranch?.toString() || ""}
+                      onChange={(value) => form.setValue("branch", value)}
+                      valueKey='value'
+                      labelKey='label'
+                      isLoadingOptions={branchesLoading}
+                      placeholder='Select branch'
+                      className='w-full !h-14 text-[#8B909A] text-xs'
+                      placeHolderClass='text-[#8B909A] text-xs'
+                      triggerColor='#8B909A'
+                      showSelectedValue={false}
+                    />
+
                     <FormField
                       control={form.control}
                       name="name"
@@ -485,6 +510,7 @@ const Page = () => {
                         </FormItem>
                       )}
                     />
+
 
                     <FormField
                       control={form.control}
@@ -603,7 +629,7 @@ const Page = () => {
                       {fields.map((field, index) => {
                         // Get the category name to determine if it's a cake or flower
                         const categoryName = form.watch("category_name")
-                        const isCake = categoryName.toLowerCase() =="cake"
+                        const isCake = categoryName.toLowerCase() == "cake"
                         const isFlower = categoryName.toLowerCase().includes("flower")
 
                         return (
@@ -904,6 +930,34 @@ const Page = () => {
                               </SheetContent>
                             </Sheet>
 
+
+                            <Select
+                              value={variation.is_active ? "active" : "deactive"}
+                              onValueChange={(value) => handleVariationStatusChange(product.id, value === "active")}
+                            >
+                              <SelectTrigger>
+                                <SelectValue
+                                  placeholder="Select Action"
+                                  className={cn(
+                                    "h-10",
+                                    variation.is_active
+                                      ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
+                                      : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none"
+                                  )}
+                                />
+                                {
+                                  isUpdatingVariationStatus && <SmallSpinner/>
+                                }
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectItem className="h-9 text-xs" value="active">
+                                    Active
+                                  </SelectItem>
+                                  <SelectItem className="h-9 text-xs" value="deactive">Inactive</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -953,7 +1007,6 @@ const Page = () => {
                           category_id: product.category.id,
                           category_name: product.category.name,
                           external_id: product.external_id || "",
-                          is_active: product.is_active,
                           image: {
                             file: null,
                             url: product.image || "",
@@ -978,29 +1031,7 @@ const Page = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-[10px]">
-                    <Select
-                      value={product.is_active ? "active" : "deactive"}
-                      onValueChange={(value) => handleStatusChange(product.id, value === "active")}
-                    >
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder="Select Action"
-                          className={
-                            product.is_active
-                              ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
-                              : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none"
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem className="" value="active">
-                            Active
-                          </SelectItem>
-                          <SelectItem value="deactive">Deactivate</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+
                     <div
                       className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
                       onClick={() => handleEditClick(product)}

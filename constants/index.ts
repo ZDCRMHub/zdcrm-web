@@ -153,6 +153,15 @@ export const ORDER_STATUS_ENUMS: Record<string, string> = {
 }
 
 
+export const ORDER_DELIVERY_STATUS_ENUMS: Record<string, string> = {
+  "PENDING": "PENDING",
+  "DISPATCHED": "DISPATCHED",
+  "DISPATCHED_CL": "DISPATCHED CLIENT NOTIFIED",
+  "DELIVERED": "DELIVERED",
+  "DELIVERED_CL": "DELIVERED CLIENT NOTIFIED",
+  "CANCELLED": "CANCELLED",
+}
+
 
 
 export const PRODUCT_CATEGORIES_OPTIONS = [
@@ -193,10 +202,12 @@ export const PAYMENT_METHODS = [
 
 export const ENQUIRY_CHANNEL_OPTIONS = [
   { value: 'Email', label: 'Email' },
-  { value: 'WhatsApp', label: 'WhatsApp' },
   { value: 'Website', label: 'Website' },
   { value: 'Store Walk In', label: 'Store Walk In' },
   { value: 'Instagram', label: 'Instagram' },
+  { value: 'WhatsApp 1', label: 'WhatsApp - Line 1' },
+  { value: 'WhatsApp 2', label: 'WhatsApp - Line 2' },
+  { value: 'WhatsApp 3', label: 'WhatsApp - Line 3' },
   { value: 'Line 1', label: 'Phone Call - Line 1' },
   { value: 'Line 2', label: 'Phone Call - Line 2' },
   { value: 'Line 3', label: 'Phone Call - Line 3' },
@@ -223,19 +234,19 @@ export const ZONES_OPTIONS = [
     label: "Lagos Mainland",
   },
   {
-    value: "LAGOS_CENTRAL",
+    value: "LC",
     label: "Lagos Central",
   },
   {
-    value: "LAGOS_ISLAND",
+    value: "LI",
     label: "Lagos Island",
   },
   {
-    value: "OTHERS",
+    value: "OT",
     label: "Others",
   },
   {
-    value: "NO_DESTINATION",
+    value: "ND",
     label: "No Destination",
   },
 ]
