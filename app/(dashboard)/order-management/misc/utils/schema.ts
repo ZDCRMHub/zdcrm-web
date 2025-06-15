@@ -48,8 +48,6 @@ export const orderItemSchema = z.object({
 }).superRefine((data, ctx) => {
     if (data.is_custom_order) {
 
-
-
         if (!data.custom_image.type.startsWith('image/')) {
             throw z.ZodError.create([{
                 path: ['custom_image'],

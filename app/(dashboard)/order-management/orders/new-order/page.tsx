@@ -176,7 +176,7 @@ const NewOrderPage = () => {
   const toggleCustomDelivery = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
-  const watchedPhoneNumber = watch('customer.phone')
+  const watchedCustomerPhoneNumber = watch('customer.phone')
 
 
 
@@ -239,7 +239,7 @@ const NewOrderPage = () => {
                           />
                         </FormControl>
                         {
-                          watchedPhoneNumber.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                          watchedCustomerPhoneNumber.length == 11 && <Link href="/order-management/client-history">View history</Link>
                         }
                       </FormItem>
                     )}

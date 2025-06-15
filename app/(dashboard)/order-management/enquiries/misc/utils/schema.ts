@@ -102,46 +102,75 @@ const ItemSchema = z.object({
 
 export const enquiryItemSchema = z.object({
     category: z.number({ message: "Category is required" }),
-    product_id: z.number({ message: "Product Name is required" }),
-    product_variation_id: z.string().min(1, { message: "Product Variation is required" }),
-    quantity: z.number().min(1),
-    inventories: z.array(inventorySchema).optional(),
-    properties: propertiesSchema,
-    custom_image: z.any().nullable(),
-    is_custom_order: z.boolean().optional(),
-    miscellaneous: z.array(
-        z.object({
-            description: z.string(),
-            cost: z.number(),
-        }),
-    ).optional(),
-}).refine((data) => {
-    if (data.is_custom_order) {
-        if (!data.custom_image) {
-            throw z.ZodError.create([{
-                path: ['custom_image'],
-                message: 'Please select a file.',
-                code: 'custom',
-            }]);
-        }
-
-        if (!data.custom_image.type.startsWith('image/')) {
-            throw z.ZodError.create([{
-                path: ['custom_image'],
-                message: 'Please select an image file.',
-                code: 'custom',
-            }]);
-        }
-        if (data.custom_image.size > MAX_FILE_SIZE) {
-            throw z.ZodError.create([{
-                path: ['custom_image'],
-                message: 'Please select a file smaller than 10MB.',
-                code: 'custom',
-            }])
-        }
-    }
-});
-
+      product_id: z.number({ message: "Product Name is required" }),
+      product_variation_id: z.string().min(1, { message: "Product Variation is required" }),
+      quantity: z.number().min(1),
+      inventories: z.array(inventorySchema),
+      properties: propertiesSchema,
+      custom_image: z.any().nullable(),
+      is_custom_order: z.boolean().optional(),
+      miscellaneous: z.array(z.object({
+          description: z.string().min(1, { message: "Description is required" }),
+          cost: z.number().min(1, { message: "Miscellaneous cost is required" })
+      })).optional()
+  }).superRefine((data, ctx) => {
+      if (data.is_custom_order) {
+  
+          if (!data.custom_image.type.startsWith('image/')) {
+              throw z.ZodError.create([{
+                  path: ['custom_image'],
+                  message: 'Please select an image file.',
+                  code: 'custom',
+              }]);
+          }
+          if (data.custom_image.size > MAX_FILE_SIZE) {
+              throw z.ZodError.create([{
+                  path: ['custom_image'],
+                  message: 'Please select a file smaller than 10MB.',
+                  code: 'custom',
+              }])
+          }
+      }
+      if (data.product_id && data.product_id == 0) {
+          ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: "Product Name is required",
+          });
+      }
+  
+      if (data.category === 8 && data.properties) {
+          if (!data.properties.toppings) {
+              ctx.addIssue({
+                  code: z.ZodIssueCode.custom,
+                  message: "Toppings must be provided for Cakes",
+                  path: [`inventories.properties.toppings`]
+              });
+          }
+          
+      }
+      data.inventories.forEach((inventory, index) => {
+          if (inventory === null) return; // Skip validation for null inventories
+  
+          if ([8, 9, 10].includes(data.category)) {
+              if (inventory?.stock_inventory_id == null) {
+                  ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      message: "Stock inventory ID is required for this category",
+                      path: [`inventories.${index}.stock_inventory_id`]
+                  });
+              }
+          } else {
+              if (inventory?.product_inventory_id == null) {
+                  ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      message: "Product inventory ID is required for this category",
+                      path: [`inventories.${index}.product_inventory_id`]
+                  });
+              }
+          }
+  
+      });
+  });
 
 export const NewEnquirySchema = z.object({
     customer: z.object({

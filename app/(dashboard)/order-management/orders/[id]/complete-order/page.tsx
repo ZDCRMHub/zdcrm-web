@@ -1,5 +1,5 @@
 "use client";
-import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link, TruckRemove } from 'iconsax-react';
+import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link, TruckRemove, Edit2 } from 'iconsax-react';
 import React from 'react';
 import { Button, LinkButton } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
@@ -65,14 +65,23 @@ const CompleteOrderPage = () => {
                             <div className="flex items-center text-sm">
                                 <Truck variant="Bold" size="24" className="mr-2" /> Driver
                             </div>
-                            {/* <div className="font-medium text-xl">ID: 222-111-33</div> */}
-                            <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver_name}</div>
-                            <div className="platform text-sm text-[#194A7A]">
-                                Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.delivery_platform}</a>
-                            </div>
-                            <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver_phone}`}>
-                                <Call size="20" className="mr-2" /> Call
-                            </LinkButton>
+                            {
+                                !isLoading && !!order && order?.delivery?.driver_name ?
+                                    <>
+                                        <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver_name}</div>
+                                        <div className="platform text-sm text-[#194A7A]">
+                                            Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.delivery_platform}</a>
+                                        </div>
+                                        <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver_phone}`}>
+                                            <Call size="20" className="mr-2" /> Call
+                                        </LinkButton>
+                                    </>
+                                    :
+                                    <LinkButton className="mt-2 h-9 w-full text-sm max-w-[190px]" variant="black" size="md" href={`confirm-delivery`}>
+                                        <Edit2 size="20" className="mr-2" /> Edit Driver Details
+                                    </LinkButton>
+
+                            }
                         </section>
 
                         <section className="flex flex-col items-center justify-around gap-4 p-4 border border-black rounded-3xl">

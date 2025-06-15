@@ -36,9 +36,13 @@ export const useUpdateEnquiry = () => {
     });
 }
 
-interface APIResponse {
-    data: TEnquiry;
-    status: number;
-    message: string;
-}
 
+
+
+interface APIResponse {
+  data: {
+    id: number
+  };
+  status: number;
+  message: string;
+}

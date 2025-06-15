@@ -792,6 +792,7 @@ const Page = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[20%]">Name</TableHead>
+              <TableHead className="w-[20%]">Branch</TableHead>
               <TableHead className="w-[15%]">Category</TableHead>
               <TableHead className="w-[40%]">Variations</TableHead>
               <TableHead className="w-[25%] text-right">Action</TableHead>
@@ -801,6 +802,7 @@ const Page = () => {
             {productsData?.data?.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="font-medium">{product.name}</TableCell>
+                {/* <TableCell className="font-medium">{product.bra}</TableCell> */}
                 <TableCell>{product.category.name}</TableCell>
                 <TableCell>
                   <div className="space-y-2">
@@ -933,7 +935,7 @@ const Page = () => {
 
                             <Select
                               value={variation.is_active ? "active" : "deactive"}
-                              onValueChange={(value) => handleVariationStatusChange(product.id, value === "active")}
+                              onValueChange={(value) => handleVariationStatusChange(variation.id, value === "active")}
                             >
                               <SelectTrigger>
                                 <SelectValue

@@ -24,7 +24,13 @@ const deliveryFormSchema = z.object({
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
   delivery_expense: z.number(),
-  tracking_link: z.string().url().optional(),
+  tracking_link: z.string().optional().refine((val) => {
+    if (!val) return true; // If tracking link is not provided, it's valid
+    const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w- .\/?%&=]*)?$/;
+    return urlPattern.test(val);
+  }, {
+    message: 'Tracking link must be a valid URL',
+  }),
 });
 
 export type DeliveryDriverFormType = z.infer<typeof deliveryFormSchema>;
