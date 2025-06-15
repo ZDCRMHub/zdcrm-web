@@ -202,10 +202,12 @@ export const PAYMENT_METHODS = [
 
 export const ENQUIRY_CHANNEL_OPTIONS = [
   { value: 'Email', label: 'Email' },
-  { value: 'WhatsApp', label: 'WhatsApp' },
   { value: 'Website', label: 'Website' },
   { value: 'Store Walk In', label: 'Store Walk In' },
   { value: 'Instagram', label: 'Instagram' },
+  { value: 'WhatsApp 1', label: 'WhatsApp - Line 1' },
+  { value: 'WhatsApp 2', label: 'WhatsApp - Line 2' },
+  { value: 'WhatsApp 3', label: 'WhatsApp - Line 3' },
   { value: 'Line 1', label: 'Phone Call - Line 1' },
   { value: 'Line 2', label: 'Phone Call - Line 2' },
   { value: 'Line 3', label: 'Phone Call - Line 3' },

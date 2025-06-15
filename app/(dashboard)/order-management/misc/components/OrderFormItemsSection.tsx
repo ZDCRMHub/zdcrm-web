@@ -186,7 +186,8 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                     options={categories?.map(cat => ({ label: cat.name, value: cat.id.toString() })) || []}
                                     valueKey='value'
                                     labelKey="label"
-                                    placeholder='Category'
+                                    placeholder={!watch('branch') ? 'Select branch first' : 'Select category'}
+                                    disabled={!watch('branch')}
                                     onChange={(value) => field.onChange(parseInt(value))}
                                     isLoadingOptions={categoriesLoading}
                                     hasError={!!errors.items?.[index]?.category}
@@ -229,7 +230,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                     inventories={watch(`items.${index}.inventories`)}
                                     setInventories={(inventories) => setValue(`items.${index}.inventories`, inventories as orderItemType['inventories'])}
                                     options={stockInvetories?.data!}
-                                    disabled={stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
+                                    disabled={!watch('branch') || !watch(`items.${index}.category`) || stockInventoriesLoading || (!stockInventoriesLoading && !stockInvetories?.data.length)}
                                     isLoadingOptions={stockInventoriesLoading}
                                     isFetchingOptions={stockInventoriesFetching}
                                     errorMessage={errors.items?.[index]?.message}
@@ -241,7 +242,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         inventories={watch(`items.${index}.inventories`)}
                                         setInventories={(inventories) => setValue(`items.${index}.inventories`, inventories as orderItemType['inventories'])}
                                         options={productsInvetories?.data!}
-                                        disabled={productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
+                                        disabled={!watch('branch') || !watch(`items.${index}.category`) || productInventoriesLoading || (!productInventoriesLoading && !productsInvetories?.data.length)}
                                         isLoadingOptions={productInventoriesLoading}
                                         isFetchingOptions={productInventoriesFetching}
                                         errorMessage={errors.items?.[index]?.inventories?.message}
