@@ -11,14 +11,14 @@ interface FetchOptions {
 const fetchProducts = async (options: FetchOptions = {}): Promise<ProductsAPIReponse[]> => {
   const params = new URLSearchParams();
   if (options.category) params.append('category', options.category.toString());
-  if (options.branch) params.append('category', options.branch.toString());
+  if (options.branch) params.append('branch', options.branch.toString());
   const res = await APIAxios.get('/inventory/products/', { params })
   return res.data.data
 }
 
 export const useGetProducts = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['products', options.category],
+    queryKey: ['products', options.category, options],
     queryFn: () => fetchProducts(options),
   })
 }

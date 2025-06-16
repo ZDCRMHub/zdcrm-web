@@ -132,8 +132,16 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
             instruction: '',
             quantity_used: 0,
             variations: [],
+
         }]);
-    }, [selectedCategory])
+        setValue(`items.${index}.properties`, {
+            layers: '',
+            toppings: '',
+            bouquet: '',
+            glass_vase: '',
+            whipped_cream_upgrade: ''
+        });
+    }, [selectedCategory, index, setValue]);
 
 
 
@@ -359,47 +367,47 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         }
 
 
-                                        <FormField
-                                            control={control}
-                                            name={`items.${index}.inventories.${0}.instruction`}
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input
-                                                            label="Instruction"
-                                                            placeholder='Enter instruction'
-                                                            {...field}
-                                                            hasError={!!errors.items?.[index]?.inventories?.[0]?.instruction}
-                                                            errorMessage={errors.items?.[index]?.inventories?.[0]?.instruction?.message}
-                                                            optional
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
                                         {
                                             (categoryName === 'Cake' || categoryName === 'Cupcake') &&
-                                            <FormField
-                                                control={control}
-                                                name={`items.${index}.inventories.${0}.message`}
-                                                render={({ field }) => (
-                                                    <FormItem className='col-span-full'>
-                                                        <FormControl>
-                                                            <Input
-                                                                label="Message on Cake"
-                                                                placeholder='Enter message'
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.inventories?.[0]?.message}
-                                                                errorMessage={errors.items?.[index]?.inventories?.[0]?.message as string}
-                                                                optional
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
+                                            <>
+                                                <FormField
+                                                    control={control}
+                                                    name={`items.${index}.inventories.${0}.instruction`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <Input
+                                                                    label="Instruction"
+                                                                    placeholder='Enter instruction'
+                                                                    {...field}
+                                                                    hasError={!!errors.items?.[index]?.inventories?.[0]?.instruction}
+                                                                    errorMessage={errors.items?.[index]?.inventories?.[0]?.instruction?.message}
+                                                                    optional
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={control}
+                                                    name={`items.${index}.inventories.${0}.message`}
+                                                    render={({ field }) => (
+                                                        <FormItem className='col-span-full'>
+                                                            <FormControl>
+                                                                <Input
+                                                                    label="Message on Cake"
+                                                                    placeholder='Enter message'
+                                                                    {...field}
+                                                                    hasError={!!errors.items?.[index]?.inventories?.[0]?.message}
+                                                                    errorMessage={errors.items?.[index]?.inventories?.[0]?.message as string}
+                                                                    optional
+                                                                />
+                                                            </FormControl>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </>
                                         }
-
-
                                     </>
 
                                 }
@@ -410,24 +418,27 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                 {/* /////////////                    PRODUCT INVENTORY                 //////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
                                 {/* /////////////////////////////////////////////////////////////////////////////////// */}
-
-                                <FormField
-                                    control={control}
-                                    name={`items.${index}.inventories.${0}.instruction`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input
-                                                    label="Instruction"
-                                                    placeholder='Enter instruction'
-                                                    {...field}
-                                                    hasError={!!errors.items?.[index]?.inventories}
-                                                    errorMessage={errors.items?.[index]?.inventories?.message}
-                                                />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
+                                {
+                                    (categoryName !== 'Cake' && categoryName !== 'Cupcake') &&
+                                    <FormField
+                                        control={control}
+                                        name={`items.${index}.inventories.${0}.instruction`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        label="Instruction"
+                                                        placeholder='Enter instruction'
+                                                        {...field}
+                                                        hasError={!!errors.items?.[index]?.inventories}
+                                                        errorMessage={errors.items?.[index]?.inventories?.message}
+                                                        optional
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                }
                             </>
                         }
 

@@ -79,7 +79,7 @@ const OrderFormProductInventorySelector: React.FC<OrderFormProductInventorySelec
         if (inventoryIndex === -1) {
             // Create new inventory
             updatedInventories?.push({
-                stock_inventory_id: 0,
+                stock_inventory_id: undefined,
                 product_inventory_id: selectedOption?.id || undefined,
                 variations: [
                     {

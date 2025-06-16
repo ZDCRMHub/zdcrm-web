@@ -32,7 +32,7 @@ interface UpdateProductVariationStatusParams {
 }
 
 const updateProductVariationStatus = async ({ id }: UpdateProductVariationStatusParams) => {
-  const res = await APIAxios.put(`/inventory/${id}/toggle-product-variation-status/`)
+  const res = await APIAxios.patch(`/inventory/${id}/toggle-product-variation-status/`)
   return res.data?.data
 }
 

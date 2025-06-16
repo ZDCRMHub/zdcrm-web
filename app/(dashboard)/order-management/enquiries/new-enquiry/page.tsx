@@ -55,6 +55,7 @@ import { useCreateEnquiry } from "../misc/api";
 import { TEnquiry } from "../misc/types";
 import { useGetOrderDeliveryLocations } from "../../misc/api";
 import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
+import Link from "next/link";
 
 
 const NewEnquiryPage = () => {
@@ -126,7 +127,7 @@ const NewEnquiryPage = () => {
 
   const { mutate, isPending } = useCreateEnquiry()
   const { uploadToCloudinary } = useCloudinary()
-  const [createdEnquiry, setCreatedEnquiry] = React.useState<TEnquiry | null>(null);
+  const [createdEnquiry, setCreatedEnquiry] = React.useState<string | number | null>(null);
   const onSubmit = async (data: NewEnquiryFormValues) => {
     const processedItems = !!data.items ? await Promise.all(
       data.items.map(async (item) => {
@@ -150,7 +151,7 @@ const NewEnquiryPage = () => {
       onSuccess(data) {
         toast.success("Enquiry created successfully");
         openSuccessModal();
-        setCreatedEnquiry(data?.data);
+        setCreatedEnquiry(data?.data?.id);
       },
       onError(error: unknown) {
         const errMessage = extractErrorMessage((error as any)?.response?.data as any);
@@ -160,7 +161,7 @@ const NewEnquiryPage = () => {
   };
 
   const routeToEnquiryDetails = () => {
-    router.push(`/order-management/enquiries/${createdEnquiry?.id}`);
+    router.push(`/order-management/enquiries/${createdEnquiry}`);
   }
 
   const resetForm = () => {
@@ -170,8 +171,9 @@ const NewEnquiryPage = () => {
   const toggleCustomDelivery = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
+  const watchedCustomerPhoneNumber = watch('customer.phone')
 
-  console.log(getValues('items'))
+  // console.log(getValues('items'))
 
 
 
@@ -229,6 +231,9 @@ const NewEnquiryPage = () => {
                             {...field}
                           />
                         </FormControl>
+                        {
+                          watchedCustomerPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                        }
                       </FormItem>
                     )}
                   />

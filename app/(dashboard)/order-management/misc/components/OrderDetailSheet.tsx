@@ -441,7 +441,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                     <header className="flex items-center justify-between border-b border-b-[#00000021]">
                       <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
                         <Notepad2 size={19} />
-                        Delivery Note
+                        Message on Order
                         <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                       </p>
 

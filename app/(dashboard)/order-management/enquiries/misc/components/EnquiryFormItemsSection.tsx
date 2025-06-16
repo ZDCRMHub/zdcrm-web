@@ -127,9 +127,27 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             const initialCostPrice = Number(selectedProduct?.variations?.find(variation => variation.id.toString() === item.product_variation_id)?.cost_price) || 0;
             return ((initialCostPrice + propertiesCost) * item.quantity) + miscCost;
         }
-
-
     }, [propertyOptions?.data, products]);
+
+
+    React.useEffect(() => {
+        setValue(`items.${index}.inventories`, [{
+            message: '',
+            instruction: '',
+            quantity_used: 0,
+            variations: [],
+
+        }]);
+        setValue(`items.${index}.properties`, {
+            layers: '',
+            toppings: '',
+            bouquet: '',
+            glass_vase: '',
+            whipped_cream_upgrade: ''
+        });
+    }, [selectedCategory, index, setValue]);
+
+
 
 
 
