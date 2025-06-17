@@ -94,7 +94,7 @@ const ProductSelector = ({
                 product_variation_id: variation.id,
             }))
         ).flat(1) || []
-    }, [options, isLoadingOptions]);
+    }, [options, isLoadingOptions, category]);
 
     const optionsToDisplay = React.useMemo(() => {
         if (!options) return [];
@@ -106,7 +106,7 @@ const ProductSelector = ({
             });
         }
         return baseOptions;
-    }, [options, searchText, baseOptions]);
+    }, [options, searchText, baseOptions, category, isLoadingOptions]);
 
 
     const handleSelect = (value: {
