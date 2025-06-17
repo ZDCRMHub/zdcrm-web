@@ -290,7 +290,7 @@ const Page = () => {
         external_id: data.external_id,
         is_active: data.is_active,
         image: imageUrl,
-        branch: data.branch
+        branch_id: parseInt(data.branch)
       }
 
       if (editingProductId) {
@@ -480,7 +480,7 @@ const Page = () => {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
                     <SelectSingleCombo
-                      name='branch'
+                      name='branch_id'
                       label="Branch"
                       options={branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []}
                       value={selectedBranch?.toString() || ""}
