@@ -329,8 +329,8 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                         <div className="space-y-4 mt-1">
                           {
                             order?.items.map((item, index: number) => {
-                               const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
-                                const itemImage = item.product.image || `/img/placeholders/${itemCategory}.svg`
+                              const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
+                              const itemImage = item.product.image || `/img/placeholders/${itemCategory}.svg`
                               return (
                                 <article key={item.id} className="flex border rounded-2xl p-6">
                                   <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
@@ -402,16 +402,34 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                                     </section>
 
                                     <section className="flex items-center justify-between pt-1 border-t">
-                                      <p className="text-[#111827] font-medium text-sm">
+                                      {/* <p className="text-[#111827] font-medium text-sm">
                                         <span className="text-[#687588] italic font-light text-[0.8rem]">
                                           Production Cost:{" "}
                                         </span>
-                                      </p>
-                                      <p className="font-medium text-[#194A7A]">
-                                        Amount:{" "}
+                                      </p> */}
+                                      <p className="font-medium text-[#194A7A] ml-auto">
+                                        Total Amount:{" "}
                                         <span className="font-bold">
-                                          {formatCurrency(Number(item.product_variation.selling_price) || 0, 'NGN')}
-                                          {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                          {
+                                            formatCurrency(
+                                              (
+                                                Number(item.product_variation.selling_price || 0) +
+                                                item.miscellaneous
+                                                  .map(misc => Number(misc.cost) || 0)
+                                                  .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
+                                                item.properties.reduce((acc, property) => {
+                                                  const value =
+                                                    Number(property.bouquet_selling_at_order || 0) +
+                                                    Number(property.glass_vase_selling_at_order || 0) +
+                                                    Number(property.toppings_selling_at_order || 0) +
+                                                    Number(property.layers_selling_at_order || 0) +
+                                                    Number(property.whipped_cream_selling_at_order || 0);
+                                                  return acc + value;
+                                                }, 0)
+                                              ) * Number(item.quantity || 0),
+                                              'NGN'
+                                            )
+                                          }
                                         </span>
                                       </p>
                                     </section>

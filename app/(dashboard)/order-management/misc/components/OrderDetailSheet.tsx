@@ -548,7 +548,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                                 })}
                                               </div>
                                             ))}
-                                         
+
                                             {item.inventories[0]?.instruction && (
                                               <p className="text-[#111827] font-medium">
                                                 <span className="text-[#687588]">Instructions:</span>{" "}
@@ -569,16 +569,34 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                       </section>
 
                                       <section className="flex items-center justify-between pt-1 border-t">
-                                        <p className="text-[#111827] font-medium text-sm">
+                                        {/* <p className="text-[#111827] font-medium text-sm">
                                           <span className="text-[#687588] italic font-light text-[0.8rem]">
                                             Production Cost:{" "}
                                           </span>
-                                        </p>
-                                        <p className="font-medium text-[#194A7A]">
-                                          Amount:{" "}
+                                        </p> */}
+                                        <p className="font-medium text-[#194A7A] ml-auto">
+                                          Total Amount:{" "}
                                           <span className="font-bold">
-                                            {formatCurrency(Number(item.product_variation.selling_price) || 0, 'NGN')}
-                                            {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                            {
+                                              formatCurrency(
+                                                (
+                                                  Number(item.product_variation.selling_price || 0) +
+                                                  item.miscellaneous
+                                                    .map(misc => Number(misc.cost) || 0)
+                                                    .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
+                                                  item.properties.reduce((acc, property) => {
+                                                    const value =
+                                                      Number(property.bouquet_selling_at_order || 0) +
+                                                      Number(property.glass_vase_selling_at_order || 0) +
+                                                      Number(property.toppings_selling_at_order || 0) +
+                                                      Number(property.layers_selling_at_order || 0) +
+                                                      Number(property.whipped_cream_selling_at_order || 0);
+                                                    return acc + value;
+                                                  }, 0)
+                                                ) * Number(item.quantity || 0),
+                                                'NGN'
+                                              )
+                                            }
                                           </span>
                                         </p>
                                       </section>
@@ -605,7 +623,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       >
                         <EditPenIcon className="h-5 w-5" />
                       </LinkButton>
-                    
+
                     </div>
                     <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
                       {[
