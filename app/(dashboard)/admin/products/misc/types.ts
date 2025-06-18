@@ -14,7 +14,10 @@ export interface TProductItem {
   created_by: Recentlyupdatedby;
   create_date: string;
   update_date: string;
+  branch: TBranch | null;
 }
+
+
 
 interface Variation {
   id: number;
@@ -66,6 +69,7 @@ export interface ProductsQueryParams {
 
 
 import { z } from "zod"
+import { TBranch } from "../../branches/misc/api/getAllBranches";
 
 const imageSchema = z
   .object({

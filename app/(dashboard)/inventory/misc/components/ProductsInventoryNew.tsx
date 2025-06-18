@@ -18,7 +18,6 @@ import {
 } from "@/components/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { APIAxios } from "@/utils/axios";
-import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import ErrorModal from "@/components/ui/modal-error";
 import useErrorModalState from "@/hooks/useErrorModalState";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
@@ -41,7 +40,6 @@ const MAX_FILE_SIZE = 1000000;
 const schema = z.object({
   name: z.string().min(1, { message: 'Item name is required' }).max(255),
   category: z.number(),
-  branch: z.number(),
   image_one: z.any().nullable().refine(
     file => {
       if (!file) {
@@ -104,7 +102,6 @@ export default function NewProductInventorySheet() {
 
   const { data: categories, isLoading: categoriesLoading } =
     useGetProductCategories();
-  const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const {
     isErrorModalOpen,
     errorModalMessage,
@@ -198,25 +195,6 @@ export default function NewProductInventorySheet() {
             />
 
 
-            <Controller
-              name="branch"
-              control={control}
-              render={({ field }) => (
-                <SelectSingleCombo
-                  {...field}
-                  name='branch'
-                  value={field.value?.toString() || ''}
-                  options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                  valueKey='value'
-                  labelKey="label"
-                  placeholder='Select Branch'
-                  onChange={(value) => field.onChange(Number(value))}
-                  isLoadingOptions={branchesLoading}
-                  hasError={!!errors.branch}
-                  errorMessage={errors.branch?.message}
-                />
-              )}
-            />
 
             <Controller
               name="category"

@@ -134,7 +134,7 @@ const Page = () => {
   const { data: categories } = useGetCategories()
   const createProductMutation = useCreateProduct()
   const updateProductMutation = useUpdateProduct()
-  const { mutate: updateVariationStatus, isPending:isUpdatingVariationStatus } = useUpdateProductVariationStatus()
+  const { mutate: updateVariationStatus, isPending: isUpdatingVariationStatus } = useUpdateProductVariationStatus()
 
   const {
     data: productsData,
@@ -802,7 +802,7 @@ const Page = () => {
             {productsData?.data?.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="font-medium">{product.name}</TableCell>
-                {/* <TableCell className="font-medium">{product.bra}</TableCell> */}
+                <TableCell className="font-medium">{product.branch?.name}</TableCell>
                 <TableCell>{product.category.name}</TableCell>
                 <TableCell>
                   <div className="space-y-2">
@@ -948,7 +948,7 @@ const Page = () => {
                                   )}
                                 />
                                 {
-                                  isUpdatingVariationStatus && <SmallSpinner/>
+                                  isUpdatingVariationStatus && <SmallSpinner />
                                 }
                               </SelectTrigger>
                               <SelectContent>

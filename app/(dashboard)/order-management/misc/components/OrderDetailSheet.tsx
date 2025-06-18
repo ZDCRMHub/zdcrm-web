@@ -449,7 +449,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                         variant="yellow"
                         onClick={() => printNote(
                           {
-                            note: order?.delivery.note || '',
+                            note: order?.message || '',
                             orderNumber: order?.order_number,
                             title: "Order Notes",
                           }
@@ -460,9 +460,9 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                     </header>
                     <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
                       <Input
-                        value={order?.delivery.note || "No note"}
+                        value={order?.message || "No note"}
                         readOnly
-                        containerClassName={cn("w-full", !order?.delivery.note && "text-[#687588] italic")}
+                        containerClassName={cn("w-full", !order?.message && "text-[#687588] italic")}
                         rightIcon={
                           <Link href={`/order-management/orders/edit?order_id=${order?.id}`} className="">
                             <EditPenIcon width={20} height={20} />
