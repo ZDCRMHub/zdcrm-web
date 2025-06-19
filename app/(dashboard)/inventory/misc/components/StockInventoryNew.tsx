@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AmountInput, Button, SelectSingleCombo } from '@/components/ui';
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
 import { PRODUCT_TYPES_OPTIONS } from '@/constants';
 import useCloudinary from '@/hooks/useCloudinary';
 import { useLoading } from '@/contexts';
@@ -39,7 +38,6 @@ const MAX_FILE_SIZE = 1000000;
 const schema = z.object({
     name: z.string().min(1, { message: 'Item name is required' }).max(255),
     category: z.number(),
-    branch: z.number(),
     image_one: z.any().nullable().refine(
         file => {
             if (!file) {
@@ -106,7 +104,6 @@ export default function NewInventorySheet() {
     });
 
     const { data: categories, isLoading: categoriesLoading } = useGetStockCategories();
-    const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
     const { uploadToCloudinary } = useCloudinary()
     const { isUploading } = useLoading()
     const {
@@ -212,26 +209,6 @@ export default function NewInventorySheet() {
 
 
                         <Controller
-                            name="branch"
-                            control={control}
-                            render={({ field }) => (
-                                <SelectSingleCombo
-                                    {...field}
-                                    name='branch'
-                                    value={field.value?.toString() || ''}
-                                    options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                                    valueKey='value'
-                                    labelKey="label"
-                                    placeholder='Select Branch'
-                                    onChange={(value) => field.onChange(Number(value))}
-                                    isLoadingOptions={branchesLoading}
-                                    hasError={!!errors.branch}
-                                    errorMessage={errors.branch?.message}
-                                />
-                            )}
-                        />
-
-                        <Controller
                             name="category"
                             control={control}
                             render={({ field }) => (
@@ -257,7 +234,8 @@ export default function NewInventorySheet() {
                             fields.map((field, index) => (
                                 <div key={field.id} className="space-y-4">
                                     <h3 className="font-semibold">Variation {index + 1}</h3>
-                                    {watch('category') === 8 ? (
+                                    {
+                                        watch('category') === 8 &&
                                         <Controller
                                             name={`variations.${index}.size`}
                                             control={control}
@@ -277,8 +255,10 @@ export default function NewInventorySheet() {
                                                 />
                                             )}
                                         />
-                                    )
-                                        :
+
+                                    }
+                                    {
+                                        watch('category') == 9 &&
                                         <Controller
                                             name={`variations.${index}.size`}
                                             control={control}
@@ -296,7 +276,6 @@ export default function NewInventorySheet() {
                                             )}
                                         />
                                     }
-
                                     {watch('category') === 10 && (
                                         <Controller
                                             name={`variations.${index}.flavour`}
@@ -305,10 +284,8 @@ export default function NewInventorySheet() {
                                                 <Input
                                                     {...field}
                                                     value={field.value || ''}
-                                                    // label="Flavor"
-                                                    label="Size"
-                                                    // placeholder='Flavour'
-                                                    placeholder='sizex'
+                                                    label="Flavour"
+                                                    placeholder='Enter flavour'
                                                     hasError={!!errors.variations?.[index]?.flavour}
                                                     errorMessage={errors.variations?.[index]?.flavour?.message}
                                                 />

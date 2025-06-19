@@ -66,8 +66,8 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                                         </div>
                                         <span>{order.user?.name}</span>
                                     </div>
-                                    <p className='text-xs text-[#F84343] shrink-0'>
-                                        {format(order.create_date, 'hh:mm a')}
+                                    <p className='text-[0.675rem] text-[#F84343] shrink-0'>
+                                        {format(order.create_date, 'dd/MM/yyyy hh:mm a')}
                                     </p>
                                 </div>
                             )}
@@ -94,8 +94,8 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                                                         </div>
                                                         <span>{discussion.user?.name}</span>
                                                     </div>
-                                                    <p className='text-xs text-[#F84343]'>
-                                                        {format(discussion.create_date, 'hh:mm a')}
+                                                    <p className='text-[0.675rem] text-[#F84343] shrink-0'>
+                                                        {format(order.create_date, 'dd/MM/yyyy hh:mm a')}
                                                     </p>
                                                 </div>
                                             </li>
@@ -111,7 +111,7 @@ const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false
                                         <SelectTrigger className="max-w-[200px] text-sm min-w-[150px]">
                                             <SelectValue placeholder="Status" />
                                             {
-                                                isPending && <Spinner/>
+                                                isPending && <Spinner />
                                             }
                                         </SelectTrigger>
                                         <SelectContent>

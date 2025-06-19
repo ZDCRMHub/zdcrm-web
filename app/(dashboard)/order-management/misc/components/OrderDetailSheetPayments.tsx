@@ -297,7 +297,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     <p>{convertKebabAndSnakeToTitleCase(order?.payment_options)}</p>
                   </div>
                 </section>
-1234567890
+                1234567890
                 <section className="mt-16 mb-8">
                   <header className="border-b border-b-[#00000021]">
                     <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
@@ -507,16 +507,29 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                                     </section>
 
                                     <section className="flex items-center justify-between pt-1 border-t">
-                                      <p className="text-[#111827] font-medium text-sm">
-                                        <span className="text-[#687588] italic font-light text-[0.8rem]">
-                                          Production Cost:{" "}
-                                        </span>
-                                      </p>
-                                      <p className="font-medium text-[#194A7A]">
-                                        Amount:{" "}
+                                      <p className="font-medium text-[#194A7A] ml-auto">
+                                        Total Amount:{" "}
                                         <span className="font-bold">
-                                          {formatCurrency(Number(item.product_variation.selling_price) || 0, 'NGN')}
-                                          {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                          {
+                                            formatCurrency(
+                                              (
+                                                Number(item.product_variation.selling_price || 0) +
+                                                item.miscellaneous
+                                                  .map(misc => Number(misc.cost) || 0)
+                                                  .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
+                                                item.properties.reduce((acc, property) => {
+                                                  const value =
+                                                    Number(property.bouquet_selling_at_order || 0) +
+                                                    Number(property.glass_vase_selling_at_order || 0) +
+                                                    Number(property.toppings_selling_at_order || 0) +
+                                                    Number(property.layers_selling_at_order || 0) +
+                                                    Number(property.whipped_cream_selling_at_order || 0);
+                                                  return acc + value;
+                                                }, 0)
+                                              ) * Number(item.quantity || 0),
+                                              'NGN'
+                                            )
+                                          }
                                         </span>
                                       </p>
                                     </section>
