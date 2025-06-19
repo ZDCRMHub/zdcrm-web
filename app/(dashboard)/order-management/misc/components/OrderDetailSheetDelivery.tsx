@@ -1,12 +1,10 @@
 import React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox, Button, LinkButton, CardTitle, Spinner } from "@/components/ui";
-import { Mail, MessageCircle, User, X } from "lucide-react";
+import { Button, LinkButton, CardTitle, Spinner } from "@/components/ui";
+import { Mail, X } from "lucide-react";
 import {
   Book,
   Notepad2,
   UserOctagon,
-  Printer,
   EmojiHappy,
   ProfileCircle,
   UserEdit,
@@ -20,7 +18,6 @@ import {
   SheetClose,
   SheetContent,
   SheetTitle,
-  SheetTrigger,
   CardHeader,
   Card,
   CardContent,
@@ -37,8 +34,8 @@ import {
 import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
-import { ORDER_STATUS_OPTIONS } from "@/constants";
-import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
+import { ORDER_DELIVERY_STATUS_OPTIONS } from "@/constants";
+import { useGetOrderDetail, useUpdateDeliveryStatus, useUpdateOrderPaymentMethod, } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
@@ -57,9 +54,8 @@ interface OrderDetailsPanelProps {
 }
 
 export default function OrderDetailSheetDelivery({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
-  const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
-  const { mutate: updatePaymentMethod, isPending: isUpdatingPaymentMethod } = useUpdateOrderPaymentMethod()
-  const { data: order, isLoading } = useGetOrderDetail(default_order?.id, isSheetOpen);
+  const { mutate, isPending: isUpdatingStatus } = useUpdateDeliveryStatus()
+  const { data: order, isLoading, refetch, isFetching } = useGetOrderDetail(default_order?.id, isSheetOpen);
   const {
     state: isEditDeliveryDetailsModalOpen,
     setTrue: openEditDeliveryDetailsModal,
@@ -67,11 +63,12 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
   } = useBooleanStateControl();
 
   const handleStatusUpdate = (new_status: string) => {
-    mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
+    mutate({ id: default_order?.id, status: new_status },
 
       {
         onSuccess: (data) => {
           toast.success("Order status updated successfully");
+          refetch();
         },
         onError: (error) => {
           const errorMessage = formatAxiosErrorMessage(error as unknown as any) || extractErrorMessage(error as unknown as any);
@@ -95,7 +92,13 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
             <span className="bg-[#E8EEFD] p-2 rounded-full">
               <Book size={25} variant="Bold" color="#194A7A" />
             </span>
-            <span>Order Details</span>
+            <span className="flex items-center gap-1.5">
+              Order Details
+
+              {
+                isFetching && <Spinner size={18} />
+              }
+            </span>
           </h2>
         </SheetTitle>
         <SheetClose className="absolute top-1/2 left-[-100%]">
@@ -117,28 +120,23 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                     <span className="text-sm">Order ID: {order?.order_number}</span>
                   </div>
 
-                  <Select value={order?.status} defaultValue={order?.status} onValueChange={(new_value) => handleStatusUpdate(new_value)}>
+                  <Select value={order?.delivery.status} defaultValue={order?.delivery.status} onValueChange={(new_value) => handleStatusUpdate(new_value)}>
                     <SelectTrigger className="w-[150px] bg-transparent">
-                      <SelectValue placeholder={order?.status} />
+                      <SelectValue placeholder={order?.delivery.status} />
                       {
                         isUpdatingStatus && <Spinner size={18} />
                       }
                     </SelectTrigger>
                     <SelectContent>
                       {
-                        ORDER_STATUS_OPTIONS.map((option) => (
-                          <>
-                            {
-                              (option.value == "STD" || option.value == "COM" || option.value == "CAN") &&
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                                className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
-                              >
-                                {option.label}
-                              </SelectItem>
-                            }
-                          </>
+                        ORDER_DELIVERY_STATUS_OPTIONS.map((option) => (
+                          <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+                          >
+                            {option.label}
+                          </SelectItem>
                         ))
                       }
                     </SelectContent>

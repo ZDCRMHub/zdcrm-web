@@ -569,11 +569,6 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                       </section>
 
                                       <section className="flex items-center justify-between pt-1 border-t">
-                                        {/* <p className="text-[#111827] font-medium text-sm">
-                                          <span className="text-[#687588] italic font-light text-[0.8rem]">
-                                            Production Cost:{" "}
-                                          </span>
-                                        </p> */}
                                         <p className="font-medium text-[#194A7A] ml-auto">
                                           Total Amount:{" "}
                                           <span className="font-bold">

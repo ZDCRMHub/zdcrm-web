@@ -45,7 +45,7 @@ import { useGetCategories } from "../../inventory/misc/api"
 import { SmallSpinner } from "@/icons/core"
 import { useGetAllBranches } from "../branches/misc/api"
 import { useUpdateProductVariationStatus } from "./misc/api/editProduct"
-
+import { Copy } from "iconsax-react"
 
 interface ProductFormValues {
   branch: string
@@ -110,12 +110,12 @@ const useAddVariation = () => {
   })
 }
 
-
 const Page = () => {
-  const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
+  const { data: branches, isLoading: branchesLoading } = useGetAllBranches()
 
   // Boolean states
   const isSheetOpen = useBooleanStateControl(false)
+  const isVariationSheetOpen = useBooleanStateControl(false)
   const isSuccessModal = useBooleanStateControl(false)
   const isErrorModal = useBooleanStateControl(false)
   const isInitialLoading = useBooleanStateControl(true)
@@ -127,6 +127,11 @@ const Page = () => {
   const [errorMessage, setErrorMessage] = React.useState("")
   const [successMessage, setSuccessMessage] = React.useState("")
   const [editingProductId, setEditingProductId] = React.useState<number | null>(null)
+  const [editingVariationData, setEditingVariationData] = React.useState<{
+    productId: number
+    variation?: any
+    categoryName: string
+  } | null>(null)
 
   const debouncedSearchText = useDebounce(searchTerm, 300)
 
@@ -147,8 +152,6 @@ const Page = () => {
     size: pageSize,
     search: debouncedSearchText || undefined,
   })
-
-
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -173,6 +176,17 @@ const Page = () => {
           selling_price: "",
         },
       ],
+    },
+  })
+
+  // Separate form for variation editing
+  const variationForm = useForm({
+    defaultValues: {
+      size: "",
+      layer: "",
+      max_flowers: 0,
+      cost_price: "",
+      selling_price: "",
     },
   })
 
@@ -202,6 +216,14 @@ const Page = () => {
       setEditingProductId(null)
     }
   }, [isSheetOpen.state, form])
+
+  // Reset variation form when sheet is closed
+  useEffect(() => {
+    if (!isVariationSheetOpen.state) {
+      variationForm.reset()
+      setEditingVariationData(null)
+    }
+  }, [isVariationSheetOpen.state, variationForm])
 
   // Set initial loading state
   useEffect(() => {
@@ -244,9 +266,10 @@ const Page = () => {
 
     // Set up the form with existing product data
     form.reset({
+      branch: product.branch?.id.toString() || "all",
       name: product.name,
       category_id: product.category.id,
-      category_name: product.category.name, // Set the category_name
+      category_name: product.category.name,
       external_id: product.external_id || "",
       is_active: product.is_active,
       image: {
@@ -260,6 +283,70 @@ const Page = () => {
     isSheetOpen.setTrue()
   }
 
+  // New function to handle product duplication
+  const handleDuplicateProduct = (product: TProductItem) => {
+    // Transform the product data to match our form structure, but remove IDs for duplication
+    const formVariations = product.variations.map((variation) => {
+      return {
+        size: variation.size || "",
+        layer: variation.layer || undefined,
+        max_flowers: variation.max_flowers || undefined,
+        cost_price: variation.cost_price || "0",
+        selling_price: variation.selling_price || "0",
+        // Don't include ID for new variations
+      }
+    })
+
+    // If no variations, add a default one
+    if (formVariations.length === 0) {
+      formVariations.push({
+        size: "",
+        cost_price: "0",
+        selling_price: "0",
+        layer: undefined,
+        max_flowers: undefined,
+      })
+    }
+
+    // Set up the form with duplicated product data
+    form.reset({
+      branch: product.branch?.id.toString() || "all",
+      name: `${product.name} (Copy)`, // Add "(Copy)" to indicate it's a duplicate
+      category_id: product.category.id,
+      category_name: product.category.name,
+      external_id: "", // Clear external_id for new product
+      is_active: product.is_active,
+      image: {
+        file: null,
+        url: product.image || "",
+      },
+      variations: formVariations,
+    })
+
+    // Don't set editingProductId since this is a new product
+    setEditingProductId(null)
+    isSheetOpen.setTrue()
+  }
+
+  // New function to handle variation duplication
+  const handleDuplicateVariation = (product: TProductItem, variation: any) => {
+    // Set up the variation form with duplicated data
+    variationForm.reset({
+      size: `${variation.size} (Copy)`, // Add "(Copy)" to indicate it's a duplicate
+      layer: variation.layer || "",
+      max_flowers: variation.max_flowers || 0,
+      cost_price: variation.cost_price || "0",
+      selling_price: variation.selling_price || "0",
+    })
+
+    setEditingVariationData({
+      productId: product.id,
+      categoryName: product.category.name,
+    })
+
+    isVariationSheetOpen.setTrue()
+  }
+
   // Helper function to determine category type
   const getCategoryType = (categoryName: string): "Cake" | "Flower" | "Other" => {
     if (categoryName.toLowerCase() == "cake") return "Cake"
@@ -271,8 +358,6 @@ const Page = () => {
   const editVariationMutation = useEditVariation()
   const deleteVariationMutation = useDeleteVariation()
   const addVariationMutation = useAddVariation()
-
-
 
   const onSubmit = async (data: ProductFormValues) => {
     try {
@@ -290,7 +375,7 @@ const Page = () => {
         external_id: data.external_id,
         is_active: data.is_active,
         image: imageUrl,
-        branch_id: parseInt(data.branch)
+        branch_id: Number.parseInt(data.branch),
       }
 
       if (editingProductId) {
@@ -390,10 +475,46 @@ const Page = () => {
     }
   }
 
+  // New function to handle variation form submission
+  const onVariationSubmit = (data: any) => {
+    if (!editingVariationData) return
+
+    const categoryName = editingVariationData.categoryName
+    const isCake = categoryName.toLowerCase() == "cake"
+    const isFlower = categoryName.toLowerCase().includes("flower")
+
+    const variationData = {
+      size: data.size,
+      cost_price: data.cost_price,
+      selling_price: data.selling_price,
+      ...(isCake ? { layer: data.layer } : {}),
+      ...(isFlower ? { max_flowers: data.max_flowers } : {}),
+    }
+
+    addVariationMutation.mutate(
+      {
+        productId: editingVariationData.productId,
+        data: variationData,
+      },
+      {
+        onSuccess: () => {
+          setSuccessMessage("Variation added successfully")
+          isSuccessModal.setTrue()
+          isVariationSheetOpen.setFalse()
+        },
+        onError: (error) => {
+          const errMessage = extractErrorMessage((error as any)?.response?.data)
+          setErrorMessage(errMessage || "Failed to add variation")
+          isErrorModal.setTrue()
+        },
+      },
+    )
+  }
+
   const handleVariationStatusChange = (id: number, value: boolean) => {
     updateVariationStatus(
       {
-        id
+        id,
       },
       {
         onSuccess: () => {
@@ -480,18 +601,20 @@ const Page = () => {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
                     <SelectSingleCombo
-                      name='branch_id'
+                      name="branch_id"
                       label="Branch"
-                      options={branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []}
+                      options={
+                        branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []
+                      }
                       value={selectedBranch?.toString() || ""}
                       onChange={(value) => form.setValue("branch", value)}
-                      valueKey='value'
-                      labelKey='label'
+                      valueKey="value"
+                      labelKey="label"
                       isLoadingOptions={branchesLoading}
-                      placeholder='Select branch'
-                      className='w-full !h-14 text-[#8B909A] text-xs'
-                      placeHolderClass='text-[#8B909A] text-xs'
-                      triggerColor='#8B909A'
+                      placeholder="Select branch"
+                      className="w-full !h-14 text-[#8B909A] text-xs"
+                      placeHolderClass="text-[#8B909A] text-xs"
+                      triggerColor="#8B909A"
                       showSelectedValue={false}
                     />
 
@@ -510,7 +633,6 @@ const Page = () => {
                         </FormItem>
                       )}
                     />
-
 
                     <FormField
                       control={form.control}
@@ -552,7 +674,6 @@ const Page = () => {
                         </FormItem>
                       )}
                     />
-
 
                     <FormField
                       control={form.control}
@@ -774,6 +895,127 @@ const Page = () => {
             </Sheet>
           </div>
         </div>
+
+        {/* Variation Sheet */}
+        <Sheet open={isVariationSheetOpen.state} onOpenChange={isVariationSheetOpen.setState}>
+          <SheetContent className="overflow-y-auto w-[400px] sm:max-w-[400px]">
+            <SheetHeader>
+              <SheetTitle className="text-2xl font-bold pb-4">Add New Variation</SheetTitle>
+            </SheetHeader>
+
+            <Form {...variationForm}>
+              <form onSubmit={variationForm.handleSubmit(onVariationSubmit)} className="space-y-6 pt-2">
+                <FormField
+                  control={variationForm.control}
+                  name="size"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Size <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className="h-14" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {editingVariationData?.categoryName.toLowerCase() === "cake" && (
+                  <FormField
+                    control={variationForm.control}
+                    name="layer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Layer <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-14" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {editingVariationData?.categoryName.toLowerCase().includes("flower") && (
+                  <FormField
+                    control={variationForm.control}
+                    name="max_flowers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Max Flowers <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) => field.onChange(Number.parseInt(e.target.value) || 0)}
+                            className="h-14"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                <FormField
+                  control={variationForm.control}
+                  name="cost_price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Cost Price <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className="h-14" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={variationForm.control}
+                  name="selling_price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Selling Price <span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} className="h-14" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <SheetFooter className="pt-4">
+                  <SheetClose asChild>
+                    <Button
+                      type="button"
+                      className="w-full bg-white text-black border border-solid h-14"
+                      onClick={() => {
+                        variationForm.reset()
+                        isVariationSheetOpen.setFalse()
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </SheetClose>
+                  <Button type="submit" className="w-full bg-[#111827] h-14" disabled={addVariationMutation.isPending}>
+                    {addVariationMutation.isPending ? <Spinner className="ml-2" /> : "Add Variation"}
+                  </Button>
+                </SheetFooter>
+              </form>
+            </Form>
+          </SheetContent>
+        </Sheet>
+
         <div className="flex items-center gap-4 h-3 my-4">
           <div className="overflow-hidden rounded-full mb-1 grow">
             <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
@@ -811,7 +1053,8 @@ const Page = () => {
                         <div key={variation.id} className="flex items-center justify-between border rounded p-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">{variation.size}
+                              <span className="font-medium">
+                                {variation.size}
                                 {product.category.name == "Cake" && " inches"}
                               </span>
                               <span className="text-sm text-muted-foreground">
@@ -921,9 +1164,7 @@ const Page = () => {
                                         </SheetClose>
                                         <Button type="submit">
                                           Save Changes
-                                          {
-                                            updateProductMutation.isPending && <SmallSpinner className="ml-2" />
-                                          }
+                                          {updateProductMutation.isPending && <SmallSpinner className="ml-2" />}
                                         </Button>
                                       </SheetFooter>
                                     </form>
@@ -932,6 +1173,16 @@ const Page = () => {
                               </SheetContent>
                             </Sheet>
 
+                            {/* Duplicate Variation Button */}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleDuplicateVariation(product, variation)}
+                              title="Duplicate variation"
+                            >
+                              <Copy className="h-4 w-4" />
+                            </Button>
 
                             <Select
                               value={variation.is_active ? "active" : "deactive"}
@@ -944,19 +1195,19 @@ const Page = () => {
                                     "h-10",
                                     variation.is_active
                                       ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
-                                      : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none"
+                                      : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none",
                                   )}
                                 />
-                                {
-                                  isUpdatingVariationStatus && <SmallSpinner />
-                                }
+                                {isUpdatingVariationStatus && <SmallSpinner />}
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
                                   <SelectItem className="h-9 text-xs" value="active">
                                     Active
                                   </SelectItem>
-                                  <SelectItem className="h-9 text-xs" value="deactive">Inactive</SelectItem>
+                                  <SelectItem className="h-9 text-xs" value="deactive">
+                                    Inactive
+                                  </SelectItem>
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
@@ -1005,6 +1256,7 @@ const Page = () => {
 
                         // Pre-fill the form with the existing product data
                         form.reset({
+                          branch: product.branch?.id.toString() || "all",
                           name: product.name,
                           category_id: product.category.id,
                           category_name: product.category.name,
@@ -1033,6 +1285,14 @@ const Page = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-[10px]">
+                    {/* Duplicate Product Button */}
+                    <div
+                      className="p-2 rounded-lg bg-[#10B981] flex items-center cursor-pointer"
+                      onClick={() => handleDuplicateProduct(product)}
+                      title="Duplicate product"
+                    >
+                      <Copy color="#fff" size={20} />
+                    </div>
 
                     <div
                       className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
