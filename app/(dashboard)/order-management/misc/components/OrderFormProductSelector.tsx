@@ -30,6 +30,7 @@ export function generateCustomLabel(item: any, format: CustomLabelFormat): strin
 interface SelectProps extends VariantProps<typeof buttonVariants> {
     productId: string;
     variationId: string;
+    branch?: string | number;
     category: string
     setProductId: (value: string) => void;
     setVariationId: (value: string) => void;
@@ -58,6 +59,7 @@ const ProductSelector = ({
     productId,
     variationId,
     category,
+    branch,
     setProductId,
     setVariationId,
     options,
@@ -181,6 +183,9 @@ const ProductSelector = ({
                                     isLoadingOptions ?
                                         "Loading options..."
                                         :
+                                        !branch ?
+                                            "Select Branch First"
+                                            :
 
                                         (productId && variationId && options && options?.length) ?
                                             getLabel(options?.find((option) => option.id === Number(productId))) || "Select Product"

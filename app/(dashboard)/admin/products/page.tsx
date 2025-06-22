@@ -606,7 +606,7 @@ const Page = () => {
                       options={
                         branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []
                       }
-                      value={selectedBranch?.toString() || ""}
+                      value={selectedBranch || ""}
                       onChange={(value) => form.setValue("branch", value)}
                       valueKey="value"
                       labelKey="label"
@@ -615,7 +615,6 @@ const Page = () => {
                       className="w-full !h-14 text-[#8B909A] text-xs"
                       placeHolderClass="text-[#8B909A] text-xs"
                       triggerColor="#8B909A"
-                      showSelectedValue={false}
                     />
 
                     <FormField

@@ -263,7 +263,7 @@ const OrderFormStockInventorySelector: React.FC<OrderFormStockInventorySelectorP
                                                         ) : null}
                                                     </div>
                                                     <span className="text-xs">
-                                                        {option.name} - {variation.size}
+                                                        {option.name} - {variation.size || variation.color  || variation.flavour}
                                                     </span>
                                                 </button>
                                             ))}
