@@ -218,6 +218,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                 <ProductSelector
                                     {...field}
                                     category={categoryName}
+                                    branch={watch('branch')}
                                     productId={field.value?.toString() || ''}
                                     variationId={watch(`items.${index}.product_variation_id`) || ''}
                                     setProductId={(value) => { setValue(`items.${index}.product_id`, Number(value)); }}
