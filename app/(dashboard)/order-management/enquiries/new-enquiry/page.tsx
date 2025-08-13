@@ -75,7 +75,14 @@ const NewEnquiryPage = () => {
         zone: "LM",
         method: "Dispatch",
         delivery_date: format(new Date(), 'yyyy-MM-dd'),
-        delivery_time: format(new Date(), 'HH:mm'),
+        delivery_time: format(
+          (() => {
+            const now = new Date();
+            now.setHours(now.getHours() + 2);
+            return now;
+          })(),
+          'HH:mm'
+        ),
         address: "",
         recipient_name: "",
         recipient_phone: "",
@@ -217,7 +224,7 @@ const NewEnquiryPage = () => {
                           />
                         </FormControl>
                         {
-                          watchedClientPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                          watchedClientPhoneNumber?.length == 11 && <Link href={`/order-management/client-history/${watchedClientPhoneNumber}`}>View history</Link>
                         }
                       </FormItem>
                     )}
@@ -583,7 +590,7 @@ const NewEnquiryPage = () => {
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
-                    defaultValue={watch('delivery.delivery_time')}
+                    
                     optional
                   />
                   <FormField

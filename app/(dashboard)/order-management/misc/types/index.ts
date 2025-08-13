@@ -135,19 +135,19 @@ export interface TOrderDiscussion {
   message: string;
   create_date: string;
 }
-interface Item {
-  id: number;
-  product: Product;
-  quantity: number;
-  miscellaneous: Miscellaneou[];
-  inventories: Inventory[];
-  custom_image: null;
-  create_date: string;
-  update_date: string;
-  price_at_order: string;
-  is_sorted: boolean;
-  properties: Property[];
-}
+// interface Item {
+//   id: number;
+//   product: Product;
+//   quantity: number;
+//   miscellaneous: Miscellaneou[];
+//   inventories: Inventory[];
+//   custom_image: string | null;
+//   create_date: string;
+//   update_date: string;
+//   price_at_order: string;
+//   is_sorted: boolean;
+//   properties: Property[];
+// }
 
 interface Property {
   id: number;

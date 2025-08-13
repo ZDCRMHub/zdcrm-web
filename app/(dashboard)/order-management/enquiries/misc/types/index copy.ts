@@ -1,36 +1,51 @@
-import { TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
+
+
+interface PropertyItem {
+  id: number;
+  name: string;
+  type: string;
+  type_display: string;
+  cost_price: string;
+  selling_price: string;
+  is_active: boolean;
+  create_date: string;
+  update_date: string;
+}
+
+import { TBranch, TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
+import { Productvariation, TOrderDeliveryInfo } from "../../../misc/types";
 
 export interface TEnquiry {
   id: number;
   customer: Customer;
   created_by: Createdby;
-  finalized_by: null;
-  converted_by: null;
-  deleted_by: null;
+  finalized_by: Createdby | null;
+  converted_by: Createdby | null;
+  deleted_by: Createdby | null;
   enquiry_channel: string;
   social_media_details: string;
   enquiry_occasion: string;
-  branch: Branch;
+  branch: TBranch;
   message: string;
   status: string;
   payment_status: string;
   payment_options: string;
   payment_currency: string;
-  initial_amount_paid: null;
-  amount_paid_in_usd: null;
+  initial_amount_paid: string | null;
+  amount_paid_in_usd: string | null;
   total_production_cost: string;
   total_selling_price: string;
   total_amount: string;
-  payment_proof: null;
-  payment_receipt_name: null;
-  delivery: Delivery;
+  payment_proof: string | null;
+  payment_receipt_name: string | null;
+  delivery: TOrderDeliveryInfo;
   items: Item[];
   discussions: TEnquiryDiscussion[];
   create_date: string;
   update_date: string;
 }
 
-interface TEnquiryDiscussion {
+export interface TEnquiryDiscussion {
   id: number;
   user: Createdby;
   message: string;
@@ -43,9 +58,9 @@ interface Item {
   product: Product;
   product_variation: Productvariation;
   quantity: number;
-  miscellaneous: any[];
+  miscellaneous: Miscellaneou[];
   inventories: Inventory[];
-  custom_image: null;
+  custom_image: string | null;
   create_date: string;
   update_date: string;
   properties: Property[];
@@ -70,24 +85,13 @@ interface Property {
   whipped_cream_selling_at_order: string | null;
 }
 
-interface PropertyItem {
-  id: number;
-  name: string;
-  type: string;
-  type_display: string;
-  cost_price: string;
-  selling_price: string;
-  is_active: boolean;
-  create_date: string;
-  update_date: string;
-}
 
 interface Inventory {
   id: number;
   stock_inventory: Stockinventory | null;
   product_inventory: Productinventory | null;
-  message: null;
-  instruction: string;
+  message: null | string;
+  instruction: null | string;
   variations: Variation[];
 }
 
@@ -115,8 +119,10 @@ interface Productinventory {
   name: string;
   category: TProductCategory;
   image_one: string;
+  cost_price: string;
   inventory_number: string;
 }
+
 interface Stockinventory {
   id: number;
   name: string;
@@ -124,62 +130,23 @@ interface Stockinventory {
   image_one: string;
   inventory_number: string;
 }
-interface Productvariation {
+
+interface Miscellaneou {
   id: number;
-  is_active: boolean;
-  size: string;
-  layer: null;
-  max_flowers: null;
-  cost_price: string;
-  selling_price: string;
-  quantity: number;
-  recently_updated_by: Createdby;
+  description: string;
+  cost: string;
 }
 
 interface Product {
   id: number;
   name: string;
   category: TProductCategory;
-  image: string;
-}
-
-
-interface Delivery {
-  id: number;
-  zone: string;
-  note: null;
-  delivery_time: string;
-  delivery_date: string;
-  method: string;
-  dispatch: Dispatch;
-  address: string;
-  residence_type: string;
-  recipient_name: string;
-  recipient_phone: string;
-  recipient_alternative_phone: string;
-  status: string;
-  driver_name: string | null;
-  driver_phone: string | null;
-  tracking_link: string | null;
-  delivery_platform: string | null;
-  fee: string | null;
-  is_custom_delivery: boolean;
-}
-
-interface Dispatch {
-  id: number;
-  state: string;
-  location: string;
-  delivery_price: string;
-}
-
-interface Branch {
-  id: number;
-  name: string;
-  country: string;
+  selling_price: string;
+  is_active: boolean;
   create_date: string;
   update_date: string;
 }
+
 
 interface Createdby {
   id: number;

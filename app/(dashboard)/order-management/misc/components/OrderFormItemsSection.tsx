@@ -125,26 +125,38 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     }, [propertyOptions?.data, products]);
 
 
-    useEffect(() => {
-        setValue(`items.${index}.inventories`, [{
-            message: '',
-            instruction: '',
-            quantity_used: 0,
-            variations: [],
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
+    React.useEffect(() => {
+        const currentInventories = watch(`items.${index}.inventories`)
 
-        }]);
-        setValue(`items.${index}.properties`, {
-            layers: '',
-            toppings: '',
-            bouquet: '',
-            glass_vase: '',
-            whipped_cream_upgrade: ''
-        });
-    }, [selectedCategory, index, setValue]);
+        if (
+            !currentInventories ||
+            currentInventories.length === 0 ||
+            (currentInventories.length === 1 && currentInventories?.[0]?.variations?.length === 0 && isInitialLoad)
+        ) {
+            setValue(`items.${index}.inventories`, [
+                {
+                    message: "",
+                    instruction: "",
+                    quantity_used: 0,
+                    variations: [],
+                },
+            ])
+
+            setValue(`items.${index}.properties`, {
+                layers: "",
+                toppings: "",
+                bouquet: "",
+                glass_vase: "",
+                whipped_cream_upgrade: "",
+            })
+        }
+
+        setIsInitialLoad(false)
+    }, [selectedCategory, index, setValue, watch, isInitialLoad])
 
 
-
-
+    
     return (
 
         <>
@@ -224,7 +236,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                 'Select product' :
                                                 'Select category first'
                                     }
-                                    isLoadingOptions={productsLoading || productsFetching}
+                                    isLoadingOptions={productsLoading}
                                     hasError={!!errors.items?.[index]?.product_id}
                                     errorMessage={errors.items?.[index]?.product_id?.message}
                                 />
@@ -322,7 +334,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         {
                                             categoryName === 'Flower' && (
                                                 <>
-                                                
+
 
 
                                                     <Controller

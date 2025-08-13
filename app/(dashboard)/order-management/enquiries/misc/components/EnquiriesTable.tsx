@@ -200,6 +200,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                   <TableCell>Status</TableCell>
                   <TableCell className="w-max max-w-[200px] min-w-[150px]">Created On</TableCell>
                   <TableCell className="w-max max-w-[200px] min-w-[150px]">Last Update</TableCell>
+                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Action</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -221,7 +222,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                           ))}
                         </TableCell>
                         <TableCell className="w-max max-w-[350px] min-w-[180px]">{enquiry.message}</TableCell>
-                       
+
                         <TableCell>
                           <div className="flex space-x-1">
                             {enquiry.items.map((item) => (
@@ -273,96 +274,90 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                               </PopoverContent>
                             </Popover>
 
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <ElipsisHorizontal className="h-6 w-6" />
-                                  <span className="sr-only">Open menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent
-                                align="end"
-                                className="py-0 px-0 w-[235px]"
-                              >
-                                {
-                                  type === "active" ? (
-                                    <>
-                                      <DropdownMenuItem>
-                                        <Link
-                                          href={`./enquiries/edit?enquiry_id=${enquiry.id}`}
-                                          className="w-full"
-                                        >
-                                          <span className="flex items-center gap-2 pl-6 py-3">
-                                            <Edit size={20} />
-                                            Edit Enquiry
-                                          </span>
-                                        </Link>
-                                      </DropdownMenuItem>
-
-                                      <DropdownMenuItem>
-                                        <Link
-                                          href={`./enquiries/${enquiry.id}`}
-                                          className="w-full"
-                                        >
-                                          <span className="flex items-center gap-2 pl-6 py-3">
-                                            <I3DRotate size={24} />
-                                            Enquiry Details
-                                          </span>
-                                        </Link>
-                                      </DropdownMenuItem>
-
-                                      <DropdownMenuItem
-                                        onSelect={() => {
-                                          setSelectedEnquiry(enquiry);
-                                          openConfirmDeleteModal();
-                                        }}
-                                        className="cursor-pointer"
-
-                                      >
-                                        <span className="flex items-center gap-2 pl-6  py-3">
-                                          <Trash size={24} />
-
-                                          Delete Enquiry
-                                        </span>
-                                      </DropdownMenuItem>
-                                    </>
-
-                                  )
-                                    :
-                                    (
-                                      <DropdownMenuItem
-                                        onSelect={() => {
-                                          setSelectedEnquiry(enquiry);
-                                          openConfirmRestoreModal();
-                                        }}
-                                        className="cursor-pointer"
-                                      >
-                                        <span className="flex items-center gap-2 pl-6  py-3">
-                                          {/* <Image
-                                src="/img/restore.svg"
-                                alt=""
-                                width={24}
-                                height={24}
-                              /> */}
-                                          Restore Enquiry
-                                        </span>
-                                      </DropdownMenuItem>
-                                    )
-                                }
-
-
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-
                           </div>
                         </TableCell>
-                         <TableCell className="">                      
-                              {format(new Date(enquiry.create_date), "EEE, do MMMM yyyy")}
+                        <TableCell className="">
+                          {format(new Date(enquiry.create_date), "EEE, do MMMM yyyy")}
 
                         </TableCell>
-                         <TableCell className="">                      
-                              {format(new Date(enquiry.update_date), "EEE, do MMMM yyyy")}
+                        <TableCell className="">
+                          {format(new Date(enquiry.update_date), "EEE, do MMMM yyyy")}
 
+                        </TableCell>
+                        <TableCell className="">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <ElipsisHorizontal className="h-6 w-6" />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="py-0 px-0 w-[235px]"
+                            >
+                              {
+                                type === "active" ? (
+                                  <>
+                                    <DropdownMenuItem>
+                                      <Link
+                                        href={`./enquiries/edit?enquiry_id=${enquiry.id}`}
+                                        className="w-full"
+                                      >
+                                        <span className="flex items-center gap-2 pl-6 py-3">
+                                          <Edit size={20} />
+                                          Edit Enquiry
+                                        </span>
+                                      </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem>
+                                      <Link
+                                        href={`./enquiries/${enquiry.id}`}
+                                        className="w-full"
+                                      >
+                                        <span className="flex items-center gap-2 pl-6 py-3">
+                                          <I3DRotate size={24} />
+                                          Enquiry Details
+                                        </span>
+                                      </Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem
+                                      onSelect={() => {
+                                        setSelectedEnquiry(enquiry);
+                                        openConfirmDeleteModal();
+                                      }}
+                                      className="cursor-pointer"
+
+                                    >
+                                      <span className="flex items-center gap-2 pl-6  py-3">
+                                        <Trash size={24} />
+
+                                        Delete Enquiry
+                                      </span>
+                                    </DropdownMenuItem>
+                                  </>
+
+                                )
+                                  :
+                                  (
+                                    <DropdownMenuItem
+                                      onSelect={() => {
+                                        setSelectedEnquiry(enquiry);
+                                        openConfirmRestoreModal();
+                                      }}
+                                      className="cursor-pointer"
+                                    >
+                                      <span className="flex items-center gap-2 pl-6  py-3">
+
+                                        Restore Enquiry
+                                      </span>
+                                    </DropdownMenuItem>
+                                  )
+                              }
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     )

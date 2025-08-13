@@ -574,7 +574,7 @@ const NewOrderPage = () => {
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
-                    defaultValue={watch('delivery.delivery_time')}
+                    
                   // placeholder="Select delivery date"
                   />
 

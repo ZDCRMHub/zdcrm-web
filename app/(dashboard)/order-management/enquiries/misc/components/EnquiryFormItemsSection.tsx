@@ -88,6 +88,8 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
     const isCustomOrder = watch(`items.${index}.is_custom_order`)
     const watchedInventories = watch(`items.${index}.inventories`)
 
+    console.log(watchedItemAtIndex)
+
     const { data: productsInvetories, isLoading: productInventoriesLoading, isFetching: productInventoriesFetching, error: productsError, refetch: refetchProductsInventory } = useGetProductsInventory({
         page: 1,
         size: 20000000000000,
@@ -100,6 +102,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         size: 20000000000000,
         category: Number(watchedItems?.[index]?.category),
     });
+
 
 
     const calcucateItemAmount = React.useCallback((items: TOrderFormItem) => {
@@ -130,25 +133,35 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
     }, [propertyOptions?.data, products]);
 
 
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
     React.useEffect(() => {
-        setValue(`items.${index}.inventories`, [{
-            message: '',
-            instruction: '',
-            quantity_used: 0,
-            variations: [],
+        const currentInventories = watch(`items.${index}.inventories`)
 
-        }]);
-        setValue(`items.${index}.properties`, {
-            layers: '',
-            toppings: '',
-            bouquet: '',
-            glass_vase: '',
-            whipped_cream_upgrade: ''
-        });
-    }, [selectedCategory, index, setValue]);
+        if (
+            !currentInventories ||
+            currentInventories.length === 0 ||
+            (currentInventories.length === 1 && currentInventories?.[0]?.variations?.length === 0 && isInitialLoad)
+        ) {
+            setValue(`items.${index}.inventories`, [
+                {
+                    message: "",
+                    instruction: "",
+                    quantity_used: 0,
+                    variations: [],
+                },
+            ])
 
+            setValue(`items.${index}.properties`, {
+                layers: "",
+                toppings: "",
+                bouquet: "",
+                glass_vase: "",
+                whipped_cream_upgrade: "",
+            })
+        }
 
-
+        setIsInitialLoad(false)
+    }, [selectedCategory, index, setValue, watch, isInitialLoad])
 
 
 
@@ -233,7 +246,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                                 'Select product' :
                                                 'Select category first'
                                     }
-                                    isLoadingOptions={productsLoading || productsFetching}
+                                    isLoadingOptions={productsLoading}
                                     hasError={!!errors.items?.[index]?.product_id}
                                     errorMessage={errors.items?.[index]?.product_id?.message}
                                 />
@@ -332,7 +345,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                                         {
                                             categoryName === 'Flower' && (
                                                 <>
-                                                  
+
                                                     <Controller
                                                         name={`items.${index}.properties.glass_vase`}
                                                         control={control}

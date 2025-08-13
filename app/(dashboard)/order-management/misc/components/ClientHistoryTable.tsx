@@ -15,10 +15,11 @@ import { convertNumberToNaira, formatCurrency } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
 import { Button, LinkButton, Spinner } from '@/components/ui';
-import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Inbox, } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase, maskString } from '@/utils/strings';
 import { TCustomerHistory } from '../api/getClientHistory';
+import Link from 'next/link';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -95,8 +96,11 @@ const OrderRow: React.FC<OrderRowProps> = ({ customer }) => {
                 <div>{formatCurrency(parseInt(customer.total_amount_spent), "NGN")}</div>
             </TableCell>
 
-
-
+            <TableCell className=''>
+                <Link href={`/order-management/client-history/${customer.phone}`}>
+                    {">>"}
+                </Link>
+            </TableCell>
         </TableRow>
     );
 };
