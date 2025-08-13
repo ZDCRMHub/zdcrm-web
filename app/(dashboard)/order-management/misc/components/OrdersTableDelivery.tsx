@@ -17,10 +17,11 @@ import { Button, LinkButton, Popover, PopoverContent, PopoverTrigger, Spinner } 
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
-import { ORDER_DELIVERY_STATUS_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
+import { ORDER_DELIVERY_STATUS_ENUMS } from '@/constants';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { useUpdateOrderStatus } from '../api';
+import { formatUniversalDate } from '@/utils/strings';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -87,7 +88,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div>{order.customer?.name}</div>
                 <div className='text-sm text-gray-500'>{order.customer.phone}</div>
             </TableCell>
-            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
+            <TableCell className=' uppercase'>{formatUniversalDate(order.delivery.delivery_date)}</TableCell>
             <TableCell className=''>
                 <div>{order.delivery.recipient_name}</div>
                 <div className='text-sm text-gray-500'>{order.delivery.recipient_phone}</div>
@@ -115,24 +116,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             isUpdatingStatus && <Spinner size={18} />
                         }
                     </PopoverTrigger>
-                    {/* <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
-                        {
-                            [
-                                { value: "STD", label: "Sent to Dispatch" },
-                                { value: "COM", label: "Delivered" },
-                                { value: "CAN", label: "Cancelled" },
-                            ].map((option) => (
-                                <button
-                                    key={option.value}
-                                    value={option.value}
-                                    onClick={() => handleStatusUpdate(option.value)}
-                                    className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
-                                >
-                                    {option.label}
-                                </button>
-                            ))
-                        }
-                    </PopoverContent> */}
                 </Popover>
 
 

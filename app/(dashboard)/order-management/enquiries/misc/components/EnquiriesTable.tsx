@@ -196,9 +196,10 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                   <TableCell>Customer Details</TableCell>
                   <TableCell >Enquiry Item</TableCell>
                   <TableCell className="w-max max-w-[350px] min-w-[180px]">Delivery Notes</TableCell>
-                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Delivery Date</TableCell>
                   <TableCell>Category</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Created On</TableCell>
+                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Last Update</TableCell>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -220,9 +221,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                           ))}
                         </TableCell>
                         <TableCell className="w-max max-w-[350px] min-w-[180px]">{enquiry.message}</TableCell>
-                        <TableCell className="uppercase">
-                          {format(new Date(enquiry.create_date), "dd/MMM/yyyy")}
-                        </TableCell>
+                       
                         <TableCell>
                           <div className="flex space-x-1">
                             {enquiry.items.map((item) => (
@@ -356,6 +355,14 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                             </DropdownMenu>
 
                           </div>
+                        </TableCell>
+                         <TableCell className="">                      
+                              {format(new Date(enquiry.create_date), "EEE, do MMMM yyyy")}
+
+                        </TableCell>
+                         <TableCell className="">                      
+                              {format(new Date(enquiry.update_date), "EEE, do MMMM yyyy")}
+
                         </TableCell>
                       </TableRow>
                     )

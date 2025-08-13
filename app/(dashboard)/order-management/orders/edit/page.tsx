@@ -11,6 +11,9 @@ import { Money, TruckTime, ShoppingBag } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+
 
 import useCloudinary from '@/hooks/useCloudinary';
 import {
@@ -49,13 +52,14 @@ import FormError from "@/components/ui/formError";
 import { formatCurrency } from "@/utils/currency";
 import { useBooleanStateControl } from "@/hooks";
 import { extractErrorMessage } from "@/utils/errors";
+import { useLoading } from "@/contexts";
+import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 
 import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
+import { TOrder } from "../../misc/types";
 import OrderFormItemsSection from "../../misc/components/OrderFormItemsSection";
 import { useCreateOrder, useGetOrderDeliveryLocations, useGetOrderDetail } from "../../misc/api";
-import { TOrder } from "../../misc/types";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useLoading } from "@/contexts";
+
 
 
 const NewOrderPage = () => {
@@ -253,6 +257,8 @@ const NewOrderPage = () => {
   const toggleCustomDelivery = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
+  const watchedClientPhoneNumber = watch('customer.phone')
+
 
 
   console.log(getValues('items'))
@@ -267,40 +273,23 @@ const NewOrderPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={["customer-information", "order-information", "delivery-information", "order-Instruction", "payment-information",]}
+            defaultValue={["client-information", "order-information", "delivery-information", "order-Instruction", "payment-information",]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            {/* /////////////                CUSTOMER INFORMATION                 ///////////// */}
+            {/* /////////////                CLIENT INFORMATION                 ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="customer-information">
+            <AccordionItem value="client-information">
               <AccordionTrigger className="py-4 flex">
                 <div className="flex items-center gap-5 text-[#194A7A]">
                   <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
                     <UserIcon className="text-custom-blue" stroke="#194a7a" fill="#194a7a" size={18} />
                   </div>
-                  <h3 className="text-custom-blue font-medium">Customer Information</h3>
+                  <h3 className="text-custom-blue font-medium">Client Information</h3>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
-                  <FormField
-                    control={control}
-                    name="customer.name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Customer's Name"
-                            hasError={!!errors.customer?.name}
-                            errorMessage={errors.customer?.name?.message}
-                            placeholder="Enter customer name"
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
                   <FormField
                     control={control}
                     name="customer.phone"
@@ -308,16 +297,37 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Customer's Phone Number"
+                            label="Client's Phone Number"
                             hasError={!!errors.customer?.phone}
                             errorMessage={errors.customer?.phone?.message}
-                            placeholder="Enter customer phone number"
+                            placeholder="Enter client phone number"
+                            {...field}
+                          />
+                        </FormControl>
+                        {
+                          watchedClientPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                        }
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="customer.name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Client's Name"
+                            hasError={!!errors.customer?.name}
+                            errorMessage={errors.customer?.name?.message}
+                            placeholder="Enter client name"
                             {...field}
                           />
                         </FormControl>
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={control}
                     name="customer.email"
@@ -325,11 +335,12 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Customer's Email"
+                            label="Client's Email"
                             hasError={!!errors.customer?.email}
                             errorMessage={errors.customer?.email?.message}
-                            placeholder="Enter customer email"
+                            placeholder="Enter client email"
                             {...field}
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -349,6 +360,7 @@ const NewOrderPage = () => {
                           {...field}
                           hasError={!!errors.enquiry_occasion}
                           errorMessage={errors.enquiry_occasion?.message}
+                          optional
                         />
                       </FormItem>
                     )}
@@ -367,8 +379,6 @@ const NewOrderPage = () => {
                           hasError={!!errors.enquiry_channel}
                           errorMessage={errors.enquiry_channel?.message}
                           {...field}
-                          value={watch('enquiry_channel')}
-
                         />
                       </FormItem>
                     )}
@@ -384,6 +394,7 @@ const NewOrderPage = () => {
                             hasError={!!errors.social_media_details}
                             errorMessage={errors.social_media_details?.message}
                             placeholder="Enter social media details"
+                            optional
                             {...field}
                           />
                         </FormControl>
@@ -393,6 +404,7 @@ const NewOrderPage = () => {
                 </div>
               </AccordionContent>
             </AccordionItem>
+
 
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -466,7 +478,7 @@ const NewOrderPage = () => {
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                 DELIVERY INFORMATION                ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="delivery-information" id="delivery-information-section">
+            <AccordionItem value="delivery-information">
               <AccordionTrigger className="py-4 flex">
                 <div className="flex items-center gap-5 text-[#194A7A]">
                   <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
@@ -476,28 +488,177 @@ const NewOrderPage = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-5">
-                {
-                  watch('delivery.method') === "Dispatch" &&
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
                   <FormField
                     control={control}
-                    name="delivery.address"
+                    name="delivery.method"
                     render={({ field }) => (
                       <FormItem>
-                        <FormControl>
-                          <Input
-                            className=""
-                            label="Delivery Address"
-                            {...field}
-                            hasError={!!errors.delivery?.address}
-                            errorMessage={errors.delivery?.address?.message}
-                            placeholder="Enter delivery address"
-                          />
-                        </FormControl>
+                        <SelectSingleCombo
+                          label="Delivery Method"
+                          options={DISPATCH_METHOD_OPTIONS}
+                          {...field}
+                          valueKey={"value"}
+                          labelKey={"label"}
+                          placeholder="Select delivery method"
+                          hasError={!!errors.delivery?.method}
+                          errorMessage={errors.delivery?.method?.message}
+                        />
                       </FormItem>
                     )}
                   />
-                }
-                <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
+                  {
+                    watch('delivery.method') === "Dispatch" &&
+                    <>
+                      <FormField
+                        control={control}
+                        name="delivery.address"
+                        render={({ field }) => (
+                          <FormItem
+                            className="col-span-full md:col-span-2"
+                          >
+                            <FormControl>
+                              <Input
+                                className=""
+                                label="Delivery Address"
+                                {...field}
+                                hasError={!!errors.delivery?.address}
+                                errorMessage={errors.delivery?.address?.message}
+                                placeholder="Enter delivery address"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="delivery.zone"
+                        render={({ field }) => (
+                          <FormItem>
+
+
+                            <SelectSingleCombo
+                              label="Delivery Zone"
+                              options={ZONES_OPTIONS}
+                              {...field}
+                              valueKey={"value"}
+                              labelKey={"label"}
+                              placeholder="Select delivery zone"
+                              hasError={!!errors.delivery?.zone}
+                              errorMessage={errors.delivery?.zone?.message}
+
+                            />
+
+
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="delivery.dispatch"
+                        render={({ field }) => (
+                          <FormItem>
+                            {
+                              isCustomDelivery ?
+                                <Input
+                                  label="Delivery Fee"
+                                  {...register('delivery.fee', { valueAsNumber: true })}
+                                  hasError={!!errors.delivery?.fee}
+                                  errorMessage={errors.delivery?.fee?.message}
+                                  placeholder="Enter delivery fee"
+                                />
+                                :
+                                <SelectSingleCombo
+                                  label="Dispatch Location"
+                                  {...field}
+                                  value={field.value?.toString() || ''}
+                                  isLoadingOptions={dispatchLocationsLoading}
+                                  options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                                  valueKey={"value"}
+                                  // labelKey={"label"}
+                                  labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                                  placeholder="Select dispatch location"
+                                  hasError={!!errors.delivery?.dispatch}
+                                  errorMessage={errors.delivery?.dispatch?.message}
+                                />
+                            }
+                            <button
+                              className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                              onClick={toggleCustomDelivery}
+                              type="button"
+                            >
+                              {
+                                !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                              }
+                            </button>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="delivery.residence_type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <SelectSingleSimple
+                                options={[
+                                  { value: "Home", label: "Home" },
+                                  { value: "Office", label: "Office" },
+                                  { value: "School", label: "School" },
+                                  { value: "Church", label: "Church" },
+                                  { value: "Hospital", label: "Hospital" },
+                                  { value: "Hotel", label: "Hotel" },
+                                  { value: "Others", label: "Others" },
+                                ]}
+                                valueKey="value"
+                                labelKey="label"
+                                label="Residence Type"
+                                hasError={!!errors.delivery?.residence_type}
+                                errorMessage={errors.delivery?.residence_type?.message}
+                                placeholder="Enter residence type"
+                                optional
+                                {...field}
+                                onChange={(value) => field.onChange(value)}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </>
+                  }
+
+                  <FormField
+                    control={control}
+                    name="delivery.delivery_date"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <SingleDatePicker
+                          label="Delivery Date"
+                          defaultDate={new Date(field.value ?? new Date())}
+                          value={format(new Date(field.value ?? new Date()), 'yyyy-MM-dd')}
+                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
+                          placeholder="Select delivery date"
+                          disablePastDates={true}
+                        />
+                        {
+                          errors.delivery?.delivery_date &&
+                          <FormError errorMessage={errors.delivery?.delivery_date?.message as string}
+                          />
+                        }
+                      </FormItem>
+                    )}
+                  />
+
+                  <TimePicker
+                    label="Dispatch Time"
+                    control={control}
+                    name="delivery.delivery_time"
+                    hasError={!!errors.delivery?.delivery_time}
+                    errorMessage={errors.delivery?.delivery_time?.message}
+                    defaultValue={watch('delivery.delivery_time')}
+                  // placeholder="Select delivery date"
+                  />
+
                   <FormField
                     control={control}
                     name="delivery.recipient_name"
@@ -526,7 +687,7 @@ const NewOrderPage = () => {
                             {...field}
                             hasError={!!errors.delivery?.recipient_phone}
                             errorMessage={errors.delivery?.recipient_phone?.message}
-                            placeholder="Enter recipient name"
+                            placeholder="Enter recipient phone number"
                           />
                         </FormControl>
                       </FormItem>
@@ -534,116 +695,26 @@ const NewOrderPage = () => {
                   />
                   <FormField
                     control={control}
-                    name="delivery.method"
+                    name="delivery.recipient_alternative_phone"
                     render={({ field }) => (
                       <FormItem>
-                        <SelectSingleCombo
-                          label="Delivery Method"
-                          options={DISPATCH_METHOD_OPTIONS}
-                          {...field}
-                          valueKey={"value"}
-                          labelKey={"label"}
-                          placeholder="Select delivery method"
-                          hasError={!!errors.delivery?.method}
-                          errorMessage={errors.delivery?.method?.message}
-                        />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name="delivery.zone"
-                    render={({ field }) => (
-                      <FormItem>
-
-
-                        <SelectSingleCombo
-                          label="Delivery Zone"
-                          options={ZONES_OPTIONS}
-                          {...field}
-                          valueKey={"value"}
-                          labelKey={"label"}
-                          placeholder="Select delivery zone"
-                          hasError={!!errors.delivery?.zone}
-                          errorMessage={errors.delivery?.zone?.message}
-
-                        />
-
-
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.dispatch"
-                    render={({ field }) => (
-                      <FormItem>
-                        {
-                          isCustomDelivery ?
-                            <AmountInput
-                              label="Delivery Fee"
-                              {...register('delivery.fee')}
-                              hasError={!!errors.delivery?.fee}
-                              errorMessage={errors.delivery?.fee?.message}
-                              placeholder="Enter delivery fee"
-                            />
-                            :
-                            <SelectSingleCombo
-                              label="Dispatch Location"
-                              {...field}
-                              value={field.value?.toString() || ''}
-                              isLoadingOptions={dispatchLocationsLoading}
-                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                              valueKey={"value"}
-                              // labelKey={"label"}
-                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                              placeholder="Select dispatch location"
-                              hasError={!!errors.delivery?.dispatch}
-                              errorMessage={errors.delivery?.dispatch?.message}
-                            />
-                        }
-                        <button
-                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
-                          onClick={toggleCustomDelivery}
-                          type="button"
-                        >
-                          {
-                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
-                          }
-                        </button>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.delivery_date"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <SingleDatePicker
-                          label="Delivery Date"
-                          value={new Date(field.value)}
-                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
-                          placeholder="Select delivery date"
-                        />
-                        {
-                          errors.delivery?.delivery_date &&
-                          <FormError errorMessage={errors.delivery?.delivery_date?.message as string}
+                        <FormControl>
+                          <Input
+                            label="Recipient's Alt Phone Number"
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_alternative_phone}
+                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
+                            placeholder="Enter recipient alternative phone number"
+                            optional
                           />
-                        }
+                        </FormControl>
                       </FormItem>
                     )}
                   />
 
-                  <TimePicker
-                    label="Dispatch Time"
-                    control={control}
-                    name="delivery.delivery_time"
-                    hasError={!!errors.delivery?.delivery_time}
-                    errorMessage={errors.delivery?.delivery_time?.message}
 
-                  // placeholder="Select delivery date"
-                  />
+
+
                   <FormField
                     control={control}
                     name="delivery.note"
@@ -656,6 +727,7 @@ const NewOrderPage = () => {
                             hasError={!!errors.delivery?.note}
                             errorMessage={errors.delivery?.note?.message}
                             placeholder="Enter delivery note"
+                            optional
                           />
                         </FormControl>
                       </FormItem>
@@ -667,13 +739,12 @@ const NewOrderPage = () => {
             </AccordionItem>
 
 
-
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                  ORDER INSTRUCTION                  ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="order-Instruction" id="delivery-note-section">
+            <AccordionItem value="order-Instruction">
               <AccordionTrigger className="py-4">
                 <div className="flex items-center gap-5">
                   <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
@@ -691,6 +762,7 @@ const NewOrderPage = () => {
                   errorMessage={errors.message?.message as string}
                   placeholder="Enter message on order"
                   {...register("message")}
+                  optional
                 />
               </AccordionContent>
             </AccordionItem>
@@ -792,28 +864,33 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  <FilePicker
-                    onFileSelect={(file) => setValue("payment_proof", file!)}
-                    hasError={!!errors.payment_proof}
-                    errorMessage={errors.payment_proof?.message as string}
-                    maxSize={10}
-                    label="Upload Payment Proof"
-                  />
-                  <Controller
-                    name="payment_receipt_name"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        label="Payment Receipt Name"
-                        id="payment_receipt_name"
-                        placeholder="Enter name in payment receipt"
-                        className="col-span-3"
-                        {...field}
-                        hasError={!!errors.payment_receipt_name}
-                        errorMessage={errors.payment_receipt_name?.message}
+                  {
+                    watch('payment_options') !== "not_paid_go_ahead" &&
+                    <>
+                      <FilePicker
+                        onFileSelect={(file) => setValue("payment_proof", file!)}
+                        hasError={!!errors.payment_proof}
+                        errorMessage={errors.payment_proof?.message as string}
+                        maxSize={10}
+                        label="Upload Payment Proof"
                       />
-                    )}
-                  />
+                      <Controller
+                        name="payment_receipt_name"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            label="Payment Receipt Name"
+                            id="payment_receipt_name"
+                            placeholder="Enter name in payment receipt"
+                            className="col-span-3"
+                            {...field}
+                            hasError={!!errors.payment_receipt_name}
+                            errorMessage={errors.payment_receipt_name?.message}
+                          />
+                        )}
+                      />
+                    </>
+                  }
                 </div>
               </AccordionContent>
             </AccordionItem>

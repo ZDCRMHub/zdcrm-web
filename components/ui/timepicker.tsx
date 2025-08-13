@@ -23,6 +23,7 @@ interface CustomTimePickerProps {
   errorMessageClass?: string
   containerClassName?: string
   optional?: boolean
+  defaultValue?: string
 }
 
 const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>(function CustomTimePicker({
@@ -34,19 +35,20 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
   errorMessage,
   errorMessageClass,
   containerClassName,
-  optional
+  optional,
+  defaultValue
 }: CustomTimePickerProps, ref) {
   const {
     field: { value, onChange },
   } = useController({
     name,
     control,
-    defaultValue: "",
+    defaultValue: defaultValue || "12:00",
   })
 
-  const [hour, setHour] = React.useState("12")
-  const [minute, setMinute] = React.useState("00")
-  const [period, setPeriod] = React.useState("AM")
+  const [hour, setHour] = React.useState(defaultValue ? defaultValue.split(":")[0] : "12")
+  const [minute, setMinute] = React.useState(defaultValue ? defaultValue.split(":")[1] : "00")
+  const [period, setPeriod] = React.useState(defaultValue ? (parseInt(defaultValue.split(":")[0]) >= 12 ? "PM" : "AM") : "AM")
 
   React.useEffect(() => {
     if (value) {

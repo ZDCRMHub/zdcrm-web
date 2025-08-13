@@ -147,9 +147,10 @@ export const linkGroups = [
         requiredPermissions: ["CAN_MANAGE_STAFFS", "CAN_MANAGE_ROLES", "CAN_MANAGE_BRANCHES"],
         nestedLinks: [
           {
-            link: "/admin/branches",
-            text: "Branches",
+            link: "/admin/businesses",
+            text: "Businesses",
             icon: <Bag2 size={20} />,
+            // requiredPermissions: ["CAN_MANAGE_BRANCHES", "CAN_MANAGE_BUSINESSES"],
             requiredPermissions: ["CAN_MANAGE_BRANCHES"],
           },
           {

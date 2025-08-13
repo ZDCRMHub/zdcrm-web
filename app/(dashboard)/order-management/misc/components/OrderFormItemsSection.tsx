@@ -322,24 +322,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         {
                                             categoryName === 'Flower' && (
                                                 <>
-                                                    <Controller
-                                                        name={`items.${index}.properties.bouquet`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
-                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Size"
-                                                                valueKey="value"
-                                                                placeholder="Select bouquet"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.bouquet}
-                                                                errorMessage={errors.items?.[index]?.properties?.bouquet?.message as string}
-
-                                                            />
-                                                        )}
-                                                    />
+                                                
 
 
                                                     <Controller

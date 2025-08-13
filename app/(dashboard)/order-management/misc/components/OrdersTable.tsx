@@ -17,7 +17,7 @@ import { TOrder } from '../types';
 import { Button, LinkButton, Popover, Spinner, PopoverTrigger, PopoverContent } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
-import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
+import { convertKebabAndSnakeToTitleCase, formatUniversalDate } from '@/utils/strings';
 import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
 import { useUpdateOrderStatus } from '../api';
 import toast from 'react-hot-toast';
@@ -105,6 +105,10 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div>{order.order_number}</div>
                 <div className='text-[0.825rem] text-gray-500 truncate'>{order.created_by.name}</div>
             </TableCell>
+            <TableCell className=' uppercase'>
+                {formatUniversalDate(order.delivery.delivery_date)}
+            </TableCell>
+
             <TableCell className=''>
                 <div>{order.customer?.name}</div>
                 <div className='text-sm text-gray-500'>{order.customer.phone}</div>
@@ -113,10 +117,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 {order.items.map((item, idx) => (
                     <div key={idx} className='!min-w-max'>{item.product.name}</div>
                 ))}
-            </TableCell>
-            <TableCell>
-                <div>{order.delivery.recipient_name}</div>
-                <div className='text-sm text-gray-500'>{order.delivery.recipient_phone}</div>
             </TableCell>
 
             <TableCell>
@@ -135,9 +135,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     ))}
                 </div>
             </TableCell>
-
-            <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
-            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Popover>
                     <PopoverTrigger className="flex items-center gap-1">
@@ -169,15 +166,25 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     </PopoverContent>
                 </Popover>
             </TableCell>
+            <TableCell>
+                <div>{order.delivery.recipient_name}</div>
+                <div className='text-sm text-gray-500'>{order.delivery.recipient_phone}</div>
+            </TableCell>
+
+            <TableCell className='min-w-[180px] max-w-[500px]'>
+                {order.message}
+            </TableCell>
+
             <TableCell className='min-w-max'>
                 <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
                 <div className='text-sm text-[#494949]'>{paymentStatusEnums[order.payment_status]}({convertKebabAndSnakeToTitleCase(order?.payment_options)})</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>
-
+                {
+                    order.amount_paid_in_usd ?? "-"
+                }
                 {/* <div>{order.amountUSD ? "$" + order.amountUSD : "-"}</div> */}
                 {/* <div>{order.paymentStatus}</div> */}
-                -
             </TableCell>
             <TableCell>
                 <Button
@@ -303,13 +310,13 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                    <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                                     <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
                                     <TableHead className='min-w-[230px]'>Order Items</TableHead>
-                                    <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
                                     <TableHead className='min-w-[150px]'>Category</TableHead>
-                                    <TableHead className='w-[170px]'>Order Notes</TableHead>
-                                    <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                                     <TableHead className='min-w-[150px]'>Status</TableHead>
+                                    <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
+                                    <TableHead className='w-[170px]'>Order Notes</TableHead>
                                     <TableHead className='min-w-[180px]'>Payment</TableHead>
                                     <TableHead>Payment(USD)</TableHead>
                                     <TableHead></TableHead>
