@@ -20,7 +20,6 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
         { status: "DISPATCHED_CL", label: "Dispatched Client Notified" },
         { status: "DELIVERED", label: "Delivered" },
         { status: "DELIVERED_CL", label: "Delivered Client Notified" },
-        { status: "CANCELLED", label: "Cancelled" },
     ];
 
     const {

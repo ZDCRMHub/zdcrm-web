@@ -1,14 +1,12 @@
+"use client"
+
 import * as React from "react"
-import { ChevronDown, ChevronUp, Clock } from 'lucide-react'
-import { useController, Control } from "react-hook-form"
+import { ChevronDown, ChevronUp, Clock } from "lucide-react"
+import { useController, type Control } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Label } from "@/components/ui/label"
 import FormError from "@/components/ui/formError"
 import { PopoverClose } from "@radix-ui/react-popover"
@@ -25,42 +23,68 @@ interface CustomTimePickerProps {
   optional?: boolean
 }
 
-const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>(function CustomTimePicker({
-  className,
-  control,
-  name,
-  label,
-  hasError,
-  errorMessage,
-  errorMessageClass,
-  containerClassName,
-  optional
-}: CustomTimePickerProps, ref) {
+const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>(function CustomTimePicker(
+  {
+    className,
+    control,
+    name,
+    label,
+    hasError,
+    errorMessage,
+    errorMessageClass,
+    containerClassName,
+    optional,
+  }: CustomTimePickerProps,
+  ref,
+) {
   const {
     field: { value, onChange },
   } = useController({
     name,
     control,
-    defaultValue: "",
+    defaultValue: "15:00", // Set a static default instead of reactive one
   })
 
-  const [hour, setHour] = React.useState("12")
-  const [minute, setMinute] = React.useState("00")
-  const [period, setPeriod] = React.useState("AM")
+  const [hour, setHour] = React.useState(() => {
+    if (value) {
+      const [h] = value.split(":")
+      const hour24 = Number.parseInt(h)
+      return (hour24 % 12 || 12).toString().padStart(2, "0")
+    }
+    return "03" // Default to 3 PM (15:00)
+  })
+
+  const [minute, setMinute] = React.useState(() => {
+    if (value) {
+      return value.split(":")[1]
+    }
+    return "00"
+  })
+
+  const [period, setPeriod] = React.useState(() => {
+    if (value) {
+      const hour24 = Number.parseInt(value.split(":")[0])
+      return hour24 >= 12 ? "PM" : "AM"
+    }
+    return "PM" // Default to PM for 15:00
+  })
+
+  const [isInitialized, setIsInitialized] = React.useState(false)
 
   React.useEffect(() => {
-    if (value) {
+    if (value && !isInitialized) {
       const [h, m] = value.split(":")
-      const hour24 = parseInt(h)
+      const hour24 = Number.parseInt(h)
       const hour12 = hour24 % 12 || 12
       setHour(hour12.toString().padStart(2, "0"))
       setMinute(m)
       setPeriod(hour24 >= 12 ? "PM" : "AM")
+      setIsInitialized(true)
     }
-  }, [value])
+  }, [value, isInitialized])
 
-  const handleTimeChange = () => {
-    let hour24 = parseInt(hour)
+  const handleTimeChange = React.useCallback(() => {
+    let hour24 = Number.parseInt(hour)
     if (period === "PM" && hour24 !== 12) {
       hour24 += 12
     } else if (period === "AM" && hour24 === 12) {
@@ -68,29 +92,31 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
     }
     const time = `${hour24.toString().padStart(2, "0")}:${minute}`
     onChange(time)
-  }
+  }, [hour, minute, period, onChange])
 
   React.useEffect(() => {
-    handleTimeChange()
-  }, [hour, minute, period])
+    if (isInitialized) {
+      handleTimeChange()
+    }
+  }, [hour, minute, period, isInitialized, handleTimeChange])
 
   const incrementHour = () => {
-    const newHour = parseInt(hour) + 1
+    const newHour = Number.parseInt(hour) + 1
     setHour(newHour > 12 ? "01" : newHour.toString().padStart(2, "0"))
   }
 
   const decrementHour = () => {
-    const newHour = parseInt(hour) - 1
+    const newHour = Number.parseInt(hour) - 1
     setHour(newHour < 1 ? "12" : newHour.toString().padStart(2, "0"))
   }
 
   const incrementMinute = () => {
-    const newMinute = parseInt(minute) + 1
+    const newMinute = Number.parseInt(minute) + 1
     setMinute(newMinute > 59 ? "00" : newMinute.toString().padStart(2, "0"))
   }
 
   const decrementMinute = () => {
-    const newMinute = parseInt(minute) - 1
+    const newMinute = Number.parseInt(minute) - 1
     setMinute(newMinute < 0 ? "59" : newMinute.toString().padStart(2, "0"))
   }
 
@@ -101,7 +127,7 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
   const formatDisplayTime = (value: string) => {
     if (!value) return "Select time"
     const [h, m] = value.split(":")
-    const hour24 = parseInt(h)
+    const hour24 = Number.parseInt(h)
     const hour12 = hour24 % 12 || 12
     const period = hour24 >= 12 ? "PM" : "AM"
     return `${hour12.toString().padStart(2, "0")}:${m} ${period}`
@@ -112,9 +138,7 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
       {label && (
         <Label className="text-sm text-[#0F172B] font-poppins font-medium" htmlFor={name}>
           {label}
-          {
-            !optional && <span className="text-red-400 font-medium"> *</span>
-          }
+          {!optional && <span className="text-red-400 font-medium"> *</span>}
         </Label>
       )}
       <Popover>
@@ -128,7 +152,7 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
               "focus-visible:border-[#31A5F9] focus-visible:border-[1.75px]",
               "transition-all duration-200",
               !value && "text-muted-foreground",
-              className
+              className,
             )}
           >
             <Clock className="mr-2 h-5 w-5 absolute right-4 top-[30%]" />
@@ -168,9 +192,7 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
               </div>
             </div>
             <PopoverClose asChild className="w-full" onClick={() => handleTimeChange()}>
-              <Button>
-                OK
-              </Button>
+              <Button>OK</Button>
             </PopoverClose>
           </div>
         </PopoverContent>
@@ -182,4 +204,3 @@ const CustomTimePicker = React.forwardRef<HTMLDivElement, CustomTimePickerProps>
 CustomTimePicker.displayName = "CustomTimePicker"
 
 export default CustomTimePicker
-

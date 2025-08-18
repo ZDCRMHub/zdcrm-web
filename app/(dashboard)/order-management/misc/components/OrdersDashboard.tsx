@@ -49,6 +49,7 @@ export default function OrdersDashboard() {
   });
 
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+  const [ordersToDisplay, setOrdersToDisplay] = useState("All")
   const { data, refetch, isLoading, isFetching, error } = useGetOrders({
     page: currentPage,
     size: pageSize,
@@ -123,7 +124,7 @@ export default function OrdersDashboard() {
                       }
                     </MenubarSubTrigger>
                     <MenubarSubContent>
-                     <Input
+                      <Input
                         type='text'
                         placeholder='Search by order number'
                         className='w-full focus:border min-w-[350px] text-xs !h-10'
@@ -256,7 +257,14 @@ export default function OrdersDashboard() {
 
       <section className="flex-grow overflow-auto w-full pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
-        <TabBar tabs={[{ name: 'All Orders', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Orders'} />
+        <TabBar
+          tabs={[
+            { name: 'All Orders', count: data?.count || 0 },
+            { name: 'Quality Check Passed', count: data?.count || 0 },
+          ]}
+          onTabClick={(tab) => { setOrdersToDisplay(tab) }}
+          activeTab={ordersToDisplay}
+        />
         <OrdersTable
           data={data?.data}
           isLoading={isLoading}

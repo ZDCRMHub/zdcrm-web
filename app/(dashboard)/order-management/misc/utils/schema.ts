@@ -107,8 +107,8 @@ export const MAX_FILE_SIZE = 10000000;
 
 export const NewOrderSchema = z.object({
     customer: z.object({
-        name: z.string().min(1, { message: "Customer's name is required" }),
-        phone: z.string().min(1, { message: "Customer's phone number is required" }),
+        name: z.string().min(1, { message: "Client's name is required" }),
+        phone: z.string().min(1, { message: "Client's phone number is required" }),
         email: z.string().optional()
     }),
 

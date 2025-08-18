@@ -13,7 +13,7 @@ import { useBooleanStateControl } from '@/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 
 import AddNewNoteModal from './AddNewNoteModal';
-import { TEnquiry, TEnquiryDiscussion } from '../types';
+import { TEnquiry, TEnquiryDiscussion,  } from '../types';
 import { useUpdateEnquiryStatus } from '../api';
 
 

@@ -26,6 +26,7 @@ interface SingleDatePickerProps {
     continueWithSelectedDate?: boolean;
     defaultDate?: Date;
     optional?: boolean;
+    disablePastDates?: boolean
 }
 
 const currentYear = new Date().getFullYear();
@@ -41,7 +42,8 @@ export function SingleDatePicker({
     align = 'end',
     continueWithSelectedDate = true,
     defaultDate,
-    optional
+    optional,
+    disablePastDates = false
 }: SingleDatePickerProps) {
     const [date, setDate] = React.useState<Date | undefined>(defaultDate);
     const [open, setOpen] = React.useState(false);
@@ -117,7 +119,7 @@ export function SingleDatePicker({
                     mode="single"
                     selected={date}
                     toYear={twoYearsFromNow}
-
+                    disablePastDates={disablePastDates}
                     // initialFocus
                     onSelect={currentSelection => {
                         setDate(currentSelection);
@@ -149,7 +151,8 @@ interface RangeDatePickerProps {
     placeholderClassName?: string;
     value?: DateRange;
     onChange?: (value: DateRange) => void;
-}
+    disablePastDates?: boolean;
+};
 
 export function RangeDatePicker({
     id,
@@ -158,6 +161,7 @@ export function RangeDatePicker({
     placeholder,
     placeholderClassName,
     onChange,
+    disablePastDates = false
 }: RangeDatePickerProps) {
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: subMonths(new Date(), 1),
@@ -267,6 +271,7 @@ interface RangeAndCustomDatePickerProps extends VariantProps<typeof buttonVarian
     placeholderClassName?: string;
     value?: { dateType: string } & DateRange;
     onChange?: (value: { dateType: string } & DateRange) => void;
+    disablePastDates?: boolean;
 }
 
 export function RangeAndCustomDatePicker({
@@ -278,6 +283,7 @@ export function RangeAndCustomDatePicker({
     onChange,
     variant = "inputButton",
     size = "inputButton",
+    disablePastDates = false
 }: RangeAndCustomDatePickerProps) {
     const [date, setDate] = React.useState<
         ({ dateType: string } & DateRange) | undefined
@@ -316,30 +322,10 @@ export function RangeAndCustomDatePicker({
             name: 'This week',
             value: 'week',
         },
-        // {
-        //     name: 'This week',
-        //     value: 'CURRENT_WEEK',
-        // },
-        // {
-        //     name: 'Last month',
-        //     value: 'LAST_MONTH',
-        // },
         {
             name: 'This month',
             value: 'month',
         },
-        // {
-        //     name: 'Last quarter',
-        //     value: 'LAST_QUARTER',
-        // },
-        // {
-        //     name: 'This quarter',
-        //     value: 'THIS_QUARTER',
-        // },
-        // {
-        //     name: 'Last Year',
-        //     value: 'LAST_YEAR',
-        // },
         {
             name: 'This Year',
             value: 'year',
@@ -455,6 +441,7 @@ export function RangeAndCustomDatePicker({
                         mode="range"
                         numberOfMonths={2}
                         selected={date}
+                        disablePastDates={disablePastDates}
                         // initialFocus
                         onSelect={currentSelection => {
                             // setDate(currentSelection);

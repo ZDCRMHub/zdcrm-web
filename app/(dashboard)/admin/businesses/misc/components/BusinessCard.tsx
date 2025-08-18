@@ -2,16 +2,18 @@
 import { CiShop } from "react-icons/ci";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa6";
+import Link from "next/link";
 
 
-type BranchCardProp = {
+type BusinessCardProp = {
     name: string;
     country: string;
+    id: string;
   };
-  
-  const BranchCard = ({ name, country }: BranchCardProp) => {
+
+  const BusinessCard = ({ name, country, id }: BusinessCardProp) => {
     return (
-      <div className="w-[264px] border border-solid rounded-[4px] p-4">
+      <Link href={`/admin/businesses/${id}`} className="block w-[264px] border border-solid rounded-[4px] p-4">
         <div className="flex gap-3 items-center">
           <div className="p-2 bg-[#F4F4F4] rounded-[4px]">
             <CiShop size={24} />
@@ -34,8 +36,8 @@ type BranchCardProp = {
             <FaChevronRight color="#8D8080" />
           </div>
         </div>
-      </div>
+      </Link>
     );
   };
 
-  export default BranchCard;
+  export default BusinessCard;

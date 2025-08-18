@@ -22,7 +22,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
 import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
 import { useBooleanStateControl } from "@/hooks";
-import { useCreateNewBranch, useGetAllBranches } from "./misc/api";
+import { useCreateNewBusiness, useGetAllBusinesses } from "./misc/api";
 import {
   Select,
   SelectContent,
@@ -30,12 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BranchFormData, branchSchema } from "./misc/utils/schemas";
-import { BranchCard } from "./misc/components";
+import { BusinessFormData, businessSchema } from "./misc/utils/schemas";
+import BusinessCard from "./misc/components/BusinessCard";
 
 
 
-const BranchPage = () => {
+const BusinessPage = () => {
   const {
     state: isSuccessModalOpen,
     setTrue: openSuccessModal,
@@ -43,36 +43,38 @@ const BranchPage = () => {
   } = useBooleanStateControl();
 
   const {
-    state: isAddBranchModalOpen,
-    setTrue: openAddBranchModal,
-    setFalse: closeAddBranchModal,
+    state: isAddBusinessModalOpen,
+    setTrue: openAddBusinessModal,
+    setFalse: closeAddBusinessModal,
   } = useBooleanStateControl();
 
-  const { data, isLoading, error, refetch: refetchBranches } = useGetAllBranches();
+  const { data, isLoading, error, refetch: refetchBusinesses } = useGetAllBusinesses();
 
-  console.log(data, "BRANCHES")
+  console.log(data, "BusinessES")
   const {
     control,
     setValue,
     handleSubmit,
     formState: { errors }, watch,
     reset,
-  } = useForm<BranchFormData>({
-    resolver: zodResolver(branchSchema),
+  } = useForm<BusinessFormData>({
+    resolver: zodResolver(businessSchema),
     defaultValues: {
       name: "",
       country: "",
+      address: "",
+      phone_number: "",
     },
   });
 
-  const { mutate: createBranch, isPending: isCreatingBranch } = useCreateNewBranch();
-  const onSubmit = (data: BranchFormData) => {
+  const { mutate: createBusiness, isPending: isCreatingBusiness } = useCreateNewBusiness();
+  const onSubmit = (data: BusinessFormData) => {
     console.log(data);
-    createBranch(data, {
+    createBusiness(data, {
       onSuccess: () => {
-        closeAddBranchModal();
+        closeAddBusinessModal();
         openSuccessModal();
-        refetchBranches()
+        refetchBusinesses()
         reset();
       },
 
@@ -97,7 +99,7 @@ const BranchPage = () => {
     <section className="w-[910px] h-auto mx-auto mt-32 flex flex-col gap-16">
       <div className="text-center">
         <p>Welcome Admin!</p>
-        <p className="text-2xl font-medium">Create & Manage Branches</p>
+        <p className="text-2xl font-medium">Create & Manage Businesses</p>
       </div>
       <div className="p-8 bg-white flex flex-col gap-12">
         <div className="relative mx-auto w-[457px]">
@@ -119,23 +121,24 @@ const BranchPage = () => {
                 <Spinner size={20} />
               </div>
             ) : error ? (
-              <p>Error loading branches: {error.message}</p>
+              <p>Error loading Businesses: {error.message}</p>
             ) :
               !isLoading && data?.data?.length === 0 ? (
-                <p>No branches found</p>
+                <p>No Businesses found</p>
               ) :
                 (
-                  data?.data?.map((branch: any) => (
-                    <BranchCard
-                      key={branch.id}
-                      name={branch.name}
-                      country={branch.country}
+                  data?.data?.map((Business: any) => (
+                    <BusinessCard
+                      key={Business.id}
+                      name={Business.name}
+                      country={Business.country}
+                      id={Business.id}
                     />
                   ))
                 )}
           <div
             className="bg-[#DFDFDF] w-[264px] h-[180px] rounded-lg flex justify-center items-center cursor-pointer"
-            onClick={openAddBranchModal}
+            onClick={openAddBusinessModal}
           >
             <GoPlus size={30} />
           </div>
@@ -144,35 +147,40 @@ const BranchPage = () => {
 
 
 
-          <Dialog open={isAddBranchModalOpen} onOpenChange={closeAddBranchModal}>
-            <DialogContent className="flex flex-col gap-8 w-[520px] px-[75px] py-8">
-              <DialogClose
-                onClick={closeAddBranchModal}
-                className="absolute right-[75px]"
-              >
-                <IoIosClose size={24} />
-              </DialogClose>
-              <FaArrowLeftLong
-                className="cursor-pointer"
-                onClick={closeAddBranchModal}
-              />
-              <DialogHeader className="">
-                <DialogTitle className="text-2xl">Add a New Branch</DialogTitle>
+          <Dialog open={isAddBusinessModalOpen} onOpenChange={closeAddBusinessModal}>
+            <DialogContent className="flex flex-col gap-8 w-[520px]">
+              <DialogHeader className="flex items-center gap-1">
+                <DialogTitle className="text-2xl">Add a New Business</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8">
 
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 p-8">
                 <Controller
                   name="name"
                   control={control}
                   render={({ field }) => (
                     <Input
                       label="Name"
-                      placeholder="Enter Branch Name"
+                      placeholder="Enter Business Name"
                       id="name"
                       {...field}
                       className="mt-2"
                       hasError={!!errors.name}
                       errorMessage={errors?.name?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name="phone_number"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      label="Business Phone Number"
+                      placeholder="Enter Phone Number"
+                      id="phone_number"
+                      {...field}
+                      className="mt-2"
+                      hasError={!!errors.phone_number}
+                      errorMessage={errors?.phone_number?.message}
                     />
                   )}
                 />
@@ -196,15 +204,31 @@ const BranchPage = () => {
 
                 />
 
+                <Controller
+                  name="address"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      label="Address"
+                      placeholder="Enter Branch Address"
+                      id="address"
+                      {...field}
+                      className="mt-2"
+                      hasError={!!errors.address}
+                      errorMessage={errors?.address?.message}
+                    />
+                  )}
+                />
+
                 <DialogFooter>
                   <Button
                     type="submit"
                     className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                   >
-                    Add New Branch
+                    Add New Business
 
                     {
-                      isCreatingBranch  && <Spinner className="ml-2" />
+                      isCreatingBusiness && <Spinner className="ml-2" />
                     }
                   </Button>
                 </DialogFooter>
@@ -217,12 +241,12 @@ const BranchPage = () => {
       <SuccessModal
         isModalOpen={isSuccessModalOpen}
         closeModal={closeSuccessModal}
-        heading="Branch Added Successfully"
-        subheading="New Branch Added"
+        heading="Business Added Successfully"
+        subheading="New Business Added"
       />
     </section>
   );
 };
 
-export default BranchPage;
+export default BusinessPage;
 

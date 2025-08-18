@@ -19,8 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card"
 import { RangeAndCustomDatePicker, Spinner } from "@/components/ui";
 
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
-import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
-
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 import { useGetEnquiryChannelStats } from "../../api";
 
 

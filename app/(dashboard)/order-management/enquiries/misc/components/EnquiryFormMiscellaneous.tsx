@@ -29,7 +29,7 @@ function EnquiryFormMiscellaneous({
   return (
     <div className="space-y-2 max-w-3xl mt-5">
       <Label className="block">
-        Miscellaneous
+        Add-Ons
       </Label>
       {
         fields.map((field, k) => {
@@ -42,10 +42,17 @@ function EnquiryFormMiscellaneous({
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.description}
                 errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.description?.message}
               />
-
               <Input
                 {...register(`items.${index}.miscellaneous.${k}.cost`, { valueAsNumber: true })}
-                placeholder="Cost"
+                placeholder="Cost Price"
+                className="!h-12"
+                pattern="^[0-9]*$"
+                hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
+                errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.cost?.message}
+              />
+              <Input
+                {...register(`items.${index}.miscellaneous.${k}.cost`, { valueAsNumber: true })}
+                placeholder="Selling Price"
                 className="!h-12"
                 pattern="^[0-9]*$"
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
@@ -66,7 +73,7 @@ function EnquiryFormMiscellaneous({
       >
         <Plus className="h-4 w-4 mr-2" />
         {
-          fields.length === 0 ? "Add Miscellaneous Item" : "Add More"
+          fields.length === 0 ? "Add Add-On Item" : "Add More"
         }
       </Button>
     </div>

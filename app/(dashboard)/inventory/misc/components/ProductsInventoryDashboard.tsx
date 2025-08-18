@@ -10,7 +10,7 @@ import { Input, SelectSingleCombo, Pagination, PaginationContent, PaginationItem
 import { Button } from '@/components/ui';
 import TabBar from '@/components/TabBar';
 import { useDebounce } from '@/hooks';
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 
 import ProductsInventoryTable from './ProductsInventoryTable';
 import { useGetProductCategories, useGetProductsInventory } from '../api';

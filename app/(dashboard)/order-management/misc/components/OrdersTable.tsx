@@ -17,26 +17,19 @@ import { TOrder } from '../types';
 import { Button, LinkButton, Popover, Spinner, PopoverTrigger, PopoverContent } from '@/components/ui';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
-import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
+import { convertKebabAndSnakeToTitleCase, formatUniversalDate } from '@/utils/strings';
 import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
 import { useUpdateOrderStatus } from '../api';
 import toast from 'react-hot-toast';
 import { extractErrorMessage } from '@/utils/errors';
 import { useRouter } from 'next/navigation';
 
-type StatusColor =
-    | 'bg-green-100 hover:bg-green-100 text-green-800'
-    | 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800'
-    | 'bg-purple-100 hover:bg-purple-100 text-purple-800'
-    | 'bg-gray-100 hover:bg-gray-100 text-gray-800'
-    | 'bg-red-100 hover:bg-red-100 text-red-800'
-    | 'bg-blue-100 hover:bg-blue-100 text-blue-800';
 
-export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
+export const ORDER_STATUS_COLORS: Record<string, string> = {
     SOA: 'bg-green-100 hover:bg-green-100 text-green-800',
     SOR: 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
     PND: 'bg-purple-100 hover:bg-purple-100 text-purple-800',
-    COM: 'bg-gray-100 hover:bg-gray-100 text-gray-800',
+    COM: 'bg-green-200 hover:bg-green-200 text-green-800',
     CAN: 'bg-red-100 hover:bg-red-100 text-red-800',
     STD: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
 };
@@ -105,6 +98,10 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div>{order.order_number}</div>
                 <div className='text-[0.825rem] text-gray-500 truncate'>{order.created_by.name}</div>
             </TableCell>
+            <TableCell className=' uppercase'>
+                {formatUniversalDate(order.delivery.delivery_date)}
+            </TableCell>
+
             <TableCell className=''>
                 <div>{order.customer?.name}</div>
                 <div className='text-sm text-gray-500'>{order.customer.phone}</div>
@@ -113,10 +110,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 {order.items.map((item, idx) => (
                     <div key={idx} className='!min-w-max'>{item.product.name}</div>
                 ))}
-            </TableCell>
-            <TableCell>
-                <div>{order.delivery.recipient_name}</div>
-                <div className='text-sm text-gray-500'>{order.delivery.recipient_phone}</div>
             </TableCell>
 
             <TableCell>
@@ -135,9 +128,6 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     ))}
                 </div>
             </TableCell>
-
-            <TableCell className='min-w-[180px] max-w-[500px]'>{order.message}</TableCell>
-            <TableCell className=' uppercase'>{format(order.delivery.delivery_date, 'dd/MMM/yyyy')}</TableCell>
             <TableCell className='min-w-max'>
                 <Popover>
                     <PopoverTrigger className="flex items-center gap-1">
@@ -169,15 +159,25 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     </PopoverContent>
                 </Popover>
             </TableCell>
+            <TableCell>
+                <div>{order.delivery.recipient_name}</div>
+                <div className='text-sm text-gray-500'>{order.delivery.recipient_phone}</div>
+            </TableCell>
+
+            <TableCell className='min-w-[180px] max-w-[500px]'>
+                {order.message}
+            </TableCell>
+
             <TableCell className='min-w-max'>
                 <div className='font-bold'>{convertNumberToNaira(Number(order.total_amount) || 0)}</div>
                 <div className='text-sm text-[#494949]'>{paymentStatusEnums[order.payment_status]}({convertKebabAndSnakeToTitleCase(order?.payment_options)})</div>
             </TableCell>
             <TableCell className='min-w-max font-bold'>
-
+                {
+                    order.amount_paid_in_usd ?? "-"
+                }
                 {/* <div>{order.amountUSD ? "$" + order.amountUSD : "-"}</div> */}
                 {/* <div>{order.paymentStatus}</div> */}
-                -
             </TableCell>
             <TableCell>
                 <Button
@@ -267,9 +267,14 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
     return (
         <div className="relative h-[93%]">
             <div className="flex items-center gap-4 h-3">
-                <div className={cn('overflow-hidden rounded-full mb-1 grow')}>
-                    <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
-                        <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+                <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
+                    <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && "bg-blue-200")}>
+                        <div
+                            className={cn(
+                                "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
+                                isFetching && "opacity-100",
+                            )}
+                        ></div>
                     </div>
                 </div>
                 <section className='flex items-center gap-2 shrink-0 px-5 -translate-y-full'>
@@ -303,13 +308,13 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                    <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                                     <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
                                     <TableHead className='min-w-[230px]'>Order Items</TableHead>
-                                    <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
                                     <TableHead className='min-w-[150px]'>Category</TableHead>
-                                    <TableHead className='w-[170px]'>Order Notes</TableHead>
-                                    <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                                     <TableHead className='min-w-[150px]'>Status</TableHead>
+                                    <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
+                                    <TableHead className='w-[170px]'>Order Notes</TableHead>
                                     <TableHead className='min-w-[180px]'>Payment</TableHead>
                                     <TableHead>Payment(USD)</TableHead>
                                     <TableHead></TableHead>

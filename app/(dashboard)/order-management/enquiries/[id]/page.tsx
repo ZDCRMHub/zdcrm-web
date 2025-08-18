@@ -25,6 +25,7 @@ import EnquiryDiscussCard from '../misc/components/EnquiryDiscussCard';
 import { ConfirmPaymentModal } from '../misc/components';
 import { useGetEnquiryDetail } from '../misc/api'
 import { formatCurrency } from '@/utils/currency';
+import { Edit } from 'lucide-react';
 
 
 const EnquiryDetailsPage = () => {
@@ -51,7 +52,7 @@ const EnquiryDetailsPage = () => {
 
     return (
         <div className="w-full md:w-[92.5%] max-w-[1792px] mx-auto p-4 space-y-9 ">
-            <header className="flex items-center mb-6">
+            <header className="flex items-center mb-6 gap-4">
                 <LinkButton
                     href="/order-management/enquiries"
                     variant="ghost"
@@ -61,6 +62,16 @@ const EnquiryDetailsPage = () => {
                     <CaretLeft className="h-6 w-6 text-[#A0AEC0]" />
                 </LinkButton>
                 <h1 className="text-xl font-semibold font-manrope">Enquiry Summary</h1>
+                <LinkButton
+                    href={`./edit?enquiry_id=${data?.id}`}
+                    className="w-max"
+                    size={"thin"}
+                >
+                    <span className="flex items-center gap-2 py-3">
+                        <Edit size={20} />
+                        Edit
+                    </span>
+                </LinkButton>
             </header>
 
             <div className="flex items-start gap-8">
@@ -267,9 +278,28 @@ const EnquiryDetailsPage = () => {
                                         <div className="flex items-end justify-end mb-3 w-full">
                                             <p className="font-semibold text-[#194A7A]">Amount: </p>
                                             <p className="font-semibold text-[#194A7A]">
-                                                {
-                                                    formatCurrency(Number(item.product.selling_price || "0"), "NGN")
-                                                }
+                                                <span className="font-bold">
+                                                    {
+                                                        formatCurrency(
+                                                            (
+                                                                Number(item.product_variation.selling_price || 0) +
+                                                                item.miscellaneous
+                                                                    .map(misc => Number(misc.cost) || 0)
+                                                                    .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
+                                                                item.properties.reduce((acc, property) => {
+                                                                    const value =
+                                                                        Number(property.bouquet_selling_at_order || 0) +
+                                                                        Number(property.glass_vase_selling_at_order || 0) +
+                                                                        Number(property.toppings_selling_at_order || 0) +
+                                                                        Number(property.layers_selling_at_order || 0) +
+                                                                        Number(property.whipped_cream_selling_at_order || 0);
+                                                                    return acc + value;
+                                                                }, 0)
+                                                            ) * Number(item.quantity || 0),
+                                                            'NGN'
+                                                        )
+                                                    }
+                                                </span>
                                             </p>
                                         </div>
                                     </Card>

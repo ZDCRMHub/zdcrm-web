@@ -145,3 +145,13 @@ export function maskString(
   const mask = "*".repeat(totalMaskLength);
   return `${input.slice(0, visibleChars)}${mask}${input.slice(-visibleChars)}`;
 }
+
+
+import { format as formatDate} from 'date-fns';
+
+export const formatUniversalDate = (date: Date | string): string => {
+  if (typeof date === 'string') {
+    date = new Date(date);
+  }
+  return formatDate(date, "EEE, do MMMM yyyy");
+}

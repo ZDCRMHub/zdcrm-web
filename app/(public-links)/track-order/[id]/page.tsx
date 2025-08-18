@@ -18,8 +18,6 @@ const CompleteOrderPage = () => {
 
     const onDelivered = () => {
         console.log("Order successfully delivered!");
-
-        // Add any additional logic here
     };
 
 

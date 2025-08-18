@@ -3,7 +3,7 @@ import { DateRange } from 'react-day-picker'
 import { Controller, useForm } from 'react-hook-form'
 import { subMonths } from 'date-fns'
 
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api'
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 import SelectSingleSimple from '@/components/ui/selectSingleSimple'
 import { RangeAndCustomDatePicker, Spinner } from '@/components/ui'
 

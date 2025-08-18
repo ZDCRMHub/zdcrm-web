@@ -133,12 +133,14 @@ export const CATEGORIES_ENUMS: Record<string, string> = {
   "Cupcake": "CC",
   "Wine": "W",
   "Teddy Bear": "TB",
+  "Teddybear": "TB",
   "Gift Card": "GC",
   "Vase": "V",
   "Chocolates": "CH",
   "Baloon": "B",
   "Perfume": "P",
-  "Hand Bag": "HB",
+  "Handbag": "HB",
+  "Hand bag": "HB",
   "Combo": "CO",
 
 }

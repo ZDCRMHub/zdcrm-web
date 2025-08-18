@@ -186,9 +186,9 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoad
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Product ID</TableHead>
+                                <TableHead>Gift ID</TableHead>
                                 <TableHead>Category</TableHead>
-                                <TableHead>Product Name</TableHead>
+                                <TableHead>Gift Name</TableHead>
                                 <TableHead>Variation</TableHead>
                                 <TableHead>Stock Quantity</TableHead>
                                 <TableHead>Quantity Sold</TableHead>

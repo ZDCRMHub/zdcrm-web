@@ -3,7 +3,6 @@
 import { Controller, useForm } from 'react-hook-form';
 import { CartesianGrid, Legend, Line, LineChart, XAxis, YAxis } from 'recharts';
 
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
 import { Spinner } from '@/components/ui';
 import {
   Card,
@@ -19,6 +18,7 @@ import {
 import SelectSingleSimple from '@/components/ui/selectSingleSimple';
 
 import { useGetClientTrackingStats } from '../../api';
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 
 const chartConfig = {
   new_customers: {

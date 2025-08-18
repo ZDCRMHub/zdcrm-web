@@ -86,7 +86,7 @@ const LoginPage = () => {
               hasError={!!errors.password}
               errorMessage={errors?.password?.message}
             />
-            <Link href='/reset-password' className='mt-4 text-sm p-2 mt-6 hover:underline'>
+            <Link href='/reset-password' className='text-sm p-2 mt-6 hover:underline'>
               Forgot Password? <span className='text-red-500'> Reset</span>
             </Link>
           </div>

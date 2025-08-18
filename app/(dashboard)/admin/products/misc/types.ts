@@ -69,8 +69,8 @@ export interface ProductsQueryParams {
 
 
 import { z } from "zod"
-import { TBranch } from "../../branches/misc/api/getAllBranches";
-
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
+import { TBranch } from "../../businesses/misc/api/getAllBranches";
 const imageSchema = z
   .object({
     file: z.instanceof(File).nullable().optional(),

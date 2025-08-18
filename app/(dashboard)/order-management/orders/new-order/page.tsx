@@ -10,6 +10,8 @@ import { Money, TruckTime } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import useCloudinary from '@/hooks/useCloudinary';
 import {
@@ -37,7 +39,6 @@ import {
   ZONES_OPTIONS,
 } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
 import { useGetCategories, useGetProducts } from "@/app/(dashboard)/inventory/misc/api";
 import FormError from "@/components/ui/formError";
 import { formatCurrency } from "@/utils/currency";
@@ -47,9 +48,9 @@ import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
 import OrderFormItemsSection from "../../misc/components/OrderFormItemsSection";
 import { useCreateOrder, useGetOrderDeliveryLocations } from "../../misc/api";
 import { TOrder } from "../../misc/types";
-import { useRouter } from "next/navigation";
 import { useLoading } from "@/contexts";
-import Link from "next/link";
+import SelectSingleSimple from "@/components/ui/selectSingleSimple";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 
 
 const NewOrderPage = () => {
@@ -68,6 +69,7 @@ const NewOrderPage = () => {
         zone: "LM",
         method: "Dispatch",
         delivery_date: format(new Date(), 'yyyy-MM-dd'),
+        delivery_time: format(new Date(Date.now() + 2 * 60 * 60 * 1000), 'HH:mm'),
         address: "",
         recipient_name: "",
         recipient_phone: "",
@@ -176,8 +178,8 @@ const NewOrderPage = () => {
   const toggleCustomDelivery = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
-  const watchedCustomerPhoneNumber = watch('customer.phone')
-
+  const watchedClientPhoneNumber = watch('customer.phone')
+  const isDispatchOrder = watch('delivery.method') === "Dispatch"
 
 
   console.log(getValues('items'))
@@ -190,40 +192,23 @@ const NewOrderPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={["customer-information", "order-information", "delivery-information", "order-Instruction", "payment-information",]}
+            defaultValue={["client-information", "order-information", "delivery-information", "order-Instruction", "payment-information",]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            {/* /////////////                CUSTOMER INFORMATION                 ///////////// */}
+            {/* /////////////                CLIENT INFORMATION                 ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
-            <AccordionItem value="customer-information">
+            <AccordionItem value="client-information">
               <AccordionTrigger className="py-4 flex">
                 <div className="flex items-center gap-5 text-[#194A7A]">
                   <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
                     <UserIcon className="text-custom-blue" stroke="#194a7a" fill="#194a7a" size={18} />
                   </div>
-                  <h3 className="text-custom-blue font-medium">Customer Information</h3>
+                  <h3 className="text-custom-blue font-medium">Client Information</h3>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
-                  <FormField
-                    control={control}
-                    name="customer.name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Customer's Name"
-                            hasError={!!errors.customer?.name}
-                            errorMessage={errors.customer?.name?.message}
-                            placeholder="Enter customer name"
-                            {...field}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
                   <FormField
                     control={control}
                     name="customer.phone"
@@ -231,19 +216,37 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Customer's Phone Number"
+                            label="Client's Phone Number"
                             hasError={!!errors.customer?.phone}
                             errorMessage={errors.customer?.phone?.message}
-                            placeholder="Enter customer phone number"
+                            placeholder="Enter client phone number"
                             {...field}
                           />
                         </FormControl>
                         {
-                          watchedCustomerPhoneNumber.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                          watchedClientPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
                         }
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={control}
+                    name="customer.name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Client's Name"
+                            hasError={!!errors.customer?.name}
+                            errorMessage={errors.customer?.name?.message}
+                            placeholder="Enter client name"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={control}
                     name="customer.email"
@@ -251,10 +254,10 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Customer's Email"
+                            label="Client's Email"
                             hasError={!!errors.customer?.email}
                             errorMessage={errors.customer?.email?.message}
-                            placeholder="Enter customer email"
+                            placeholder="Enter client email"
                             {...field}
                             optional
                           />
@@ -404,82 +407,7 @@ const NewOrderPage = () => {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-5">
-                {
-                  watch('delivery.method') === "Dispatch" &&
-                  <>
-                    <FormField
-                      control={control}
-                      name="delivery.address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              className=""
-                              label="Delivery Address"
-                              {...field}
-                              hasError={!!errors.delivery?.address}
-                              errorMessage={errors.delivery?.address?.message}
-                              placeholder="Enter delivery address"
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </>
-                }
                 <div className="grid grid-cols-2 xl:grid-cols-3 gap-10 pt-8 pb-14 w-full">
-                  <FormField
-                    control={control}
-                    name="delivery.recipient_name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Recipient's Name"
-                            {...field}
-                            hasError={!!errors.delivery?.recipient_name}
-                            errorMessage={errors.delivery?.recipient_name?.message}
-                            placeholder="Enter recipient name"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.recipient_phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Recipient's Phone Number"
-                            {...field}
-                            hasError={!!errors.delivery?.recipient_phone}
-                            errorMessage={errors.delivery?.recipient_phone?.message}
-                            placeholder="Enter recipient phone number"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.recipient_alternative_phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            label="Recipient's Alt Phone Number"
-                            {...field}
-                            hasError={!!errors.delivery?.recipient_alternative_phone}
-                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
-                            placeholder="Enter recipient alternative phone number"
-                            optional
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
                   <FormField
                     control={control}
                     name="delivery.method"
@@ -498,104 +426,138 @@ const NewOrderPage = () => {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={control}
-                    name="delivery.zone"
-                    render={({ field }) => (
-                      <FormItem>
-
-
-                        <SelectSingleCombo
-                          label="Delivery Zone"
-                          options={ZONES_OPTIONS}
-                          {...field}
-                          valueKey={"value"}
-                          labelKey={"label"}
-                          placeholder="Select delivery zone"
-                          hasError={!!errors.delivery?.zone}
-                          errorMessage={errors.delivery?.zone?.message}
-
-                        />
-
-
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="delivery.dispatch"
-                    render={({ field }) => (
-                      <FormItem>
-                        {
-                          isCustomDelivery ?
-                            <Input
-                              label="Delivery Fee"
-                              {...register('delivery.fee', { valueAsNumber: true })}
-                              hasError={!!errors.delivery?.fee}
-                              errorMessage={errors.delivery?.fee?.message}
-                              placeholder="Enter delivery fee"
-                            />
-                            :
-                            <SelectSingleCombo
-                              label="Dispatch Location"
-                              {...field}
-                              value={field.value?.toString() || ''}
-                              isLoadingOptions={dispatchLocationsLoading}
-                              options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                              valueKey={"value"}
-                              // labelKey={"label"}
-                              labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                              placeholder="Select dispatch location"
-                              hasError={!!errors.delivery?.dispatch}
-                              errorMessage={errors.delivery?.dispatch?.message}
-                            />
-                        }
-                        <button
-                          className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
-                          onClick={toggleCustomDelivery}
-                          type="button"
-                        >
-                          {
-                            !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
-                          }
-                        </button>
-                      </FormItem>
-                    )}
-                  />
-
                   {
-
                     watch('delivery.method') === "Dispatch" &&
-                    <FormField
-                      control={control}
-                      name="delivery.residence_type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <Input
-                              label="Residence Type"
-                              hasError={!!errors.delivery?.residence_type}
-                              errorMessage={errors.delivery?.residence_type?.message}
-                              placeholder="Enter residence type"
-                              optional
+                    <>
+                      <FormField
+                        control={control}
+                        name="delivery.address"
+                        render={({ field }) => (
+                          <FormItem
+                            className="col-span-full md:col-span-2"
+                          >
+                            <FormControl>
+                              <Input
+                                className=""
+                                label="Delivery Address"
+                                {...field}
+                                hasError={!!errors.delivery?.address}
+                                errorMessage={errors.delivery?.address?.message}
+                                placeholder="Enter delivery address"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="delivery.zone"
+                        render={({ field }) => (
+                          <FormItem>
+
+
+                            <SelectSingleCombo
+                              label="Delivery Zone"
+                              options={ZONES_OPTIONS}
                               {...field}
+                              valueKey={"value"}
+                              labelKey={"label"}
+                              placeholder="Select delivery zone"
+                              hasError={!!errors.delivery?.zone}
+                              errorMessage={errors.delivery?.zone?.message}
+
                             />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
+
+
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="delivery.dispatch"
+                        render={({ field }) => (
+                          <FormItem>
+                            {
+                              isCustomDelivery ?
+                                <Input
+                                  label="Delivery Fee"
+                                  {...register('delivery.fee', { valueAsNumber: true })}
+                                  hasError={!!errors.delivery?.fee}
+                                  errorMessage={errors.delivery?.fee?.message}
+                                  placeholder="Enter delivery fee"
+                                />
+                                :
+                                <SelectSingleCombo
+                                  label="Dispatch Location"
+                                  {...field}
+                                  value={field.value?.toString() || ''}
+                                  isLoadingOptions={dispatchLocationsLoading}
+                                  options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
+                                  valueKey={"value"}
+                                  // labelKey={"label"}
+                                  labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
+                                  placeholder="Select dispatch location"
+                                  hasError={!!errors.delivery?.dispatch}
+                                  errorMessage={errors.delivery?.dispatch?.message}
+                                />
+                            }
+                            <button
+                              className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
+                              onClick={toggleCustomDelivery}
+                              type="button"
+                            >
+                              {
+                                !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
+                              }
+                            </button>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={control}
+                        name="delivery.residence_type"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <SelectSingleSimple
+                                options={[
+                                  { value: "Home", label: "Home" },
+                                  { value: "Office", label: "Office" },
+                                  { value: "School", label: "School" },
+                                  { value: "Church", label: "Church" },
+                                  { value: "Hospital", label: "Hospital" },
+                                  { value: "Hotel", label: "Hotel" },
+                                  { value: "Others", label: "Others" },
+                                ]}
+                                valueKey="value"
+                                labelKey="label"
+                                label="Residence Type"
+                                hasError={!!errors.delivery?.residence_type}
+                                errorMessage={errors.delivery?.residence_type?.message}
+                                placeholder="Enter residence type"
+                                optional
+                                {...field}
+                                onChange={(value) => field.onChange(value)}
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </>
                   }
+
                   <FormField
                     control={control}
                     name="delivery.delivery_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
-                          label="Delivery Date"
-                          value={new Date(field.value)}
+                          label={isDispatchOrder ? "Delivery Date" : "Pickup Date"}
+                          defaultDate={new Date(field.value ?? new Date())}
+                          value={format(new Date(field.value ?? new Date()), 'yyyy-MM-dd')}
                           onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
                           placeholder="Select delivery date"
+                          disablePastDates={true}
                         />
                         {
                           errors.delivery?.delivery_date &&
@@ -607,7 +569,7 @@ const NewOrderPage = () => {
                   />
 
                   <TimePicker
-                    label="Dispatch Time"
+                    label={isDispatchOrder ? "Dispatch Time" : "Pickup Time"}
                     control={control}
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}
@@ -615,6 +577,63 @@ const NewOrderPage = () => {
 
                   // placeholder="Select delivery date"
                   />
+
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label={isDispatchOrder ? "Recipient's Name" : "Pickup Contact Name"}
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_name}
+                            errorMessage={errors.delivery?.recipient_name?.message}
+                            placeholder={isDispatchOrder ? "Enter recipient name" : "Enter pickup contact name"}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label={isDispatchOrder ? "Recipient's Phone Number" : "Pickup Contact Phone Number"}
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_phone}
+                            errorMessage={errors.delivery?.recipient_phone?.message}
+                            placeholder={isDispatchOrder ? "Enter recipient phone number" : "Enter pickup contact phone number"}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="delivery.recipient_alternative_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label={isDispatchOrder ? "Recipient's Alt Phone Number" : "Pickup Contact Alt Phone Number"}
+                            {...field}
+                            hasError={!!errors.delivery?.recipient_alternative_phone}
+                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
+                            placeholder={isDispatchOrder ? "Enter recipient alternative phone number" : "Enter pickup contact alternative phone number"}
+                            optional
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+
+
+
                   <FormField
                     control={control}
                     name="delivery.note"

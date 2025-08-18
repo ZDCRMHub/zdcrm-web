@@ -125,26 +125,38 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     }, [propertyOptions?.data, products]);
 
 
-    useEffect(() => {
-        setValue(`items.${index}.inventories`, [{
-            message: '',
-            instruction: '',
-            quantity_used: 0,
-            variations: [],
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
+    React.useEffect(() => {
+        const currentInventories = watch(`items.${index}.inventories`)
 
-        }]);
-        setValue(`items.${index}.properties`, {
-            layers: '',
-            toppings: '',
-            bouquet: '',
-            glass_vase: '',
-            whipped_cream_upgrade: ''
-        });
-    }, [selectedCategory, index, setValue]);
+        if (
+            !currentInventories ||
+            currentInventories.length === 0 ||
+            (currentInventories.length === 1 && currentInventories?.[0]?.variations?.length === 0 && isInitialLoad)
+        ) {
+            setValue(`items.${index}.inventories`, [
+                {
+                    message: "",
+                    instruction: "",
+                    quantity_used: 0,
+                    variations: [],
+                },
+            ])
+
+            setValue(`items.${index}.properties`, {
+                layers: "",
+                toppings: "",
+                bouquet: "",
+                glass_vase: "",
+                whipped_cream_upgrade: "",
+            })
+        }
+
+        setIsInitialLoad(false)
+    }, [selectedCategory, index, setValue, watch, isInitialLoad])
 
 
-
-
+    
     return (
 
         <>
@@ -224,7 +236,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                                 'Select product' :
                                                 'Select category first'
                                     }
-                                    isLoadingOptions={productsLoading || productsFetching}
+                                    isLoadingOptions={productsLoading}
                                     hasError={!!errors.items?.[index]?.product_id}
                                     errorMessage={errors.items?.[index]?.product_id?.message}
                                 />
@@ -322,24 +334,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
                                         {
                                             categoryName === 'Flower' && (
                                                 <>
-                                                    <Controller
-                                                        name={`items.${index}.properties.bouquet`}
-                                                        control={control}
-                                                        render={({ field }) => (
-                                                            <SelectSingleCombo
-                                                                options={propertyOptions?.data.filter(option => option.type === 'BOUQUET').map(option => ({ label: option.name, value: option.id, selling_price: option.selling_price })) || []}
-                                                                labelKey={(item) => `${item.label} (${formatCurrency(item.selling_price, 'NGN')})`}
-                                                                isLoadingOptions={isLoadingPropertyOptions}
-                                                                label="Size"
-                                                                valueKey="value"
-                                                                placeholder="Select bouquet"
-                                                                {...field}
-                                                                hasError={!!errors.items?.[index]?.properties?.bouquet}
-                                                                errorMessage={errors.items?.[index]?.properties?.bouquet?.message as string}
 
-                                                            />
-                                                        )}
-                                                    />
 
 
                                                     <Controller

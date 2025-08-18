@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import React, { useEffect } from 'react';
 import { useBooleanStateControl } from '@/hooks';
 import { AddDeliveryNoteModal } from '../../../misc/components';
-import { useUpdateDeliveryStatus } from '../../../misc/api';
+import { useUpdateDeliveryStatus, useUpdateOrderStatus } from '../../../misc/api';
 import { Button } from '@/components/ui';
 import { Check, X } from 'lucide-react';
 import { TOrder } from '../../../misc/types';
@@ -22,7 +22,6 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
         { label: "Dispatched client notified", status: "DISPATCHED_CL" },
         { label: "Delivered", status: "DELIVERED" },
         { label: "Delivered client notified", status: "DELIVERED_CL" },
-        { label: "Cancelled", status: "CANCELLED" },
     ];
 
     const {
@@ -31,7 +30,8 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
         setFalse: closeAddDeliveryNoteModal,
     } = useBooleanStateControl();
 
-    const { mutate: updateStatus, isPending } = useUpdateDeliveryStatus(orderId);
+    const { mutate: updateOrderDeliveryStatus, isPending: isUpdatingDeliveryStatus } = useUpdateDeliveryStatus(orderId);
+    const { mutate: updateOrderStatus, isPending: isUpdatingOrderStatus } = useUpdateOrderStatus(orderId);
 
     const currentStep = steps.findIndex(step => step.status === currentStatus);
 
@@ -41,8 +41,11 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
         }
     }, [currentStatus, onDelivered]);
 
-    const handleStatusUpdate = (status: "PND" | "DIS" | "DSC" | "DEL" | "CAN") => {
-        updateStatus({ id: orderId, status });
+    const handleDeliveryStatusUpdate = (status: "PND" | "DIS" | "DSC" | "DEL" | "CAN") => {
+        updateOrderDeliveryStatus({ id: orderId, status });
+    };
+    const handleOrderStatusUpdate = (status: "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN") => {
+        updateOrderStatus({ id: orderId, status });
     };
 
     const isDelivered = currentStatus === "DELIVERED" || currentStatus === "DELIVERED_CL";
@@ -97,7 +100,14 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
                                 ? "bg-black text-white scale-105"
                                 : "border-white border bg-transparent text-white"
                         )}
-                        onClick={() => handleStatusUpdate(step.status as any)}
+                        onClick={() => {
+                            if(step.status == "DELIVERED" || step.status == "DELIVERED_CL") {
+                                openAddDeliveryNoteModal();
+                                handleOrderStatusUpdate("COM")
+
+                            }
+                            handleDeliveryStatusUpdate(step.status as any)
+                        }}
                         disabled={currentStatus === step.status}
                     >
                         {step.label}
