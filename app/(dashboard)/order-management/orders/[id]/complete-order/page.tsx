@@ -8,6 +8,7 @@ import { useGetOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
 import { formatTimeString } from '@/utils/strings';
 import OrderPageSkeleton from './CompleteOrderPageSkeleton';
 import { formatDate } from 'date-fns';
+import toast from 'react-hot-toast';
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
@@ -24,10 +25,17 @@ const CompleteOrderPage = () => {
     };
 
     const { mutate: updateStatus } = useUpdateDeliveryStatus(order_id);
-    const handleStatusUpdate = (status: "PND" | "DIS" | "DSC" | "DEL" | "CAN") => {
+    const handleStatusUpdate = (status: string) => {
         updateStatus({ id: order_id, status });
     };
 
+    const copyDeliveryLink = () => {
+        if (typeof window !== "undefined") {
+            const baseUrl = window.location.origin;
+            navigator.clipboard.writeText(`${baseUrl}/track-order/${encodeURIComponent(order?.order_number ?? '')}`);
+            toast.success("Delivery link copied to clipboard");
+        }
+    };
 
     if (isLoading) {
         return <OrderPageSkeleton />;
@@ -106,10 +114,10 @@ const CompleteOrderPage = () => {
 
                     {/* Share Delivery Link Section */}
                     <div className="flex items-center gap-4 p-4 text-center">
-                        <Button className="px-8 h-14" >
+                        <Button className="px-8 h-14" onClick={copyDeliveryLink}>
                             <Link size="24" className="mr-2" /> Share Delivery Link
                         </Button>
-                        <Button variant="destructive" className="px-8 h-14" onClick={() => handleStatusUpdate("CAN")}>
+                        <Button variant="destructive" className="px-8 h-14" onClick={() => handleStatusUpdate("CANCELLED")}>
                             <TruckRemove size="24" className="mr-2" /> Cancel Order
                         </Button>
                     </div>

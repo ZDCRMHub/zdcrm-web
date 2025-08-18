@@ -43,9 +43,9 @@ import { formatCurrency } from "@/utils/currency"
 import useCloudinary from "@/hooks/useCloudinary"
 import { useGetCategories } from "../../inventory/misc/api"
 import { SmallSpinner } from "@/icons/core"
-import { useGetAllBranches } from "../branches/misc/api"
 import { useUpdateProductVariationStatus } from "./misc/api/editProduct"
 import { Copy } from "iconsax-react"
+import { useGetAllBranches } from "../businesses/misc/api"
 
 interface ProductFormValues {
   branch: string

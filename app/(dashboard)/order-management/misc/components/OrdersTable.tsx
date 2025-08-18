@@ -24,19 +24,12 @@ import toast from 'react-hot-toast';
 import { extractErrorMessage } from '@/utils/errors';
 import { useRouter } from 'next/navigation';
 
-type StatusColor =
-    | 'bg-green-100 hover:bg-green-100 text-green-800'
-    | 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800'
-    | 'bg-purple-100 hover:bg-purple-100 text-purple-800'
-    | 'bg-gray-100 hover:bg-gray-100 text-gray-800'
-    | 'bg-red-100 hover:bg-red-100 text-red-800'
-    | 'bg-blue-100 hover:bg-blue-100 text-blue-800';
 
-export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
+export const ORDER_STATUS_COLORS: Record<string, string> = {
     SOA: 'bg-green-100 hover:bg-green-100 text-green-800',
     SOR: 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
     PND: 'bg-purple-100 hover:bg-purple-100 text-purple-800',
-    COM: 'bg-gray-100 hover:bg-gray-100 text-gray-800',
+    COM: 'bg-green-200 hover:bg-green-200 text-green-800',
     CAN: 'bg-red-100 hover:bg-red-100 text-red-800',
     STD: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
 };
@@ -275,11 +268,11 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
         <div className="relative h-[93%]">
             <div className="flex items-center gap-4 h-3">
                 <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
-                    <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && "bg-blue-200")}>
+                    <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && "bg-blue-200")}>
                         <div
                             className={cn(
-                                "h-full w-full origin-[0_50%] animate-pulse rounded-full bg-primary opacity-0 transition-opacity",
-                                isFetching && !isLoading && "opacity-100",
+                                "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
+                                isFetching && "opacity-100",
                             )}
                         ></div>
                     </div>

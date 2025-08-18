@@ -5,7 +5,7 @@ import { useGetTopProducts } from '../../api';
 import { Skeleton } from "@/components/ui/skeleton"
 import { DateRange } from 'react-day-picker';
 import { Controller, useForm } from 'react-hook-form';
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 import { subMonths } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle, RangeAndCustomDatePicker, Spinner } from '@/components/ui';
 import SelectSingleSimple from '@/components/ui/selectSingleSimple';

@@ -4,7 +4,7 @@ import React from 'react';
 import { ArrowLeft2, UserOctagon } from 'iconsax-react';
 import { useParams, useRouter } from 'next/navigation';
 
-import { AmountInput, Button, Card, Input, LinkButton, Spinner } from '@/components/ui';
+import { AmountInput, Button, Card, Input, LinkButton, SelectSingleCombo, Spinner } from '@/components/ui';
 import { Separator } from '@/components/ui/separator';
 
 import { useGetOrderDetail, useUpdateDriverDetails } from '../../../misc/api';
@@ -23,7 +23,7 @@ const deliveryFormSchema = z.object({
   driver_name: z.string().min(1, 'Driver Name is required'),
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
-  delivery_expense: z.number(),
+  delivery_expense: z.number().optional() ,
   tracking_link: z.string().optional().refine((val) => {
     if (!val) return true; // If tracking link is not provided, it's valid
     const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w- .\/?%&=]*)?$/;
@@ -44,8 +44,15 @@ const OrdeManagementDelivery = () => {
     router.back();
   }
 
-  const { control, handleSubmit, formState: { errors }, register } = useForm<DeliveryDriverFormType>({
+  const { setValue, handleSubmit, formState: { errors }, register, watch } = useForm<DeliveryDriverFormType>({
     resolver: zodResolver(deliveryFormSchema),
+    defaultValues: {
+      driver_name: order?.delivery?.driver_name || '',
+      driver_phone: order?.delivery?.driver_phone || '',
+      delivery_platform: order?.delivery?.delivery_platform || '',
+      delivery_expense: 0,
+      tracking_link: order?.delivery?.tracking_link || '',
+    }
   });
 
   const { mutate: updateDriverDetails, isPending: isUpdatingDriverDetails } = useUpdateDriverDetails();
@@ -191,12 +198,29 @@ const OrdeManagementDelivery = () => {
             defaultValue={order?.delivery?.driver_phone ?? ""}
           />
 
+
+          <SelectSingleCombo
+            name='delivery_platform'
+            placeholder='Select delivery platform'
+            options={[
+              { value: 'Bolt', label: 'Bolt' },
+              { value: 'Uber', label: 'Uber' },
+              { value: 'Indrive', label: 'Indrive' },
+              { value: 'RideBooker', label: 'RideBooker' },
+              { value: 'Offline', label: 'Offline' },
+            ]}
+            className='w-full focus:border min-w-[350px] text-xs'
+            value={watch('delivery_platform')}
+            onChange={(value) => setValue('delivery_platform', value)}
+            label='Delivery Platform'
+            valueKey={"value"}
+            labelKey={"label"}
+            hasError={!!errors.delivery_platform}
+            errorMessage={errors.delivery_platform?.message}
+          />
           <Input
             label='Delivery Platform'
             type='text'
-            placeholder='Enter delivery platform'
-            className='w-full focus:border min-w-[350px] text-xs'
-            {...register('delivery_platform')}
             hasError={!!errors.delivery_platform}
             errorMessage={errors.delivery_platform?.message}
             defaultValue={order?.delivery?.delivery_platform ?? ""}

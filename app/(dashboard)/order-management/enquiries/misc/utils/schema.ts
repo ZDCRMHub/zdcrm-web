@@ -174,7 +174,7 @@ export const enquiryItemSchema = z.object({
 
 export const NewEnquirySchema = z.object({
     customer: z.object({
-        name: z.string().min(1, { message: "Customer's name is required" }),
+        name: z.string().min(1, { message: "Client's name is required" }),
         phone: z.string().optional(),
         email: z.string().optional()
     }),
@@ -209,8 +209,8 @@ export const NewEnquirySchema = z.object({
 
 export const ConvertiblEnquirySchema = z.object({
     customer: z.object({
-        name: z.string().min(1, { message: "Customer's name is required" }),
-        phone: z.string().min(1, { message: "Customer's phone number is required" }),
+        name: z.string().min(1, { message: "Client's name is required" }),
+        phone: z.string().min(1, { message: "Client's phone number is required" }),
         email: z.string().email().optional()
     }),
     delivery: z.object({

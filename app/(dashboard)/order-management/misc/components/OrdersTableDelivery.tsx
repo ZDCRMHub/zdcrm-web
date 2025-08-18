@@ -17,10 +17,10 @@ import { Button, LinkButton, Popover, PopoverContent, PopoverTrigger, Spinner } 
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
-import { ORDER_DELIVERY_STATUS_ENUMS } from '@/constants';
+import { ORDER_DELIVERY_STATUS_ENUMS, ORDER_DELIVERY_STATUS_OPTIONS } from '@/constants';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
-import { useUpdateOrderStatus } from '../api';
+import { useUpdateDeliveryStatus, useUpdateOrderStatus } from '../api';
 import { formatUniversalDate } from '@/utils/strings';
 
 type StatusColor =
@@ -41,7 +41,7 @@ export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
 };
 
 export const ORDER_DELIVERY_STATUS_COLORS: Record<string, StatusColor> = {
-    PENDING: 'bg-purple-100 hover:bg-purple-100 text-purple-800',   
+    PENDING: 'bg-purple-100 hover:bg-purple-100 text-purple-800',
     DISPATCHED: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
     DISPATCHED_CL: 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
     DELIVERED: 'bg-green-100 hover:bg-green-100 text-green-800',
@@ -61,7 +61,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         setTrue: openSheet,
     } = useBooleanStateControl()
 
-    const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
+    const { mutate, isPending: isUpdatingStatus } = useUpdateDeliveryStatus()
     const handleStatusUpdate = (new_status: string) => {
         mutate({ id: order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
@@ -116,6 +116,20 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             isUpdatingStatus && <Spinner size={18} />
                         }
                     </PopoverTrigger>
+                    <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
+                        {
+                            ORDER_DELIVERY_STATUS_OPTIONS.map((option) => (
+                                <button
+                                    key={option.value}
+                                    value={option.value}
+                                    onClick={() => handleStatusUpdate(option.value)}
+                                    className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
+                                >
+                                    {option.label}
+                                </button>
+                            ))
+                        }
+                    </PopoverContent>
                 </Popover>
 
 
@@ -214,9 +228,14 @@ const OrdersTableDelivery = ({ data, isLoading, isFetching, error, isFiltered }:
     return (
         <div className="relative h-[93%]">
             <div className="flex items-center gap-4 h-3">
-                <div className={cn('overflow-hidden rounded-full mb-1 grow')}>
-                    <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
-                        <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+                <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
+                    <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && "bg-blue-200")}>
+                        <div
+                            className={cn(
+                                "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
+                                isFetching && "opacity-100",
+                            )}
+                        ></div>
                     </div>
                 </div>
                 <section className='flex items-center gap-2 shrink-0 px-5 -translate-y-full'>

@@ -12,11 +12,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { APIAxios } from "@/utils/axios";
 import CustomImagePicker from './CustomImagePicker';
 import { useGetCategories } from '../api/getCategories';
-import { useGetAllBranches } from '@/app/(dashboard)/admin/branches/misc/api';
 import toast from 'react-hot-toast';
 import { useLoading } from '@/contexts';
 import useCloudinary from '@/hooks/useCloudinary';
 import { extractErrorMessage } from '@/utils/errors';
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 
 
 

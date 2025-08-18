@@ -21,7 +21,7 @@ const AddDeliveryNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, }
                 <DialogContent onPointerDownOutside={closeModal} className="max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle>
-                            Customer&apos;s Feedback
+                            Client&apos;s Feedback
                         </DialogTitle>
                     </DialogHeader>
                     <div className="p-3">

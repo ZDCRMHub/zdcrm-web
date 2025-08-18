@@ -202,7 +202,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     <CardHeader className="border-b border-[#FFC600] pb-4">
                       <CardTitle className="flex items-center justify-center gap-2 text-lg">
                         <UserOctagon size={25} color="#FFC600" />
-                        <span>Customer&apos;s Info</span>
+                        <span>Client&apos;s Info</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-6 flex justify-center">
@@ -297,7 +297,7 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                     <p>{convertKebabAndSnakeToTitleCase(order?.payment_options)}</p>
                   </div>
                 </section>
-                1234567890
+                
                 <Accordion type="single" collapsible defaultValue="payments-section">
                   <AccordionItem className="mt-16 mb-8" value="payments-sectionitems">
                     <AccordionTrigger className="border-b border-b-[#00000021]">

@@ -150,7 +150,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                     <CardHeader className="border-b border-[#FFC600] pb-4">
                       <CardTitle className="flex items-center justify-center gap-2 text-lg">
                         <UserOctagon size={25} color="#FFC600" />
-                        <span>Customer&apos;s Info</span>
+                        <span>Client&apos;s Info</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-6 flex justify-center">

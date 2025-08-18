@@ -49,6 +49,8 @@ import { formatCurrency } from "@/utils/currency";
 import OrderDetailSheetSkeleton from "./OrderDetailSheetSkeleton";
 import OrderDiscussCard from "./OrderDiscussCard";
 import { ORDER_STATUS_COLORS } from "./OrdersTable";
+import PartPaymentsForm from "./PartPaymentsForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -68,22 +70,22 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
     setFalse: closeEditDeliveryDetailsModal,
   } = useBooleanStateControl();
 
-  const handleStatusUpdate = (new_status: string) => {
-    mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 
-      {
-        onSuccess: (data) => {
-          toast.success("Order status updated successfully");
-        },
-        onError: (error) => {
-          const errorMessage = extractErrorMessage((error as any).response?.data);
-          toast.error(errorMessage), {
-            duration: 5000,
-          };
-        }
-      }
-    );
+  const {
+    state: isEditingPaymentDetails,
+    toggle: togglePaymentDetailsEdit
+  } = useBooleanStateControl()
+
+  const queryClient = useQueryClient();
+  const refetchDetailsAndList = () => {
+    queryClient.invalidateQueries({
+      queryKey: ['order-details']
+    });
+    queryClient.invalidateQueries({
+      queryKey: ['active-orders-list']
+    });
   }
+
   const handleUpdatePaymentMethod = (new_payment_method: string) => {
     updatePaymentMethod({ id: default_order?.id, payment_options: new_payment_method },
       {
@@ -177,7 +179,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     <CardHeader className="border-b border-[#FFC600] pb-4">
                       <CardTitle className="flex items-center justify-center gap-2 text-lg">
                         <UserOctagon size={25} color="#FFC600" />
-                        <span>Customer&apos;s Info</span>
+                        <span>Client&apos;s Info</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-6 flex justify-center">
@@ -273,72 +275,104 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                   </div>
                 </section>
 
-
-                <section className="mt-16 mb-8">
-                  <header className="border-b border-b-[#00000021]">
-                    <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
-                      <Money size={19} />
-                      Payment Details
-                      <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
-                    </p>
-                  </header>
-                  <div className=" space-y-2 text-sm mt-4">
-                    {[
-                      ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
-                      // ["Amount Paid(USD)", order?.amoun],
-                      [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_selling_price || 0), 'NGN')],
-                      [order?.payment_options?.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
-                      [order?.payment_options?.startsWith("part_payment") && "Oustanding Balance",
-                      <span className="flex items-center gap-2" key={order?.id}>
-                        {
-                          formatCurrency(
-                            Number(Number(order?.total_selling_price ?? 0)
-                              -
-                              (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
-                              -
-                              (order?.initial_amount_paid || 0)
-                            ), 'NGN')
-                        }
-                      </span>
-                      ],
-                    ].map(([label, value], index) => (
-                      <p className=" grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
-                        {
-                          !!label && !!value &&
-                          <>
-                            <span className="text-[#687588] font-manrope text-sm">{label}</span>
-                            <span className="text-[#111827] text-sm">{value}</span>
-                          </>
-                        }
+                <Accordion type="single" collapsible defaultValue="payments-section">
+                  <AccordionItem className="mt-16 mb-8" value="payments-sectionitems">
+                    <AccordionTrigger className="border-b border-b-[#00000021]">
+                      <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1">
+                        <Money size={19} />
+                        Payment Details
+                        <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                       </p>
-                    ))}
-                  </div>
-
-                  {
-                    order?.part_payments.map((payment, index) => (
-                      <div className="space-y-2 text-sm mt-4 ml-3" key={index}>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
                         {[
-                          ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
-                          ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
-                          ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
-                          ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
-                          ["Payment Receipt Name", payment.payment_receipt_name],
+                          ["Payment Method", convertKebabAndSnakeToTitleCase(order?.payment_options)],
+                          // ["Amount Paid(USD)", order?.amoun],
+                          [order?.payment_options?.startsWith("part_payment") ? "Total Amount Due" : "Total", formatCurrency(Number(order?.total_amount || 0), 'NGN')],
+                          [order?.payment_options?.startsWith("part_payment") && "Initial Amount Paid", formatCurrency(Number(order?.initial_amount_paid || 0), 'NGN')],
+                          [order?.payment_options?.startsWith("part_payment") && "Oustanding Balance",
+                          <span className="flex items-center gap-2" key={order?.id}>
+                            {
+                              formatCurrency(
+                                Number(Number(order?.total_amount ?? 0)
+                                  -
+                                  (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0)
+                                  -
+                                  (order?.initial_amount_paid || 0)
+                                ), 'NGN')
+                            }
+                            <button
+                              className="flex items-center justify-center rounded-md h-6 w-6 bg-[#FFC600] text-[#111827]"
+                              onClick={togglePaymentDetailsEdit}
+                            >
+                              <EditPenIcon height={16} width={16} />
+                            </button>
+                          </span>
+
+                          ],
                         ].map(([label, value], index) => (
-                          <p className=" grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
+                          <React.Fragment key={index}>
                             {
                               !!label && !!value &&
                               <>
-                                <span className="text-[#687588] font-manrope text-[13px]">{label}</span>
-                                <span className="text-[#111827] text-[13px]">{value}</span>
+                                <span className="text-[#687588] font-manrope text-sm">{label}</span>
+                                <span className="text-[#111827] text-sm">{value}</span>
                               </>
                             }
-                          </p>
+                          </React.Fragment>
                         ))}
                       </div>
-                    ))
-                  }
+                      {
+                        order?.part_payments.map((payment, index) => (
+                          <div className="space-y-2 text-sm mt-4 ml-3" key={index}>
+                            {[
+                              ["Amount Paid", formatCurrency(Number(payment.amount_paid || 0), 'NGN')],
+                              ["Payment Date", format(new Date(payment.create_date), "do MMMM, yyyy | h:mma")],
+                              ["Payment Method", convertKebabAndSnakeToTitleCase(payment.payment_options)],
+                              ["Payment Proof", payment.payment_proof ? <a href={payment.payment_proof} target="_blank" className="text-primary">View Proof</a> : "No proof uploaded"],
+                              ["Payment Receipt Name", payment.payment_receipt_name],
+                            ].map(([label, value], index) => (
+                              <p className=" grid grid-cols-[max-content,1fr] gap-x-6" key={index}>
+                                {
+                                  !!label && !!value &&
+                                  <>
+                                    <span className="text-[#687588] font-manrope text-[13px]">{label}</span>
+                                    <span className="text-[#111827] text-[13px]">{value}</span>
+                                  </>
+                                }
+                              </p>
+                            ))}
+                          </div>
+                        ))
+                      }
+                      {
+                        isEditingPaymentDetails && <PartPaymentsForm
+                          order_id={order?.id || default_order?.id}
+                          outstanding_balance={
+                            Number(order?.total_amount || 0) -
+                            (order?.part_payments?.reduce((acc: number, curr: any) => acc + Number(curr.amount_paid || 0), 0) || 0) -
+                            (order?.initial_amount_paid || 0)
+                          }
+                          closeForm={togglePaymentDetailsEdit}
+                          refetch={refetchDetailsAndList}
+                        />
+                      }
 
-                </section>
+                      {
+                        order?.payment_proof &&
+                        <div className="mt-4">
+                          <p className="text-[#687588] font-manrope text-sm mb-2">Payment Proof:</p>
+                          <a href={order?.payment_proof} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                            View Payment Proof
+                          </a>
+                        </div>
+                      }
+                    </AccordionContent>
+
+                  </AccordionItem>
+                </Accordion>
+
 
                 <section className="mt-16 mb-8">
                   <header className="border-b border-b-[#00000021]">
@@ -369,9 +403,9 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                 </section>
 
 
-                <Accordion type="single" defaultValue="product-items">
+                <Accordion type="single" collapsible defaultValue="product-items">
                   <section className="mb-8">
-                    <AccordionItem value="product-items">
+                    <AccordionItem value="product-items" >
                       <AccordionTrigger>
                         <header className="border-b border-b-[#00000021] mb-6">
                           <p className="relative flex items-center gap-2 text-base text-[#111827] w-max p-1 px-2.5">
@@ -386,7 +420,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                             order?.items.map((item, index: number) => {
                               const itemCategory = item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name
                               const itemImage = item.product.image || `/img/placeholders/${itemCategory}.svg`
-                              
+
                               return (
                                 <article key={item.id} className="flex border rounded-2xl p-6">
                                   <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
@@ -437,6 +471,14 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                               })}
                                             </div>
                                           ))}
+                                          {/* {item.properties[0] && Object.entries(item.properties[0]).map(([key, value]) => (
+                                                                                                         key !== 'id' && value && (
+                                                                                                           <p key={key} className="text-[#111827] font-medium">
+                                                                                                             <span className="text-[#687588]">{key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ')}:</span>{" "}
+                                                                                                             {value as string}
+                                                                                                           </p>
+                                                                                                         )
+                                                                                                       ))} */}
                                           {item.inventories[0]?.instruction && (
                                             <p className="text-[#111827] font-medium">
                                               <span className="text-[#687588]">Instructions:</span>{" "}
@@ -457,16 +499,29 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                     </section>
 
                                     <section className="flex items-center justify-between pt-1 border-t">
-                                      <p className="text-[#111827] font-medium text-sm">
-                                        <span className="text-[#687588] italic font-light text-[0.8rem]">
-                                          Production Cost:{" "}
-                                        </span>
-                                      </p>
-                                      <p className="font-medium text-[#194A7A]">
-                                        Amount:{" "}
+                                      <p className="font-medium text-[#194A7A] ml-auto">
+                                        Total Amount:{" "}
                                         <span className="font-bold">
-                                          {formatCurrency(Number(item.product_variation.selling_price) || 0, 'NGN')}
-                                          {/* {formatCurrency(item.inventories[0]?.|| 0, 'NGN')} */}
+                                          {
+                                            formatCurrency(
+                                              (
+                                                Number(item.product_variation.selling_price || 0) +
+                                                item.miscellaneous
+                                                  .map(misc => Number(misc.cost) || 0)
+                                                  .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
+                                                item.properties.reduce((acc, property) => {
+                                                  const value =
+                                                    Number(property.bouquet_selling_at_order || 0) +
+                                                    Number(property.glass_vase_selling_at_order || 0) +
+                                                    Number(property.toppings_selling_at_order || 0) +
+                                                    Number(property.layers_selling_at_order || 0) +
+                                                    Number(property.whipped_cream_selling_at_order || 0);
+                                                  return acc + value;
+                                                }, 0)
+                                              ) * Number(item.quantity || 0),
+                                              'NGN'
+                                            )
+                                          }
                                         </span>
                                       </p>
                                     </section>
@@ -481,6 +536,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     </AccordionItem>
                   </section>
                 </Accordion>
+
 
 
                 <section className="p-4 px-6 rounded-2xl border">

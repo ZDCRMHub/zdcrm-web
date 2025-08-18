@@ -66,13 +66,19 @@ export const linkGroups = [
           },
           {
             link: "/order-management/order-history",
-            text: "Order History",
+            text: "History",
             icon: <OrderManagement />,
             requiredPermissions: ["CAN_MANAGE_ORDERS_HISTORY"],
           },
           {
             link: "/order-management/client-history",
             text: "Client History",
+            icon: <ClientHistoryIcon />,
+            requiredPermissions: ["CAN_MANAGE_ORDERS_HISTORY"],
+          },
+          {
+            link: "/order-management/riders-history",
+            text: "Riders History",
             icon: <ClientHistoryIcon />,
             requiredPermissions: ["CAN_MANAGE_ORDERS_HISTORY"],
           },
@@ -116,19 +122,25 @@ export const linkGroups = [
         nestedLinks: [
           {
             link: "/inventory/products",
-            text: "Product Inventory",
+            text: "Gift Inventory",
             icon: <I3Dcube />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
             link: "/inventory/stock",
-            text: "Stock Inventory",
+            text: "Cakes, Flowers & Cupcakes",
             icon: <BagTick2 />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
             link: "/inventory/store",
-            text: "Store Inventory",
+            text: "Store",
+            icon: <OrderManagement />,
+            requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
+          },
+          {
+            link: "/inventory/store",
+            text: "Vendors",
             icon: <OrderManagement />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },

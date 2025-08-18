@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -18,6 +18,8 @@ import { formatAxiosErrorMessage } from "@/utils/errors";
 import { useQueryClient } from "@tanstack/react-query";
 import { Edit, FilterSearch, I3DRotate, Trash } from "iconsax-react";
 import { ORDER_STATUS_COLORS } from "../../../misc/components/OrdersTable";
+import { formatUniversalDate } from "@/utils/strings";
+import { CATEGORIES_ENUMS } from "@/constants";
 
 interface EnquiriesTableProps {
   data?: TEnquiry[]
@@ -193,14 +195,17 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableCell>Customer Details</TableCell>
-                  <TableCell >Enquiry Item</TableCell>
-                  <TableCell className="w-max max-w-[350px] min-w-[180px]">Delivery Notes</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Created On</TableCell>
-                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Last Update</TableCell>
-                  <TableCell className="w-max max-w-[200px] min-w-[150px]">Action</TableCell>
+                  <TableHead className='min-w-[150px]'>Enquiry ID</TableHead>
+                  <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
+                  <TableHead className='min-w-[200px] max-w-[500px]'>Client Details</TableHead>
+                  <TableHead className='min-w-[230px]'>Enquiry Items</TableHead>
+                  <TableHead className='min-w-[150px]'>Category</TableHead>
+                  <TableHead className='min-w-[150px]'>Status</TableHead>
+                  <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
+                  <TableHead className='w-[170px]'>Order Notes</TableHead>
+                  <TableHead className='min-w-[150px]'>Created On</TableHead>
+                  <TableHead className='min-w-[150px]'>Last Update</TableHead>
+                  <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -208,6 +213,16 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                   data.map((enquiry, index) => {
                     return (
                       <TableRow key={enquiry.id}>
+                        <TableCell>
+                          <div className="font-medium !min-w-max">
+                            {enquiry.id}
+                          </div>
+                          <div className="text-sm text-gray-500">{enquiry.created_by?.name}</div>
+                        </TableCell>
+                        <TableCell className=' uppercase'>
+                          {formatUniversalDate(enquiry?.delivery.delivery_date)}
+                        </TableCell>
+
                         <TableCell>
                           <div className="font-medium !min-w-max">
                             {enquiry.customer.name}
@@ -221,21 +236,20 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                             </div>
                           ))}
                         </TableCell>
-                        <TableCell className="w-max max-w-[350px] min-w-[180px]">{enquiry.message}</TableCell>
-
                         <TableCell>
-                          <div className="flex space-x-1">
-                            {enquiry.items.map((item) => (
+                          <div className='flex items-center gap-2 min-w-max'>
+                            {enquiry.items?.map((item) => (
                               <Badge
                                 key={item.id}
                                 variant="outline"
-                                className="flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                                className={cn("flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5")}
                               >
-                                {item.product.category.name.charAt(0)}
+                                {CATEGORIES_ENUMS[item?.product?.category?.name]}
                               </Badge>
                             ))}
                           </div>
                         </TableCell>
+
                         <TableCell>
                           <div className="min-w-full max-w-max grid grid-cols-[1fr,0.5fr] items-center ">
                             <Popover>
@@ -276,14 +290,22 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
 
                           </div>
                         </TableCell>
+
+                        <TableCell>
+                          <div>{enquiry?.delivery?.recipient_name}</div>
+                          <div className='text-sm text-gray-500'>{enquiry?.delivery?.recipient_phone}</div>
+                        </TableCell>
+
+                        <TableCell className="w-max max-w-[350px] min-w-[180px]">{enquiry.message}</TableCell>
+
                         <TableCell className="">
                           {format(new Date(enquiry.create_date), "EEE, do MMMM yyyy")}
 
                         </TableCell>
                         <TableCell className="">
                           {format(new Date(enquiry.update_date), "EEE, do MMMM yyyy")}
-
                         </TableCell>
+
                         <TableCell className="">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

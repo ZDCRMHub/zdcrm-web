@@ -18,8 +18,7 @@ import { Spinner } from "@/components/ui";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 
 import { useGetFinancialOverviewStats } from "../../api";
-import { useGetAllBranches } from "@/app/(dashboard)/admin/branches/misc/api";
-import BarChartSkeleton from "./BarChartSkeleton";
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';import BarChartSkeleton from "./BarChartSkeleton";
 
 const chartConfig = {
   total_revenue: {

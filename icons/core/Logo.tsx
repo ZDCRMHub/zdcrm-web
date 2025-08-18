@@ -7,7 +7,7 @@ const Logo = ({ className, isCollapsed }: { className?: string, isCollapsed?: bo
     return (
         <Link href="/dashboard" className={cn('flex items-center h-[100px] py-6', className)}>
             <LogoSVG width={42} height={42} />
-            <h1 className={cn('ml-2 text-xl font-semibold truncate', isCollapsed && "hidden")}>Zuru CRM</h1>
+            <h1 className={cn('ml-2 text-xl font-semibold truncate', isCollapsed && "hidden")}>ZDCRM</h1>
         </Link>
     )
 }
