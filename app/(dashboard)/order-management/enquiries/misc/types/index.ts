@@ -4,9 +4,9 @@ export interface TEnquiry {
   id: number;
   customer: Customer;
   created_by: Createdby;
-  finalized_by: null;
-  converted_by: null;
-  deleted_by: null;
+  finalized_by: Createdby | null;
+  converted_by: Createdby | null;
+  deleted_by: Createdby | null;
   enquiry_channel: string;
   social_media_details: string;
   enquiry_occasion: string;
@@ -30,13 +30,6 @@ export interface TEnquiry {
   update_date: string;
 }
 
-interface TEnquiryDiscussion {
-  id: number;
-  user: Createdby;
-  message: string;
-  create_date: string;
-  update_date: string;
-}
 
 interface Item {
   id: number;
@@ -69,6 +62,14 @@ interface Property {
   whipped_cream_cost_at_order: string | null;
   whipped_cream_selling_at_order: string | null;
 }
+export interface TEnquiryDiscussion {
+  id: number;
+  user: Createdby;
+  message: string;
+  create_date: string;
+  update_date: string;
+}
+
 
 interface PropertyItem {
   id: number;
