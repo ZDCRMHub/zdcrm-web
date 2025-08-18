@@ -179,7 +179,7 @@ const NewOrderPage = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
   const watchedClientPhoneNumber = watch('customer.phone')
-
+  const isDispatchOrder = watch('delivery.method') === "Dispatch"
 
 
   console.log(getValues('items'))
@@ -545,14 +545,14 @@ const NewOrderPage = () => {
                       />
                     </>
                   }
-                  
+
                   <FormField
                     control={control}
                     name="delivery.delivery_date"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
-                          label="Delivery Date"
+                          label={isDispatchOrder ? "Delivery Date" : "Pickup Date"}
                           defaultDate={new Date(field.value ?? new Date())}
                           value={format(new Date(field.value ?? new Date()), 'yyyy-MM-dd')}
                           onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
@@ -569,12 +569,12 @@ const NewOrderPage = () => {
                   />
 
                   <TimePicker
-                    label="Dispatch Time"
+                    label={isDispatchOrder ? "Dispatch Time" : "Pickup Time"}
                     control={control}
                     name="delivery.delivery_time"
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
-                    
+
                   // placeholder="Select delivery date"
                   />
 
@@ -585,11 +585,11 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Recipient's Name"
+                            label={isDispatchOrder ? "Recipient's Name" : "Pickup Contact Name"}
                             {...field}
                             hasError={!!errors.delivery?.recipient_name}
                             errorMessage={errors.delivery?.recipient_name?.message}
-                            placeholder="Enter recipient name"
+                            placeholder={isDispatchOrder ? "Enter recipient name" : "Enter pickup contact name"}
                           />
                         </FormControl>
                       </FormItem>
@@ -602,11 +602,11 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Recipient's Phone Number"
+                            label={isDispatchOrder ? "Recipient's Phone Number" : "Pickup Contact Phone Number"}
                             {...field}
                             hasError={!!errors.delivery?.recipient_phone}
                             errorMessage={errors.delivery?.recipient_phone?.message}
-                            placeholder="Enter recipient phone number"
+                            placeholder={isDispatchOrder ? "Enter recipient phone number" : "Enter pickup contact phone number"}
                           />
                         </FormControl>
                       </FormItem>
@@ -619,11 +619,11 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label="Recipient's Alt Phone Number"
+                            label={isDispatchOrder ? "Recipient's Alt Phone Number" : "Pickup Contact Alt Phone Number"}
                             {...field}
                             hasError={!!errors.delivery?.recipient_alternative_phone}
                             errorMessage={errors.delivery?.recipient_alternative_phone?.message}
-                            placeholder="Enter recipient alternative phone number"
+                            placeholder={isDispatchOrder ? "Enter recipient alternative phone number" : "Enter pickup contact alternative phone number"}
                             optional
                           />
                         </FormControl>

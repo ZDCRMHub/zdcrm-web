@@ -42,10 +42,17 @@ function EnquiryFormMiscellaneous({
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.description}
                 errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.description?.message}
               />
-
               <Input
                 {...register(`items.${index}.miscellaneous.${k}.cost`, { valueAsNumber: true })}
-                placeholder="Cost"
+                placeholder="Cost Price"
+                className="!h-12"
+                pattern="^[0-9]*$"
+                hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
+                errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.cost?.message}
+              />
+              <Input
+                {...register(`items.${index}.miscellaneous.${k}.cost`, { valueAsNumber: true })}
+                placeholder="Selling Price"
                 className="!h-12"
                 pattern="^[0-9]*$"
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
