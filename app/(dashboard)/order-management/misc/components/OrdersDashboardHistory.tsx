@@ -22,6 +22,7 @@ import { ORDER_STATUS_OPTIONS } from '@/constants';
 
 import { useGetOrders } from '../api';
 import OrdersTableHistory from './OrdersTableHistory';
+import UniversalFilters from '@/components/UniversalFilters';
 
 
 const today = new Date();
@@ -36,6 +37,10 @@ export default function OrdersDashboardHistory() {
   const defaultStatuses = 'COM,CAN'
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>(defaultStatuses);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
+  const [selectedRep, setSelectedRep] = useState<number | null>(null);
+  const [selectedDeliveryZone, setSelectedDeliveryZone] = useState<string | null>(null);
+
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
   }>({
@@ -75,6 +80,7 @@ export default function OrdersDashboardHistory() {
     setCurrentPage(1);
   }
 
+  const isFiltered = debouncedSearchText || selectedCategory || watch('date').from || watch('date').to || selectedStatuses;
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSelectedStatuses(defaultStatuses);
@@ -97,7 +103,7 @@ export default function OrdersDashboardHistory() {
             <Input
               type='text'
               placeholder='Search (order number, items name, customer name and phone number)'
-            
+
               className='w-full focus:border min-w-[350px] text-xs !h-10'
               value={searchText}
               onChange={handleSearch}
@@ -191,13 +197,22 @@ export default function OrdersDashboardHistory() {
                       }
                     </MenubarSubContent>
                   </MenubarSub>
+                  
+                  <UniversalFilters
+                    selectedBusiness={selectedBusiness}
+                    selectedRep={selectedRep}
+                    selectedDeliveryZone={selectedDeliveryZone}
+                    setSelectedBusiness={setSelectedBusiness}
+                    setSelectedRep={setSelectedRep}
+                    setSelectedDeliveryZone={setSelectedDeliveryZone}
+                  />
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
           </div>
           <div className='flex items-center gap-2'>
             {
-              (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== defaultStatuses)) && (
+              isFiltered && (
                 <Button
                   variant='outline'
                   className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
@@ -207,7 +222,7 @@ export default function OrdersDashboardHistory() {
                 </Button>
               )
             }
-           
+
             <Button
               variant='outline'
               className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'

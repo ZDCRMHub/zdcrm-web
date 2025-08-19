@@ -16,10 +16,11 @@ import { useGetCategories } from '@/app/(dashboard)/inventory/misc/api';
 
 import EnquiriesTable from './EnquiriesTable';
 import { useGetEnquiries } from '../api';
+import UniversalFilters from '@/components/UniversalFilters';
 
 
 const today = new Date();
-const tomorrow =  new Date(today.getTime() + 24 * 60 * 60 * 1000);
+const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 const monthsAgo = subMonths(new Date(), 20);
 
 export default function EnquiriesDashboard() {
@@ -29,12 +30,11 @@ export default function EnquiriesDashboard() {
   const [pageSize, setPageSize] = useState(10);
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>('STD,FND');
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
+  const [selectedRep, setSelectedRep] = useState<number | null>(null);
+  const [selectedDeliveryZone, setSelectedDeliveryZone] = useState<string | null>(null);
 
-  // const handleDateRangeChange = (range: { from: Date | null, to: Date | null }) => {
-  //   setStartDate(range.from);
-  //   setEndDate(range.to);
-  //   setCurrentPage(1);
-  // };
+
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
   }>({
@@ -85,6 +85,10 @@ export default function EnquiriesDashboard() {
       from: monthsAgo,
       to: tomorrow,
     });
+
+    setSelectedRep(null);
+    setSelectedDeliveryZone(null);
+    setSelectedDeliveryZone(null);
   }
 
 
@@ -156,6 +160,14 @@ export default function EnquiriesDashboard() {
                       Finalized Discussion</MenubarItem>
                   </MenubarSubContent>
                 </MenubarSub>
+                <UniversalFilters
+                  selectedBusiness={selectedBusiness}
+                  selectedRep={selectedRep}
+                  selectedDeliveryZone={selectedDeliveryZone}
+                  setSelectedBusiness={setSelectedBusiness}
+                  setSelectedRep={setSelectedRep}
+                  setSelectedDeliveryZone={setSelectedDeliveryZone}
+                />
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
@@ -234,9 +246,9 @@ export default function EnquiriesDashboard() {
 
             </div>
 
-          <div className="text-sm text-gray-500 w-max shrink-0">
-            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, data?.count || 0)} of {data?.count || 0} entries
-          </div>
+            <div className="text-sm text-gray-500 w-max shrink-0">
+              Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, data?.count || 0)} of {data?.count || 0} entries
+            </div>
           </section>
         </div>
       </footer>
