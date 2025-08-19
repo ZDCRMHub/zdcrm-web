@@ -22,6 +22,7 @@ import { ORDER_STATUS_OPTIONS } from '@/constants';
 
 import { useGetOrders } from '../api';
 import OrdersTable from './OrdersTable';
+import UniversalFilters from '@/components/UniversalFilters';
 
 
 const today = new Date();
@@ -35,6 +36,10 @@ export default function OrdersDashboard() {
   const [pageSize, setPageSize] = useState(10);
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>('PND,SOA,SOR');
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
+  const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
+  const [selectedRep, setSelectedRep] = useState<number | null>(null);
+  const [selectedDeliveryZone, setSelectedDeliveryZone] = useState<string | null>(null);
+  
   const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
   const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
   const { control, register, setValue, watch } = useForm<{
@@ -49,7 +54,7 @@ export default function OrdersDashboard() {
   });
 
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
-  const [ordersToDisplay, setOrdersToDisplay] = useState("All")
+  const [ordersToDisplay, setOrdersToDisplay] = useState("All Orders")
   const { data, refetch, isLoading, isFetching, error } = useGetOrders({
     page: currentPage,
     size: pageSize,
@@ -77,6 +82,7 @@ export default function OrdersDashboard() {
     setCurrentPage(1);
   }
 
+  const isFiltered =  selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR') || selectedBusiness || selectedRep || selectedDeliveryZone;
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSelectedStatuses('PND,SOA,SOR');
@@ -87,6 +93,9 @@ export default function OrdersDashboard() {
       to: tomorrow,
     });
     setFilteredOrderNumber("");
+    setSelectedRep(null);
+    setSelectedDeliveryZone(null);
+    setSelectedDeliveryZone(null);
   }
 
 
@@ -216,13 +225,22 @@ export default function OrdersDashboard() {
                       }
                     </MenubarSubContent>
                   </MenubarSub>
+
+                  <UniversalFilters
+                    selectedBusiness={selectedBusiness}
+                    selectedRep={selectedRep}
+                    selectedDeliveryZone={selectedDeliveryZone}
+                    setSelectedBusiness={setSelectedBusiness}
+                    setSelectedRep={setSelectedRep}
+                    setSelectedDeliveryZone={setSelectedDeliveryZone}
+                  />
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
           </div>
           <div className='flex items-center gap-2'>
             {
-              (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR')) && (
+              isFiltered && (
                 <Button
                   variant='outline'
                   className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'

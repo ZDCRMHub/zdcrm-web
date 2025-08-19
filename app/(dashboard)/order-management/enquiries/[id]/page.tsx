@@ -64,7 +64,7 @@ const EnquiryDetailsPage = () => {
                 <h1 className="text-xl font-semibold font-manrope">Enquiry Summary</h1>
                 <LinkButton
                     href={`./edit?enquiry_id=${data?.id}`}
-                    className="w-max"
+                    className="w-max ml-auto"
                     size={"thin"}
                 >
                     <span className="flex items-center gap-2 py-3">
@@ -222,8 +222,8 @@ const EnquiryDetailsPage = () => {
                                             <div className="flex flex-col shrink-0">
                                                 <div className="bg-white-grey rounded-[6px] w-fit">
                                                     <Image
-                                                        src={item.inventories[0]?.product_inventory?.image_one || item.inventories[0]?.stock_inventory?.image_one || placeHolderImage}
-                                                        alt={item.inventories[0]?.stock_inventory?.name || item.inventories[0]?.product_inventory?.name || "Product"}
+                                                        src={item.product.image || placeHolderImage}
+                                                        alt={item.product.name || "Product"}
                                                         className="w-24 h-24 object-cover rounded-md p-2 text-xxs"
                                                         width={100}
                                                         height={100}
@@ -308,7 +308,14 @@ const EnquiryDetailsPage = () => {
                             })
                         }
 
-
+                        <section className="flex items-center justify-between pt-1">
+                            <p className="font-medium text-2xl text-[#194A7A] ml-auto">
+                                Total Amount:{" "}
+                                <span className="font-bold">
+                                    {formatCurrency(Number(data?.total_amount || 0))}
+                                </span>
+                            </p>
+                        </section>
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>

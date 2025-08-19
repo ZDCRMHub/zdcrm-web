@@ -22,6 +22,7 @@ import { ORDER_DELIVERY_STATUS_OPTIONS, ORDER_STATUS_OPTIONS } from '@/constants
 
 import { useGetOrders } from '../api';
 import OrdersTableDelivery from './OrdersTableDelivery';
+import UniversalFilters from '@/components/UniversalFilters';
 
 
 const today = new Date();
@@ -38,6 +39,9 @@ export default function OrdersDashboardDelivery() {
   const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
   const defaultDeliveryStatuses = "PENDING,DISPATCHED,DISPATCHED_CL,DELIVERED,DELIVERED_CL,CANCELLED"
   const [selectedDeliveryStatuses, setSelectedDeliveryStatuses] = useState<string | undefined>(defaultDeliveryStatuses);
+  const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
+  const [selectedRep, setSelectedRep] = useState<number | null>(null);
+  const [selectedDeliveryZone, setSelectedDeliveryZone] = useState<string | null>(null);
 
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
@@ -81,6 +85,7 @@ export default function OrdersDashboardDelivery() {
     setCurrentPage(1);
   }
 
+  const isFiltered = debouncedSearchText || selectedCategory || filteredOrderNumber || watch('date').from || watch('date').to || selectedDeliveryStatuses;
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSearchText("");
@@ -91,6 +96,9 @@ export default function OrdersDashboardDelivery() {
     });
     setFilteredOrderNumber('');
     setSelectedDeliveryStatuses(defaultDeliveryStatuses);
+    setSelectedRep(null);
+    setSelectedDeliveryZone(null);
+    setSelectedDeliveryZone(null);
   }
 
 
@@ -216,13 +224,22 @@ export default function OrdersDashboardDelivery() {
                       }
                     </MenubarSubContent>
                   </MenubarSub>
+
+                  <UniversalFilters
+                    selectedBusiness={selectedBusiness}
+                    selectedRep={selectedRep}
+                    selectedDeliveryZone={selectedDeliveryZone}
+                    setSelectedBusiness={setSelectedBusiness}
+                    setSelectedRep={setSelectedRep}
+                    setSelectedDeliveryZone={setSelectedDeliveryZone}
+                  />
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
           </div>
           <div className='flex items-center gap-2'>
             {
-              (selectedCategory || debouncedSearchText || selectedDeliveryStatuses !== defaultDeliveryStatuses) && (
+              isFiltered && (
                 <Button
                   variant='outline'
                   className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
@@ -245,18 +262,17 @@ export default function OrdersDashboardDelivery() {
 
         <div className="text-sm text-gray-600 mb-4">
           Showing
-           {
+          {
             !selectedCategory && !debouncedSearchText && (!selectedDeliveryStatuses || selectedDeliveryStatuses === defaultDeliveryStatuses) && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
           }
-           orders {" "}
+          orders {" "}
           <p className='inline-block font-medium text-black'>
             {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
-            {selectedDeliveryStatuses && selectedDeliveryStatuses !== defaultDeliveryStatuses && ` with delivery statuses: ${ 
-              selectedDeliveryStatuses.split(',').map((status) => {
-                const statusObj = ORDER_DELIVERY_STATUS_OPTIONS.find((s) => s.value === status);
-                return statusObj ? statusObj.label : status;
-              }).join(', ')
-            },`}
+            {selectedDeliveryStatuses && selectedDeliveryStatuses !== defaultDeliveryStatuses && ` with delivery statuses: ${selectedDeliveryStatuses.split(',').map((status) => {
+              const statusObj = ORDER_DELIVERY_STATUS_OPTIONS.find((s) => s.value === status);
+              return statusObj ? statusObj.label : status;
+            }).join(', ')
+              },`}
             {debouncedSearchText && ` with search text: ${debouncedSearchText},`}
             {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
           </p>

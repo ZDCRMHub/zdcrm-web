@@ -34,7 +34,7 @@ function EnquiryFormMiscellaneous({
       {
         fields.map((field, k) => {
           return (
-            <div key={field.id} className="grid grid-cols-[1fr,1fr,max-content] items-center space-x-2 w-full">
+            <div key={field.id} className="grid grid-cols-[1fr,0.5fr,0.5fr,max-content] items-center space-x-2 w-full">
               <Input
                 {...register(`items.${index}.miscellaneous.${k}.description`)}
                 placeholder="Name"

@@ -43,7 +43,8 @@ export const orderItemSchema = z.object({
     is_custom_order: z.boolean().optional(),
     miscellaneous: z.array(z.object({
         description: z.string().min(1, { message: "Description is required" }),
-        cost: z.number().min(1, { message: "Miscellaneous cost is required" })
+        cost: z.number().min(1, { message: "Miscellaneous cost is required" }),
+        selling_price: z.number().min(1, { message: "Miscellaneous selling price is required" })
     })).optional()
 }).superRefine((data, ctx) => {
     if (data.is_custom_order) {
