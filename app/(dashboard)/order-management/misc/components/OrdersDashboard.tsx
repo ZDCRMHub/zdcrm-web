@@ -49,7 +49,7 @@ export default function OrdersDashboard() {
   });
 
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
-  const [ordersToDisplay, setOrdersToDisplay] = useState("All")
+  const [ordersToDisplay, setOrdersToDisplay] = useState("All Orders")
   const { data, refetch, isLoading, isFetching, error } = useGetOrders({
     page: currentPage,
     size: pageSize,
