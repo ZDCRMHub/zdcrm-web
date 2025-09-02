@@ -113,8 +113,7 @@ export const ORDER_STATUS_OPTIONS = [
   { value: "PND", label: "Pending" },
   { value: "SOA", label: "Start Order Arrangement" },
   { value: "SOR", label: "Sorted" },
-  { value: "STD", label: "Sent to Dispatch" },
-  { value: "COM", label: "Delivered" },
+  { value: "STD", label: "Quality Check Passed" },
   { value: "CAN", label: "Cancelled" },
 ]
 export const ORDER_DELIVERY_STATUS_OPTIONS = [
@@ -126,6 +125,14 @@ export const ORDER_DELIVERY_STATUS_OPTIONS = [
   { value: "DELIVERED_CL", label: "Delivered Client Notified" },
   { value: "CANCELLED", label: "Cancelled" },
 ]
+
+export const DELIVERY_ZONES_ENUMS: Record<string, string> = {
+ "LM": "Lagos Mainland",
+ "LI": "Lagos Island",
+ "LC": "Lagos Central",
+ "ND": "No Destination",
+ "OT": "Others"
+}
 
 export const CATEGORIES_ENUMS: Record<string, string> = {
   "Cake": "C",
@@ -156,7 +163,7 @@ export const ORDER_STATUS_ENUMS: Record<string, string> = {
 
 
 export const ORDER_DELIVERY_STATUS_ENUMS: Record<string, string> = {
-  "PENDING": "PENDING",
+  "PENDING": "QUALITY CHECK PASSED",
   "DISPATCHED": "DISPATCHED",
   "DISPATCHED_CL": "DISPATCHED CLIENT NOTIFIED",
   "DELIVERED": "DELIVERED",

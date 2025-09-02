@@ -68,8 +68,8 @@ const Page = () => {
   }>({
     name: "",
     type: "",
-    cost_price: "",
-    selling_price: "",
+    cost_price: '0',
+    selling_price: '0',
   });
   const [editingProperty, setEditingProperty] = useState<TPropertyItem | null>(
     null

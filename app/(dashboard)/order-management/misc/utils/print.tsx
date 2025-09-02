@@ -65,9 +65,6 @@ export const printNote = (options: {
             margin-bottom: 20px;
           }
           .note-container {
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 4px;
             min-height: 300px;
           }
           .additional-info {

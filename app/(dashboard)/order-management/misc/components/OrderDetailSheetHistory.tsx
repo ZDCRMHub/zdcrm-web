@@ -105,7 +105,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
 
 
 
-
+  const isDispatchOrder = order?.delivery.method === "Dispatch"
 
 
   return (
@@ -391,6 +391,48 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                     />
                   </div>
                 </section>
+
+
+                <section className="p-4 px-6 rounded-2xl border">
+                  <div className="flex justify-between items-center mb-2 border-b">
+                    <h3 className="font-semibold font-manrope text-lg">
+                      Delivery Details
+                    </h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={openEditDeliveryDetailsModal}
+                    >
+                      <EditPenIcon className="h-5 w-5" />
+                    </Button>
+                  </div>
+                  <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
+                    {[
+                      ["Delivery Method", order?.delivery.method],
+                      ["Primary address", order?.delivery.address],
+                      ["Residence Type", order?.delivery.residence_type],
+                      ["Delivery Location", `${order?.delivery.dispatch?.location} - ${formatCurrency(Number(order?.delivery.dispatch?.delivery_price || '0'), 'NGN')}`],
+                      ["Delivery Zone", order?.delivery.zone],
+                      [isDispatchOrder ? "Dispatch Time" : "Pickup Time", order?.delivery.delivery_time],
+                      [isDispatchOrder ? "Delivery Date" : "Pickup Date", order?.delivery.delivery_date],
+                      ...(isDispatchOrder
+                        ? [
+                          ["Driver Name", order?.delivery.driver_name],
+                          ["Driver Phone", order?.delivery.driver_phone],
+                          ["Dispatch Platform", order?.delivery.delivery_platform],
+                        ]
+                        : []
+                      )
+                    ].map(([label, value], idx) => (
+                      <React.Fragment key={idx}>
+                        <span className="text-[#687588] font-manrope">{label}</span>
+                        <span className="text-[#111827]">{value}</span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </section>
+
+
                 <section className="p-4 px-6 rounded-2xl border">
                   <div className="flex justify-between items-center mb-2 border-b">
                     <h3 className="font-semibold font-manrope text-lg">
@@ -539,37 +581,6 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
 
 
 
-                <section className="p-4 px-6 rounded-2xl border">
-                  <div className="flex justify-between items-center mb-2 border-b">
-                    <h3 className="font-semibold font-manrope text-lg">
-                      Delivery Details
-                    </h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={openEditDeliveryDetailsModal}
-                    >
-                      <EditPenIcon className="h-5 w-5" />
-                    </Button>
-                  </div>
-                  <div className=" grid grid-cols-[max-content,1fr] gap-x-6 gap-y-2 text-sm mt-4">
-                    {[
-                      ["Delivery Method", order?.delivery.method],
-                      ["Primary address", order?.delivery.address],
-                      ["Residence Type", order?.delivery.residence_type],
-                      ["Delivery Location", `${order?.delivery.dispatch?.location} - ${formatCurrency(Number(order?.delivery.dispatch?.delivery_price || '0'), 'NGN')}`],
-                      ["Delivery Zone", order?.delivery.zone],
-                      ["Dispatch Time", order?.delivery.delivery_time],
-                      ["Delivery Date", order?.delivery.delivery_date],
-                    ].map(([label, value]) => (
-                      <>
-                        <span className="text-[#687588] font-manrope">{label}</span>
-                        <span className="text-[#111827]">{value}</span>
-                      </>
-                    ))}
-                  </div>
-                </section>
-
 
                 <section>
                   <p className="flex items-center gap-3">
@@ -627,7 +638,7 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
           closeModal={closeEditDeliveryDetailsModal}
           isModalOpen={isEditDeliveryDetailsModalOpen}
         />
-      </SheetContent>
-    </Sheet>
+      </SheetContent >
+    </Sheet >
   );
 }

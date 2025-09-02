@@ -84,10 +84,10 @@ const CompleteOrderPage = () => {
                             <div className="flex flex-col items-center font-poppins">
                                 <p className="flex font-semibold text-[#292D32]">
                                     <Calendar size="24" className="mr-2" />
-                                    Date/Expected Time
+                                    Date
                                 </p>
                                 <p className="text-sm">
-                                    {formatDate(order?.delivery.delivery_date || '0', "dd/MMMM/yyyy")} at {formatTimeString(order?.delivery.delivery_time || '0')}
+                                    {formatDate(order?.delivery.delivery_date || '0', "dd/MMMM/yyyy")}
                                 </p>
                             </div>
                         </section>

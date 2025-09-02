@@ -19,7 +19,7 @@ import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase } from '@/utils/strings';
 import { ORDER_STATUS_COLORS } from './OrdersTable';
-import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS } from '@/constants';
+import { CATEGORIES_ENUMS, DELIVERY_ZONES_ENUMS, ORDER_STATUS_ENUMS } from '@/constants';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -65,6 +65,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             <TableCell className='min-w-[150px]'>
                 <div>{order.order_number}</div>
                 <div className='text-[0.825rem] text-gray-500 truncate'>{order.created_by.name}</div>
+            </TableCell>
+            <TableCell className='min-w-[150px]'>
+                <div>{DELIVERY_ZONES_ENUMS[order.delivery.zone]}</div>
             </TableCell>
             <TableCell className=''>
                 <div>{order.customer?.name}</div>
@@ -226,6 +229,7 @@ const OrdersTableHistory = ({ data, isLoading, isFetching, error, isFiltered }: 
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                    <TableHead className='min-w-[150px]'>Delivery Zone</TableHead>
                                     <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
                                     <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                                     <TableHead className='w-[170px]'>Category</TableHead>
