@@ -42,6 +42,26 @@ export default function OrdersDashboardDelivery() {
   const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
   const [selectedRep, setSelectedRep] = useState<number | null>(null);
   const [selectedDeliveryZone, setSelectedDeliveryZone] = useState<string | null>(null);
+  const [selectedDeliveryMode, setSelectedDeliveryMode] = useState<string | null>(null);
+
+  const mode_options = [
+    {
+      name: "Pickup",
+      value: "pickup"
+    },
+    {
+      name: "Bolt",
+      value: "bolt"
+    },
+    {
+      name: "Uber",
+      value: "uber"
+    },
+    {
+      name: "Indrive",
+      value: "indrive"
+    }
+  ]
 
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
@@ -99,6 +119,7 @@ export default function OrdersDashboardDelivery() {
     setSelectedRep(null);
     setSelectedDeliveryZone(null);
     setSelectedDeliveryZone(null);
+    setSelectedDeliveryMode(null);
   }
 
 
@@ -147,6 +168,27 @@ export default function OrdersDashboardDelivery() {
                         }}
                       />
 
+                    </MenubarSubContent>
+                  </MenubarSub>
+                  <MenubarSub>
+                    <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                      <Bag size={18} />Delivery Mode
+                      {
+                        selectedDeliveryMode?.trim() !== '' &&
+                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                      }
+                    </MenubarSubTrigger>
+                    <MenubarSubContent>
+                      {
+                        mode_options?.map((mode) => (
+                          <MenubarItem key={mode.value} onClick={() => setSelectedDeliveryMode(mode.value)}>
+                            {
+                              selectedDeliveryMode === mode.value && <Check className='mr-2 h-4 w-4' />
+                            }
+                            {mode.name}
+                          </MenubarItem>
+                        ))
+                      }
                     </MenubarSubContent>
                   </MenubarSub>
                   <MenubarSub>

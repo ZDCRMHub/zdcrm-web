@@ -451,18 +451,23 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                         <span className="absolute h-[2px] w-full bottom-[-2px] left-0 bg-black" />
                       </p>
 
-                      <Button
-                        variant="yellow"
-                        onClick={() => printNote(
-                          {
-                            note: order?.message || '',
-                            orderNumber: order?.order_number,
-                            title: "Order Notes",
-                          }
-                        )}
-                      >
-                        Print
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          customIcon={isUpdatingItemSortedStatus && <Spinner className="text-custom-blue h-4 w-4" size={16} />}
+                        />
+                        <Button
+                          variant="yellow"
+                          onClick={() => printNote(
+                            {
+                              note: order?.message || '',
+                              orderNumber: order?.order_number,
+                              title: "Order Notes",
+                            }
+                          )}
+                        >
+                          Print
+                        </Button>
+                      </div>
                     </header>
                     <div className="mt-1 py-2 bg-transparent rounded-md flex justify-between items-stretch gap-6 w-full">
                       <Input
@@ -496,7 +501,9 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                 const itemImage = item.product.image || `/img/placeholders/${itemCategory}.svg`
 
                                 return (
-                                  <article key={item.id} className="flex border rounded-2xl p-6">
+                                  <article key={item.id}
+                                    className={cn("flex border rounded-2xl p-6")}
+                                  >
                                     <div className="flex flex-col gap-1.5 w-full max-w-[700px] bg-white rounded-xl">
                                       <header className="flex items-start justify-between">
                                         <div className="relative w-[120px] aspect-[98/88] rounded-xl bg-[#F6F6F6]">
@@ -515,6 +522,7 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                                             checked={item.is_sorted}
                                             customIcon={isUpdatingItemSortedStatus && <Spinner className="text-custom-blue h-4 w-4" size={16} />}
                                             onCheckedChange={(new_value) => handleUpdateItemStatus({ item_id: item.id, is_sorted: !!new_value })}
+                                            className={cn(item.is_sorted ? "!bg-green-300 " : "bg-white")}
                                           />
                                         </div>
                                       </header>

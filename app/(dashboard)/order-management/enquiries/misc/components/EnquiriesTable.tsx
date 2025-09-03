@@ -19,7 +19,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Edit, FilterSearch, I3DRotate, Trash } from "iconsax-react";
 import { ORDER_STATUS_COLORS } from "../../../misc/components/OrdersTable";
 import { formatUniversalDate } from "@/utils/strings";
-import { CATEGORIES_ENUMS } from "@/constants";
+import { CATEGORIES_ENUMS, DELIVERY_ZONES_ENUMS } from "@/constants";
+import { CaretDown } from "@phosphor-icons/react";
 
 interface EnquiriesTableProps {
   data?: TEnquiry[]
@@ -196,6 +197,7 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
               <TableHeader>
                 <TableRow>
                   <TableHead className='min-w-[150px]'>Enquiry ID</TableHead>
+                  <TableHead className='min-w-[150px]'>Delivery Zone</TableHead>
                   <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                   <TableHead className='min-w-[200px] max-w-[500px]'>Client Details</TableHead>
                   <TableHead className='min-w-[230px]'>Enquiry Items</TableHead>
@@ -204,7 +206,12 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                   <TableHead className='min-w-[200px]'>Recipient Details</TableHead>
                   <TableHead className='w-[170px]'>Order Notes</TableHead>
                   <TableHead className='min-w-[150px]'>Created On</TableHead>
-                  <TableHead className='min-w-[150px]'>Last Update</TableHead>
+                  <TableHead className='min-w-[150px]'>
+                    {
+                      type == "active" ? "Last Update" : "Deleted On"
+                    }
+                  </TableHead>
+
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -218,6 +225,9 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                             {enquiry.id}
                           </div>
                           <div className="text-sm text-gray-500">{enquiry.created_by?.name}</div>
+                        </TableCell>
+                        <TableCell className=''>
+                          {enquiry?.delivery.zone ? DELIVERY_ZONES_ENUMS[enquiry?.delivery.zone] : "-"}
                         </TableCell>
                         <TableCell className=' uppercase'>
                           {formatUniversalDate(enquiry?.delivery.delivery_date)}
@@ -261,6 +271,8 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
                                   )}
                                 >
                                   {ENQUIRY_STATUS_ENUMS[enquiry.status]}
+                                  <CaretDown className="h-4 w-4" />
+
                                 </Badge>
                                 {
                                   isPending && selectedEnquiry?.id == enquiry?.id && <Spinner size={18} />
@@ -303,7 +315,11 @@ export default function EnquiriesTable({ data, isLoading, isFetching, error, typ
 
                         </TableCell>
                         <TableCell className="">
-                          {format(new Date(enquiry.update_date), "EEE, do MMMM yyyy")}
+                          <div>{format(new Date(enquiry.update_date), "EEE, do MMMM yyyy")}</div>
+                          {
+                            type !== "active" &&
+                            <div className="text-sm text-gray-500">{enquiry.deleted_by?.name}</div>
+                          }
                         </TableCell>
 
                         <TableCell className="">

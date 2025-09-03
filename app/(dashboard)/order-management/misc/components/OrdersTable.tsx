@@ -15,14 +15,15 @@ import { convertNumberToNaira } from '@/utils/currency';
 import { FilterSearch, Tag } from 'iconsax-react';
 import { TOrder } from '../types';
 import { Button, LinkButton, Popover, Spinner, PopoverTrigger, PopoverContent } from '@/components/ui';
-import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import { convertKebabAndSnakeToTitleCase, formatUniversalDate } from '@/utils/strings';
-import { CATEGORIES_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
+import { CATEGORIES_ENUMS, DELIVERY_ZONES_ENUMS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS } from '@/constants';
 import { useUpdateOrderStatus } from '../api';
 import toast from 'react-hot-toast';
 import { extractErrorMessage } from '@/utils/errors';
 import { useRouter } from 'next/navigation';
+import { CaretDown } from '@phosphor-icons/react';
 
 
 export const ORDER_STATUS_COLORS: Record<string, string> = {
@@ -98,6 +99,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <div>{order.order_number}</div>
                 <div className='text-[0.825rem] text-gray-500 truncate'>{order.created_by.name}</div>
             </TableCell>
+            <TableCell className='min-w-[150px]'>
+                <div>{DELIVERY_ZONES_ENUMS[order.delivery.zone]}</div>
+            </TableCell>
             <TableCell className=' uppercase'>
                 {formatUniversalDate(order.delivery.delivery_date)}
             </TableCell>
@@ -138,6 +142,12 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             )}
                         >
                             {ORDER_STATUS_ENUMS[order.status]}
+                            <ChevronDown
+                                className={cn(
+                                    'transition-transform size-3',
+                                    isSheetOpen && 'rotate-180'
+                                )}
+                            />
                         </Badge>
                         {
                             isUpdatingStatus && <Spinner size={18} />
@@ -165,7 +175,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             </TableCell>
 
             <TableCell className='min-w-[180px] max-w-[500px]'>
-                {order.message}
+                {order.message.substring(0,50)}{order.message.length > 50 && "..."}
             </TableCell>
 
             <TableCell className='min-w-max'>
@@ -308,6 +318,7 @@ const OrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersT
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                    <TableHead className='min-w-[150px]'>Delivery Zone</TableHead>
                                     <TableHead className='min-w-[175px] max-w-[500px]'>Delivery Date</TableHead>
                                     <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
                                     <TableHead className='min-w-[230px]'>Order Items</TableHead>

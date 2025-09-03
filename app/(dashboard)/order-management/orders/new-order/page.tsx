@@ -231,6 +231,26 @@ const NewOrderPage = () => {
                   />
                   <FormField
                     control={control}
+                    name="customer.phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Client's Alt Phone Number"
+                            hasError={!!errors.customer?.phone}
+                            errorMessage={errors.customer?.phone?.message}
+                            placeholder="Enter client alternative phone number"
+                            {...field}
+                          />
+                        </FormControl>
+                        {
+                          watchedClientPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
+                        }
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
                     name="customer.name"
                     render={({ field }) => (
                       <FormItem>

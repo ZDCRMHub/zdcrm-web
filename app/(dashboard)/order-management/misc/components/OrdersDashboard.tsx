@@ -251,7 +251,7 @@ export default function OrdersDashboard() {
               )
             }
             <LinkButton href="./orders/new-order" variant='default' className='bg-black text-white'>
-              <Plus className='mr-2 h-4 w-4' /> Add Order
+              <Plus className='mr-2 h-4 w-4' /> Add New
             </LinkButton>
             <Button
               variant='outline'

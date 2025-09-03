@@ -197,8 +197,6 @@ const OrdeManagementDelivery = () => {
             errorMessage={errors.driver_phone?.message}
             defaultValue={order?.delivery?.driver_phone ?? ""}
           />
-
-
           <SelectSingleCombo
             name='delivery_platform'
             placeholder='Select delivery platform'
@@ -217,13 +215,6 @@ const OrdeManagementDelivery = () => {
             labelKey={"label"}
             hasError={!!errors.delivery_platform}
             errorMessage={errors.delivery_platform?.message}
-          />
-          <Input
-            label='Delivery Platform'
-            type='text'
-            hasError={!!errors.delivery_platform}
-            errorMessage={errors.delivery_platform?.message}
-            defaultValue={order?.delivery?.delivery_platform ?? ""}
           />
           <AmountInput
             label='Delivery Expense'

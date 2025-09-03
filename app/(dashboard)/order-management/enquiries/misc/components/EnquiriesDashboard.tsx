@@ -187,7 +187,7 @@ export default function EnquiriesDashboard() {
             )
           }
           <LinkButton href="./enquiries/new-enquiry" variant='default' className='bg-black text-white'>
-            <Plus className='mr-2 h-4 w-4' /> Add Enquiry
+            <Plus className='mr-2 h-4 w-4' /> Add New
           </LinkButton>
 
           <Button

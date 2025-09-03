@@ -18,12 +18,13 @@ import { Button, LinkButton, Popover, PopoverContent, PopoverTrigger, Spinner } 
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { useBooleanStateControl } from '@/hooks';
 import OrderDetailSheetDelivery from './OrderDetailSheetDelivery';
-import { ORDER_DELIVERY_STATUS_ENUMS, ORDER_DELIVERY_STATUS_OPTIONS } from '@/constants';
+import { DELIVERY_ZONES_ENUMS, ORDER_DELIVERY_STATUS_ENUMS, ORDER_DELIVERY_STATUS_OPTIONS } from '@/constants';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { useUpdateDeliveryStatus, useUpdateOrderStatus } from '../api';
 import { formatUniversalDate } from '@/utils/strings';
 import AddDeliveryNoteModal from './AddDeliveryNoteModal';
+import { CaretDown } from '@phosphor-icons/react';
 
 type StatusColor =
     | 'bg-green-100 hover:bg-green-100 text-green-800'
@@ -43,7 +44,7 @@ export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
 };
 
 export const ORDER_DELIVERY_STATUS_COLORS: Record<string, StatusColor> = {
-    PENDING: 'bg-purple-100 hover:bg-purple-100 text-purple-800',
+    QUALITY_CHECK_PASSED: 'bg-purple-100 hover:bg-purple-100 text-purple-800',
     DISPATCHED: 'bg-blue-100 hover:bg-blue-100 text-blue-800',
     DISPATCHED_CL: 'bg-yellow-100 hover:bg-yellow-100 text-yellow-800',
     DELIVERED: 'bg-green-100 hover:bg-green-100 text-green-800',
@@ -76,7 +77,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             {
                 onSuccess: (data) => {
                     toast.success("Order status updated successfully");
-                    if(new_status  == "DELIVERED" || new_status == "DELIVERED_CL") {
+                    if (new_status == "DELIVERED" || new_status == "DELIVERED_CL") {
                         openAddDeliveryNoteModal();
                     }
                 },
@@ -97,6 +98,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                     <div>{order.order_number}</div>
                     <div>{order.created_by.name}</div>
                 </TableCell>
+                <TableCell className='min-w-[150px]'>
+                    <div>{DELIVERY_ZONES_ENUMS[order.delivery.zone]}</div>
+                </TableCell>
                 <TableCell className=' uppercase'>
                     {formatUniversalDate(order.delivery.delivery_date)}
                 </TableCell>
@@ -106,10 +110,17 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             <Badge
                                 className={cn(
                                     ORDER_DELIVERY_STATUS_COLORS[order.delivery.status] || 'bg-gray-100 text-gray-800 w-full text-center min-w-max',
-                                    'rounded-md w-max'
+                                    'flex space-x-1 rounded-md w-max'
                                 )}
                             >
                                 {ORDER_DELIVERY_STATUS_ENUMS[order?.delivery.status!]}
+                                {/* {order?.delivery.status!} */}
+                                <CaretDown
+                                    className={cn(
+                                        'transition-transform size-3',
+                                        isSheetOpen && 'rotate-180'
+                                    )}
+                                />
                             </Badge>
                             {
                                 isUpdatingStatus && <Spinner size={18} />
@@ -287,6 +298,7 @@ const OrdersTableDelivery = ({ data, isLoading, isFetching, error, isFiltered }:
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                    <TableHead className='min-w-[150px]'>Delivery Zone</TableHead>
                                     <TableHead>Delivery Date</TableHead>
                                     <TableHead className='min-w-[150px] max-w-max'>Status</TableHead>
                                     <TableHead>Recipient Details</TableHead>
