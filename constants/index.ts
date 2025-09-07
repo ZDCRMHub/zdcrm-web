@@ -118,7 +118,7 @@ export const ORDER_STATUS_OPTIONS = [
 ]
 export const ORDER_DELIVERY_STATUS_OPTIONS = [
 
-  { value: "PENDING", label: "Pending" },
+  { value: "PENDING", label: "Quality CHeck Passed" },
   { value: "DISPATCHED", label: "Dispatched" },
   { value: "DISPATCHED_CL", label: "Dispatched Client Notified" },
   { value: "DELIVERED", label: "Delivered" },
