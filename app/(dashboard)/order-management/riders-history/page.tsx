@@ -1,10 +1,10 @@
 'use client';
 import React from 'react';
-import { ClientHistoryDashboard } from '../misc/components';
+import { RidersHistoryDashboard } from './misc/components';
 
 const page = () => {
   return (
-    <ClientHistoryDashboard />
+    <RidersHistoryDashboard />
   );
 };
 

@@ -139,7 +139,7 @@ export const linkGroups = [
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
-            link: "/inventory/store",
+            link: "/inventory/vendors",
             text: "Vendors",
             icon: <OrderManagement />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
