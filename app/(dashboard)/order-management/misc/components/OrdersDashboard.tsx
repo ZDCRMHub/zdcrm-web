@@ -278,7 +278,6 @@ export default function OrdersDashboard() {
         <TabBar
           tabs={[
             { name: 'All Orders', count: data?.count || 0 },
-            { name: 'Quality Check Passed', count: data?.count || 0 },
           ]}
           onTabClick={(tab) => { setOrdersToDisplay(tab) }}
           activeTab={ordersToDisplay}
