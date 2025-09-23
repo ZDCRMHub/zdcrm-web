@@ -67,10 +67,16 @@ const OrderRow: React.FC<OrderRowProps> = ({ product }) => {
                     <TableCell>
                         {variation.quantity_sold}
                     </TableCell>
+                    <TableCell>
+                        {/* // */}
+                    </TableCell>
+                    <TableCell>
+                        {/* // */}
+                    </TableCell>
                     <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
                     <TableCell>
                         <LinkButton
-                            href={`/inventory/products/${product.id}?variation=${variation.id}`}
+                            href={`/inventory/gifts/${product.id}?variation=${variation.id}`}
                             variant="unstyled"
                             className=""
                             size="sm"
@@ -190,8 +196,10 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({ data, isLoad
                                 <TableHead>Category</TableHead>
                                 <TableHead>Gift Name</TableHead>
                                 <TableHead>Variation</TableHead>
-                                <TableHead>Stock Quantity</TableHead>
-                                <TableHead>Quantity Sold</TableHead>
+                                <TableHead>Quantity In Stock</TableHead>
+                                <TableHead>Re-order Required</TableHead>
+                                <TableHead>Cost Price/Unit</TableHead>
+                                <TableHead>Storage Location</TableHead>
                                 <TableHead>Last Updated</TableHead>
                                 <TableHead></TableHead>
                             </TableRow>

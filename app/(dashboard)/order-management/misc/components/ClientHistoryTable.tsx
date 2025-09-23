@@ -89,6 +89,12 @@ const OrderRow: React.FC<OrderRowProps> = ({ customer }) => {
             </TableCell>
 
             <TableCell className=''>
+            </TableCell>
+
+            <TableCell className=''>
+            </TableCell>
+
+            <TableCell className=''>
                 <div>{customer.orders_count}</div>
             </TableCell>
 
@@ -212,8 +218,10 @@ const ClientHistoryTable = ({ data, isLoading, isFetching, error, isFiltered }: 
                                     <TableHead className='min-w-[200px] max-w-[500px]'>Customer&apos; Name</TableHead>
                                     <TableHead className='min-w-[150px]'>Phone Number</TableHead>
                                     <TableHead className='min-w-[230px]'>Email Address</TableHead>
+                                    <TableHead className='min-w-[230px]'>Client Behaviour</TableHead>
+                                    <TableHead className='min-w-[230px]'>Last Order Date</TableHead>
                                     <TableHead className='min-w-[200px]'>Number of Orders</TableHead>
-                                    <TableHead className='min-w-[150px]'>Total AMount Spent</TableHead>
+                                    <TableHead className='min-w-[150px]'>Total Amount Spent</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

@@ -34,7 +34,7 @@ const RedirectionPage = () => {
       else if (user?.permissions.includes('CAN_MANAGE_ORDERS')) {
         router.push('/order-management/orders');
       } else if (user?.permissions.includes('CAN_MANAGE_INVENTORIES')) {
-        router.push('/inventory/products');
+        router.push('/inventory/gifts');
       } else if (user?.permissions.includes('CAN_MANAGE_ENQUIRIES')) {
         router.push('/order-management/enquiries');
       } else if (user?.permissions.includes('CAN_MANAGE_DELIVERIES')) {

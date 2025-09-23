@@ -192,7 +192,7 @@ export default function EnquiriesDashboard() {
 
           <Button
             variant='outline'
-            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
+            className='bg-[#28C76F]  hover:bg-[#28C76F]  text-[#1EA566] bg-opacity-25 !border-none outline-none'
             onClick={handleRefresh}
           >
             <RefreshCcw className='mr-2 h-4 w-4' /> Refresh

@@ -73,7 +73,7 @@ const InventoryDetailsPage = () => {
         containerClass="max-w-[500px]"
       />
 
-      <section className="grid md:grid-cols-2 max-w-4xl gap-6 mt-10">
+      <section className="grid md:grid-cols-2 max-w-6xl gap-6 mt-10">
         <article className=" flex ">
           <div className="p-8 bg-[#F6F6F6] rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
 
