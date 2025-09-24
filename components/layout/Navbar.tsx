@@ -1,12 +1,14 @@
 'use client'
 
-import { Dot } from 'lucide-react';
+import { Bell, Dot } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 import { useAuth } from '@/contexts/auth';
 import { convertPathToTitle, getInitials } from '@/utils/strings';
 
-import { AvatarComponent } from '../ui';
+import { AvatarComponent, Button } from '../ui';
+import Link from 'next/link';
+import { NotificationBing } from 'iconsax-react';
 
 
 export function Navbar() {
@@ -25,6 +27,11 @@ export function Navbar() {
             </h1>
           </div>
           <div className='flex items-center'>
+            <Link href="/notifications">
+                <Button variant="ghost" size="icon" className="relative border border-[#6884CA4D] rounded-full">
+                <NotificationBing variant="Bold" className="h-5 w-5 text-[#194A7A]" />
+              </Button>
+            </Link>
             <div className='ml-4 relative'>
               <AvatarComponent
                 fallback={user?.name || "0kay 0kay"}

@@ -121,7 +121,7 @@ export const linkGroups = [
         requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
         nestedLinks: [
           {
-            link: "/inventory/products",
+            link: "/inventory/gifts",
             text: "Gift Inventory",
             icon: <I3Dcube />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
