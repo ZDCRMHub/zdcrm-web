@@ -97,6 +97,12 @@ export const linkGroups = [
         requiredPermissions: ["CAN_MANAGE_ORDERS_STAT", "CAN_MANAGE_FINANCIAL_REPORT"],
         nestedLinks: [
           {
+            link: "/report-analytics/overview",
+            text: "Overview",
+            icon: <ReportAndAnalytics />,
+            requiredPermissions: ["CAN_MANAGE_ORDERS_STAT"]
+          },
+          {
             link: "/report-analytics/order-statistics",
             text: "Order Statistics",
             icon: <OrderStatistics />,
