@@ -55,6 +55,18 @@ const InventoryDetailsPage = () => {
     setFalse: closeUpdateModal,
   } = useBooleanStateControl();
 
+  const [modalOperationMode, setModalOperationMode] = React.useState<'add' | 'subtract' | 'both'>('both');
+
+  const openAddModal = () => {
+    setModalOperationMode('add');
+    openUpdateModal();
+  };
+
+  const openSubtractModal = () => {
+    setModalOperationMode('subtract');
+    openUpdateModal();
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 300);
@@ -165,56 +177,64 @@ const InventoryDetailsPage = () => {
         containerClass="max-w-[500px]"
       />
 
-      <section className="grid md:grid-cols-2 max-w-6xl gap-6 mt-10">
-        <article className=" flex ">
-          <div className="p-8 bg-[#F6F6F6] rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
-            <p className="text-2xl font-medium text-center mb-3">Inventory</p>
-            <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-1 ">
-              <div className="relative flex items-center justify-center gap-2 width-[120px] h-[120px] shrink-0 mx-auto">
-                {isLoading ? (
-                  <Skeleton className="w-full h-[100px] rounded-[20px]" />
-                ) : (
-                  <Image
-                    src={inventoryImage}
-                    alt={data?.name as string}
-                    className="object-cover text-xs rounded-[20px]"
-                    width={100}
-                    height={100}
-                    priority
-                  />
-                )}
-              </div>
-              <p className="flex items-center text-xl text-[#113770] font-bold">
-                {data?.name}
-              </p>
-              <p className="text-xl text-[#113770] font-bold">
-                {selectedVariant?.size}{" "}
-                {(data?.category.name == "Cake" && "inches") ||
-                  selectedVariant?.flavour ||
-                  selectedVariant?.color}
-              </p>
-              <div className="bg-white rounded-[20px] items-center flex flex-col gap-2 mt-4 ">
-                <p className="text-base !uppercase">
-                  Quantity at hand:{" "}
-                  <span className="text-[1.025rem] text-[#113770] font-bold">
-                    {selectedVariant?.quantity}
-                  </span>
-                </p>
-                <Button
-                  className="bg-[#1E1E1E] rounded-none text-sm w-[161px]"
-                  onClick={openUpdateModal}
-                >
-                  Adjust Stock
-                </Button>
-              </div>
+      <section className="grid md:grid-cols-2 max-w-5xl gap-4 mt-8">
+        <article className="flex">
+          <div className="p-4 bg-[#F6F6F6] rounded-lg w-full max-w-[450px] shadow-inner shadow-white">
+        <p className="text-lg font-medium text-center mb-2">Inventory</p>
+        <div className="bg-white py-4 rounded-lg items-center flex flex-col gap-1">
+          <div className="relative flex items-center justify-center gap-2 w-[80px] h-[80px] shrink-0 mx-auto">
+            {isLoading ? (
+          <Skeleton className="w-full h-[80px] rounded-lg" />
+            ) : (
+          <Image
+            src={inventoryImage}
+            alt={data?.name as string}
+            className="object-cover text-xs rounded-lg"
+            width={80}
+            height={80}
+            priority
+          />
+            )}
+          </div>
+          <p className="flex items-center text-base text-[#113770] font-bold">
+            {data?.name}
+          </p>
+          <p className="text-sm text-[#113770] font-medium">
+            {selectedVariant?.size}{" "}
+            {(data?.category.name == "Cake" && "inches") ||
+          selectedVariant?.flavour ||
+          selectedVariant?.color}
+          </p>
+          <div className="bg-white rounded-lg items-center flex flex-col gap-2 mt-2">
+            <p className="text-sm !uppercase">
+          Quantity at hand:{" "}
+          <span className="text-sm text-[#113770] font-bold">
+            {selectedVariant?.quantity}
+          </span>
+            </p>
+            <div className="flex gap-2">
+              <Button
+            className="bg-[#FFC600] hover:bg-[#E6B200] text-black rounded-none text-xs w-[6rem] h-8"
+            onClick={openAddModal}
+              >
+            Add Stock
+              </Button>
+              <Button
+            className="bg-[#1E1E1E] hover:bg-[#000000] text-white rounded-none text-xs w-[6rem] h-8"
+            onClick={openSubtractModal}
+              >
+            Subtract
+              </Button>
             </div>
           </div>
+        </div>
+          </div>
         </article>
-        <article className=" flex p-6 bg-[#F6F6F6]">
-          <div className="p-8 bg-white h-full rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
-            <p className="text-2xl font-medium text-center mb-3">
-              Product Description
-            </p>
+        <article className="flex p-4 bg-[#F6F6F6]">
+          <div className="p-4 bg-white h-full rounded-lg w-full max-w-[450px] shadow-inner shadow-white">
+        <p className="text-lg font-medium text-center mb-2">
+          Product Description
+        </p>
           </div>
         </article>
       </section>
@@ -358,6 +378,7 @@ const InventoryDetailsPage = () => {
           stock={data!}
           variation={selectedVariant}
           refetch={refetch}
+          operationMode={modalOperationMode}
         />
       )}
     </section>

@@ -1,37 +1,28 @@
 "use client";
 
-import React from 'react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer
-} from "recharts";
+import React from "react";
 import { DateRange } from "react-day-picker";
 import { subMonths } from "date-fns";
 import { Controller, useForm } from "react-hook-form";
 
-import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RangeAndCustomDatePicker, Spinner } from "@/components/ui";
 
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 import { useGetEnquiryChannelStats } from "../../api";
 
-
 const chartConfig = {
-  "Email": { label: "Email", color: "#1C1C1C" },
-  "WhatsApp": { label: "WhatsApp", color: "#25D366" },
-  "Website": { label: "Website", color: "#0095FF" },
-  "Store Walk In": { label: "Store Walk-in", color: "#6E81F4" },
-  "Instagram": { label: "Instagram", color: "#E1306C" },
+  Google: { label: "Google", color: "#25D366" },
+  Instagram: { label: "Instagram", color: "#E6A500" },
+  WhatsApp: { label: "WhatsApp", color: "#25D366" },
+  "Store walk in": { label: "Store walk in", color: "#6E81F4" },
+  Others: { label: "Others", color: "#6E81F4" },
+  Email: { label: "Email", color: "#1C1C1C" },
+  Website: { label: "Website", color: "#0095FF" },
   "Phone Call": { label: "Phone Call", color: "#6FC5F5" },
-  "Facebook": { label: "Facebook", color: "#4267B2" },
-  "Tik Tok": { label: "TikTok", color: "#69C9D0" }
+  Facebook: { label: "Facebook", color: "#4267B2" },
+  "Tik Tok": { label: "TikTok", color: "#69C9D0" },
 };
 
 const today = new Date();
@@ -39,7 +30,8 @@ const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 const monthsAgo = subMonths(new Date(), 1);
 
 function EnquiryChannelsChart() {
-  const { data: allBranches, isLoading: isFetchingBranch } = useGetAllBranches();
+  const { data: allBranches, isLoading: isFetchingBranch } =
+    useGetAllBranches();
   const { control, watch, setValue } = useForm<{
     branch?: string;
     date: DateRange;
@@ -51,44 +43,109 @@ function EnquiryChannelsChart() {
         from: monthsAgo,
         to: tomorrow,
       },
-      period: 'today',
+      period: "today",
     },
   });
 
   const { data, isLoading, isFetching } = useGetEnquiryChannelStats({
-    branch: watch('branch') == "all" ? undefined : watch('branch'),
-    date_from: watch('date').from?.toISOString().split('T')[0],
-    date_to: watch('date').to?.toISOString().split('T')[0],
-    period: watch('period'),
+    branch: watch("branch") == "all" ? undefined : watch("branch"),
+    date_from: watch("date").from?.toISOString().split("T")[0],
+    date_to: watch("date").to?.toISOString().split("T")[0],
+    period: watch("period"),
   });
 
-  const chartData = data?.data.channels.map(channel => ({
-    channel: channel.channel,
-    enquiries: channel.total_count,
-    converted_enquiries: channel.converted_count
-  })) || [];
+  const chartData =
+    data?.data.channels.map((channel) => ({
+      channel: channel.channel,
+      enquiries: channel.total_count,
+      converted_enquiries: channel.converted_count,
+    })) || [];
+
+  // Find max enquiries for consistent bar scaling
+  const maxEnquiries = Math.max(...chartData.map((item) => item.enquiries), 1);
+
+  const ProgressBar = ({
+    channel,
+    enquiries,
+    convertedEnquiries,
+  }: {
+    channel: string;
+    enquiries: number;
+    convertedEnquiries: number;
+  }) => {
+    const channelConfig = chartConfig[channel as keyof typeof chartConfig];
+    const barColor = channelConfig?.color || "#8B909A";
+
+    // Calculate bar widths as percentages of max enquiries
+    const totalBarWidth = (enquiries / maxEnquiries) * 100;
+    const convertedBarWidth = (convertedEnquiries / maxEnquiries) * 100;
+
+    // Create lighter version of the color for total enquiries
+    const lighterBarColor = `${barColor}40`; // Add transparency for lighter version
+
+    return (
+      <div className="flex flex-col gap-2 py-3 w-full">
+        <header className="flex items-center justify-between gap-4 w-full">
+          <span className="text-sm font-medium text-gray-900 text-left">
+            {channelConfig?.label || channel}
+          </span>
+
+          <div className="text-sm text-gray-500 min-w-[60px] text-right">
+            {convertedEnquiries}/{enquiries}
+          </div>
+        </header>
+
+        <section className=" w-full">
+          <div className="w-full bg-gray-200 rounded-sm h-3 relative overflow-hidden">
+            {/* Total enquiries bar (lighter color) */}
+            <div
+              className="h-3 rounded-full absolute top-0 left-0"
+              style={{
+                width: `${totalBarWidth}%`,
+                backgroundColor: lighterBarColor,
+              }}
+            />
+            {/* Converted enquiries bar (darker color, overlays the lighter one) */}
+            <div
+              className="h-3 rounded-full absolute top-0 left-0"
+              style={{
+                width: `${convertedBarWidth}%`,
+                backgroundColor: barColor,
+              }}
+            />
+          </div>
+        </section>
+      </div>
+    );
+  };
 
   return (
-    <Card>
+    <Card className="2xl:col-span-2">
       <CardHeader className="flex md:!flex-row items-center justify-between">
         <CardTitle className="text-2xl md:text-[1.7rem] font-medium text-[#17181C] flex items-center gap-2">
-          Enquiry Channels
+          Conversion Channel
           {isFetching && <Spinner />}
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap max-w-max">
           <Controller
-            name='branch'
+            name="branch"
             control={control}
             render={({ field }) => (
               <SelectSingleSimple
                 {...field}
-                onChange={(new_value) => setValue('branch', new_value)}
-                value={watch('branch')}
+                onChange={(new_value) => setValue("branch", new_value)}
+                value={watch("branch")}
                 isLoadingOptions={isFetchingBranch}
-                options={[{ label: "All Branches", value: "all" }, ...(allBranches?.data.map(branch => ({ label: branch.name, value: branch.id.toString() })) || [])]}
+                options={[
+                  { label: "All Branches", value: "all" },
+                  ...(allBranches?.data.map((branch) => ({
+                    label: branch.name,
+                    value: branch.id.toString(),
+                  })) || []),
+                ]}
                 labelKey="label"
                 valueKey="value"
-                placeholder='Filter Branch'
+                placeholder="Filter Branch"
                 variant="light"
                 size="thin"
               />
@@ -99,73 +156,50 @@ function EnquiryChannelsChart() {
             variant="light"
             size="thin"
             onChange={(value) => {
-              if (value.dateType === 'custom' && value.from && value.to) {
-                setValue('date', { from: value.from, to: value.to });
-                setValue('period', 'custom');
+              if (value.dateType === "custom" && value.from && value.to) {
+                setValue("date", { from: value.from, to: value.to });
+                setValue("period", "custom");
               } else {
-                setValue('period', value.dateType as "today" | "week" | "month" | "year" | "custom");
+                setValue(
+                  "period",
+                  value.dateType as
+                    | "today"
+                    | "week"
+                    | "month"
+                    | "year"
+                    | "custom"
+                );
               }
             }}
             value={{
-              dateType: watch('period'),
-              from: watch('date').from,
-              to: watch('date').to
+              dateType: watch("period"),
+              from: watch("date").from,
+              to: watch("date").to,
             }}
           />
         </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <Spinner />
+          <div className="flex justify-center items-center h-64">
+            <Spinner />
+          </div>
         ) : (
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={chartData} barSize={15}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.35} stroke="#ccc" />
-              <XAxis
-                dataKey="channel"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
-                tickFormatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label || value}
-              />
-              <YAxis tickLine={false} axisLine={false}
-                tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
-
-              />
-              <Tooltip />
-              <Legend
-                verticalAlign="bottom"
-                align="center"
-                layout="horizontal"
-                wrapperStyle={{
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "15px",
-                  paddingLeft: "20px",
-                }}
-                payload={[
-                  {
-                    value: "No. of Enquiries",
-                    type: "circle",
-                    id: "enquiries",
-                    color: "#34CF56",
-                  },
-                  {
-                    value: "No. of Converted Enquiries",
-                    type: "circle",
-                    id: "converted_enquiries",
-                    color: "#194A7A",
-                  },
-                ]}
-              />
-              <Bar dataKey="enquiries" name="No. of Enquiries" fill="#34CF56" radius={6} />
-              <Bar dataKey="converted_enquiries" name="No. of Converted Enquiries" fill="#194A7A" radius={6} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="space-y-1">
+            <div className="flex items-center justify-end text-xs text-gray-500 mb-4 pr-4">
+              No. of Enquiries/No. of Converted Enquiries
+            </div>
+            <div className="grid xl:grid-cols-2 gap-x-10">
+              {chartData.map((item, index) => (
+                <ProgressBar
+                  key={index}
+                  channel={item.channel}
+                  enquiries={item.enquiries}
+                  convertedEnquiries={item.converted_enquiries}
+                />
+              ))}
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
@@ -173,4 +207,3 @@ function EnquiryChannelsChart() {
 }
 
 export default EnquiryChannelsChart;
-

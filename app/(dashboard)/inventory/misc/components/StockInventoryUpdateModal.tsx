@@ -31,26 +31,39 @@ import { useRouter } from 'next/navigation';
 const stockInventorySchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
     quantity: z.number().int().nonnegative(),
+    adjustmentAmount: z.number().int().min(1, { message: 'Amount must be at least 1' }).optional(),
 });
+
+type QuantityOperationMode = 'add' | 'subtract' | 'both';
+
 interface StockInventoryUpdateModalProps {
     isModalOpen: boolean;
     closeModal: () => void;
     refetch: () => void;
     stock: TStockInventoryItem
     variation: TStockVariation
-
+    operationMode?: QuantityOperationMode;
 }
 type updateStockInventoryFormType = z.infer<typeof stockInventorySchema>
-const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ isModalOpen, closeModal, variation, stock, refetch }) => {
+const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ 
+    isModalOpen, 
+    closeModal, 
+    variation, 
+    stock, 
+    refetch,
+    operationMode = 'both' 
+}) => {
     const { register, formState: { errors }, setValue, handleSubmit, watch, control, setError } = useForm<updateStockInventoryFormType>({
         defaultValues: {
             quantity: variation.quantity,
-            name: stock.name
+            name: stock.name,
+            adjustmentAmount: undefined,
         },
         resolver: zodResolver(stockInventorySchema)
     })
 
     const router = useRouter();
+    const [customError, setCustomError] = React.useState<string>('');
 
     const quantityMinus = () => {
         const prevQuantity = watch('quantity') || 0
@@ -61,9 +74,35 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
         setValue('quantity', prevQuantity + 1)
     }
 
+    const validateAdjustment = (amount: number, operation: 'add' | 'subtract'): boolean => {
+        if (operation === 'subtract') {
+            const resultingQuantity = variation.quantity - amount;
+            if (resultingQuantity < 0) {
+                setCustomError(`Cannot subtract ${amount}. Only ${variation.quantity} items available in stock.`);
+                return false;
+            }
+        }
+        setCustomError('');
+        return true;
+    };
+
     const { mutate: updateName, isPending: isUpdatingName } = useUpdateStockInventoryName()
     const { mutate, isPending } = useUpdateStockInventory()
     const submit = (data: updateStockInventoryFormType) => {
+        let finalQuantity = data.quantity;
+
+        // Handle adjustment operations
+        if (operationMode !== 'both' && data.adjustmentAmount) {
+            if (operationMode === 'add') {
+                finalQuantity = variation.quantity + data.adjustmentAmount;
+            } else if (operationMode === 'subtract') {
+                if (!validateAdjustment(data.adjustmentAmount, 'subtract')) {
+                    return; // Stop submission if validation fails
+                }
+                finalQuantity = variation.quantity - data.adjustmentAmount;
+            }
+        }
+
         updateName(
             { id: stock.id, data: { name: data.name } },
             {
@@ -71,14 +110,16 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                     toast.success("stock name updated successfully")
                     mutate({
                         data: {
-                            quantity: data.quantity,
+                            quantity: finalQuantity,
                         },
                         id: variation.id
                     },
                         {
                             onSuccess: () => {
                                 refetch()
-                                toast.success("stock inventory updated successfully")
+                                const operationText = operationMode === 'add' ? 'added to' : 
+                                                    operationMode === 'subtract' ? 'subtracted from' : 'updated for';
+                                toast.success(`Stock inventory ${operationText} successfully`)
                                 router.replace(`/inventory/stock/${stock.id}?variation=${variation.id}`)
                                 closeModal()
                             },
@@ -95,13 +136,99 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                 }
             }
         )
-
     }
 
     useEffect(() => {
         setValue('quantity', variation.quantity)
         setValue('name', stock.name)
-    }, [variation])
+        setValue('adjustmentAmount', undefined)
+        setCustomError('')
+    }, [variation, stock.name, setValue])
+
+    // Reset adjustment amount when modal closes
+    useEffect(() => {
+        if (!isModalOpen) {
+            setValue('adjustmentAmount', undefined)
+            setCustomError('')
+        }
+    }, [isModalOpen, setValue])
+
+    const getModalTitle = () => {
+        switch (operationMode) {
+            case 'add': return 'Add to Stock';
+            case 'subtract': return 'Subtract from Stock';
+            default: return 'Stock Adjustment';
+        }
+    };
+
+    const renderQuantityInput = () => {
+        if (operationMode === 'both') {
+            return (
+                <div>
+                    <p className="text-xs">Quantity</p>
+                    <div className="grid grid-cols-[max-content,1fr,max-content] items-center border border-solid border-[#E1E1E1] py-3 px-[18px] gap-4 mt-2">
+                        <div className="cursor-pointer" onClick={quantityMinus}>
+                            <MinusCirlce size={24} />
+                        </div>
+                        <Input
+                            className="font-bold text-sm appearance-none w-full text-center"
+                            {...register('quantity', { valueAsNumber: true })}
+                            pattern="^[0-9]*$"
+                        />
+                        <div className="cursor-pointer" onClick={quantityPlus}>
+                            <AddCircle size={24} />
+                        </div>
+                    </div>
+                    {!!errors.quantity && (
+                        <FormError errorMessage={errors.quantity?.message} />
+                    )}
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <p className="text-xs">
+                        {operationMode === 'add' ? 'Amount to Add' : 'Amount to Subtract'}
+                    </p>
+                    <Input
+                        className="font-bold text-sm appearance-none w-full mt-2"
+                        {...register('adjustmentAmount', { 
+                            valueAsNumber: true,
+                            onChange: (e) => {
+                                const value = parseInt(e.target.value) || 0;
+                                if (operationMode === 'subtract' && value > 0) {
+                                    validateAdjustment(value, 'subtract');
+                                } else {
+                                    setCustomError('');
+                                }
+                            }
+                        })}
+                        placeholder={`Enter amount to ${operationMode}`}
+                        pattern="^[0-9]*$"
+                    />
+                    {!!errors.adjustmentAmount && (
+                        <FormError errorMessage={errors.adjustmentAmount?.message} />
+                    )}
+                    {customError && (
+                        <FormError errorMessage={customError} />
+                    )}
+                    <div className="mt-2 text-xs text-gray-500">
+                        Current quantity: <span className="font-semibold">{variation.quantity}</span>
+                        {operationMode === 'add' && watch('adjustmentAmount') && (
+                            <span> → New quantity: <span className="font-semibold text-green-600">
+                                {variation.quantity + (watch('adjustmentAmount') || 0)}
+                            </span></span>
+                        )}
+                        {operationMode === 'subtract' && watch('adjustmentAmount') && !customError && (
+                            <span> → New quantity: <span className="font-semibold text-blue-600">
+                                {Math.max(0, variation.quantity - (watch('adjustmentAmount') || 0))}
+                            </span></span>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+    };
 
 
 
@@ -113,7 +240,7 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
 
                 <DialogHeader className="">
                     <DialogTitle className="text-xl font-semibold uppercase">
-                        stock adjustment
+                        {getModalTitle()}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -145,36 +272,14 @@ const StockInventoryUpdateModal: React.FC<StockInventoryUpdateModalProps> = ({ i
                         hasError={!!errors.name}
                         errorMessage={errors.name?.message}
                     />
-                    <div>
-                        <p className="text-xs">Quantity</p>
-                        <div className="grid grid-cols-[max-content,1fr,max-content] items-center border border-solid border-[#E1E1E1] py-3 px-[18px] gap-4 mt-2">
-                            <div className="cursor-pointer" onClick={quantityMinus}>
-                                <MinusCirlce size={24} />
-                            </div>
-                            <Input
-                                className="font-bold text-sm appearance-none w-full text-center"
-                                {...register('quantity', { valueAsNumber: true })}
-                                pattern="^[0-9]*$"
-
-                            />
-                            <div className="cursor-pointer" onClick={quantityPlus}>
-                                <AddCircle size={24} />
-                            </div>
-                        </div>
-                        {
-                            !!errors.quantity && (
-                                <FormError errorMessage={errors.quantity?.message} />
-                            )
-                        }
-                    </div>
-
-
+                    
+                    {renderQuantityInput()}
 
                     <DialogFooter className="p-2">
                         <Button
                             type="submit"
                             id='FORM'
-                            disabled={isPending || isUpdatingName}
+                            disabled={isPending || isUpdatingName || !!customError}
                             className="bg-[#17181C] mt-10 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                         >
                             {

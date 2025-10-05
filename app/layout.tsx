@@ -25,7 +25,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: 'Zuru CRM',
+  title: 'ZDCRM Hub',
   description: 'Built by Oni Khalid',
 };
 
