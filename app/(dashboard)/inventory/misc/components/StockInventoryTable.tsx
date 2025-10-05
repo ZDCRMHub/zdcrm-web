@@ -9,34 +9,51 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LinkButton, Spinner } from "@/components/ui";
-import { TStockInventoryItem } from "../types/stock";
+import { Button, LinkButton, Spinner } from "@/components/ui";
+import { TStockInventoryItem, TStockVariation } from "../types/stock";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { Edit } from "lucide-react";
+import { useBooleanStateControl } from "@/hooks";
+import { StockInventoryUpdateModal } from ".";
+import Image from "next/image";
 
 interface StockRowProps {
   item: TStockInventoryItem;
+  refetch: () => void;
 }
 
-const StockRow: React.FC<StockRowProps> = ({ item }) => {
+const StockRow: React.FC<StockRowProps> = ({ item, refetch }) => {
+  const [selectedVariation, setSelectedVariation] =
+    React.useState<TStockVariation | null>(null);
+  const {
+    state: isUpdateModalOpen,
+    setTrue: openUpdateModal,
+    setFalse: closeUpdateModal,
+  } = useBooleanStateControl();
+
+  const handleEditClick = (variation: TStockVariation) => {
+    setSelectedVariation(variation);
+    openUpdateModal();
+  };
   return (
     <>
       {item.variations.map((variation, index) => (
         <TableRow key={`${item.id}-${index}`}>
           {index === 0 && (
             <>
-              <TableCell rowSpan={item.variations.length}>
-                {item.id}
-              </TableCell>
+              <TableCell rowSpan={item.variations.length}>{item.id}</TableCell>
               <TableCell rowSpan={item.variations.length} className="uppercase">
                 {item.category.name}
               </TableCell>
               <TableCell rowSpan={item.variations.length}>
                 <div className="flex items-center space-x-2">
-                  <img
+                  <Image
                     src={item.image_one || "/img/cake.png"}
                     alt={"product image"}
                     className="h-10 w-10 rounded object-cover text-[0.65rem] leading-tight bg-gray-300 lowercase"
+                    width={40}
+                    height={40}
                   />
                   <span>{item.name}</span>
                 </div>
@@ -44,11 +61,9 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
             </>
           )}
           <TableCell>
-            {
-              (variation.size ? variation.size  + "inches" :  variation.size)
-              || variation.color
-              || variation.flavour
-            }
+            {(variation.size ? variation.size + "inches" : variation.size) ||
+              variation.color ||
+              variation.flavour}
           </TableCell>
           <TableCell>
             <div className="grid grid-cols-[1fr,max-content] items-center space-x-2">
@@ -62,22 +77,40 @@ const StockRow: React.FC<StockRowProps> = ({ item }) => {
               )}
             </div>
           </TableCell>
+          <TableCell>{variation.quantity_sold}</TableCell>
+          <TableCell>{format(item.update_date, "dd-MMM-yyyy")}</TableCell>
           <TableCell>
-           {variation.quantity_sold}
-          </TableCell>
-          <TableCell>{format(item.update_date, 'dd-MMM-yyyy')}</TableCell>
-          <TableCell>
-            <LinkButton
-              href={`/inventory/stock/${item.id}?variation=${variation.id}`}
-              variant="unstyled"
-              className=""
-              size="sm"
-            >
-              {">>"}
-            </LinkButton>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="unstyled"
+                size="sm"
+                onClick={() => handleEditClick(variation)}
+                className="h-8 w-full p-0 font-medium flex items-center gap-1.5 hover:bg-gray-200 rounded-full px-2.5"
+              >
+                Edit
+                <Edit className="h-4 w-4" />
+              </Button>
+              <LinkButton
+                href={`/inventory/stock/${item.id}?variation=${variation.id}`}
+                variant="unstyled"
+                className=""
+                size="sm"
+              >
+                {">>"}
+              </LinkButton>
+            </div>
           </TableCell>
         </TableRow>
       ))}
+      {selectedVariation && (
+        <StockInventoryUpdateModal
+          isModalOpen={isUpdateModalOpen}
+          closeModal={closeUpdateModal}
+          stock={item}
+          variation={selectedVariation}
+          refetch={refetch}
+        />
+      )}
     </>
   );
 };
@@ -87,25 +120,40 @@ interface StockInventoryTableProps {
   isLoading: boolean;
   isFetching: boolean;
   error: unknown;
+  refetch: () => void;
 }
 
-const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoading, isFetching, error }) => {
-  if (isLoading) return <div className='flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]'><Spinner /></div>;
+const StockInventoryTable: React.FC<StockInventoryTableProps> = ({
+  data,
+  isLoading,
+  isFetching,
+  error,
+  refetch,
+}) => {
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]">
+        <Spinner />
+      </div>
+    );
   if (error) return <div>Error fetching data</div>;
   if (!data) return null;
 
   return (
     <div className="w-full md:w-[95%] max-w-[1792px] px-8">
-      <div
-        className={cn(
-          'overflow-hidden rounded-full mb-1',
-        )}
-      >
-        <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden",
-          isFetching && !isLoading && 'bg-blue-200'
-        )}>
-
-          <div className={cn("h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity", isFetching && !isLoading && 'opacity-100')}></div>
+      <div className={cn("overflow-hidden rounded-full mb-1")}>
+        <div
+          className={cn(
+            "bg-[#F8F9FB] h-1 w-full overflow-hidden",
+            isFetching && !isLoading && "bg-blue-200"
+          )}
+        >
+          <div
+            className={cn(
+              "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
+              isFetching && !isLoading && "opacity-100"
+            )}
+          ></div>
         </div>
       </div>
       <Table>
@@ -123,7 +171,7 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoadi
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <StockRow key={item.id} item={item} />
+            <StockRow key={item.id} item={item} refetch={refetch} />
           ))}
         </TableBody>
       </Table>
@@ -132,4 +180,3 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({ data, isLoadi
 };
 
 export default StockInventoryTable;
-

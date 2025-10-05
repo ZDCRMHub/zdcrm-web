@@ -122,7 +122,7 @@ export default function ClientDetailsPage() {
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-red-600 mb-2">Error Loading Customer</h2>
-                    <p className="text-gray-600 mb-4">Could not load customer details for phone: {client_phone}</p>
+                    <p className="text-gray-600 mb-4">Could not load riders details for phone: {client_phone}</p>
                     <Button onClick={handleRefresh}>Try Again</Button>
                 </div>
             </div>

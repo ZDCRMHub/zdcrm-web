@@ -5,6 +5,7 @@ import {
   Search,
   Plus,
   RefreshCcw,
+  Download,
 } from 'lucide-react';
 import { subMonths } from 'date-fns';
 
@@ -43,8 +44,55 @@ export default function ClientHistoryDashboard() {
   const clearFilters = () => {
     setSearchText("");
     setCurrentPage(1);
-
   }
+
+  // CSV Download function
+  const downloadCSV = () => {
+    if (!customers?.data || customers.data.length === 0) {
+      alert("No data available to download");
+      return;
+    }
+
+    // Define CSV headers
+    const headers = [
+      "Client Name",
+      "Phone Number", 
+      "Email Address",
+      "Number of Orders",
+      "Total Amount Spent",
+      "Created Date",
+      "Last Updated"
+    ];
+
+    // Convert data to CSV format
+    const csvContent = [
+      headers.join(","),
+      ...customers.data.map(customer => [
+        `"${customer.name}"`,
+        `"${customer.phone}"`,
+        `"${customer.email}"`,
+        customer.orders_count,
+        `"${customer.total_amount_spent}"`,
+        `"${new Date(customer.create_date).toLocaleDateString()}"`,
+        `"${new Date(customer.update_date).toLocaleDateString()}"`
+      ].join(","))
+    ].join("\n");
+
+    // Create and download the CSV file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `client-history-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  };
 
 
 
@@ -82,6 +130,15 @@ export default function ClientHistoryDashboard() {
               onClick={handleRefresh}
             >
               <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+            </Button>
+
+            <Button
+              variant="outline"
+              className="bg-[#007ACC] text-[#005299] bg-opacity-25"
+              onClick={downloadCSV}
+              disabled={!customers?.data || customers.data.length === 0}
+            >
+              <Download className="mr-2 h-4 w-4" /> Export CSV
             </Button>
           </div>
         </div>

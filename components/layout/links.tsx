@@ -20,6 +20,7 @@ import {
   Setting2,
   ShopRemove,
   Trash,
+  TruckTick,
 } from "iconsax-react";
 import { UserCircle } from 'lucide-react';
 
@@ -79,7 +80,7 @@ export const linkGroups = [
           {
             link: "/order-management/riders-history",
             text: "Riders History",
-            icon: <ClientHistoryIcon />,
+            icon: <TruckTick />,
             requiredPermissions: ["CAN_MANAGE_ORDERS_HISTORY"],
           },
           {
