@@ -187,6 +187,7 @@ export default function ProductsInventoryDashboard() {
           isLoading={isLoading}
           isFetching={isFetching}
           error={error}
+          refetch={refetch}
         />
       </section>
 

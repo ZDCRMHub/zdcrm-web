@@ -178,7 +178,7 @@ export default function StockInventoryDashboard() {
           onTabClick={setActiveTab}
           activeTab={activeTab}
         />
-        <StockInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} />
+        <StockInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} refetch={refetch} />
       </section>
 
       <footer className="sticky bottom-0">
