@@ -65,7 +65,7 @@ export function OrderStatsDeliveryZoneSection() {
   return (
     <Card className="">
       <CardHeader className="flex md:!flex-row items-center justify-between">
-        <CardTitle className="text-2xl md:text-[1.7rem] font-medium text-[#17181C] flex items-center gap-2">
+        <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
           Order Delivery Zones
           {
             isFetching && <Spinner />

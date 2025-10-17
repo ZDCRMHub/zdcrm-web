@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
-import { EnquiryChannelsChart, ClientTrackingChart, TrendsSeasonalitySalesChart, EmployeePerformanceChart } from '../misc/components/conversion-statistics';
+import { EnquiryChannelsChart, ClientTrackingChart, TrendsSeasonalitySalesChart, EmployeePerformanceChart, ClientBehaviorChart } from '../misc/components/conversion-statistics';
 
 const page = () => {
 
@@ -32,11 +32,13 @@ const page = () => {
       <div className='grid  2xl:grid-cols-2 gap-10 mb-10'>
         <EnquiryChannelsChart />
 
+        <ClientBehaviorChart />
+        
         <ClientTrackingChart />
 
         <TrendsSeasonalitySalesChart />
 
-        <EmployeePerformanceChart />
+        {/* <EmployeePerformanceChart /> */}
       </div>
 
       <div className='flex justify-end mb-24 gap-6'>

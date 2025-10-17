@@ -47,6 +47,16 @@ const OrderStatsCard: React.FC<OrderStatsCardProps> = ({
             icon: <OrderTimeLine className="text-white" />,
             iconBg: '#33860C'
         },
+        delivered_cl_deliveries: {
+            title: "Delivered Client Notified",
+            icon: <OrderTimeLine className="text-white" />,
+            iconBg: '#33860C'
+        },
+        completed_orders: {
+            title: "Completed Orders",
+            icon: <BoxTick className="text-white" />,
+            iconBg: '#33860C'
+        },
         cancelled_orders: {
             title: "Cancelled Orders",
             icon: <BoxRemove className="text-white" />,

@@ -43,9 +43,9 @@ import { ArrowDown2, Bag, Category2 } from "iconsax-react";
 import { Controller, useForm } from "react-hook-form";
 import { DateRange } from "react-day-picker";
 
-const today = new Date();
-const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-const monthsAgo = subMonths(new Date(), 20);
+export const today = new Date();
+export const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
+export const monthsAgo = subMonths(new Date(), 20);
 
 export default function ClientHistoryDashboard() {
   const [searchText, setSearchText] = useState("");
@@ -110,36 +110,41 @@ export default function ClientHistoryDashboard() {
     // Define CSV headers
     const headers = [
       "Rider Name",
-      "Phone Number", 
+      "Phone Number",
       "Email Address",
       "Number of Orders Delivered",
       "Total Amount Spent",
       "Created Date",
-      "Last Updated"
+      "Last Updated",
     ];
 
     // Convert data to CSV format
     const csvContent = [
       headers.join(","),
-      ...customers.data.map(customer => [
-        `"${customer.name}"`,
-        `"${customer.phone}"`,
-        `"${customer.email}"`,
-        customer.orders_count,
-        `"${customer.total_amount_spent}"`,
-        `"${new Date(customer.create_date).toLocaleDateString()}"`,
-        `"${new Date(customer.update_date).toLocaleDateString()}"`
-      ].join(","))
+      ...customers.data.map((customer) =>
+        [
+          `"${customer.name}"`,
+          `"${customer.phone}"`,
+          `"${customer.email}"`,
+          customer.orders_count,
+          `"${customer.total_amount_spent}"`,
+          `"${new Date(customer.create_date).toLocaleDateString()}"`,
+          `"${new Date(customer.update_date).toLocaleDateString()}"`,
+        ].join(",")
+      ),
     ].join("\n");
 
     // Create and download the CSV file
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    
+
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `riders-history-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute(
+        "download",
+        `riders-history-${new Date().toISOString().split("T")[0]}.csv`
+      );
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
@@ -161,17 +166,6 @@ export default function ClientHistoryDashboard() {
               onChange={handleSearch}
               rightIcon={<Search className="h-5 w-5 text-[#8B909A]" />}
             />
-          </div>
-          <div className="flex items-center gap-2">
-            {debouncedSearchText && (
-              <Button
-                variant="outline"
-                className="bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </Button>
-            )}
             <Menubar className="!p-0">
               <MenubarMenu>
                 <MenubarTrigger className="relative flex items-center gap-4 text-xs cursor-pointer text-[#8B909A] !h-10">
@@ -246,6 +240,17 @@ export default function ClientHistoryDashboard() {
                 </MenubarContent>
               </MenubarMenu>
             </Menubar>
+          </div>
+          <div className="flex items-center gap-2">
+            {debouncedSearchText && (
+              <Button
+                variant="outline"
+                className="bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25"
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </Button>
+            )}
 
             <Button
               variant="outline"

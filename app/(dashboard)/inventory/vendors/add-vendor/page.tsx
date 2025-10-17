@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { ArrowLeft, Plus, Upload, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { LinkButton } from "@/components/ui/linkButton"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -86,10 +87,10 @@ export default function AddVendorPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="sm" onClick={() => router.push("/")} className="flex items-center gap-2">
+          <LinkButton variant="ghost" size="sm" href={"/inventory/vendors"} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
-          </Button>
+          </LinkButton>
         </div>
 
         <div className="flex items-center gap-3">

@@ -108,7 +108,7 @@ const BranchPage = () => {
             className="absolute top-[35%] right-[24px]"
           />
         </div>
-        <div className="flex gap-6 flex-wrap">
+        <div className="flex flex-col gap-6 flex-wrap">
           {
             isLoading ? (
               <div className="w-full h-full flex items-center justify-center">
@@ -130,7 +130,7 @@ const BranchPage = () => {
                   ))
                 )}
           <div
-            className="bg-[#DFDFDF] w-[264px] h-[180px] rounded-lg flex justify-center items-center cursor-pointer"
+            className="bg-[#DFDFDF] w-full h-[50px] rounded-lg flex justify-center items-center cursor-pointer"
             onClick={openAddBranchModal}
           >
             <GoPlus size={30} />

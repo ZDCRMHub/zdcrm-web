@@ -174,7 +174,7 @@ export const linkGroups = [
           },
           {
             link: "/admin/employees-role",
-            text: "Employees Role",
+            text: "Employees",
             icon: <EnquiriesIcon />,
             requiredPermissions: ["CAN_MANAGE_ROLES"],
           },
@@ -210,7 +210,7 @@ export const linkGroups = [
           },
           {
             link: "/admin/admin-roles",
-            text: "Admin Roles",
+            text: "Roles and Permissions",
             icon: <Setting2 />,
             requiredPermissions: ["CAN_MANAGE_ROLES"],
           },

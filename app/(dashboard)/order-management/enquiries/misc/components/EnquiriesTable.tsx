@@ -91,6 +91,11 @@ export default function EnquiriesTable({
     setTrue: openConfirmRestoreModal,
     setFalse: closeConfirmRestoreModal,
   } = useBooleanStateControl();
+  const {
+    state: isConfirmPermanentDeleteModalOpen,
+    setTrue: openConfirmPermanentDeleteModal,
+    setFalse: closeConfirmPermanentDeleteModal,
+  } = useBooleanStateControl();
 
   const { mutate, isPending } = useUpdateEnquiryStatus();
   const queryClient = useQueryClient();
@@ -443,17 +448,30 @@ export default function EnquiriesTable({
                                 </DropdownMenuItem>
                               </>
                             ) : (
-                              <DropdownMenuItem
-                                onSelect={() => {
-                                  setSelectedEnquiry(enquiry);
-                                  openConfirmRestoreModal();
-                                }}
-                                className="cursor-pointer"
-                              >
-                                <span className="flex items-center gap-2 pl-6  py-3">
-                                  Restore Enquiry
-                                </span>
-                              </DropdownMenuItem>
+                              <>
+                                <DropdownMenuItem
+                                  onSelect={() => {
+                                    setSelectedEnquiry(enquiry);
+                                    openConfirmRestoreModal();
+                                  }}
+                                  className="cursor-pointer"
+                                >
+                                  <span className="flex items-center gap-2 pl-6  py-3">
+                                    Restore Enquiry
+                                  </span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onSelect={() => {
+                                    setSelectedEnquiry(enquiry);
+                                    openConfirmPermanentDeleteModal();
+                                  }}
+                                  className="cursor-pointer"
+                                >
+                                  <span className="flex items-center gap-2 pl-6  py-3">
+                                    Delete Permanently
+                                  </span>
+                                </DropdownMenuItem>
+                              </>
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -496,6 +514,15 @@ export default function EnquiriesTable({
         isDeleting={isPending}
         heading="Delete Enquiry"
         subheading="This action means order enquiry be removed."
+      />
+      <ConfirmDeleteModal
+        isModalOpen={isConfirmPermanentDeleteModalOpen}
+        closeModal={closeConfirmPermanentDeleteModal}
+        deleteFn={() => {}}
+        isDeleting={isPending}
+        customTitleText="Confirm Permanent Delete"
+        heading="Delete Permanently"
+        subheading="Warning, this action is irreversible and all data relating to this enquiry will be lost forever."
       />
       <ConfirmActionModal
         isModalOpen={isConfirmRestoreModalOpen}

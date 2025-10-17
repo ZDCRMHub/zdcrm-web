@@ -47,6 +47,7 @@ export const ORDER_STATUS_COLORS: Record<string, string> = {
   COM: "bg-green-200 hover:bg-green-200 text-green-800",
   CAN: "bg-red-100 hover:bg-red-100 text-red-800",
   STD: "bg-blue-100 hover:bg-blue-100 text-blue-800",
+  DEL: "bg-[#bf0f021c] text-[#bf3102]",  
 };
 
 interface CategoryBadgeProps {
