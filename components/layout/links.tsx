@@ -19,6 +19,7 @@ import {
   I3Dcube,
   Logout,
   Setting2,
+  Shop,
   ShopRemove,
   Trash,
   TruckTick,
@@ -149,7 +150,7 @@ export const linkGroups = [
           {
             link: "/inventory/vendors",
             text: "Vendors",
-            icon: <OrderManagement />,
+            icon: <Shop />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
         ],
