@@ -13,6 +13,7 @@ import { authTokenStorage } from "@/utils/auth";
 import {
   Bag2,
   BagTick2,
+  Cake,
   DiscountShape,
   Graph,
   I3Dcube,
@@ -136,7 +137,7 @@ export const linkGroups = [
           {
             link: "/inventory/stock",
             text: "Cakes, Flowers & Cupcakes",
-            icon: <BagTick2 />,
+            icon: <Cake />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
