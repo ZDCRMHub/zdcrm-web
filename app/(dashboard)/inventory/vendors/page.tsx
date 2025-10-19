@@ -9,12 +9,14 @@ import {
   User,
   Package,
   RefreshCcw,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { VendorDetailSheet } from "./misc/components";
+import { Input } from "@/components/ui";
 
 // Mock data for vendors
 const mockVendors = [
@@ -83,11 +85,24 @@ export default function VendorsPage() {
     // Simulate refresh
     console.log("Refreshing vendors...");
   };
+  const [searchText, setSearchText] = useState("");
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+  };
 
+  
   return (
     <div className="p-6 max-w-7xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
+        <Input
+          type="text"
+          placeholder="Search (client name, customer rep, phone number)"
+          className="w-full focus:border min-w-[350px] text-xs !h-10"
+          value={searchText}
+          onChange={handleSearch}
+          rightIcon={<Search className="h-5 w-5 text-[#8B909A]" />}
+        />
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
@@ -96,7 +111,7 @@ export default function VendorsPage() {
           >
             <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
           </Button>
-          <Link href="./add-vendor">
+          <Link href="/inventory/vendors/add-vendor">
             <Button className="flex items-center gap-2 bg-black hover:bg-gray-800">
               <Plus className="h-4 w-4" />
               Add Vendor
@@ -124,7 +139,10 @@ export default function VendorsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {vendors.map((vendor) => (
-            <Card key={vendor.id} className="hover:shadow-lg transition-shadow rounded-md">
+            <Card
+              key={vendor.id}
+              className="hover:shadow-lg transition-shadow rounded-md"
+            >
               <CardHeader className="pb-4 border-b border-[#051F2E]">
                 <div className="flex items-center justify-between">
                   <aside className="flex items-center gap-3">

@@ -13,11 +13,13 @@ import { authTokenStorage } from "@/utils/auth";
 import {
   Bag2,
   BagTick2,
+  Cake,
   DiscountShape,
   Graph,
   I3Dcube,
   Logout,
   Setting2,
+  Shop,
   ShopRemove,
   Trash,
   TruckTick,
@@ -136,7 +138,7 @@ export const linkGroups = [
           {
             link: "/inventory/stock",
             text: "Cakes, Flowers & Cupcakes",
-            icon: <BagTick2 />,
+            icon: <Cake />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
@@ -148,7 +150,7 @@ export const linkGroups = [
           {
             link: "/inventory/vendors",
             text: "Vendors",
-            icon: <OrderManagement />,
+            icon: <Shop />,
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
         ],
@@ -174,7 +176,7 @@ export const linkGroups = [
           },
           {
             link: "/admin/employees-role",
-            text: "Employees Role",
+            text: "Employees",
             icon: <EnquiriesIcon />,
             requiredPermissions: ["CAN_MANAGE_ROLES"],
           },
@@ -210,7 +212,7 @@ export const linkGroups = [
           },
           {
             link: "/admin/admin-roles",
-            text: "Admin Roles",
+            text: "Roles and Permissions",
             icon: <Setting2 />,
             requiredPermissions: ["CAN_MANAGE_ROLES"],
           },

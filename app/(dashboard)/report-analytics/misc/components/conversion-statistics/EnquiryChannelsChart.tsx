@@ -6,11 +6,12 @@ import { subMonths } from "date-fns";
 import { Controller, useForm } from "react-hook-form";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RangeAndCustomDatePicker, Spinner } from "@/components/ui";
+import { LinkButton, RangeAndCustomDatePicker, Spinner } from "@/components/ui";
 
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 import { useGetEnquiryChannelStats } from "../../api";
+import { cn } from "@/lib/utils";
 
 const chartConfig = {
   Google: { label: "Google", color: "#25D366" },
@@ -29,7 +30,10 @@ const today = new Date();
 const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 const monthsAgo = subMonths(new Date(), 1);
 
-function EnquiryChannelsChart() {
+interface EnquiryChannelsChartProps {
+  from_overview?: boolean;
+}
+function EnquiryChannelsChart({ from_overview }: EnquiryChannelsChartProps) {
   const { data: allBranches, isLoading: isFetchingBranch } =
     useGetAllBranches();
   const { control, watch, setValue } = useForm<{
@@ -96,10 +100,10 @@ function EnquiryChannelsChart() {
         </header>
 
         <section className=" w-full">
-          <div className="w-full bg-gray-200 rounded-sm h-3 relative overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-sm h-3.5 relative overflow-hidden">
             {/* Total enquiries bar (lighter color) */}
             <div
-              className="h-3 rounded-full absolute top-0 left-0"
+              className="h-3.5 rounded-full absolute top-0 left-0"
               style={{
                 width: `${totalBarWidth}%`,
                 backgroundColor: lighterBarColor,
@@ -119,64 +123,78 @@ function EnquiryChannelsChart() {
     );
   };
 
+  const usableChartData = from_overview ? chartData.slice(0, 4) : chartData;
+
   return (
-    <Card className="2xl:col-span-2">
+    <Card className={cn(from_overview ? "" : "h-full 2xl:col-span-2")}>
       <CardHeader className="flex md:!flex-row items-center justify-between">
-        <CardTitle className="text-2xl md:text-[1.7rem] font-medium text-[#17181C] flex items-center gap-2">
+        <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
           Conversion Channel
           {isFetching && <Spinner />}
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap max-w-max">
-          <Controller
-            name="branch"
-            control={control}
-            render={({ field }) => (
-              <SelectSingleSimple
-                {...field}
-                onChange={(new_value) => setValue("branch", new_value)}
-                value={watch("branch")}
-                isLoadingOptions={isFetchingBranch}
-                options={[
-                  { label: "All Branches", value: "all" },
-                  ...(allBranches?.data.map((branch) => ({
-                    label: branch.name,
-                    value: branch.id.toString(),
-                  })) || []),
-                ]}
-                labelKey="label"
-                valueKey="value"
-                placeholder="Filter Branch"
+          {from_overview ? (
+            <LinkButton
+              href={"/report-analytics/conversion-statistics"}
+              variant={"outline"}
+              size={"thin"}
+            >
+              View All
+            </LinkButton>
+          ) : (
+            <>
+              <Controller
+                name="branch"
+                control={control}
+                render={({ field }) => (
+                  <SelectSingleSimple
+                    {...field}
+                    onChange={(new_value) => setValue("branch", new_value)}
+                    value={watch("branch")}
+                    isLoadingOptions={isFetchingBranch}
+                    options={[
+                      { label: "All Branches", value: "all" },
+                      ...(allBranches?.data.map((branch) => ({
+                        label: branch.name,
+                        value: branch.id.toString(),
+                      })) || []),
+                    ]}
+                    labelKey="label"
+                    valueKey="value"
+                    placeholder="Filter Branch"
+                    variant="light"
+                    size="thin"
+                  />
+                )}
+              />
+              <RangeAndCustomDatePicker
+                className="max-w-max"
                 variant="light"
                 size="thin"
+                onChange={(value) => {
+                  if (value.dateType === "custom" && value.from && value.to) {
+                    setValue("date", { from: value.from, to: value.to });
+                    setValue("period", "custom");
+                  } else {
+                    setValue(
+                      "period",
+                      value.dateType as
+                        | "today"
+                        | "week"
+                        | "month"
+                        | "year"
+                        | "custom"
+                    );
+                  }
+                }}
+                value={{
+                  dateType: watch("period"),
+                  from: watch("date").from,
+                  to: watch("date").to,
+                }}
               />
-            )}
-          />
-          <RangeAndCustomDatePicker
-            className="max-w-max"
-            variant="light"
-            size="thin"
-            onChange={(value) => {
-              if (value.dateType === "custom" && value.from && value.to) {
-                setValue("date", { from: value.from, to: value.to });
-                setValue("period", "custom");
-              } else {
-                setValue(
-                  "period",
-                  value.dateType as
-                    | "today"
-                    | "week"
-                    | "month"
-                    | "year"
-                    | "custom"
-                );
-              }
-            }}
-            value={{
-              dateType: watch("period"),
-              from: watch("date").from,
-              to: watch("date").to,
-            }}
-          />
+            </>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -189,8 +207,13 @@ function EnquiryChannelsChart() {
             <div className="flex items-center justify-end text-xs text-gray-500 mb-4 pr-4">
               No. of Enquiries/No. of Converted Enquiries
             </div>
-            <div className="grid xl:grid-cols-2 gap-x-10">
-              {chartData.map((item, index) => (
+            <div
+              className={cn(
+                "grid gap-x-10",
+                from_overview ? "gap-y-2.5" : "xl:grid-cols-2"
+              )}
+            >
+              {usableChartData.map((item, index) => (
                 <ProgressBar
                   key={index}
                   channel={item.channel}

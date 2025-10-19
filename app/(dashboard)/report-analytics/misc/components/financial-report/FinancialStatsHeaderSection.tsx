@@ -46,7 +46,7 @@ const FinancialStatsHeaderSection = () => {
     return (
         <div>
             <header className='flex justify-between items-center mb-6'>
-                <h1 className='flex items-center gap-2 text-2xl md:text-[1.7rem] font-medium text-[#17181C] '>
+                <h1 className='flex items-center gap-2 text-xl md:text-[1.5rem] font-medium text-[#17181C] '>
                     Financial Report
                     {
                         isFetchingStats && <Spinner />

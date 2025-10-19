@@ -3,7 +3,7 @@ import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Badge } from '@/components/ui/badge';
-import { Button, SelectSingleCombo } from '@/components/ui';
+import { Button, SelectSingleCombo, Textarea } from '@/components/ui';
 import { Plus, User, X } from 'lucide-react';
 import { Add, Book } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
@@ -166,24 +166,60 @@ export default function NewStoreInventorySheet() {
                             />
                         )}
                     />
+                    <Controller
+                        name="branch"
+                        control={control}
+                        render={({ field }) => (
+                            <SelectSingleCombo
+                                {...field}
+                                name='branch'
+                                value={field.value?.toString() || ''}
+                                options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
+                                valueKey='value'
+                                labelKey="label"
+                                placeholder='Select Storage Location'
+                                onChange={(value) => field.onChange(Number(value))}
+                                isLoadingOptions={branchesLoading}
+                                hasError={!!errors.branch}
+                                errorMessage={errors.branch?.message}
+                            />
+                        )}
+                    />
 
 
                     <Input
                         type='number'
-                        placeholder='Cost Price'
+                        placeholder='Min Quantity'
+                        hasError={!!errors.quantity}
+                        errorMessage={errors.quantity?.message}
+                        pattern='[0-9]*'
+                        {...register('quantity', { valueAsNumber: true })}
+                    />
+
+
+                    <Input
+                        type='number'
+                        placeholder='Max Quantity'
+                        hasError={!!errors.quantity}
+                        errorMessage={errors.quantity?.message}
+                        pattern='[0-9]*'
+                        // {...register('quantity', { valueAsNumber: true })}
+                    />
+
+
+                    <Input
+                        type='number'
+                        placeholder='Cost Price/Unit'
                         hasError={!!errors.cost_price}
                         errorMessage={errors.cost_price?.message}
                         pattern='[0-9]*'
                         {...register('cost_price', { valueAsNumber: true })}
                     />
-
-                    <Input
-                        type='number'
-                        placeholder='Quantity'
-                        hasError={!!errors.quantity}
-                        errorMessage={errors.quantity?.message}
-                        pattern='[0-9]*'
-                        {...register('quantity', { valueAsNumber: true })}
+                    <Textarea
+                        placeholder='Description (optional)'
+                        // hasError={!!errors.cost_price}
+                        // errorMessage={errors.cost_price?.message}
+                        // {...register('cost_price', { valueAsNumber: true })}
                     />
 
 
