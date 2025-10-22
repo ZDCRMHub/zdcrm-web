@@ -3,15 +3,16 @@ import { CiShop } from "react-icons/ci";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa6";
 import Link from "next/link";
+import { TBusiness } from "../api/getAllBusinesses";
 
 
 type BusinessCardProp = {
-    name: string;
-    country: string;
-    id: string;
+   
+    business: TBusiness
   };
 
-  const BusinessCard = ({ name, country, id }: BusinessCardProp) => {
+  const BusinessCard = ({ business }: BusinessCardProp) => {
+    const { id, name, country, country_display } = business;
     return (
       <Link href={`/admin/businesses/${id}`} className="block w-[264px] border border-solid rounded-[4px] p-4">
         <div className="flex gap-3 items-center">
@@ -26,7 +27,7 @@ type BusinessCardProp = {
           <div className="flex justify-between">
             <div className="flex gap-2 items-center">
               <Image
-                src={`/flags/${country}.svg`}
+                src={`/flags/${country_display}.svg`}
                 alt={country}
                 width={30}
                 height={20}

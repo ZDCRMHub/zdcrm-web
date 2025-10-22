@@ -50,7 +50,7 @@ function ClientTrackingChart() {
     <Card>
       <CardHeader className="flex md:!flex-row items-center justify-between">
         <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
-          Customers
+          Clients
           {isFetching && <Spinner />}
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap max-w-max">

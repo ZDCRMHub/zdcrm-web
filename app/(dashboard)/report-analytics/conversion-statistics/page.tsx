@@ -29,7 +29,7 @@ const page = () => {
         {/* <ComparisonModal /> */}
       </div>
 
-      <div className='grid  2xl:grid-cols-2 gap-10 mb-10'>
+      <div className='grid 2xl:grid-cols-2 gap-10 mb-10'>
         <EnquiryChannelsChart />
 
         <ClientBehaviorChart />

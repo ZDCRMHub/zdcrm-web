@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { IoIosClose } from "react-icons/io";
-import { LinkButton, SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
+import {
+  LinkButton,
+  SelectSingleCombo,
+  Spinner,
+  SuccessModal,
+} from "@/components/ui";
 import { useBooleanStateControl } from "@/hooks";
 import { useCreateNewBranch, useGetAllBranches } from "../misc/api";
 
@@ -27,8 +32,8 @@ import { BranchCard } from "../misc/components";
 import { useParams } from "next/navigation";
 import { Back } from "iconsax-react";
 import Link from "next/link";
-
-
+import { useGetBusinessBranches } from "../misc/api/getBusinessBranches";
+import { useGetBusinessDetails } from "../misc/api/getBusiness";
 
 const BranchPage = () => {
   const {
@@ -43,43 +48,63 @@ const BranchPage = () => {
     setFalse: closeAddBranchModal,
   } = useBooleanStateControl();
 
-  const { data, isLoading, error, refetch: refetchBranches } = useGetAllBranches();
+  const searchParams = useParams<{ business_id: string }>();
+  const businessId = searchParams.business_id;
+  const { data: businessDetails, isLoading: isLoadingBusinessDetails } = useGetBusinessDetails(businessId);
+  const [search, setSearch] = useState("");
 
-  console.log(data, "BRANCHES")
+  const {
+    data,
+    isLoading,
+    error,
+    refetch: refetchBranches,
+  } = useGetBusinessBranches({
+    business_id: Number(businessId),
+    page: 1,
+    size: 100,
+    search,
+  });
+
+  console.log(data, "BRANCHES");
   const {
     control,
     setValue,
     handleSubmit,
-    formState: { errors }, watch,
+    formState: { errors },
+    watch,
     reset,
   } = useForm<BranchFormData>({
     resolver: zodResolver(branchSchema),
     defaultValues: {
       name: "",
-      country: "",
     },
   });
 
-  const { mutate: createBranch, isPending: isCreatingBranch } = useCreateNewBranch();
+  const { mutate: createBranch, isPending: isCreatingBranch } =
+    useCreateNewBranch();
   const onSubmit = (data: BranchFormData) => {
     console.log(data);
-    createBranch(data, {
-      onSuccess: () => {
-        closeAddBranchModal();
-        openSuccessModal();
-        refetchBranches()
-        reset();
+    createBranch(
+      {
+        ...data,
+        business_id: Number(businessId),
       },
-
-    })
+      {
+        onSuccess: () => {
+          closeAddBranchModal();
+          openSuccessModal();
+          refetchBranches();
+          reset();
+        },
+      }
+    );
   };
 
-  const params = useParams<{ business_id: string }>();
-  const businessId = params.business_id;
+  console.log(errors, "ERRRORRS");
 
   const countries = [
-    "Nigeria",
-    "Ghana",
+    { label: "Nigeria", value: "NG" },
+    { label: "Ghana", value: "GH" },
   ];
 
   return (
@@ -93,7 +118,7 @@ const BranchPage = () => {
           <Back />
           Back
         </LinkButton>
-        <p className="text-2xl font-medium">Branches {businessId}</p>
+        <p className="text-2xl font-medium">{businessDetails?.data.name} Branches </p>
       </div>
       <div className="p-8 bg-white flex flex-col gap-12">
         <div className="relative mx-auto w-[457px]">
@@ -101,6 +126,8 @@ const BranchPage = () => {
             type="search"
             placeholder="Search"
             className="h-11 w-[457px]"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
           <CiSearch
             size={20}
@@ -109,26 +136,23 @@ const BranchPage = () => {
           />
         </div>
         <div className="flex flex-col gap-6 flex-wrap">
-          {
-            isLoading ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <Spinner size={20} />
-              </div>
-            ) : error ? (
-              <p>Error loading branches: {error.message}</p>
-            ) :
-              !isLoading && data?.data?.length === 0 ? (
-                <p>No branches found</p>
-              ) :
-                (
-                  data?.data?.map((branch: any) => (
-                    <BranchCard
-                      key={branch.id}
-                      name={branch.name}
-                      country={branch.country}
-                    />
-                  ))
-                )}
+          {isLoading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <Spinner size={20} />
+            </div>
+          ) : error ? (
+            <p>Error loading branches: {error.message}</p>
+          ) : !isLoading && data?.data?.length === 0 ? (
+            <p>No branches found</p>
+          ) : (
+            data?.data?.map((branch) => (
+              <BranchCard
+                key={branch.id}
+                business_id={businessId}
+                branch={branch}
+              />
+            ))
+          )}
           <div
             className="bg-[#DFDFDF] w-full h-[50px] rounded-lg flex justify-center items-center cursor-pointer"
             onClick={openAddBranchModal}
@@ -136,16 +160,18 @@ const BranchPage = () => {
             <GoPlus size={30} />
           </div>
 
-
-
-
-
-          <Dialog open={isAddBranchModalOpen} onOpenChange={closeAddBranchModal}>
+          <Dialog
+            open={isAddBranchModalOpen}
+            onOpenChange={closeAddBranchModal}
+          >
             <DialogContent className="flex flex-col gap-8 w-[520px]">
               <DialogHeader className="flex items-center gap-1">
                 <DialogTitle className="text-2xl">Add a New Branch</DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 p-8">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-8 p-8"
+              >
                 <Controller
                   name="name"
                   control={control}
@@ -161,37 +187,44 @@ const BranchPage = () => {
                     />
                   )}
                 />
-
-                <SelectSingleCombo
-                  name="country"
-                  options={countries.map((country) => ({
-                    label: country,
-                    value: country,
-                  }))}
-                  placeholder="Select Country"
-                  label="Select Country"
-                  labelKey="label"
-                  valueKey="value"
-                  value={watch('country')}
-                  onChange={(selectedOption) => {
-                    setValue("country", selectedOption);
-                  }}
-                  hasError={!!errors.country}
-                  errorMessage={errors?.country?.message}
-
+                <Controller
+                  name="phone_number"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      label="Phone Number"
+                      placeholder="Enter Branch Phone Number"
+                      id="phone_number"
+                      {...field}
+                      className="mt-2"
+                      hasError={!!errors.phone_number}
+                      errorMessage={errors?.phone_number?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name="address"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      label="Address"
+                      placeholder="Enter Branch Address"
+                      id="address"
+                      {...field}
+                      className="mt-2"
+                      hasError={!!errors.address}
+                      errorMessage={errors?.address?.message}
+                    />
+                  )}
                 />
 
-               
                 <DialogFooter>
                   <Button
                     type="submit"
                     className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                   >
                     Add New Branch
-
-                    {
-                      isCreatingBranch && <Spinner className="ml-2" />
-                    }
+                    {isCreatingBranch && <Spinner className="ml-2" />}
                   </Button>
                 </DialogFooter>
               </form>
@@ -211,4 +244,3 @@ const BranchPage = () => {
 };
 
 export default BranchPage;
-

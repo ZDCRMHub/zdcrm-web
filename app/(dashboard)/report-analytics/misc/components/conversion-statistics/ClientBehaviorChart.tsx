@@ -82,9 +82,8 @@ export default function ClientBehaviorChart({
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6 items-center">
           {/* Donut chart */}
-          <ChartContainer config={chartConfig} className="mx-auto w-full max-w-[320px]">
-            <div className="relative aspect-square">
-              <ResponsiveContainer>
+          <ChartContainer config={chartConfig} className="mx-auto w-full max-w-[320px] md:!min-h-[300px]">
+              <ResponsiveContainer className={"md:!min-h-[300px]"}>
                 <PieChart>
                   {/* Background track ring */}
                   <Pie
@@ -124,10 +123,7 @@ export default function ClientBehaviorChart({
                   <RechartsTooltip />
                 </PieChart>
               </ResponsiveContainer>
-
-              {/* Inner hole to mimic the lighter inner ring in mock */}
-              <div className="pointer-events-none absolute inset-1/2 -translate-x-1/2 -translate-y-1/2 h-[120px] w-[120px] rounded-full border-[14px] border-muted bg-background" />
-            </div>
+            
           </ChartContainer>
 
           {/* Legend / Breakdown */}

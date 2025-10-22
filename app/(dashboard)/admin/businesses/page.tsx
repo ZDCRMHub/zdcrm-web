@@ -23,17 +23,8 @@ import { IoIosClose } from "react-icons/io";
 import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
 import { useBooleanStateControl } from "@/hooks";
 import { useCreateNewBusiness, useGetAllBusinesses } from "./misc/api";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { BusinessFormData, businessSchema } from "./misc/utils/schemas";
 import BusinessCard from "./misc/components/BusinessCard";
-
-
 
 const BusinessPage = () => {
   const {
@@ -48,14 +39,20 @@ const BusinessPage = () => {
     setFalse: closeAddBusinessModal,
   } = useBooleanStateControl();
 
-  const { data, isLoading, error, refetch: refetchBusinesses } = useGetAllBusinesses();
+  const {
+    data,
+    isLoading,
+    error,
+    refetch: refetchBusinesses,
+  } = useGetAllBusinesses();
 
-  console.log(data, "BusinessES")
+  console.log(data, "BusinessES");
   const {
     control,
     setValue,
     handleSubmit,
-    formState: { errors }, watch,
+    formState: { errors },
+    watch,
     reset,
   } = useForm<BusinessFormData>({
     resolver: zodResolver(businessSchema),
@@ -67,32 +64,23 @@ const BusinessPage = () => {
     },
   });
 
-  const { mutate: createBusiness, isPending: isCreatingBusiness } = useCreateNewBusiness();
+  const { mutate: createBusiness, isPending: isCreatingBusiness } =
+    useCreateNewBusiness();
   const onSubmit = (data: BusinessFormData) => {
     console.log(data);
     createBusiness(data, {
       onSuccess: () => {
         closeAddBusinessModal();
         openSuccessModal();
-        refetchBusinesses()
+        refetchBusinesses();
         reset();
       },
-
-    })
+    });
   };
 
-  // This is a mock list of countries. In a real application, you'd fetch this from an API or use a comprehensive list.
   const countries = [
-    "Nigeria",
-    "Ghana",
-    "Kenya",
-    "South Africa",
-    "Egypt",
-    "Morocco",
-    "Ethiopia",
-    "Tanzania",
-    "Uganda",
-    "Algeria",
+    { label: "Nigeria", value: "NG" },
+    { label: "Ghana", value: "GH" },
   ];
 
   return (
@@ -115,27 +103,19 @@ const BusinessPage = () => {
           />
         </div>
         <div className="flex gap-6 flex-wrap">
-          {
-            isLoading ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <Spinner size={20} />
-              </div>
-            ) : error ? (
-              <p>Error loading Businesses: {error.message}</p>
-            ) :
-              !isLoading && data?.data?.length === 0 ? (
-                <p>No Businesses found</p>
-              ) :
-                (
-                  data?.data?.map((Business: any) => (
-                    <BusinessCard
-                      key={Business.id}
-                      name={Business.name}
-                      country={Business.country}
-                      id={Business.id}
-                    />
-                  ))
-                )}
+          {isLoading ? (
+            <div className="w-full h-full flex items-center justify-center">
+              <Spinner size={20} />
+            </div>
+          ) : error ? (
+            <p>Error loading Businesses: {error.message}</p>
+          ) : !isLoading && data?.data?.length === 0 ? (
+            <p>No Businesses found</p>
+          ) : (
+            data?.data?.map((business) => (
+              <BusinessCard key={business.id} business={business} />
+            ))
+          )}
           <div
             className="bg-[#DFDFDF] w-[264px] h-[180px] rounded-lg flex justify-center items-center cursor-pointer"
             onClick={openAddBusinessModal}
@@ -143,17 +123,21 @@ const BusinessPage = () => {
             <GoPlus size={30} />
           </div>
 
-
-
-
-
-          <Dialog open={isAddBusinessModalOpen} onOpenChange={closeAddBusinessModal}>
+          <Dialog
+            open={isAddBusinessModalOpen}
+            onOpenChange={closeAddBusinessModal}
+          >
             <DialogContent className="flex flex-col gap-8 w-[520px]">
               <DialogHeader className="flex items-center gap-1">
-                <DialogTitle className="text-2xl">Add a New Business</DialogTitle>
+                <DialogTitle className="text-2xl">
+                  Add a New Business
+                </DialogTitle>
               </DialogHeader>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 p-8">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-8 p-8"
+              >
                 <Controller
                   name="name"
                   control={control}
@@ -187,21 +171,17 @@ const BusinessPage = () => {
 
                 <SelectSingleCombo
                   name="country"
-                  options={countries.map((country) => ({
-                    label: country,
-                    value: country,
-                  }))}
+                  options={countries}
                   placeholder="Select Country"
                   label="Select Country"
                   labelKey="label"
                   valueKey="value"
-                  value={watch('country')}
+                  value={watch("country")}
                   onChange={(selectedOption) => {
                     setValue("country", selectedOption);
                   }}
                   hasError={!!errors.country}
                   errorMessage={errors?.country?.message}
-
                 />
 
                 <Controller
@@ -226,10 +206,7 @@ const BusinessPage = () => {
                     className="bg-[#17181C] mt-7 mb-3 w-full p-6 h-[70px] rounded-[10px]"
                   >
                     Add New Business
-
-                    {
-                      isCreatingBusiness && <Spinner className="ml-2" />
-                    }
+                    {isCreatingBusiness && <Spinner className="ml-2" />}
                   </Button>
                 </DialogFooter>
               </form>
@@ -249,4 +226,3 @@ const BusinessPage = () => {
 };
 
 export default BusinessPage;
-
