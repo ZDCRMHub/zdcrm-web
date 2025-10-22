@@ -5,13 +5,17 @@ import { Button, LinkButton } from "@/components/ui";
 import { CaretRightIcon } from "@/icons/sidebar";
 import { CaretRight } from "@phosphor-icons/react";
 import Link from "next/link";
+import { TBranch } from "../api/getBusinessBranches";
+import BranchEditSheet from "./BranchEditSheet";
+import { useState } from "react";
 
 type BranchCardProp = {
-  name: string;
-  country: string;
+  branch: TBranch
+  business_id: string
 };
 
-const BranchCard = ({ name, country }: BranchCardProp) => {
+const BranchCard = ({ branch, business_id }: BranchCardProp) => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   return (
     <div className="bg-[#F2F2F2] w-full border border-solid border-[#E1E1E1] rounded-[4px] p-3">
       <header className="flex items-center justify-between">
@@ -19,36 +23,28 @@ const BranchCard = ({ name, country }: BranchCardProp) => {
           <div className="p-2 bg-[#F4F4F4] rounded-[4px]">
             <CiShop size={24} />
           </div>
-          <p>{name}</p>
+          <p>{branch.name}</p>
         </div>
 
         <section className="flex">
           <div>
             <p className="text-xs text-[#AAAEB0] italic font-extralight">
-              Country
+              Address
             </p>
             <div className="flex justify-between">
-              <div className="flex gap-2 items-center">
-                <Image
-                  src={`/flags/${country}.svg`}
-                  alt={country}
-                  width={30}
-                  height={20}
-                />
-                <p className="italic font-extralight">{country}</p>
-              </div>
+              {branch.address}
             </div>
           </div>
-          <Link href="/">
-            <CaretRight className="ml-4" size={16} />
-          </Link>
+         
         </section>
       </header>
       <div className="h-[1px] w-full bg-[#E1E1E1CC] my-3" />
 
       <button className="flex items-center gap-1 text-[#111827] font-medium">
-        <Edit size={15} /> Edit
+        <Edit size={15} />
+        <button onClick={() => setIsEditOpen(true)} className="ml-1">Edit</button>
       </button>
+      <BranchEditSheet open={isEditOpen} onOpenChange={(v) => setIsEditOpen(Boolean(v))} branch={branch} onSuccess={() => {}} />
     </div>
   );
 };

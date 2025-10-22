@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
+import SelectBranchMultiCombo from '@/components/ui/selectBranchMultiCombo'
 import { useBooleanStateControl } from "@/hooks";
 import useErrorModalState from "@/hooks/useErrorModalState";
 
@@ -24,6 +25,7 @@ const inviteEmployeeSchema = z.object({
   role: z.string({
     message: "Enter role",
   }).min(1, "Role is required"),
+  branch_ids: z.array(z.string()).optional(),
 });
 
 type InviteEmployeeFormData = z.infer<typeof inviteEmployeeSchema>;
@@ -46,6 +48,7 @@ const InviteEmployeePage = () => {
       name: "",
       email: "",
       role: "",
+      branch_ids: [],
     },
   });
   const { data, isLoading: isLoadingRoles } = useGetRoles()
@@ -61,7 +64,8 @@ const InviteEmployeePage = () => {
   const onSubmit = (data: InviteEmployeeFormData) => {
     mutate({
       role: data.role,
-      email: data.email
+      email: data.email,
+      branch_ids: data.branch_ids
     }, {
       onSuccess(data, variables, context) {
         openSuccessModal();
@@ -168,6 +172,19 @@ const InviteEmployeePage = () => {
                     />
                 }
               </>
+            )}
+          />
+
+          <Controller
+            name="branch_ids"
+            control={control}
+            render={({ field }) => (
+              <SelectBranchMultiCombo
+                value={field.value}
+                onChange={(vals) => field.onChange(vals)}
+                name="branch_ids"
+                placeholder="Select branch(es)"
+              />
             )}
           />
 

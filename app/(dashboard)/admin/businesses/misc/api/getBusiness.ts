@@ -1,24 +1,22 @@
 import { APIAxios } from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 
-const queryFn = async () => {
-  const res = await APIAxios.get(`/business/list`);
+const queryFn = async (id: string) => {
+  const res = await APIAxios.get(`/business/${id}/details/`);
   return res.data as APIResponse;
 };
 
-export const useGetAllBusinesses = () => {
+export const useGetBusinessDetails = (id: string) => {
   return useQuery({
-    queryFn,
-    queryKey: ["getAllBusinesses"],
-    staleTime: Infinity,
-    gcTime: 1000 * 60 * 60,
-    refetchOnWindowFocus: false,
+    queryFn: () => queryFn(id),
+    queryKey: ["getBusinessDetails", id],
+    refetchOnWindowFocus: true,
     refetchOnReconnect: true,
   });
 };
 
 interface APIResponse {
-  data: TBusiness[];
+  data: TBusiness
   status: number;
   message: null;
 }

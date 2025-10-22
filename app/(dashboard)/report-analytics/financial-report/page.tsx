@@ -16,6 +16,7 @@ import {
   FinancialStatsHeaderSection,
   PartPaymentTracker,
   PaymentStatusConversionChart,
+  OrderStatisticsFIinancialsChart,
 } from "../misc/components/financial-report";
 
 const FinancialReportPage = () => {
@@ -29,6 +30,10 @@ const FinancialReportPage = () => {
 
       <div className="grid 2xl:grid-cols-2 gap-10 mb-10">
         <FinancialOverviewSection />
+        <OrderStatisticsFIinancialsChart />
+      </div>
+
+      <div className="my-8">
         <PaymentStatusConversionChart />
       </div>
 

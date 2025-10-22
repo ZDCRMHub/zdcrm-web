@@ -3,12 +3,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type TBusiness = {
     name: string;
+    phone_number: string;
     country: string;
     address: string;
 }
 
-const mutationFn = async (branch: TBusiness) => {
-    const res = await APIAxios.post(`/branch/create/`, branch);
+const mutationFn = async (business: TBusiness) => {
+    const res = await APIAxios.post(`/business/create/`, business);
     return res.data;
 }
 

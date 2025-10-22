@@ -81,7 +81,8 @@ export default function PaymentStatusConversionChart({
   className,
   formatCurrency = (v) => defaultCurrency.format(v),
   minCategoryWidth = 80,
-  barSize = 18,
+  // remove fixed barSize so bars can auto-size and spread across the width
+  barSize,
   barGap = 8,
   barCategoryGap = 32,
 }: PaymentStatusConversionChartProps) {
@@ -101,48 +102,72 @@ export default function PaymentStatusConversionChart({
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="w-full">
+        {/* Override ChartContainer's default aspect ratio (aspect-video) so the card doesn't grow too tall */}
+        <ChartContainer
+          config={chartConfig}
+          className="w-full aspect-auto h-[380px]"
+        >
+          {/* Outer wrapper allows horizontal scrolling when there are many categories */}
           <div className="w-full overflow-x-auto">
-            <div className="h-[360px] w-full" style={{ minWidth: `${minWidthPx}px` }}>
-              <ResponsiveContainer>
+            {/* Inner wrapper enforces a minimum width based on categories so bars can spread */}
+            <div style={{ minWidth: `${minWidthPx}px` }} className="w-full">
+              {/* Cap the chart height so it never exceeds 380px */}
+              <ResponsiveContainer height={380} className="w-full max-h-[380px]">
                 <BarChart
-                  data={chartData}
-                  margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
-                  barCategoryGap={barCategoryGap}
-                  barGap={barGap}
-                >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="status"
-                    tickLine={false}
-                    axisLine={false}
-                    interval={0}
-                    height={64}
-                    tickMargin={10}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={8}
-                    tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`)}
-                  />
-                  <ChartTooltip
-                    cursor={{ fill: "rgba(0,0,0,0.04)" }}
-                    content={
-                      <ChartTooltipContent
-                        labelFormatter={(label) => String(label)}
-                        formatter={(value: unknown, name?: string | number) => {
-                          if (name === "amount") return [formatCurrency(Number(value)), "Amount"];
-                          if (name === "orders") return [Number(value).toLocaleString(), "No. of Orders"];
-                          return [String(value), String(name)];
-                        }}
-                      />
-                    }
-                  />
+                data={chartData}
+                margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
+                barCategoryGap={barCategoryGap}
+                barGap={barGap}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="status"
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
+                  height={64}
+                  tickMargin={10}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  tickFormatter={(v) =>
+                    v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`
+                  }
+                />
+                <ChartTooltip
+                  cursor={{ fill: "rgba(0,0,0,0.04)" }}
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(label) => String(label)}
+                      formatter={(value: unknown, name?: string | number) => {
+                        if (name === "amount")
+                          return [formatCurrency(Number(value)), "Amount"];
+                        if (name === "orders")
+                          return [
+                            Number(value).toLocaleString(),
+                            "No. of Orders",
+                          ];
+                        return [String(value), String(name)];
+                      }}
+                    />
+                  }
+                />
 
-                  <Bar dataKey="orders" barSize={barSize} radius={[4, 4, 0, 0]} fill="var(--color-orders)" />
-                  <Bar dataKey="amount" barSize={barSize} radius={[4, 4, 0, 0]} fill="var(--color-amount)" />
-                </BarChart>
+                <Bar
+                  dataKey="orders"
+                  // omit barSize so Recharts will size bars to fill available width
+                  radius={[4, 4, 0, 0]}
+                  fill="var(--color-orders)"
+                />
+                <Bar
+                  dataKey="amount"
+                  // omit barSize so Recharts will size bars to fill available width
+                  radius={[4, 4, 0, 0]}
+                  fill="var(--color-amount)"
+                />
+              </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
