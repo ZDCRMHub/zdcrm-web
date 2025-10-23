@@ -30,7 +30,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { IoChevronUp } from "react-icons/io5";
-import { Spinner, SuccessModal } from "@/components/ui";
+import { SelectSingleCombo, Spinner, SuccessModal } from "@/components/ui";
 import {
   Sheet,
   SheetClose,
@@ -50,6 +50,7 @@ import {
 import { TDispatchItem } from "./misc/types";
 import ErrorModal from "@/components/ui/modal-error";
 import { extractErrorMessage } from "@/utils/errors";
+import { ZONES_OPTIONS } from "@/constants";
 
 const Page = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -59,10 +60,12 @@ const Page = () => {
     state: string;
     location: string;
     delivery_price: string;
+    zone?: string;
   }>({
     state: "",
     location: "",
     delivery_price: "",
+    zone: "",
   });
   const [editingDispatch, setEditingDispatch] = useState<TDispatchItem | null>(
     null
@@ -111,7 +114,8 @@ const Page = () => {
     if (
       !newDispatch.state ||
       !newDispatch.delivery_price ||
-      !newDispatch.location
+      !newDispatch.location ||
+      !newDispatch.zone
     ) {
       setErrorMessage("Please fill in all required fields");
       setIsErrorModalOpen(true);
@@ -289,6 +293,33 @@ const Page = () => {
                       }
                       className="h-14"
                     />
+
+                    <SelectSingleCombo
+                    name="zone"
+                      label="Delivery Zone"
+                      options={ZONES_OPTIONS}
+                      valueKey={"value"}
+                      labelKey={"label"}
+                      placeholder="Select delivery zone"
+                      value={
+                        editingDispatch
+                          ? editingDispatch.zone || undefined
+                          : newDispatch.zone || undefined
+                      }
+                      onChange={(selected) => {
+                        if (editingDispatch) {
+                          setEditingDispatch({
+                            ...editingDispatch,
+                            zone: selected ? selected : "",
+                          });
+                        } else {
+                          setNewDispatch({
+                            ...newDispatch,
+                            zone: selected ? selected : "",
+                          });
+                        }
+                      }}
+                    />
                   </SheetDescription>
                 </SheetHeader>
                 <SheetFooter className="mt-20">
@@ -302,6 +333,7 @@ const Page = () => {
                           state: "",
                           location: "",
                           delivery_price: "",
+                          zone: "LM",
                         });
                       }}
                     >

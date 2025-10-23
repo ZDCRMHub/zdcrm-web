@@ -6,6 +6,7 @@ export interface TDispatchItem {
   delivery_price: string;
   create_date?: string;
   update_date?: string;
+  zone: string;
 }
 
 export interface DispatchPaginatedResponse<T> {
