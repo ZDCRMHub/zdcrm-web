@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/chart";
 import { Spinner } from "@/components/ui";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
+import { SelectBranchCombo } from '@/components/ui';
 
 import { useGetFinancialOverviewStats } from "../../api";
 import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';import BarChartSkeleton from "./BarChartSkeleton";
@@ -92,17 +93,13 @@ export function FinancialOverviewSection() {
             name='branch'
             control={control}
             render={({ field }) => (
-              <SelectSingleSimple
-                {...field}
-                onChange={(new_value) => setValue('branch', new_value)}
+              <SelectBranchCombo
                 value={watch('branch')}
-                isLoadingOptions={isFetchingBranch}
-                options={[{ label: "All Branches", value: "all" }, ...(allBranches?.data.map(branch => ({ label: branch.name, value: branch.id.toString() })) || [])]}
-                labelKey="label"
-                valueKey="value"
+                onChange={(new_value) => setValue('branch', new_value)}
                 placeholder='Filter Branch'
                 variant="light"
                 size="thin"
+                isLoadingOptions={isFetchingBranch}
               />
             )}
           />

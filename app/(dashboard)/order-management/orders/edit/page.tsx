@@ -24,6 +24,7 @@ import {
   Input,
   SingleDatePicker,
   SelectSingleCombo,
+  SelectBranchCombo,
   Button,
   FilePicker,
   FormControl,
@@ -108,7 +109,7 @@ const NewOrderPage = () => {
 
   React.useEffect(() => {
     if (!isLoadingOrderData && !!orderData) {
-      form.reset({
+      reset({
         customer: {
           name: orderData.customer.name,
           phone: orderData.customer.phone,
@@ -160,9 +161,9 @@ const NewOrderPage = () => {
         amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
         initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
 
-      });
+  });
     }
-  }, [orderData, isLoadingOrderData]);
+  }, [orderData, isLoadingOrderData, reset]);
   console.log(errors)
 
   const addNewItem = () => {
@@ -194,7 +195,7 @@ const NewOrderPage = () => {
     } else {
       setValue('payment_status', 'UP')
     }
-  }, [selectedPaymentOption])
+  }, [selectedPaymentOption, setValue])
 
   const { uploadToCloudinary } = useCloudinary()
   const { isUploading } = useLoading();
@@ -414,7 +415,7 @@ const NewOrderPage = () => {
               <AccordionTrigger className="py-4">
                 <div className="flex items-center gap-5">
                   <div className="h-10 w-10 flex items-center justify-center bg-custom-white rounded-full">
-                    <img src="/img/book.svg" alt="" width={24} height={24} />
+                    <Image src="/img/book.svg" alt="" width={24} height={24} />
                   </div>
                   <p className="text-custom-blue font-medium">Order Details</p>
                 </div>
@@ -427,19 +428,16 @@ const NewOrderPage = () => {
                       name="branch"
                       control={control}
                       render={({ field }) => (
-                        <SelectSingleCombo
-                          {...field}
-                          name='branch'
+                        <SelectBranchCombo
+                          name="branch"
                           value={field.value?.toString() || ''}
-                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                          valueKey='value'
+                          onChange={(val) => field.onChange(Number(val))}
                           className="!h-10 min-w-40"
-                          labelKey="label"
-                          placeholder='Select Branch'
-                          onChange={(value) => field.onChange(Number(value))}
+                          placeholder="Select Branch"
                           isLoadingOptions={branchesLoading}
                           hasError={!!errors.branch}
                           errorMessage={errors.branch?.message}
+                          variant="inputButton"
                         />
                       )}
                     />

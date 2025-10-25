@@ -21,13 +21,14 @@ import {
 
 import { TStoreInventoryItem } from '../types/store';
 import FormError from '@/components/ui/formError';
-import { useUpdateProductInventory } from '../api';
+import { useUpdateStoreInventory } from '../api';
 import { extractErrorMessage } from '@/utils/errors';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/icons/core';
 
 const storeInventorySchema = z.object({
     quantity: z.number().int().nonnegative(),
+    adjustmentAmount: z.number().int().min(1, { message: 'Amount must be at least 1' }).optional(),
     cost_price: z.number()
         .min(1, {
             message: "Cost price must be greater than 0"
@@ -40,12 +41,14 @@ interface StoreInventoryUpdateModalProps {
     closeModal: () => void;
     refetch: () => void;
     product: TStoreInventoryItem
+    operationMode?: 'add' | 'subtract' | 'both'
 }
 
-const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch }) => {
+const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ isModalOpen, closeModal, product, refetch, operationMode = 'both' }) => {
     const { register, formState: { errors }, setValue, handleSubmit, watch, getValues, setError } = useForm({
         defaultValues: {
             quantity: product.quantity,
+            adjustmentAmount: undefined,
             cost_price: parseInt(product.cost_price),
         },
         resolver: zodResolver(storeInventorySchema)
@@ -60,8 +63,19 @@ const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ i
         setValue('quantity', prevQuantity + 1)
     }
 
-      const {mutate, isPending} =  useUpdateProductInventory()
-        const submit = (data: { quantity: number; cost_price: number }) => {
+    const validateAdjustment = (amount: number, operation: 'add' | 'subtract'): boolean => {
+        if (operation === 'subtract') {
+            const resultingQuantity = product.quantity - amount;
+            if (resultingQuantity < 0) {
+                setError('quantity', { type: 'manual', message: `Cannot subtract ${amount}. Only ${product.quantity} items available in stock.` })
+                return false;
+            }
+        }
+        return true;
+    }
+
+      const {mutate, isPending} =  useUpdateStoreInventory()
+        const submit = (data: { quantity: number; cost_price: number; adjustmentAmount?: number }) => {
         if (isNaN(data.cost_price)) {
             alert("Cost price cannot be NaN");
             setError("cost_price", {
@@ -70,7 +84,20 @@ const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ i
             })
             return;
         }
-        mutate({data, id: product.id},
+
+        let finalQuantity = data.quantity;
+        if (operationMode !== 'both' && data.adjustmentAmount) {
+            if (operationMode === 'add') {
+                finalQuantity = product.quantity + data.adjustmentAmount;
+            } else if (operationMode === 'subtract') {
+                if (!validateAdjustment(data.adjustmentAmount, 'subtract')) {
+                    return;
+                }
+                finalQuantity = Math.max(0, product.quantity - data.adjustmentAmount);
+            }
+        }
+
+        mutate({data: { quantity: finalQuantity, cost_price: data.cost_price }, id: product.id},
             {
                 onSuccess: () => {
                     toast.success("Store inventory updated successfully")
@@ -120,28 +147,55 @@ const StoreInventoryUpdateModal: React.FC<StoreInventoryUpdateModalProps> = ({ i
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <p className="text-xs">Quantity</p>
-                        <div className="grid grid-cols-[max-content,1fr,max-content] items-center border border-solid border-[#E1E1E1] py-3 px-[18px] gap-4 mt-2">
-                            <div className="cursor-pointer" onClick={quantityMinus}>
-                                <MinusCirlce size={24} />
-                            </div>
-                            <Input
-                                className="font-bold text-sm appearance-none w-full text-center"
-                                {...register('quantity', { valueAsNumber: true })}
-                                pattern="^[0-9]*$"
+                    {
+                        operationMode === 'both' ? (
+                            <div>
+                                <p className="text-xs">Quantity</p>
+                                <div className="grid grid-cols-[max-content,1fr,max-content] items-center border border-solid border-[#E1E1E1] py-3 px-[18px] gap-4 mt-2">
+                                    <div className="cursor-pointer" onClick={quantityMinus}>
+                                        <MinusCirlce size={24} />
+                                    </div>
+                                    <Input
+                                        className="font-bold text-sm appearance-none w-full text-center"
+                                        {...register('quantity', { valueAsNumber: true })}
+                                        pattern="^[0-9]*$"
 
-                            />
-                            <div className="cursor-pointer" onClick={quantityPlus}>
-                                <AddCircle size={24} />
+                                    />
+                                    <div className="cursor-pointer" onClick={quantityPlus}>
+                                        <AddCircle size={24} />
+                                    </div>
+                                </div>
+                                {
+                                    !!errors.quantity && (
+                                        <FormError errorMessage={errors.quantity?.message} />
+                                    )
+                                }
                             </div>
-                        </div>
-                        {
-                            !!errors.quantity && (
-                                <FormError errorMessage={errors.quantity?.message} />
-                            )
-                        }
-                    </div>
+                        ) : (
+                            <div>
+                                <p className="text-xs">{operationMode === 'add' ? 'Amount to Add' : 'Amount to Subtract'}</p>
+                                <Input
+                                    className="font-bold text-sm appearance-none w-full mt-2"
+                                    {...register('adjustmentAmount', { valueAsNumber: true, onChange: (e) => {
+                                        const value = parseInt(e.target.value) || 0;
+                                        if (operationMode === 'subtract' && value > 0) {
+                                            validateAdjustment(value, 'subtract');
+                                        } else {
+                                            // clear manual quantity error if any
+                                        }
+                                    } })}
+                                    placeholder={`Enter amount to ${operationMode}`}
+                                    pattern="^[0-9]*$"
+                                />
+                                {!!errors.adjustmentAmount && (
+                                    <FormError errorMessage={errors.adjustmentAmount?.message} />
+                                )}
+                                {!!errors.quantity && (
+                                    <FormError errorMessage={errors.quantity?.message} />
+                                )}
+                            </div>
+                        )
+                    }
                     {/* <div>
                         <p className="text-xs">Low in Stock</p>
                         <div className="border border-solid border-[#E1E1E1] py-3 px-[18px] flex gap-12 mt-2">

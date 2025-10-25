@@ -8,7 +8,7 @@ import React, {
   ReactNode
 } from 'react';
 import { APIAxios, setAxiosDefaultToken } from "@/utils/axios";
-import { authTokenStorage } from '@/utils/auth';
+import { authTokenStorage } from '@/utils/tokens';
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { LoginAPIResponse } from '@/app/(auth)/misc/api/postLogin';
 import { usePathname, useRouter } from 'next/navigation';

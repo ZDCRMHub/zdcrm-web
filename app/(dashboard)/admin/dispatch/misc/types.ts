@@ -7,6 +7,7 @@ export interface TDispatchItem {
   create_date?: string;
   update_date?: string;
   zone: string;
+  zone_display: string;
 }
 
 export interface DispatchPaginatedResponse<T> {

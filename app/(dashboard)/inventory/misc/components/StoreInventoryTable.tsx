@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { LinkButton, Spinner } from "@/components/ui";
 import { TStoreInventoryItem } from "../types/store";
 import { format } from "date-fns";
+import { formatCurrency } from "@/utils/currency";
 
 interface StoreRowProps {
   product: TStoreInventoryItem;
@@ -41,7 +42,11 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
           )}
         </div>
       </TableCell>
-      <TableCell>{format(product.update_date, 'dd-MMM-yyyy')}</TableCell>
+      <TableCell>
+        {formatCurrency(parseInt(product.cost_price ?? "0"))}
+      </TableCell>
+      <TableCell>{"-"}</TableCell>
+      <TableCell>{format(product.update_date, "dd-MMM-yyyy")}</TableCell>
       <TableCell>{product.created_by.name}</TableCell>
       <TableCell>
         <LinkButton
@@ -99,9 +104,11 @@ const StoreInventory: React.FC<ProductsInventoryTableProps> = ({
         <TableHeader>
           <TableRow>
             <TableHead>Product Name</TableHead>
-            <TableHead>Stock Quantity</TableHead>
+            <TableHead>Quantity In Stock</TableHead>
+            <TableHead>Cost/Unit</TableHead>
+            <TableHead>Storage Location</TableHead>
             <TableHead>Last Updated</TableHead>
-            {/* <TableHead>Updated By</TableHead> */}
+            <TableHead>Updated By</TableHead>
             <TableHead></TableHead>
           </TableRow>
         </TableHeader>

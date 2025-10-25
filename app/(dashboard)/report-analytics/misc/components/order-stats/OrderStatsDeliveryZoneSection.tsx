@@ -20,6 +20,7 @@ import { Controller, useForm } from "react-hook-form";
 import { subMonths } from "date-fns";
 import { OrderStatsDeliveryZoneChartSkeleton } from "./OrderStatsDeliveryZoneSkeleton";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
+import { SelectBranchCombo } from '@/components/ui';
 
 const chartConfig = {
   order_count: {
@@ -76,17 +77,13 @@ export function OrderStatsDeliveryZoneSection() {
             name='branch'
             control={control}
             render={({ field }) => (
-              <SelectSingleSimple
-                {...field}
-                onChange={(new_value) => setValue('branch', new_value)}
+              <SelectBranchCombo
                 value={watch('branch')}
-                isLoadingOptions={isFetchingBranch}
-                options={[{ label: "All Branches", value: "all" }, ...(allBranches?.data.map(branch => ({ label: branch.name, value: branch.id.toString() })) || [])]}
-                labelKey="label"
-                valueKey="value"
+                onChange={(new_value) => setValue('branch', new_value)}
                 placeholder='Filter Branch'
                 variant="light"
                 size="thin"
+                isLoadingOptions={isFetchingBranch}
               />
             )}
           />

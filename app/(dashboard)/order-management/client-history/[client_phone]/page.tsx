@@ -146,6 +146,7 @@ export default function ClientDetailsPage() {
     page: currentPage,
     size: pageSize,
     search: client_phone,
+    business:selectedBusiness!,
     start_date: watch("date").from?.toISOString().split("T")[0],
     end_date: watch("date").to
       ? new Date((watch("date").to as Date).getTime() + 24 * 60 * 60 * 1000)

@@ -48,6 +48,7 @@ import { useGetAllRoles, useGetAllUsers, } from "./misc/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { APIAxios } from "@/utils/axios";
 import { TUser } from "./misc/api/getAllUsers";
+import EditEmployeeSheet from "./misc/components/EditEmployeeSheet";
 
 const Page = () => {
   const {
@@ -56,9 +57,16 @@ const Page = () => {
     setFalse: closeConfirmDeleteModal,
   } = useBooleanStateControl();
 
+  const {
+    state: isEditSheetOpen,
+    setTrue: openEditSheet,
+    setFalse: closeEditSheet,
+  } = useBooleanStateControl();
+
   const { data: rolesData, isLoading: isLoadingRoles, error: rolesError } = useGetAllRoles();
   const { data: usersData, isLoading: isLoadingUsers, error: usersError } = useGetAllUsers();
   const [editedUsers, setEditedUsers] = useState<TUser[]>([]);
+  const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -74,6 +82,11 @@ const Page = () => {
       queryClient.invalidateQueries({ queryKey: ["getAllUsers"] });
     },
   });
+
+  const handleEditEmployee = (user: TUser) => {
+    setSelectedUser(user);
+    openEditSheet();
+  };
 
   const handleEdit = (userId: number, field: keyof TUser, value: any) => {
     setEditedUsers((prevUsers) =>
@@ -235,9 +248,12 @@ const Page = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                <div className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer">
+                <button 
+                  className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
+                  onClick={() => handleEditEmployee(user)}
+                >
                   <MdOutlineModeEdit color="#fff" size={20} />
-                </div>
+                </button>
                 <button className="p-2 rounded-lg bg-[#E03137] flex items-center cursor-pointer" onClick={openConfirmDeleteModal}>
                   <RiDeleteBin6Line color="#fff" size={20} />
                 </button>
@@ -280,6 +296,14 @@ const Page = () => {
         heading="Delete Employee Record"
         subheading="This action means employee record will automatically be removed."
         icon={<RiDeleteBin6Line className="bg-[#FFD4D6] p-2 rounded-2xl" color="#E03137" size={50} />}
+      />
+
+      <EditEmployeeSheet
+        isOpen={isEditSheetOpen}
+        onClose={closeEditSheet}
+        selectedUser={selectedUser}
+        rolesData={rolesData}
+        isLoadingRoles={isLoadingRoles}
       />
     </section>
   );

@@ -43,7 +43,7 @@ const today = new Date();
 const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 const monthsAgo = subMonths(new Date(), 20);
 
-const InventoryDetailsPage = () => {
+const StockInventoryDetailsPage = () => {
   const product_id = useParams().id as string;
   const variation_id = useSearchParams().get("variation") as string;
 
@@ -385,4 +385,4 @@ const InventoryDetailsPage = () => {
   );
 };
 
-export default InventoryDetailsPage;
+export default StockInventoryDetailsPage;

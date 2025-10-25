@@ -5,6 +5,7 @@ import { Suitcase } from '@phosphor-icons/react';
 import { ZONES_OPTIONS } from '@/constants';
 import { Location, User } from 'iconsax-react';
 import { useGetAllUsers } from '@/app/(dashboard)/admin/employees-role/misc/api';
+import { useGetAllBusinesses } from '@/app/(dashboard)/admin/businesses/misc/api';
 
 interface Props {
     selectedBusiness: string | null;
@@ -19,11 +20,9 @@ const UniversalFilters = ({ selectedBusiness, selectedRep, selectedDeliveryZone,
     setSelectedBusiness, setSelectedRep, setSelectedDeliveryZone
 
 }: Props) => {
-    const businesses = [
-        { id: 1, name: 'Business 1' },
-        { id: 2, name: 'Business 2' },
-        { id: 3, name: 'Business 3' },
-    ]
+
+      const { data: businesses, isLoading: isLoadingBusinesses } =
+        useGetAllBusinesses();
     const { data: employees, isLoading: isLoadingEmployees } = useGetAllUsers();
 
     return (
@@ -37,10 +36,10 @@ const UniversalFilters = ({ selectedBusiness, selectedRep, selectedDeliveryZone,
                 </MenubarSubTrigger>
                 <MenubarSubContent>
                     {
-                        businesses?.map((business) => (
-                            <MenubarItem key={business.id} onClick={() => setSelectedBusiness(business.name)}>
+                        businesses?.data.map((business) => (
+                            <MenubarItem key={business.id} onClick={() => setSelectedBusiness(business.id.toString())}>
                                 {
-                                    selectedBusiness === business.name && <Check className='mr-2 h-4 w-4' />
+                                    parseInt(selectedBusiness ?? '0') === business.id && <Check className='mr-2 h-4 w-4' />
                                 }
                                 {business.name}
                             </MenubarItem>

@@ -163,7 +163,7 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({
             <TableHead>Category</TableHead>
             <TableHead>Stock Item</TableHead>
             <TableHead>Variation</TableHead>
-            <TableHead>Stock Quantity</TableHead>
+            <TableHead>Quantity In Stock</TableHead>
             <TableHead>Quantity Sold</TableHead>
             <TableHead>Last Updated</TableHead>
             <TableHead></TableHead>

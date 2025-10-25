@@ -9,11 +9,12 @@ import {
   Inventory,
   ConversionStatisticsIcon,
 } from "@/icons/sidebar";
-import { authTokenStorage } from "@/utils/auth";
+import { authTokenStorage } from "@/utils/tokens";
 import {
   Bag2,
   BagTick2,
   Cake,
+  Danger,
   DiscountShape,
   Graph,
   I3Dcube,
@@ -148,6 +149,12 @@ export const linkGroups = [
             requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
           },
           {
+            link: "/inventory/alert",
+            text: "Inventory Alert",
+            icon: <Danger />,
+            requiredPermissions: ["CAN_MANAGE_INVENTORIES"],
+          },
+          {
             link: "/inventory/vendors",
             text: "Vendors",
             icon: <Shop />,
@@ -187,6 +194,12 @@ export const linkGroups = [
             requiredPermissions: ["CAN_MANAGE_STAFFS"],
           },
           {
+            link: "/admin/admin-roles",
+            text: "Roles and Permissions",
+            icon: <Setting2 />,
+            requiredPermissions: ["CAN_MANAGE_ROLES"],
+          },
+          {
             link: "/admin/products",
             text: "Products",
             icon: <I3Dcube />,
@@ -209,12 +222,6 @@ export const linkGroups = [
             text: "Order Properties",
             icon: <I3Dcube />,
             requiredPermissions: ["CAN_MANAGE_ORDERS"],
-          },
-          {
-            link: "/admin/admin-roles",
-            text: "Roles and Permissions",
-            icon: <Setting2 />,
-            requiredPermissions: ["CAN_MANAGE_ROLES"],
           },
         ],
       },

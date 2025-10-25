@@ -368,6 +368,7 @@ const Page = () => {
             <TableRow>
               <TableHead className="w-[22.9%]">State</TableHead>
               <TableHead className="w-[22.9%]">Location</TableHead>
+              <TableHead className="w-[22.9%]">Delivery Zone</TableHead>
               <TableHead className="w-[12.8%]">Delivery Price</TableHead>
               <TableHead className="w-[22.9%] text-right">Action</TableHead>
             </TableRow>
@@ -377,6 +378,7 @@ const Page = () => {
               <TableRow key={dispatch.id}>
                 <TableCell className="font-medium">{dispatch.state}</TableCell>
                 <TableCell>{dispatch.location}</TableCell>
+                <TableCell>{dispatch.zone_display}</TableCell>
                 <TableCell>{dispatch.delivery_price}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end">
