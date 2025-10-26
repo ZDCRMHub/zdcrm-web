@@ -13,6 +13,7 @@ interface FetchOptions {
   delivery_status?: string;
   start_date?: string;
   end_date?: string;
+  business?: string;
 }
 
 const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesAPIResponse> => {
@@ -30,6 +31,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
     params.append('payment_options', status)
   })
   
+  
   if (options.page) params.append('page', options.page.toString());
   if (options.size) params.append('size', options.size.toString());
   if (options.search) params.append('search', options.search);
@@ -37,6 +39,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
   if (options.order_number) params.append('order_number', options.order_number);
   if (options.start_date) params.append('start_date', options.start_date);
   if (options.end_date) params.append('end_date', options.end_date);
+  if (options.business) params.append('business', options.business);
 
   const res = await APIAxios.get('/order/list/', { params });
   return res.data;

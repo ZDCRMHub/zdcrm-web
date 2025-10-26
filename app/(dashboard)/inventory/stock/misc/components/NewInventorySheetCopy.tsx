@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Badge } from '@/components/ui/badge';
-import { Button, SelectSingleCombo } from '@/components/ui';
+import { Button, SelectSingleCombo, SelectBranchCombo } from '@/components/ui';
 import { Plus, User, X } from 'lucide-react';
 import { Add, Book } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
@@ -67,17 +67,12 @@ export default function NewInventorySheet() {
                         name="branch"
                         control={control}
                         render={({ field }) => (
-                            <SelectSingleCombo
-                                {...field}
-                                name='branch'
-                                options={[
-                                    { label: 'Prestige Flowers', value: 'category-1' },
-                                    { label: 'Zuzu Delights', value: 'category-2' },
-                                ]}
-                                valueKey='value'
-                                labelKey="label"
-                                placeholder='Branch'
-                                onChange={field.onChange}
+                            <SelectBranchCombo
+                                name="branch"
+                                value={field.value?.toString() || ''}
+                                onChange={(val) => field.onChange(val)}
+                                placeholder="Branch"
+                                variant="inputButton"
                             />
                         )}
                     />

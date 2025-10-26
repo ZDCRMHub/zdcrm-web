@@ -1,11 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import {
-  Controller,
-  useFieldArray,
-  useForm,
-} from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Money, TruckTime } from "iconsax-react";
 import { Plus, UserIcon } from "lucide-react";
 import toast from "react-hot-toast";
@@ -13,7 +9,7 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import useCloudinary from '@/hooks/useCloudinary';
+import useCloudinary from "@/hooks/useCloudinary";
 import {
   Accordion,
   AccordionContent,
@@ -31,6 +27,7 @@ import {
   TimePicker,
   Spinner,
 } from "@/components/ui";
+import { SelectBranchCombo } from "@/components/ui";
 import {
   DISPATCH_METHOD_OPTIONS,
   ENQUIRY_CHANNEL_OPTIONS,
@@ -39,7 +36,10 @@ import {
   ZONES_OPTIONS,
 } from "@/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGetCategories, useGetProducts } from "@/app/(dashboard)/inventory/misc/api";
+import {
+  useGetCategories,
+  useGetProducts,
+} from "@/app/(dashboard)/inventory/misc/api";
 import FormError from "@/components/ui/formError";
 import { formatCurrency } from "@/utils/currency";
 import { extractErrorMessage } from "@/utils/errors";
@@ -52,13 +52,12 @@ import { useLoading } from "@/contexts";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 
-
 const NewOrderPage = () => {
-
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
-  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
+  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } =
+    useGetOrderDeliveryLocations();
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(NewOrderSchema),
@@ -68,8 +67,11 @@ const NewOrderPage = () => {
       delivery: {
         zone: "LM",
         method: "Dispatch",
-        delivery_date: format(new Date(), 'yyyy-MM-dd'),
-        delivery_time: format(new Date(Date.now() + 2 * 60 * 60 * 1000), 'HH:mm'),
+        delivery_date: format(new Date(), "yyyy-MM-dd"),
+        delivery_time: format(
+          new Date(Date.now() + 2 * 60 * 60 * 1000),
+          "HH:mm"
+        ),
         address: "",
         recipient_name: "",
         recipient_phone: "",
@@ -82,33 +84,44 @@ const NewOrderPage = () => {
         {
           category: categories?.[0].id,
           product_id: products?.[0].id,
-          product_variation_id: '',
+          product_variation_id: "",
           quantity: 1,
           properties: {},
-          inventories: [{
-            variations: [],
-          }],
-        }
+          inventories: [
+            {
+              variations: [],
+            },
+          ],
+        },
       ],
       payment_status: "UP",
       payment_options: "not_paid_go_ahead",
       payment_currency: "NGN",
-    }
+    },
   });
 
-  const { control, handleSubmit, formState: { errors }, watch, setValue, getValues, register, reset } = form;
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    getValues,
+    register,
+    reset,
+  } = form;
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "items"
+    name: "items",
   });
 
-  console.log(errors)
+  console.log(errors);
 
   const addNewItem = () => {
     append({
       category: categories?.[0].id || 1,
       product_id: products?.[0].id || 0,
-      product_variation_id: '',
+      product_variation_id: "",
       quantity: 1,
       properties: {},
       inventories: [],
@@ -119,72 +132,81 @@ const NewOrderPage = () => {
   const selectedPaymentOption = watch("payment_options");
   React.useEffect(() => {
     // "not_received_paid"
-    if (selectedPaymentOption == "paid_usd_transfer" || selectedPaymentOption == "paid_naira_transfer" || selectedPaymentOption == "cash_paid" || selectedPaymentOption == "paid_website_card"
-      || selectedPaymentOption == "paid_pos" || selectedPaymentOption == "paid_paypal" || selectedPaymentOption == "paid_bitcoin") {
-      setValue('payment_status', 'FP')
-    } else if (selectedPaymentOption == "part_payment_cash" || selectedPaymentOption == "part_payment_transfer") {
-      setValue('payment_status', 'PP')
+    if (
+      selectedPaymentOption == "paid_usd_transfer" ||
+      selectedPaymentOption == "paid_naira_transfer" ||
+      selectedPaymentOption == "cash_paid" ||
+      selectedPaymentOption == "paid_website_card" ||
+      selectedPaymentOption == "paid_pos" ||
+      selectedPaymentOption == "paid_paypal" ||
+      selectedPaymentOption == "paid_bitcoin"
+    ) {
+      setValue("payment_status", "FP");
+    } else if (
+      selectedPaymentOption == "part_payment_cash" ||
+      selectedPaymentOption == "part_payment_transfer"
+    ) {
+      setValue("payment_status", "PP");
     } else {
-      setValue('payment_status', 'UP')
+      setValue("payment_status", "UP");
     }
-  }, [selectedPaymentOption, setValue])
+  }, [selectedPaymentOption, setValue]);
 
-  const { uploadToCloudinary } = useCloudinary()
+  const { uploadToCloudinary } = useCloudinary();
   const { isUploading } = useLoading();
   const [createdOrder, setCreatedOrder] = React.useState<TOrder | null>(null);
 
-  const { mutate, isPending } = useCreateOrder()
+  const { mutate, isPending } = useCreateOrder();
   const onSubmit = async (data: NewOrderFormValues) => {
-    let payment_proof: string | undefined
-    const PdfFile = data.payment_proof
+    let payment_proof: string | undefined;
+    const PdfFile = data.payment_proof;
     if (data.payment_proof) {
-      const data = await uploadToCloudinary(PdfFile)
-      payment_proof = data.secure_url
+      const data = await uploadToCloudinary(PdfFile);
+      payment_proof = data.secure_url;
     }
 
     const processedItems = await Promise.all(
       data.items.map(async (item) => {
-        let custom_image: string | undefined
+        let custom_image: string | undefined;
         if (item.custom_image && item.is_custom_order) {
-          const uploadResult = await uploadToCloudinary(item.custom_image)
-          custom_image = uploadResult.secure_url
+          const uploadResult = await uploadToCloudinary(item.custom_image);
+          custom_image = uploadResult.secure_url;
         }
         return {
           ...item,
           custom_image,
-        }
-      }),
-    )
+        };
+      })
+    );
     const dataToSubmit = {
       ...data,
       items: processedItems,
       payment_proof: PdfFile ? payment_proof : undefined,
-    }
+    };
 
     mutate(dataToSubmit, {
       onSuccess(data) {
         toast.success("Created successfully");
-        router.push(`/order-management/orders/${data.data.id}/order-summary`)
+        router.push(`/order-management/orders/${data.data.id}/order-summary`);
         // setCreatedOrder(data?.data);
       },
       onError(error: unknown) {
-        const errMessage = extractErrorMessage((error as any)?.response?.data as any);
+        const errMessage = extractErrorMessage(
+          (error as any)?.response?.data as any
+        );
         toast.error(errMessage, { duration: 7500 });
-      }
-    })
+      },
+    });
   };
 
   const isCustomDelivery = watch(`delivery.is_custom_delivery`);
   const toggleCustomDelivery = () => {
-    setValue('delivery.is_custom_delivery', !isCustomDelivery);
-  }
-  const watchedClientPhoneNumber = watch('customer.phone')
-  const isDispatchOrder = watch('delivery.method') === "Dispatch"
+    setValue("delivery.is_custom_delivery", !isCustomDelivery);
+  };
+  const watchedClientPhoneNumber = watch("customer.phone");
+  const isDispatchOrder = watch("delivery.method") === "Dispatch";
 
-
-  console.log(getValues('items'))
-
-
+  console.log(getValues("items"));
 
   return (
     <div className="px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
@@ -192,7 +214,13 @@ const NewOrderPage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Accordion
             type="multiple"
-            defaultValue={["client-information", "order-information", "delivery-information", "order-Instruction", "payment-information",]}
+            defaultValue={[
+              "client-information",
+              "order-information",
+              "delivery-information",
+              "order-Instruction",
+              "payment-information",
+            ]}
             className="w-full"
           >
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -202,9 +230,16 @@ const NewOrderPage = () => {
               <AccordionTrigger className="py-4 flex">
                 <div className="flex items-center gap-5 text-[#194A7A]">
                   <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
-                    <UserIcon className="text-custom-blue" stroke="#194a7a" fill="#194a7a" size={18} />
+                    <UserIcon
+                      className="text-custom-blue"
+                      stroke="#194a7a"
+                      fill="#194a7a"
+                      size={18}
+                    />
                   </div>
-                  <h3 className="text-custom-blue font-medium">Client Information</h3>
+                  <h3 className="text-custom-blue font-medium">
+                    Client Information
+                  </h3>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
@@ -223,9 +258,11 @@ const NewOrderPage = () => {
                             {...field}
                           />
                         </FormControl>
-                        {
-                          watchedClientPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
-                        }
+                        {watchedClientPhoneNumber?.length == 11 && (
+                          <Link href="/order-management/client-history">
+                            View history
+                          </Link>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -243,9 +280,11 @@ const NewOrderPage = () => {
                             {...field}
                           />
                         </FormControl>
-                        {
-                          watchedClientPhoneNumber?.length == 11 && <Link href="/order-management/client-history">View history</Link>
-                        }
+                        {watchedClientPhoneNumber?.length == 11 && (
+                          <Link href="/order-management/client-history">
+                            View history
+                          </Link>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -344,8 +383,6 @@ const NewOrderPage = () => {
               </AccordionContent>
             </AccordionItem>
 
-
-
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                  ORDER INFORMATION                  ///////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -360,59 +397,54 @@ const NewOrderPage = () => {
               </AccordionTrigger>
               <AccordionContent className="flex flex-col pt-3 pb-14 gap-y-8">
                 <section className="flex items-center justify-between gap-10">
-                  {
-                    (!!watch('items') && !!watch('items')?.length) &&
+                  {!!watch("items") && !!watch("items")?.length && (
                     <Controller
                       name="branch"
                       control={control}
                       render={({ field }) => (
-                        <SelectSingleCombo
-                          {...field}
-                          name='branch'
-                          value={field.value?.toString() || ''}
-                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                          valueKey='value'
+                        <SelectBranchCombo
+                          value={field.value?.toString() || ""}
+                          onChange={(v) => field.onChange(Number(v))}
+                          name="branch"
+                          placeholder="Select Branch"
+                          variant="inputButton"
                           className="!h-10 min-w-40"
-                          labelKey="label"
-                          placeholder='Select Branch'
-                          onChange={(value) => field.onChange(Number(value))}
                           isLoadingOptions={branchesLoading}
-                          hasError={!!errors.branch}
-                          errorMessage={errors.branch?.message}
                         />
                       )}
                     />
-                  }
-                  {
-                    !watch('items')?.length &&
+                  )}
+                  {!watch("items")?.length && (
                     <div className="w-full h-48 flex items-center justify-center">
-                      <Button size="inputButton" onClick={addNewItem} className="w-full max-w-[300px]" type="button">
+                      <Button
+                        size="inputButton"
+                        onClick={addNewItem}
+                        className="w-full max-w-[300px]"
+                        type="button"
+                      >
                         Add Item
                       </Button>
                     </div>
-                  }
+                  )}
                 </section>
                 <section className="flex flex-col gap-y-12 lg:gap-y-20">
-                  {
-                    watch('items')?.map((_, index) => {
-                      return (
-                        <OrderFormItemsSection
-                          key={index}
-                          index={index}
-                          control={control}
-                          watch={watch}
-                          errors={errors}
-                          register={register}
-                          setValue={setValue}
-                          addNewItem={addNewItem}
-                        />
-                      )
-                    })
-                  }
+                  {watch("items")?.map((_, index) => {
+                    return (
+                      <OrderFormItemsSection
+                        key={index}
+                        index={index}
+                        control={control}
+                        watch={watch}
+                        errors={errors}
+                        register={register}
+                        setValue={setValue}
+                        addNewItem={addNewItem}
+                      />
+                    );
+                  })}
                 </section>
               </AccordionContent>
             </AccordionItem>
-
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                 DELIVERY INFORMATION                ///////////// */}
@@ -421,9 +453,15 @@ const NewOrderPage = () => {
               <AccordionTrigger className="py-4 flex">
                 <div className="flex items-center gap-5 text-[#194A7A]">
                   <div className="flex items-center justify-center p-1.5 h-10 w-10 rounded-full bg-[#F2F2F2]">
-                    <TruckTime className="text-custom-blue" stroke="#194a7a" size={18} />
+                    <TruckTime
+                      className="text-custom-blue"
+                      stroke="#194a7a"
+                      size={18}
+                    />
                   </div>
-                  <h3 className="text-custom-blue font-medium">Delivery Details</h3>
+                  <h3 className="text-custom-blue font-medium">
+                    Delivery Details
+                  </h3>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pt-5">
@@ -446,16 +484,13 @@ const NewOrderPage = () => {
                       </FormItem>
                     )}
                   />
-                  {
-                    watch('delivery.method') === "Dispatch" &&
+                  {watch("delivery.method") === "Dispatch" && (
                     <>
                       <FormField
                         control={control}
                         name="delivery.address"
                         render={({ field }) => (
-                          <FormItem
-                            className="col-span-full md:col-span-2"
-                          >
+                          <FormItem className="col-span-full md:col-span-2">
                             <FormControl>
                               <Input
                                 className=""
@@ -474,8 +509,6 @@ const NewOrderPage = () => {
                         name="delivery.zone"
                         render={({ field }) => (
                           <FormItem>
-
-
                             <SelectSingleCombo
                               label="Delivery Zone"
                               options={ZONES_OPTIONS}
@@ -485,10 +518,7 @@ const NewOrderPage = () => {
                               placeholder="Select delivery zone"
                               hasError={!!errors.delivery?.zone}
                               errorMessage={errors.delivery?.zone?.message}
-
                             />
-
-
                           </FormItem>
                         )}
                       />
@@ -497,38 +527,52 @@ const NewOrderPage = () => {
                         name="delivery.dispatch"
                         render={({ field }) => (
                           <FormItem>
-                            {
-                              isCustomDelivery ?
-                                <Input
-                                  label="Delivery Fee"
-                                  {...register('delivery.fee', { valueAsNumber: true })}
-                                  hasError={!!errors.delivery?.fee}
-                                  errorMessage={errors.delivery?.fee?.message}
-                                  placeholder="Enter delivery fee"
-                                />
-                                :
-                                <SelectSingleCombo
-                                  label="Dispatch Location"
-                                  {...field}
-                                  value={field.value?.toString() || ''}
-                                  isLoadingOptions={dispatchLocationsLoading}
-                                  options={dispatchLocations?.data?.map(loc => ({ label: loc.location, value: loc.id.toString(), price: loc.delivery_price })) || []}
-                                  valueKey={"value"}
-                                  // labelKey={"label"}
-                                  labelKey={(item) => `${item.label} (${formatCurrency(item.price, 'NGN')})`}
-                                  placeholder="Select dispatch location"
-                                  hasError={!!errors.delivery?.dispatch}
-                                  errorMessage={errors.delivery?.dispatch?.message}
-                                />
-                            }
+                            {isCustomDelivery ? (
+                              <Input
+                                label="Delivery Fee"
+                                {...register("delivery.fee", {
+                                  valueAsNumber: true,
+                                })}
+                                hasError={!!errors.delivery?.fee}
+                                errorMessage={errors.delivery?.fee?.message}
+                                placeholder="Enter delivery fee"
+                              />
+                            ) : (
+                              <SelectSingleCombo
+                                label="Dispatch Location"
+                                {...field}
+                                value={field.value?.toString() || ""}
+                                isLoadingOptions={dispatchLocationsLoading}
+                                options={
+                                  dispatchLocations?.data?.map((loc) => ({
+                                    label: loc.location,
+                                    value: loc.id.toString(),
+                                    price: loc.delivery_price,
+                                  })) || []
+                                }
+                                valueKey={"value"}
+                                // labelKey={"label"}
+                                labelKey={(item) =>
+                                  `${item.label} (${formatCurrency(
+                                    item.price,
+                                    "NGN"
+                                  )})`
+                                }
+                                placeholder="Select dispatch location"
+                                hasError={!!errors.delivery?.dispatch}
+                                errorMessage={
+                                  errors.delivery?.dispatch?.message
+                                }
+                              />
+                            )}
                             <button
                               className="bg-custom-blue rounded-none px-4 py-1.5 text-xs text-white"
                               onClick={toggleCustomDelivery}
                               type="button"
                             >
-                              {
-                                !isCustomDelivery ? "+ Custom Delivery" : "- Regular Delivery"
-                              }
+                              {!isCustomDelivery
+                                ? "+ Custom Delivery"
+                                : "- Regular Delivery"}
                             </button>
                           </FormItem>
                         )}
@@ -553,7 +597,9 @@ const NewOrderPage = () => {
                                 labelKey="label"
                                 label="Residence Type"
                                 hasError={!!errors.delivery?.residence_type}
-                                errorMessage={errors.delivery?.residence_type?.message}
+                                errorMessage={
+                                  errors.delivery?.residence_type?.message
+                                }
                                 placeholder="Enter residence type"
                                 optional
                                 {...field}
@@ -564,7 +610,7 @@ const NewOrderPage = () => {
                         )}
                       />
                     </>
-                  }
+                  )}
 
                   <FormField
                     control={control}
@@ -572,18 +618,30 @@ const NewOrderPage = () => {
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <SingleDatePicker
-                          label={isDispatchOrder ? "Delivery Date" : "Pickup Date"}
+                          label={
+                            isDispatchOrder ? "Delivery Date" : "Pickup Date"
+                          }
                           defaultDate={new Date(field.value ?? new Date())}
-                          value={format(new Date(field.value ?? new Date()), 'yyyy-MM-dd')}
-                          onChange={(newValue) => setValue('delivery.delivery_date', format(newValue, 'yyyy-MM-dd'))}
+                          value={format(
+                            new Date(field.value ?? new Date()),
+                            "yyyy-MM-dd"
+                          )}
+                          onChange={(newValue) =>
+                            setValue(
+                              "delivery.delivery_date",
+                              format(newValue, "yyyy-MM-dd")
+                            )
+                          }
                           placeholder="Select delivery date"
                           disablePastDates={true}
                         />
-                        {
-                          errors.delivery?.delivery_date &&
-                          <FormError errorMessage={errors.delivery?.delivery_date?.message as string}
+                        {errors.delivery?.delivery_date && (
+                          <FormError
+                            errorMessage={
+                              errors.delivery?.delivery_date?.message as string
+                            }
                           />
-                        }
+                        )}
                       </FormItem>
                     )}
                   />
@@ -595,7 +653,7 @@ const NewOrderPage = () => {
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
 
-                  // placeholder="Select delivery date"
+                    // placeholder="Select delivery date"
                   />
 
                   <FormField
@@ -605,11 +663,21 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label={isDispatchOrder ? "Recipient's Name" : "Pickup Contact Name"}
+                            label={
+                              isDispatchOrder
+                                ? "Recipient's Name"
+                                : "Pickup Contact Name"
+                            }
                             {...field}
                             hasError={!!errors.delivery?.recipient_name}
-                            errorMessage={errors.delivery?.recipient_name?.message}
-                            placeholder={isDispatchOrder ? "Enter recipient name" : "Enter pickup contact name"}
+                            errorMessage={
+                              errors.delivery?.recipient_name?.message
+                            }
+                            placeholder={
+                              isDispatchOrder
+                                ? "Enter recipient name"
+                                : "Enter pickup contact name"
+                            }
                           />
                         </FormControl>
                       </FormItem>
@@ -622,11 +690,21 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label={isDispatchOrder ? "Recipient's Phone Number" : "Pickup Contact Phone Number"}
+                            label={
+                              isDispatchOrder
+                                ? "Recipient's Phone Number"
+                                : "Pickup Contact Phone Number"
+                            }
                             {...field}
                             hasError={!!errors.delivery?.recipient_phone}
-                            errorMessage={errors.delivery?.recipient_phone?.message}
-                            placeholder={isDispatchOrder ? "Enter recipient phone number" : "Enter pickup contact phone number"}
+                            errorMessage={
+                              errors.delivery?.recipient_phone?.message
+                            }
+                            placeholder={
+                              isDispatchOrder
+                                ? "Enter recipient phone number"
+                                : "Enter pickup contact phone number"
+                            }
                           />
                         </FormControl>
                       </FormItem>
@@ -639,20 +717,30 @@ const NewOrderPage = () => {
                       <FormItem>
                         <FormControl>
                           <Input
-                            label={isDispatchOrder ? "Recipient's Alt Phone Number" : "Pickup Contact Alt Phone Number"}
+                            label={
+                              isDispatchOrder
+                                ? "Recipient's Alt Phone Number"
+                                : "Pickup Contact Alt Phone Number"
+                            }
                             {...field}
-                            hasError={!!errors.delivery?.recipient_alternative_phone}
-                            errorMessage={errors.delivery?.recipient_alternative_phone?.message}
-                            placeholder={isDispatchOrder ? "Enter recipient alternative phone number" : "Enter pickup contact alternative phone number"}
+                            hasError={
+                              !!errors.delivery?.recipient_alternative_phone
+                            }
+                            errorMessage={
+                              errors.delivery?.recipient_alternative_phone
+                                ?.message
+                            }
+                            placeholder={
+                              isDispatchOrder
+                                ? "Enter recipient alternative phone number"
+                                : "Enter pickup contact alternative phone number"
+                            }
                             optional
                           />
                         </FormControl>
                       </FormItem>
                     )}
                   />
-
-
-
 
                   <FormField
                     control={control}
@@ -672,11 +760,9 @@ const NewOrderPage = () => {
                       </FormItem>
                     )}
                   />
-
                 </div>
               </AccordionContent>
             </AccordionItem>
-
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////////////////////////////////////////////////////////////////////// */}
@@ -705,8 +791,6 @@ const NewOrderPage = () => {
                 />
               </AccordionContent>
             </AccordionItem>
-
-
 
             {/* /////////////////////////////////////////////////////////////////////////////// */}
             {/* /////////////                  PAYMENT INFORMATION                  ///////////// */}
@@ -744,7 +828,9 @@ const NewOrderPage = () => {
                     )}
                   />
 
-                  {(selectedPaymentOption === "paid_usd_transfer" || selectedPaymentOption === "paid_paypal" || selectedPaymentOption === "paid_bitcoin") && (
+                  {(selectedPaymentOption === "paid_usd_transfer" ||
+                    selectedPaymentOption === "paid_paypal" ||
+                    selectedPaymentOption === "paid_bitcoin") && (
                     <Controller
                       name="amount_paid_in_usd"
                       control={control}
@@ -762,7 +848,8 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {(selectedPaymentOption === "part_payment_cash" || selectedPaymentOption === "part_payment_transfer") && (
+                  {(selectedPaymentOption === "part_payment_cash" ||
+                    selectedPaymentOption === "part_payment_transfer") && (
                     <Controller
                       name="initial_amount_paid"
                       control={control}
@@ -781,7 +868,11 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {!(selectedPaymentOption === "paid_usd_transfer" || selectedPaymentOption === "paid_paypal" || selectedPaymentOption === "paid_bitcoin") && (
+                  {!(
+                    selectedPaymentOption === "paid_usd_transfer" ||
+                    selectedPaymentOption === "paid_paypal" ||
+                    selectedPaymentOption === "paid_bitcoin"
+                  ) && (
                     <Controller
                       name="payment_currency"
                       control={control}
@@ -803,11 +894,12 @@ const NewOrderPage = () => {
                     />
                   )}
 
-                  {
-                    watch('payment_options') !== "not_paid_go_ahead" &&
+                  {watch("payment_options") !== "not_paid_go_ahead" && (
                     <>
                       <FilePicker
-                        onFileSelect={(file) => setValue("payment_proof", file!)}
+                        onFileSelect={(file) =>
+                          setValue("payment_proof", file!)
+                        }
                         hasError={!!errors.payment_proof}
                         errorMessage={errors.payment_proof?.message as string}
                         maxSize={10}
@@ -829,7 +921,7 @@ const NewOrderPage = () => {
                         )}
                       />
                     </>
-                  }
+                  )}
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -844,14 +936,11 @@ const NewOrderPage = () => {
               disabled={isPending || isUploading}
             >
               Proceed
-              {
-                (isPending || isUploading) && <Spinner size={20} />
-              }
+              {(isPending || isUploading) && <Spinner size={20} />}
             </Button>
           </footer>
         </form>
       </Form>
-
     </div>
   );
 };

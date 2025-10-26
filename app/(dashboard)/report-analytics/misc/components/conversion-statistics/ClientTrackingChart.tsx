@@ -1,33 +1,29 @@
 "use client";
 
-import { Controller, useForm } from 'react-hook-form';
-import { CartesianGrid, Legend, XAxis, YAxis, Area, AreaChart } from 'recharts';
+import { Controller, useForm } from "react-hook-form";
+import { CartesianGrid, Legend, XAxis, YAxis, Area, AreaChart } from "recharts";
 
-import { Spinner } from '@/components/ui';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Spinner } from "@/components/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart';
-import SelectSingleSimple from '@/components/ui/selectSingleSimple';
+} from "@/components/ui/chart";
+import SelectSingleSimple from "@/components/ui/selectSingleSimple";
+import { SelectBranchCombo } from "@/components/ui";
 
-import { useGetClientTrackingStats } from '../../api';
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
+import { useGetClientTrackingStats } from "../../api";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 
 const chartConfig = {
   new_customers: {
-    label: 'New Clients',
-    color: 'hsl(var(--chart-1))',
+    label: "New Clients",
+    color: "hsl(var(--chart-1))",
   },
   returning_customers: {
-    label: 'Returning Clients',
-    color: 'hsl(var(--chart-2))',
+    label: "Returning Clients",
+    color: "hsl(var(--chart-2))",
   },
 };
 
@@ -39,9 +35,10 @@ function ClientTrackingChart() {
       branch: undefined,
     },
   });
-  const { data: allBranches, isLoading: isFetchingBranch } = useGetAllBranches();
+  const { data: allBranches, isLoading: isFetchingBranch } =
+    useGetAllBranches();
   const { data, isLoading, isFetching } = useGetClientTrackingStats({
-    branch: watch('branch') == "all" ? undefined : watch('branch'),
+    branch: watch("branch") == "all" ? undefined : watch("branch"),
   });
 
   const chartData = data?.data.monthly_stats || [];
@@ -55,28 +52,27 @@ function ClientTrackingChart() {
         </CardTitle>
         <div className="flex items-center gap-4 flex-wrap max-w-max">
           <Controller
-            name='branch'
+            name="branch"
             control={control}
             render={({ field }) => (
-              <SelectSingleSimple
-                {...field}
-                onChange={(new_value) => setValue('branch', new_value)}
-                value={watch('branch')}
-                isLoadingOptions={isFetchingBranch}
-                options={[{ label: "All Branches", value: "all" }, ...(allBranches?.data.map(branch => ({ label: branch.name, value: branch.id.toString() })) || [])]}
-                labelKey="label"
-                valueKey="value"
-                placeholder='Filter Branch'
+              <SelectBranchCombo
+                name="branch-filter"
+                value={watch("branch")}
+                onChange={(new_value) => setValue("branch", new_value)}
+                placeholder="Filter Branch"
                 variant="light"
                 size="thin"
+                isLoadingOptions={isFetchingBranch}
               />
             )}
           />
-
         </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[400px] w-full h-[95%]">
+        <ChartContainer
+          config={chartConfig}
+          className="max-h-[400px] w-full h-[95%]"
+        >
           <AreaChart
             accessibilityLayer
             data={chartData}
@@ -88,13 +84,41 @@ function ClientTrackingChart() {
             }}
           >
             <defs>
-              <linearGradient id="newCustomersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-new_customers)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-new_customers)" stopOpacity={0.1} />
+              <linearGradient
+                id="newCustomersGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-new_customers)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-new_customers)"
+                  stopOpacity={0.1}
+                />
               </linearGradient>
-              <linearGradient id="returningCustomersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-returning_customers)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-returning_customers)" stopOpacity={0.1} />
+              <linearGradient
+                id="returningCustomersGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-returning_customers)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-returning_customers)"
+                  stopOpacity={0.1}
+                />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} />

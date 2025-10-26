@@ -22,6 +22,7 @@ import {
   Menubar,
   MenubarContent,
 } from "@/components/ui";
+import { SelectBranchCombo } from "@/components/ui";
 import { LinkButton, Button } from "@/components/ui";
 import StoreInventoryTable from "./StoreInventoryTable";
 import TabBar from "@/components/TabBar";
@@ -109,31 +110,15 @@ export default function StoreInventoryDashboard() {
                 )}
               </MenubarTrigger>
               <MenubarContent>
-                <MenubarSub>
-                  <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
-                    <Category2 size={18} />
-                    Branch
-                    {selectedBranch && (
-                      <Circle
-                        size={6}
-                        className="absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full"
-                      />
-                    )}
-                  </MenubarSubTrigger>
-                  <MenubarSubContent>
-                    {branches?.data.map((branch) => (
-                      <MenubarItem
-                        key={branch.id}
-                        onClick={() => handleBranchChange(branch.id)}
-                      >
-                        {selectedBranch === branch.id && (
-                          <Check className="mr-2 h-4 w-4" />
-                        )}
-                        {branch.name}
-                      </MenubarItem>
-                    ))}
-                  </MenubarSubContent>
-                </MenubarSub>
+                <SelectBranchCombo
+                  noLabel
+                  value={selectedBranch ? String(selectedBranch) : undefined}
+                  dropdownItem={true}
+                  onChange={(v) => handleBranchChange(Number(v))}
+                  name="branch-filter"
+                  variant="unstyled"
+                  className="relative py-3 flex items-center gap-2"
+                />
 
                 <MenubarSub>
                   <MenubarSubTrigger className="relative py-3 flex items-center gap-2">

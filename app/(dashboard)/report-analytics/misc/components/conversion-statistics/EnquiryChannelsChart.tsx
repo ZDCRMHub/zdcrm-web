@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LinkButton, RangeAndCustomDatePicker, Spinner } from "@/components/ui";
 
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
+import { SelectBranchCombo } from '@/components/ui';
 import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 import { useGetEnquiryChannelStats } from "../../api";
 import { cn } from "@/lib/utils";
@@ -147,23 +148,14 @@ function EnquiryChannelsChart({ from_overview }: EnquiryChannelsChartProps) {
                 name="branch"
                 control={control}
                 render={({ field }) => (
-                  <SelectSingleSimple
-                    {...field}
-                    onChange={(new_value) => setValue("branch", new_value)}
+                  <SelectBranchCombo
                     value={watch("branch")}
-                    isLoadingOptions={isFetchingBranch}
-                    options={[
-                      { label: "All Branches", value: "all" },
-                      ...(allBranches?.data.map((branch) => ({
-                        label: branch.name,
-                        value: branch.id.toString(),
-                      })) || []),
-                    ]}
-                    labelKey="label"
-                    valueKey="value"
+                    onChange={(new_value) => setValue("branch", new_value)}
                     placeholder="Filter Branch"
+                    name="branch"
                     variant="light"
                     size="thin"
+                    isLoadingOptions={isFetchingBranch}
                   />
                 )}
               />

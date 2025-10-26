@@ -3,7 +3,7 @@ import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Badge } from '@/components/ui/badge';
-import { Button, SelectSingleCombo, Textarea } from '@/components/ui';
+import { Button, SelectSingleCombo, Textarea, SelectBranchCombo } from '@/components/ui';
 import { Plus, User, X } from 'lucide-react';
 import { Add, Book } from 'iconsax-react';
 import { Separator } from '@radix-ui/react-select';
@@ -151,18 +151,13 @@ export default function NewStoreInventorySheet() {
                         name="branch"
                         control={control}
                         render={({ field }) => (
-                            <SelectSingleCombo
-                                {...field}
-                                name='branch'
+                            <SelectBranchCombo
                                 value={field.value?.toString() || ''}
-                                options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                                valueKey='value'
-                                labelKey="label"
+                                onChange={(v) => field.onChange(Number(v))}
+                                name='branch'
                                 placeholder='Select Branch'
-                                onChange={(value) => field.onChange(Number(value))}
+                                variant='inputButton'
                                 isLoadingOptions={branchesLoading}
-                                hasError={!!errors.branch}
-                                errorMessage={errors.branch?.message}
                             />
                         )}
                     />
@@ -170,18 +165,13 @@ export default function NewStoreInventorySheet() {
                         name="branch"
                         control={control}
                         render={({ field }) => (
-                            <SelectSingleCombo
-                                {...field}
-                                name='branch'
+                            <SelectBranchCombo
                                 value={field.value?.toString() || ''}
-                                options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                                valueKey='value'
-                                labelKey="label"
+                                onChange={(v) => field.onChange(Number(v))}
+                                name='branch'
                                 placeholder='Select Storage Location'
-                                onChange={(value) => field.onChange(Number(value))}
+                                variant='inputButton'
                                 isLoadingOptions={branchesLoading}
-                                hasError={!!errors.branch}
-                                errorMessage={errors.branch?.message}
                             />
                         )}
                     />

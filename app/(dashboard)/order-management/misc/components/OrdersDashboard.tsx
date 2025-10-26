@@ -64,6 +64,7 @@ export default function OrdersDashboard() {
     start_date: watch('date').from?.toISOString().split('T')[0],
     end_date: watch('date').to ? new Date((watch('date').to as Date).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
     order_number: debouncedOrderNumber,
+    business: selectedBusiness!,
   })
 
   const handleRefresh = () => {

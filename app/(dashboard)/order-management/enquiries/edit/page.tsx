@@ -20,6 +20,7 @@ import {
   Input,
   SingleDatePicker,
   SelectSingleCombo,
+  SelectBranchCombo,
   Button,
   FilePicker,
   FormControl,
@@ -136,9 +137,9 @@ const NewEnquiryPage = () => {
           })) || [],
       }
 
-      form.reset(resetData)
+      reset(resetData)
     }
-  }, [enquiryData, isLoadingEnquiryData, form])
+  }, [enquiryData, isLoadingEnquiryData, reset])
 
   console.log(errors)
 
@@ -375,19 +376,16 @@ const NewEnquiryPage = () => {
                       name="branch"
                       control={control}
                       render={({ field }) => (
-                        <SelectSingleCombo
-                          {...field}
-                          name='branch'
+                        <SelectBranchCombo
+                          name="branch"
                           value={field.value?.toString() || ''}
-                          options={branches?.data?.map(bra => ({ label: bra.name, value: bra.id.toString() })) || []}
-                          valueKey='value'
+                          onChange={(val) => field.onChange(Number(val))}
                           className="!h-10 min-w-40"
-                          labelKey="label"
-                          placeholder='Select Branch'
-                          onChange={(value) => field.onChange(Number(value))}
+                          placeholder="Select Branch"
                           isLoadingOptions={branchesLoading}
                           hasError={!!errors.branch}
                           errorMessage={errors.branch?.message}
+                          variant="inputButton"
                         />
                       )}
                     />

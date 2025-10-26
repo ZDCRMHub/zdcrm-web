@@ -10,6 +10,7 @@ interface FetchOptions {
   status?: string;
   start_date?: string;
   end_date?: string;
+  business?:string | null
 }
 
 const fetchActiveEmquiries = async (options: FetchOptions = {}): Promise<EnquiriesAPIResponse> => {
@@ -24,6 +25,7 @@ const fetchActiveEmquiries = async (options: FetchOptions = {}): Promise<Enquiri
   if (options.category) params.append('category_id', options.category.toString());
   if (options.start_date) params.append('start_date', options.start_date);
   if (options.end_date) params.append('end_date', options.end_date);
+  if (options.business) params.append('business', options.business);
 
   const res = await APIAxios.get('/enquiry/list/', { params });
   return res.data;

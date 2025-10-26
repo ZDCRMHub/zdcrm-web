@@ -11,7 +11,7 @@ import { ProductsInventoryHistoryTable, StoreInventoryUpdateModal } from "../../
 import { useBooleanStateControl } from "@/hooks";
 
 
-const InventoryDetailsPage = () => {
+const StoreInventoryDetailsPage = () => {
   const product_id = useParams().id as string;
 
   const router = useRouter();
@@ -21,6 +21,18 @@ const InventoryDetailsPage = () => {
     setTrue: openUpdateModal,
     setFalse: closeUpdateModal,
   } = useBooleanStateControl();
+
+  const [modalOperationMode, setModalOperationMode] = React.useState<'add' | 'subtract' | 'both'>('add');
+
+  const openAddModal = () => {
+    setModalOperationMode('add');
+    openUpdateModal();
+  }
+
+  const openSubtractModal = () => {
+    setModalOperationMode('subtract');
+    openUpdateModal();
+  }
 
   const { data, isLoading, isFetching, refetch:refetchData } = useGetStoreInventoryDetails(product_id)
   const { data: historyData, isLoading: isHistoryLoading, isFetching: isHistoryFetching, error: historyError, refetch:refetchHistory } = useGetStoreInventoryHistory(product_id)
@@ -41,18 +53,32 @@ const InventoryDetailsPage = () => {
       </div>
 
 
-      <div className="mt-10 flex ">
-        <div className="p-8 bg-[#F6F6F6] rounded-xl w-full max-w-[522px] shadow-inner shadow-white">
-          <p className="text-2xl font-medium text-center mb-3">Stock</p>
-          <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-4">
-            <p className="text-[18px] uppercase">Quantity at hand</p>
-            <p className="text-2xl text-[#113770] font-bold">{data?.quantity}</p>
-            <Button className="bg-[#1E1E1E] rounded-none text-sm w-[161px]" onClick={openUpdateModal}>
-              Adjust Stock
-            </Button>
+      <section className="grid md:grid-cols-2 max-w-5xl gap-4 mt-8">
+        <article className="flex">
+          <div className="p-4 bg-[#F6F6F6] rounded-lg w-full max-w-[450px] shadow-inner shadow-white">
+            <p className="text-2xl font-medium text-center mb-3">Stock</p>
+            <div className="bg-white py-9 rounded-[20px] items-center flex flex-col gap-4">
+              <p className="text-[18px] uppercase">Quantity at hand</p>
+              <p className="text-2xl text-[#113770] font-bold">{data?.quantity}</p>
+              <div className="flex gap-2">
+                <Button className="bg-[#FFC600] hover:bg-[#E6B200] text-black rounded-none text-xs w-[6rem] h-8" onClick={openAddModal}>
+                  Add Stock
+                </Button>
+                <Button className="bg-[#1E1E1E] hover:bg-[#000000] text-white rounded-none text-xs w-[6rem] h-8" onClick={openSubtractModal}>
+                  Subtract
+                </Button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </article>
+
+        <article className="flex p-4 bg-[#F6F6F6]">
+          <div className="p-4 bg-white h-full rounded-lg w-full max-w-[450px] shadow-inner shadow-white">
+            <p className="text-lg font-medium text-center mb-2">Product Description</p>
+            <p className="text-sm text-[#113770]">{'No description available'}</p>
+          </div>
+        </article>
+      </section>
 
 
       <section className="mt-16">
@@ -75,10 +101,11 @@ const InventoryDetailsPage = () => {
           closeModal={closeUpdateModal}
           product={data}
           refetch={refetch}
+          operationMode={modalOperationMode}
         />
       }
     </section>
   );
 };
 
-export default InventoryDetailsPage;
+export default StoreInventoryDetailsPage;
