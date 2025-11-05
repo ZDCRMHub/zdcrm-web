@@ -71,6 +71,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
       </TableCell>
       <TableCell className="min-w-[150px]">
         <div>{DELIVERY_ZONES_ENUMS[order.delivery.zone]}</div>
+        <div className="text-[0.825rem] text-gray-500 truncate">
+          {order.branch?.name}
+        </div>
       </TableCell>
       <TableCell className="">
         <div>{order.customer?.name}</div>
@@ -267,10 +270,10 @@ const OrdersTableHistory = ({
               <TableHeader>
                 <TableRow>
                   <TableHead className="min-w-[150px]">Order ID</TableHead>
+                  <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
                   <TableHead className="min-w-[200px] max-w-[500px]">
                     Customers Details
                   </TableHead>
-                  <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
                   <TableHead className="min-w-[175px] max-w-[500px]">
                     Delivery Date
                   </TableHead>

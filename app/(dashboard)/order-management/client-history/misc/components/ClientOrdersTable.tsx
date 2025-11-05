@@ -34,7 +34,7 @@ export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
 
 const ORDER_STATUS_ENUMS: Record<string, string> = {
   PND: "Pending",
-  SOA: "Sorted & Approved",
+  SOA: "Start Order Arrangement",
   SOR: "Sorted",
   STD: "Sent to Dispatch",
   COM: "Completed",
