@@ -126,6 +126,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
       </TableCell>
       <TableCell className="min-w-[150px]">
         <div>{DELIVERY_ZONES_ENUMS[order.delivery.zone]}</div>
+        <div className="text-[0.825rem] text-gray-500 truncate">
+          {order.branch?.name}
+        </div>
       </TableCell>
       <TableCell className=" uppercase">
         {formatUniversalDate(order.delivery.delivery_date)}

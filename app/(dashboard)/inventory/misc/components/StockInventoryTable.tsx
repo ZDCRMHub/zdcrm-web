@@ -65,6 +65,7 @@ const StockRow: React.FC<StockRowProps> = ({ item, refetch }) => {
               variation.color ||
               variation.flavour}
           </TableCell>
+        
           <TableCell>
             <div className="grid grid-cols-[1fr,max-content] items-center space-x-2">
               <span>{variation.quantity} In Stock</span>
@@ -76,6 +77,9 @@ const StockRow: React.FC<StockRowProps> = ({ item, refetch }) => {
                 ""
               )}
             </div>
+          </TableCell>
+            <TableCell>
+           -
           </TableCell>
           <TableCell>{variation.quantity_sold}</TableCell>
           <TableCell>{format(item.update_date, "dd-MMM-yyyy")}</TableCell>
@@ -164,7 +168,8 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({
             <TableHead>Stock Item</TableHead>
             <TableHead>Variation</TableHead>
             <TableHead>Quantity In Stock</TableHead>
-            <TableHead>Quantity Sold</TableHead>
+            <TableHead>Storage Location</TableHead>
+            <TableHead>Reorder Required</TableHead>
             <TableHead>Last Updated</TableHead>
             <TableHead></TableHead>
           </TableRow>

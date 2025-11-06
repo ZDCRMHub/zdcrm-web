@@ -278,9 +278,14 @@ export default function EnquiriesTable({
                         </div>
                       </TableCell>
                       <TableCell className="">
-                        {enquiry?.delivery.zone
-                          ? DELIVERY_ZONES_ENUMS[enquiry?.delivery.zone]
-                          : "-"}
+                        <div>
+                          {enquiry?.delivery.zone
+                            ? DELIVERY_ZONES_ENUMS[enquiry?.delivery.zone]
+                            : "-"}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {enquiry.branch?.name ?? ""}
+                        </div>
                       </TableCell>
                       <TableCell className=" uppercase">
                         {formatUniversalDate(enquiry?.delivery.delivery_date)}
