@@ -15,7 +15,7 @@ import {
 import { RangeAndCustomDatePicker, Select, SelectItem, SelectValue, Spinner } from "@/components/ui";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
 import { useGetOrderDeliveryStats } from "../../api/getOrderStatisticsDeliveryZone";
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';import { DateRange } from "react-day-picker";
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api'; import { DateRange } from "react-day-picker";
 import { Controller, useForm } from "react-hook-form";
 import { subMonths } from "date-fns";
 import { OrderStatsDeliveryZoneChartSkeleton } from "./OrderStatsDeliveryZoneSkeleton";
@@ -37,7 +37,7 @@ const today = new Date();
 const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 const monthsAgo = subMonths(new Date(), 1);
 
-export function OrderStatsDeliveryZoneSection() {
+export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDetailed?: boolean }) {
   const { data: allBranches, isLoading: isFetchingBranch } = useGetAllBranches();
   const { control, watch, setValue } = useForm<{
     branch?: string;
@@ -72,40 +72,44 @@ export function OrderStatsDeliveryZoneSection() {
             isFetching && <Spinner />
           }
         </CardTitle>
-        <div className="flex items-center gap-4 flex-wrap max-w-max">
-          <Controller
-            name='branch'
-            control={control}
-            render={({ field }) => (
-              <SelectBranchCombo
-                value={watch('branch')}
-                onChange={(new_value) => setValue('branch', new_value)}
-                placeholder='Filter Branch'
-                variant="light"
-                size="thin"
-                isLoadingOptions={isFetchingBranch}
-              />
-            )}
-          />
-          <RangeAndCustomDatePicker
-            className="max-w-max"
-            variant="light"
-            size="thin"
-            onChange={(value) => {
-              if (value.dateType === 'custom' && value.from && value.to) {
-                setValue('date', { from: value.from, to: value.to });
-                setValue('period', 'custom');
-              } else {
-                setValue('period', value.dateType as "today" | "week" | "month" | "year" | "custom");
-              }
-            }}
-            value={{
-              dateType: watch('period'),
-              from: watch('date').from,
-              to: watch('date').to
-            }}
-          />
-        </div>
+
+        {
+          showDetailed &&
+          <div className="flex items-center gap-4 flex-wrap max-w-max">
+            <Controller
+              name='branch'
+              control={control}
+              render={({ field }) => (
+                <SelectBranchCombo
+                  value={watch('branch')}
+                  onChange={(new_value) => setValue('branch', new_value)}
+                  placeholder='Filter Branch'
+                  variant="light"
+                  size="thin"
+                  isLoadingOptions={isFetchingBranch}
+                />
+              )}
+            />
+            <RangeAndCustomDatePicker
+              className="max-w-max"
+              variant="light"
+              size="thin"
+              onChange={(value) => {
+                if (value.dateType === 'custom' && value.from && value.to) {
+                  setValue('date', { from: value.from, to: value.to });
+                  setValue('period', 'custom');
+                } else {
+                  setValue('period', value.dateType as "today" | "week" | "month" | "year" | "custom");
+                }
+              }}
+              value={{
+                dateType: watch('period'),
+                from: watch('date').from,
+                to: watch('date').to
+              }}
+            />
+          </div>
+        }
       </CardHeader>
       <CardContent>
         <ChartContainer

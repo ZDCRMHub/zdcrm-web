@@ -2,7 +2,7 @@ import { APIAxios } from "@/utils/axios"
 import { useQuery } from "@tanstack/react-query"
 
 const queryFn = async ()=>{
-    const res = await APIAxios.get(`/branch/list`)
+    const res = await APIAxios.get(`/business/branches/list`)
     return res.data as RootObject
 }
 
@@ -17,8 +17,6 @@ export const useGetAllBranches = () => {
         refetchOnReconnect: false,
     })
 }
-
-
 
 interface RootObject {
   data: TBranch[];

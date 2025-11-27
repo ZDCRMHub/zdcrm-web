@@ -127,12 +127,13 @@ const Page = () => {
         state: newDispatch.state,
         location: newDispatch.location,
         delivery_price: parseFloat(newDispatch.delivery_price),
+        zone: newDispatch.zone,
       },
       {
         onSuccess: () => {
           setSuccessMessage("Dispatch created successfully");
           setIsSuccessModalOpen(true);
-          setNewDispatch({ state: "", location: "", delivery_price: "" });
+          setNewDispatch({ state: "", location: "", delivery_price: "", zone: "" });
         },
         onError: (error: unknown) => {
           const errMessage = extractErrorMessage(
@@ -153,6 +154,7 @@ const Page = () => {
         id: editingDispatch.id,
         data: {
           state: editingDispatch.state,
+          zone: editingDispatch.zone,
           location: editingDispatch.location,
           delivery_price: parseFloat(editingDispatch.delivery_price),
         },
@@ -234,13 +236,13 @@ const Page = () => {
                       onChange={(e) =>
                         editingDispatch
                           ? setEditingDispatch({
-                              ...editingDispatch,
-                              state: e.target.value,
-                            })
+                            ...editingDispatch,
+                            state: e.target.value,
+                          })
                           : setNewDispatch({
-                              ...newDispatch,
-                              state: e.target.value,
-                            })
+                            ...newDispatch,
+                            state: e.target.value,
+                          })
                       }
                       className="h-14"
                     />
@@ -258,13 +260,13 @@ const Page = () => {
                       onChange={(e) =>
                         editingDispatch
                           ? setEditingDispatch({
-                              ...editingDispatch,
-                              location: e.target.value,
-                            })
+                            ...editingDispatch,
+                            location: e.target.value,
+                          })
                           : setNewDispatch({
-                              ...newDispatch,
-                              location: e.target.value,
-                            })
+                            ...newDispatch,
+                            location: e.target.value,
+                          })
                       }
                       className="h-14"
                     />
@@ -283,19 +285,19 @@ const Page = () => {
                       onChange={(e) =>
                         editingDispatch
                           ? setEditingDispatch({
-                              ...editingDispatch,
-                              delivery_price: e.target.value,
-                            })
+                            ...editingDispatch,
+                            delivery_price: e.target.value,
+                          })
                           : setNewDispatch({
-                              ...newDispatch,
-                              delivery_price: e.target.value,
-                            })
+                            ...newDispatch,
+                            delivery_price: e.target.value,
+                          })
                       }
                       className="h-14"
                     />
 
                     <SelectSingleCombo
-                    name="zone"
+                      name="zone"
                       label="Delivery Zone"
                       options={ZONES_OPTIONS}
                       valueKey={"value"}
@@ -350,7 +352,7 @@ const Page = () => {
                     }
                   >
                     {createDispatchMutation.isPending ||
-                    updateDispatchMutation.isPending ? (
+                      updateDispatchMutation.isPending ? (
                       <Spinner className="ml-2" />
                     ) : editingDispatch ? (
                       "Update"

@@ -11,10 +11,7 @@ import { useGetFinancialReportStats, useGetOrderStats } from "../../api";
 import OrderStatsCard from "./FinancialStatsCard";
 import OrderStatsCardSkeleton from "./OrderStatsSkeleton";
 import { RangeAndCustomDatePicker, Spinner } from "@/components/ui";
-
-const today = new Date();
-const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-const monthsAgo = subMonths(new Date(), 20);
+import { monthsAgo, tomorrow } from "@/utils/functions";
 
 const FinancialStatsHeaderSection = () => {
   const { data: allBranches, isLoading: isFetchingBranch } =
@@ -34,6 +31,7 @@ const FinancialStatsHeaderSection = () => {
       period: "today",
     },
   });
+
   const {
     data: financial_stats,
     isLoading: isLoadingStats,
@@ -80,11 +78,11 @@ const FinancialStatsHeaderSection = () => {
                 setValue(
                   "period",
                   value.dateType as
-                    | "today"
-                    | "week"
-                    | "month"
-                    | "year"
-                    | "custom"
+                  | "today"
+                  | "week"
+                  | "month"
+                  | "year"
+                  | "custom"
                 );
               }
             }}

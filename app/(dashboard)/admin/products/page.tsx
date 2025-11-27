@@ -45,7 +45,7 @@ import { useGetCategories } from "../../inventory/misc/api"
 import { SmallSpinner } from "@/icons/core"
 import { useUpdateProductVariationStatus } from "./misc/api/editProduct"
 import { Copy } from "iconsax-react"
-import { useGetAllBranches } from "../businesses/misc/api"
+import { useGetAllBranches } from "@/mutations/business.mutation"
 
 interface ProductFormValues {
   branch: string
@@ -113,6 +113,7 @@ const useAddVariation = () => {
 const Page = () => {
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches()
 
+  console.log("branches", branches)
   // Boolean states
   const isSheetOpen = useBooleanStateControl(false)
   const isVariationSheetOpen = useBooleanStateControl(false)
@@ -604,7 +605,7 @@ const Page = () => {
                       name="branch_id"
                       label="Branch"
                       options={
-                        branches?.data.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []
+                        branches?.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []
                       }
                       value={selectedBranch || ""}
                       onChange={(value) => form.setValue("branch", value)}
