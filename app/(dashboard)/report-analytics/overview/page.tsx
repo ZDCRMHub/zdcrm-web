@@ -40,7 +40,7 @@ import { useForm } from "react-hook-form";
 import { DateRange } from "react-day-picker";
 import { monthsAgo, tomorrow } from "@/utils/functions";
 import FinancialSummaryCards from "../misc/components/financial-report/FinancialSummaryCards";
-import { useGetFinancialReportStats } from "@/mutations/reportsAndAnalytics.mutation";
+import { useGetFinancialReportStats } from "@/mutations/order.mutation";
 import { useGetInventoryChartStats } from "@/mutations/inventory.mutation";
 
 const OverviewPage: React.FC = () => {
