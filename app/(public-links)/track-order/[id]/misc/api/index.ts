@@ -1,1 +1,1 @@
-export {useGetOrderDetail} from './getOrderDetails'
+export {useGeTOrderDetail} from './geTOrderDetails'

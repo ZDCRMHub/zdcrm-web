@@ -4,7 +4,7 @@ import React from 'react';
 import { Button, LinkButton } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
 import ProgressTimeline from './ProgressTimeline';
-import { useGetOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
+import { useGeTOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
 import { formatTimeString } from '@/utils/strings';
 import OrderPageSkeleton from './CompleteOrderPageSkeleton';
 import { formatDate } from 'date-fns';
@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
-    const { data: order, isLoading } = useGetOrderDetail(order_id);
+    const { data: order, isLoading } = useGeTOrderDetail(order_id);
 
     const router = useRouter();
     const goBack = () => {

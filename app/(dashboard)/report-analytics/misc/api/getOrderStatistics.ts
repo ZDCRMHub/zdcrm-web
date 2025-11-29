@@ -43,7 +43,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<APIRespons
   return res.data;
 }
 
-export const useGetOrderStats = (options: FetchOptions = {}) => {
+export const useGeTOrderStats = (options: FetchOptions = {}) => {
   return useQuery({
     queryKey: ['orders-statistics', options],
     placeholderData: keepPreviousData,

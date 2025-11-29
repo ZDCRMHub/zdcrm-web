@@ -313,7 +313,7 @@ export const printNote = (options: {
             toolbar.appendChild(createSeparator());
             
             toolbar.appendChild(createFormatButton('fa-list-ul', 'Bullet List', 'insertUnorderedList'));
-            toolbar.appendChild(createFormatButton('fa-list-ol', 'Ordered List', 'insertOrderedList'));
+            toolbar.appendChild(createFormatButton('fa-list-ol', 'Ordered List', 'inserTOrderedList'));
             toolbar.appendChild(createSeparator());
             
             // Color picker

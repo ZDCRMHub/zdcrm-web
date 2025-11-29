@@ -39,8 +39,7 @@ import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
 import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_OPTIONS, } from "@/constants";
-import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
-import { TOrder } from "../types";
+import { useGeTOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 import { convertKebabAndSnakeToTitleCase, formatTimeString } from "@/utils/strings";
 import toast from "react-hot-toast";
@@ -54,6 +53,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import PartPaymentsForm from "./PartPaymentsForm";
 import { printNote } from "../utils/print";
 import Link from "next/link";
+import { TOrder } from "../types";
 
 interface OrderDetailsPanelProps {
   order: TOrder;
@@ -62,7 +62,7 @@ interface OrderDetailsPanelProps {
 }
 
 export default function OrderDetailSheet({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
-  const { data: order, isLoading, isRefetching } = useGetOrderDetail(default_order?.id, isSheetOpen);
+  const { data: order, isLoading, isRefetching } = useGeTOrderDetail(default_order?.id, isSheetOpen);
 
   const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
   const { mutate: updatePaymentMethod, isPending: isUpdatingPaymentMethod } = useUpdateOrderPaymentMethod()

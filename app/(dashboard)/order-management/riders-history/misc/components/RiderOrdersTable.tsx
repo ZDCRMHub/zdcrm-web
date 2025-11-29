@@ -121,7 +121,7 @@ interface OrdersTableProps {
   isFiltered?: boolean
 }
 
-const ClientOrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersTableProps) => {
+const RiderOrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: OrdersTableProps) => {
   const tableRef = React.useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = React.useState(false)
   const [canScrollRight, setCanScrollRight] = React.useState(false)
@@ -258,4 +258,4 @@ const ClientOrdersTable = ({ data, isLoading, isFetching, error, isFiltered }: O
   )
 }
 
-export default ClientOrdersTable
+export default RiderOrdersTable

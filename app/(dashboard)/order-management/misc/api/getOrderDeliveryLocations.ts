@@ -8,7 +8,7 @@ const fetchLocations = async (): Promise<LocationsAPIResponse> => {
   return res.data;
 }
 
-export const useGetOrderDeliveryLocations = () => {
+export const useGeTOrderDeliveryLocations = () => {
   return useQuery({
     queryKey: ['orders-dispatch-locations-list'],
     placeholderData: keepPreviousData,

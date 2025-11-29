@@ -9,12 +9,12 @@ import { formatTimeString } from '@/utils/strings';
 
 import OrderPageSkeleton from './TrackOrderPageSkeleton';
 import ProgressTimeline from './ProgressTimeline';
-import { useGetOrderDetail } from './misc/api';
+import { useGeTOrderDetail } from './misc/api';
 
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
-    const { data: order, isLoading } = useGetOrderDetail(order_id);
+    const { data: order, isLoading } = useGeTOrderDetail(order_id);
 
     const onDelivered = () => {
         console.log("Order successfully delivered!");

@@ -7,7 +7,7 @@ import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 import { SelectBranchCombo } from "@/components/ui";
 
-import { useGetFinancialReportStats, useGetOrderStats } from "../../api";
+import { useGetFinancialReportStats, useGeTOrderStats } from "../../api";
 import OrderStatsCard from "./FinancialStatsCard";
 import OrderStatsCardSkeleton from "./OrderStatsSkeleton";
 import { RangeAndCustomDatePicker, Spinner } from "@/components/ui";

@@ -19,7 +19,7 @@ import { extractErrorMessage, formatAxiosErrorMessage } from '@/utils/errors';
 
 import OrderSummarySkeleton from './OrderSummarySkeleton';
 import OrderSummaryExportModal from './OrderSummaryExportModal';
-import { useAddDiscountToOrder, useGDiscounts, useGetOrderDetail, useUpdateOrderStatus } from '../api';
+import { useAddDiscountToOrder, useGDiscounts, useGeTOrderDetail, useUpdateOrderStatus } from '../api';
 
 
 
@@ -54,7 +54,7 @@ export default function OrderSummary() {
   const [processed, setprocessed] = useState(false)
 
   const order_id = useParams()?.id as string;
-  const { data: order, isLoading } = useGetOrderDetail(order_id);
+  const { data: order, isLoading } = useGeTOrderDetail(order_id);
   const { data: discounts, isLoading: isLoadingDiscounts } = useGDiscounts();
   const { mutate: addDiscount, isPending: isAddingDiscount } = useAddDiscountToOrder();
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus()

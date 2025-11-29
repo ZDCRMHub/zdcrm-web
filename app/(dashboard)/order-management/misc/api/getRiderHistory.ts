@@ -1,6 +1,5 @@
 import { APIAxios } from "@/utils/axios"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { TOrder } from "../types";
 
 interface FetchOptions {
   page?: number;
@@ -15,36 +14,32 @@ const getCustomers = async (options: FetchOptions = {}): Promise<APIResponse> =>
   if (options.size) params.append('size', options.size.toString());
   if (options.search) params.append('search', options.search);
 
-  const res = await APIAxios.get('/customer/list-stats/', { params });
+  const res = await APIAxios.get('/order/riders-history/', { params });
   return res.data;
 }
 
-export const useGetCustomerHistory = (options: FetchOptions = {}) => {
+export const useGetRiderHistory = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['customers-list', options],
+    queryKey: ['riders-list', options],
     placeholderData: keepPreviousData,
     queryFn: () => getCustomers(options),
   });
 }
 
 interface APIResponse {
-  data: TCustomerHistory[];  
+  data: TRiderHistory[];  
   next_page: string | null;
   previous_page: string | null;
   number_of_pages: number;
   count: number;
 }
 
-export interface TCustomerHistory {
+export interface TRiderHistory {
   id: number;
   name: string;
-  phone: string;
-  email: null | string;
-  orders_count: number;
-  total_amount_spent: string;
-  last_order_date: string;
-  client_behaviour: string;
-  create_date: string;
-  update_date: string;
+  phone_number: string;
+  email: null;
+  orders_delivered: number;
+  delivery_platform: string;
+  total_delivery_fee: string;
 }
-

@@ -1,2 +1,2 @@
-export { useGetOrderTimeline } from './getOrderTimeline'
+export { useGeTOrderTimeline } from './geTOrderTimeline'
 export { useAddNoteToDiscussion } from './postAddNoteToDiscussion'

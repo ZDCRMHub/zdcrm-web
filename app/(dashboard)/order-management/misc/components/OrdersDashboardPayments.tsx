@@ -20,7 +20,7 @@ import { useGetCategories } from '@/app/(dashboard)/inventory/misc/api';
 import { useDebounce } from '@/hooks';
 import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_OPTIONS } from '@/constants';
 
-import { useGetOrders } from '../api';
+import { useGeTOrders } from '../api';
 import OrdersTablePayments from './OrdersTablePayments';
 
 
@@ -53,7 +53,7 @@ export default function OrdersDashboardPayments() {
   });
 
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
-  const { data, refetch, isLoading, isFetching, error } = useGetOrders({
+  const { data, refetch, isLoading, isFetching, error } = useGeTOrders({
     page: currentPage,
     size: pageSize,
     search: searchText,

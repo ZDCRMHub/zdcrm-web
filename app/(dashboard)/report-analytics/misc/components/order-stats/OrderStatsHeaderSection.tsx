@@ -8,7 +8,7 @@ import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 import { SelectBranchCombo } from "@/components/ui";
 import { RangeAndCustomDatePicker, Spinner } from "@/components/ui";
 
-import { useGetOrderStats } from "../../api";
+import { useGeTOrderStats } from "../../api";
 import OrderStatsCard from "./OrderStatsCard";
 import OrderStatsCardSkeleton from "./OrderStatsSkeleton";
 
@@ -38,7 +38,7 @@ const OrderStatsHeaderSection = () => {
     data: order_stats,
     isLoading: isLoadingStats,
     isFetching: isFetchingStats,
-  } = useGetOrderStats({
+  } = useGeTOrderStats({
     branch: watch("branch") == "all" ? undefined : watch("branch"),
     date_from: watch("date").from?.toISOString().split("T")[0],
     date_to: watch("date").to?.toISOString().split("T")[0],

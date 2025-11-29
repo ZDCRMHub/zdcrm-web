@@ -35,7 +35,7 @@ import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
 import { ORDER_DELIVERY_STATUS_OPTIONS } from "@/constants";
-import { useGetOrderDetail, useUpdateDeliveryStatus, useUpdateOrderPaymentMethod, } from "../api";
+import { useGeTOrderDetail, useUpdateDeliveryStatus, useUpdateOrderPaymentMethod, } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
@@ -56,7 +56,7 @@ interface OrderDetailsPanelProps {
 
 export default function OrderDetailSheetDelivery({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
   const { mutate, isPending: isUpdatingStatus } = useUpdateDeliveryStatus()
-  const { data: order, isLoading, refetch, isFetching } = useGetOrderDetail(default_order?.id, isSheetOpen);
+  const { data: order, isLoading, refetch, isFetching } = useGeTOrderDetail(default_order?.id, isSheetOpen);
   const {
     state: isEditDeliveryDetailsModalOpen,
     setTrue: openEditDeliveryDetailsModal,
@@ -430,10 +430,8 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                                                     .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
                                                   item.properties.reduce((acc, property) => {
                                                     const value =
-                                                      Number(property.bouquet_selling_at_order || 0) +
                                                       Number(property.glass_vase_selling_at_order || 0) +
                                                       Number(property.toppings_selling_at_order || 0) +
-                                                      Number(property.layers_selling_at_order || 0) +
                                                       Number(property.whipped_cream_selling_at_order || 0);
                                                     return acc + value;
                                                   }, 0)
@@ -472,7 +470,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
 
                   <section className="flex justify-end my-12">
                     <LinkButton
-                      href={(!order?.delivery.driver_phone && !order?.delivery.driver_name) ? `/order-management/orders/${order?.id}/confirm-delivery` : `/order-management/orders/${order?.id}/complete-order`}
+                      href={(!order?.delivery.driver?.phone_number && !order?.delivery.driver?.name) ? `/order-management/orders/${order?.id}/confirm-delivery` : `/order-management/orders/${order?.id}/complete-order`}
                       className="h-12 px-8"
                     >
                       Proceed to Dispatch

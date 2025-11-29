@@ -56,10 +56,10 @@ import { useLoading } from "@/contexts";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 
 import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
-import { TOrder } from "../../misc/types";
 import OrderFormItemsSection from "../../misc/components/OrderFormItemsSection";
-import { useCreateOrder, useGetOrderDeliveryLocations, useGetOrderDetail } from "../../misc/api";
+import { useCreateOrder, useGeTOrderDeliveryLocations, useGeTOrderDetail } from "../../misc/api";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
+import { TOrder } from "../../misc/types";
 
 
 
@@ -67,11 +67,11 @@ const NewOrderPage = () => {
 
   const order_id = useSearchParams().get('order_id');
 
-  const { data: orderData, isLoading: isLoadingOrderData } = useGetOrderDetail(order_id ?? '')
+  const { data: orderData, isLoading: isLoadingOrderData } = useGeTOrderDetail(order_id ?? '')
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
-  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
+  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGeTOrderDeliveryLocations();
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(NewOrderSchema),
