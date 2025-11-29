@@ -152,8 +152,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                 <TableCell className='min-w-[180px] max-w-[500px]'>{order.delivery.address}</TableCell>
                 <TableCell className='min-w-[180px] max-w-[500px]'>{order.delivery.note}</TableCell>
                 <TableCell>
-                    <div>{order.delivery.delivery_platform || "-"} - {order.delivery.driver_name || "-"} </div>
-                    <div className='text-sm text-gray-500'>{order.delivery.driver_phone}</div>
+                    <div>{order.delivery.driver?.delivery_platform || "-"} - {order.delivery.driver?.name || "-"} </div>
+                    <div className='text-sm text-gray-500'>{order.delivery.driver?.phone_number}</div>
                 </TableCell>
                 <TableCell className=''>
                     <div>{order.customer?.name}</div>

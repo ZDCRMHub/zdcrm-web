@@ -74,13 +74,13 @@ const CompleteOrderPage = () => {
                                 <Truck variant="Bold" size="24" className="mr-2" /> Driver
                             </div>
                             {
-                                !isLoading && !!order && order?.delivery?.driver_name ?
+                                !isLoading && !!order && order?.delivery?.driver?.name ?
                                     <>
-                                        <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver_name}</div>
+                                        <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver?.name}</div>
                                         <div className="platform text-sm text-[#194A7A]">
-                                            Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.delivery_platform}</a>
+                                            Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.driver?.delivery_platform}</a>
                                         </div>
-                                        <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver_phone}`}>
+                                        <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver?.phone_number}`}>
                                             <Call size="20" className="mr-2" /> Call
                                         </LinkButton>
                                     </>

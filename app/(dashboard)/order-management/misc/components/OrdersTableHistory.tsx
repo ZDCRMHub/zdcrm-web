@@ -84,11 +84,11 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
       </TableCell>
       <TableCell>
         <div>
-          {order.delivery.delivery_platform || "-"} -{" "}
-          {order.delivery.driver_name || "-"}{" "}
+          {order.delivery.driver?.delivery_platform || "-"} -{" "}
+          {order.delivery.driver?.name || "-"}{" "}
         </div>
         <div className="text-sm text-gray-500">
-          {order.delivery.driver_phone}
+          {order.delivery.driver?.phone_number}
         </div>
       </TableCell>
       <TableCell>
