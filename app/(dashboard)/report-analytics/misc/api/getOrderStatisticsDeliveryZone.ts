@@ -46,7 +46,7 @@ const getStats = async (options: FetchOptions = {}): Promise<APIResponse> => {
   return res.data;
 }
 
-export const useGetOrderDeliveryStats = (options: FetchOptions = {}) => {
+export const useGeTOrderDeliveryStats = (options: FetchOptions = {}) => {
   return useQuery({
     queryKey: ['orders-delivery-zone-statistics', options],
     placeholderData: keepPreviousData,

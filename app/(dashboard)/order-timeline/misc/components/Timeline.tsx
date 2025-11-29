@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import OrderTimelineCard from './OrderTimelineCard';
 import { RefreshCcw, Search } from 'lucide-react';
 import { Button, Input } from '@/components/ui';
-import { useGetOrderTimeline } from '../api';
+import { useGeTOrderTimeline } from '../api';
 import { cn } from '@/lib/utils';
 
 
@@ -21,11 +21,11 @@ const OrderTimeline = () => {
     const in_three_days = format(new Date(new Date().setDate(new Date().getDate() + 3)), 'yyyy-MM-dd');
     const in_four_days = format(new Date(new Date().setDate(new Date().getDate() + 4)), 'yyyy-MM-dd');
 
-    const { data: todayData, refetch: refetchTodayData, isLoading: isLoadingTodayData, isRefetching: isRefetchingTodayData } = useGetOrderTimeline({ date: today, search: searchTerm });
-    const { data: tomorrowData, refetch: refetchTomorrowData, isLoading: isLoadingTomorrowData, isRefetching: isRefetchingTomorrowData } = useGetOrderTimeline({ date: tomorrow, search: searchTerm });
-    const { data: nextTomorrowData, refetch: refetchNextTomorrowData, isLoading: isLoadingNextTomorrowData, isRefetching: isRefetchingNextTomorrowData } = useGetOrderTimeline({ date: next_tomorrow, search: searchTerm });
-    const { data: inThreeDaysData, refetch: refetch3DaysData, isLoading: isLoading3DaysData, isRefetching: isRefetching3DaysData } = useGetOrderTimeline({ date: in_three_days, search: searchTerm });
-    const { data: inFourDaysData, refetch: refetch4DaysData, isLoading: isLoading4DaysData, isRefetching: isRefetching4DaysData } = useGetOrderTimeline({ date: in_four_days, search: searchTerm });
+    const { data: todayData, refetch: refetchTodayData, isLoading: isLoadingTodayData, isRefetching: isRefetchingTodayData } = useGeTOrderTimeline({ date: today, search: searchTerm });
+    const { data: tomorrowData, refetch: refetchTomorrowData, isLoading: isLoadingTomorrowData, isRefetching: isRefetchingTomorrowData } = useGeTOrderTimeline({ date: tomorrow, search: searchTerm });
+    const { data: nextTomorrowData, refetch: refetchNextTomorrowData, isLoading: isLoadingNextTomorrowData, isRefetching: isRefetchingNextTomorrowData } = useGeTOrderTimeline({ date: next_tomorrow, search: searchTerm });
+    const { data: inThreeDaysData, refetch: refetch3DaysData, isLoading: isLoading3DaysData, isRefetching: isRefetching3DaysData } = useGeTOrderTimeline({ date: in_three_days, search: searchTerm });
+    const { data: inFourDaysData, refetch: refetch4DaysData, isLoading: isLoading4DaysData, isRefetching: isRefetching4DaysData } = useGeTOrderTimeline({ date: in_four_days, search: searchTerm });
 
     const refetchAll = () => {
         refetchTodayData();

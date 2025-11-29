@@ -48,7 +48,7 @@ import { extractErrorMessage } from "@/utils/errors";
 import { useRouter, useSearchParams } from "next/navigation";
 import { NewEnquiryFormValues, NewEnquirySchema } from "../misc/utils/schema";
 import { useCreateEnquiry, useGetEnquiryDetail, useUpdateEnquiry } from "../misc/api";
-import { useGetOrderDeliveryLocations } from "../../misc/api";
+import { useGeTOrderDeliveryLocations } from "../../misc/api";
 import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
 import { formatTimeString } from "@/utils/strings";
 import Link from "next/link";
@@ -63,7 +63,7 @@ const NewEnquiryPage = () => {
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
-  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
+  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGeTOrderDeliveryLocations();
 
   const form = useForm<NewEnquiryFormValues>({
     resolver: zodResolver(NewEnquirySchema),

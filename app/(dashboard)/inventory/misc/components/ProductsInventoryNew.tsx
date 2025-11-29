@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Add, Book } from "iconsax-react";
 import { Plus, User, X } from "lucide-react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api/getAllBranches";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -31,10 +32,18 @@ import useCloudinary from "@/hooks/useCloudinary";
 
 import CustomImagePicker from "./CustomImagePicker";
 import { useGetProductCategories } from "../api";
-import { PRODUCT_TYPES_OPTIONS } from "@/constants";
 
 const variationSchema = z.object({
   size: z.string().min(1, { message: "Size is required" }),
+  max_quantity_required: z
+    .number()
+    .int()
+    .nonnegative({ message: "Max quantity must be 0 or more" }),
+  minimum_quantity_required: z
+    .number()
+    .int()
+    .nonnegative({ message: "Min quantity must be 0 or more" }),
+  location: z.string().min(1, { message: "Location is required" }).max(255),
   quantity: z
     .number()
     .int()
@@ -48,6 +57,7 @@ const schema = z.object({
     .string()
     .min(1, { message: "Item name is required" })
     .max(255, { message: "Item name must be at most 255 characters long" }),
+  branch: z.number({ required_error: "Branch is required" }),
   description: z
     .string()
     .min(10, {
@@ -56,9 +66,6 @@ const schema = z.object({
     .max(500, {
       message: "Item description must be at most 500 characters long",
     }),
-  storage_location: z
-    .string()
-    .min(1, { message: "Storage location is required" }),
   category: z.number(),
   image_one: z
     .any()
@@ -121,6 +128,7 @@ export default function NewProductInventorySheet() {
     },
   });
 
+  const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "variations",
@@ -208,6 +216,31 @@ export default function NewProductInventorySheet() {
               hasError={!!errors.image_one}
               errorMessage={errors.image_one?.message as string}
             />
+
+            <Controller
+              name="branch"
+              control={control}
+              render={({ field }) => (
+                <SelectSingleCombo
+                  {...field}
+                  name="branch"
+                  value={field.value?.toString() || ""}
+                  options={
+                    branches?.data?.map((branch) => ({
+                      label: branch.name,
+                      value: branch.id.toString(),
+                    })) || []
+                  }
+                  valueKey="value"
+                  labelKey="label"
+                  placeholder="Branch"
+                  onChange={(value) => field.onChange(Number(value))}
+                  isLoadingOptions={branchesLoading}
+                  hasError={!!errors.branch}
+                  errorMessage={errors.branch?.message}
+                />
+              )}
+            />
             <Controller
               name="name"
               control={control}
@@ -260,32 +293,6 @@ export default function NewProductInventorySheet() {
               )}
             />
 
-            <Controller
-              name="storage_location"
-              control={control}
-              render={({ field }) => (
-                <SelectSingleCombo
-                  {...field}
-                  name="storage_location"
-                  value={field.value?.toString() || ""}
-                  options={[
-                    { label: "Main Store", value: "1" },
-                    { label: "Mini Store", value: "2" },
-                    { label: "Processing Room", value: "3" },
-                    { label: "Kitchen", value: "4" },
-                    { label: "Cold Room", value: "5" },
-                  ]}
-                  valueKey="value"
-                  labelKey="label"
-                  placeholder="Storage Location"
-                  onChange={(value) => field.onChange(value)}
-                  isLoadingOptions={categoriesLoading}
-                  hasError={!!errors.storage_location}
-                  errorMessage={errors.storage_location?.message}
-                />
-              )}
-            />
-
             {fields.map((field, index) => (
               <div key={field.id} className="space-y-4">
                 <h3 className="font-semibold">Variation {index + 1}</h3>
@@ -328,6 +335,36 @@ export default function NewProductInventorySheet() {
                     />
                   )}
                 />
+
+                <Controller
+                  name={`variations.${index}.location`}
+                  control={control}
+                  render={({ field }) => (
+                    <SelectSingleCombo
+                      {...field}
+                      name={`variations.${index}.location`}
+                      value={field.value?.toString() || ""}
+                      options={[
+                        { label: "Reception Shelf", value: "Reception Shelf" },
+                        { label: "Main Store", value: "Main Store" },
+                        { label: "Mini Store", value: "Mini Store" },
+                        { label: "Processing Room", value: "Processing Room" },
+                        { label: "Kitchen", value: "Kitchen" },
+                        { label: "Cold Room", value: "Cold Room" },
+                      ]}
+                      valueKey="value"
+                      labelKey="label"
+                      placeholder="Storage Location"
+                      onChange={(value) => field.onChange(value)}
+                      isLoadingOptions={categoriesLoading}
+                      hasError={!!errors.variations?.[index]?.location}
+                      errorMessage={
+                        errors.variations?.[index]?.location?.message
+                      }
+                    />
+                  )}
+                />
+
                 {index > 0 && (
                   <Button
                     type="button"
@@ -342,7 +379,15 @@ export default function NewProductInventorySheet() {
 
             <Button
               type="button"
-              onClick={() => append({ quantity: 1, size: "" })}
+              onClick={() =>
+                append({
+                  quantity: 1,
+                  size: "",
+                  max_quantity_required: 0,
+                  minimum_quantity_required: 0,
+                  location: "",
+                })
+              }
               variant="outline"
             >
               Add Variation

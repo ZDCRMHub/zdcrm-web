@@ -34,6 +34,7 @@ import ErrorModal from "@/components/ui/modal-error";
 
 import CustomImagePicker from "./CustomImagePicker";
 import { useGetStockCategories } from "../api";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api/getAllBranches";
 
 const variationSchema = z.object({
   size: z.string().optional(),
@@ -43,6 +44,17 @@ const variationSchema = z.object({
     .number()
     .int()
     .positive({ message: "Quantity must be a positive integer" }),
+  max_quantity_required: z
+    .number()
+    .int()
+    .nonnegative({ message: "Max quantity must be 0 or more" })
+    .optional(),
+  minimum_quantity_required: z
+    .number()
+    .int()
+    .nonnegative({ message: "Min quantity must be 0 or more" })
+    .optional(),
+  location: z.string().min(1, { message: "Location is required" }).max(255),
 });
 
 const MAX_FILE_SIZE = 1000000;
@@ -55,10 +67,7 @@ const schema = z
       .min(10, { message: "Item description is required" })
       .max(300),
     category: z.number(),
-    storage_location: z
-      .string()
-      .min(1, { message: "Item name is required" })
-      .max(255),
+    branch: z.number({ required_error: "Branch is required" }),
     image_one: z
       .any()
       .nullable()
@@ -124,6 +133,7 @@ const createStockInventory = async (
 };
 
 export default function NewInventorySheet() {
+  const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const {
     register,
     control,
@@ -243,6 +253,31 @@ export default function NewInventorySheet() {
               hasError={!!errors.image_one}
               errorMessage={errors.image_one?.message as string}
             />
+
+            <Controller
+              name="branch"
+              control={control}
+              render={({ field }) => (
+                <SelectSingleCombo
+                  {...field}
+                  name="branch"
+                  value={field.value?.toString() || ""}
+                  options={
+                    branches?.data?.map((branch) => ({
+                      label: branch.name,
+                      value: branch.id.toString(),
+                    })) || []
+                  }
+                  valueKey="value"
+                  labelKey="label"
+                  placeholder="Branch"
+                  onChange={(value) => field.onChange(Number(value))}
+                  isLoadingOptions={branchesLoading}
+                  hasError={!!errors.branch}
+                  errorMessage={errors.branch?.message}
+                />
+              )}
+            />
             <Controller
               name="name"
               control={control}
@@ -266,32 +301,6 @@ export default function NewInventorySheet() {
                   placeholder="Item description"
                   hasError={!!errors.description}
                   errorMessage={errors.description?.message}
-                />
-              )}
-            />
-
-            <Controller
-              name="storage_location"
-              control={control}
-              render={({ field }) => (
-                <SelectSingleCombo
-                  {...field}
-                  name="storage_location"
-                  value={field.value?.toString() || ""}
-                  options={[
-                    { label: "Main Store", value: "1" },
-                    { label: "Mini Store", value: "2" },
-                    { label: "Processing Room", value: "3" },
-                    { label: "Kitchen", value: "4" },
-                    { label: "Cold Room", value: "5" },
-                  ]}
-                  valueKey="value"
-                  labelKey="label"
-                  placeholder="Storage Location"
-                  onChange={(value) => field.onChange(value)}
-                  isLoadingOptions={categoriesLoading}
-                  hasError={!!errors.storage_location}
-                  errorMessage={errors.storage_location?.message}
                 />
               )}
             />
@@ -398,10 +407,92 @@ export default function NewInventorySheet() {
                       errorMessage={
                         errors.variations?.[index]?.quantity?.message
                       }
-                      // onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   )}
                 />
+                <Controller
+                  name={`variations.${index}.max_quantity_required`}
+                  control={control}
+                  render={({ field }) => (
+                    <AmountInput
+                      {...field}
+                      {...register(
+                        `variations.${index}.max_quantity_required`,
+                        {
+                          valueAsNumber: true,
+                        }
+                      )}
+                      type="number"
+                      label="Max Quantity Required"
+                      placeholder="Max Quantity"
+                      pattern="^[0-9]*$"
+                      hasError={
+                        !!errors.variations?.[index]?.max_quantity_required
+                      }
+                      errorMessage={
+                        errors.variations?.[index]?.max_quantity_required
+                          ?.message
+                      }
+                    />
+                  )}
+                />
+                <Controller
+                  name={`variations.${index}.minimum_quantity_required`}
+                  control={control}
+                  render={({ field }) => (
+                    <AmountInput
+                      {...field}
+                      {...register(
+                        `variations.${index}.minimum_quantity_required`,
+                        {
+                          valueAsNumber: true,
+                        }
+                      )}
+                      type="number"
+                      label="Min Quantity Required"
+                      placeholder="Min Quantity"
+                      pattern="^[0-9]*$"
+                      hasError={
+                        !!errors.variations?.[index]?.minimum_quantity_required
+                      }
+                      errorMessage={
+                        errors.variations?.[index]?.minimum_quantity_required
+                          ?.message
+                      }
+                    />
+                  )}
+                />
+          
+
+                <Controller
+                  name={`variations.${index}.location`}
+                  control={control}
+                  render={({ field }) => (
+                    <SelectSingleCombo
+                      {...field}
+                      name={`variations.${index}.location`}
+                      value={field.value?.toString() || ""}
+                      options={[
+                        { label: "Reception Shelf", value: "Reception Shelf" },
+                        { label: "Main Store", value: "Main Store" },
+                        { label: "Mini Store", value: "Mini Store" },
+                        { label: "Processing Room", value: "Processing Room" },
+                        { label: "Kitchen", value: "Kitchen" },
+                        { label: "Cold Room", value: "Cold Room" },
+                      ]}
+                      valueKey="value"
+                      labelKey="label"
+                      placeholder="Storage Location"
+                      onChange={(value) => field.onChange(value)}
+                      isLoadingOptions={categoriesLoading}
+                      hasError={!!errors.variations?.[index]?.location}
+                      errorMessage={
+                        errors.variations?.[index]?.location?.message
+                      }
+                    />
+                  )}
+                />
+
                 {index > 0 && (
                   <Button
                     type="button"
@@ -416,7 +507,7 @@ export default function NewInventorySheet() {
 
             <Button
               type="button"
-              onClick={() => append({ quantity: 1, size: "" })}
+              onClick={() => append({ quantity: 1, size: "", location: "" })}
               variant="outline"
             >
               Add Variation

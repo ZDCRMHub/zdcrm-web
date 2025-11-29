@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { AmountInput, Button, Card, Input, LinkButton, SelectSingleCombo, Spinner } from '@/components/ui';
 import { Separator } from '@/components/ui/separator';
 
-import { useGetOrderDetail, useUpdateDriverDetails } from '../../../misc/api';
+import { useGeTOrderDetail, useUpdateDriverDetails } from '../../../misc/api';
 import { OrderManagementDeliverySkeleton } from '../../../misc/components';
 import { useAuth } from '@/contexts/auth';
 import { format } from 'date-fns';
@@ -37,7 +37,7 @@ export type DeliveryDriverFormType = z.infer<typeof deliveryFormSchema>;
 
 const OrdeManagementDelivery = () => {
   const order_id = useParams()?.id as string;
-  const { data: order, isLoading } = useGetOrderDetail(order_id);
+  const { data: order, isLoading } = useGeTOrderDetail(order_id);
   const { user } = useAuth();
   const router = useRouter();
   const goBack = () => {
@@ -47,9 +47,9 @@ const OrdeManagementDelivery = () => {
   const { setValue, handleSubmit, formState: { errors }, register, watch } = useForm<DeliveryDriverFormType>({
     resolver: zodResolver(deliveryFormSchema),
     defaultValues: {
-      driver_name: order?.delivery?.driver_name || '',
-      driver_phone: order?.delivery?.driver_phone || '',
-      delivery_platform: order?.delivery?.delivery_platform || '',
+      driver_name: order?.delivery?.driver?.name || '',
+      driver_phone: order?.delivery?.driver?.phone_number || '',
+      delivery_platform: order?.delivery?.driver?.delivery_platform || '',
       delivery_expense: 0,
       tracking_link: order?.delivery?.tracking_link || '',
     }
@@ -185,7 +185,7 @@ const OrdeManagementDelivery = () => {
             {...register('driver_name')}
             hasError={!!errors.driver_name}
             errorMessage={errors.driver_name?.message}
-            defaultValue={order?.delivery?.driver_name ?? ""}
+            defaultValue={order?.delivery?.driver?.name ?? ""}
           />
           <Input
             label='Phone Number'
@@ -195,7 +195,7 @@ const OrdeManagementDelivery = () => {
             {...register('driver_phone')}
             hasError={!!errors.driver_phone}
             errorMessage={errors.driver_phone?.message}
-            defaultValue={order?.delivery?.driver_phone ?? ""}
+            defaultValue={order?.delivery?.driver?.phone_number ?? ""}
           />
           <SelectSingleCombo
             name='delivery_platform'

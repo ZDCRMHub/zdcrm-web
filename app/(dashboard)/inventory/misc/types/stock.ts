@@ -17,12 +17,19 @@ export interface TStockInventoryItem {
 
 export interface TStockVariation {
   id: number;
-  size: string;
-  color: string;
-  flavour: string;
-  selling_price: string;
+  is_active: boolean;
+  size: string | null;
+  layer: string | null;
+  max_flowers: number | null;
   cost_price: string;
+  selling_price: string;
   quantity: number;
+  recently_updated_by: Createdby;
+  color: string | null;
+  flavour: string;
+  max_quantity_required: number;
+  minimum_quantity_required: number;
+  location: string;
   quantity_sold: number;
   last_updated_by: number;
   create_date: string;
@@ -36,4 +43,3 @@ export interface Createdby {
   phone: string;
   image: null;
 }
-

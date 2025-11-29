@@ -38,7 +38,7 @@ import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
 import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_OPTIONS } from "@/constants";
-import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
+import { useGeTOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 import { convertKebabAndSnakeToTitleCase, formatTimeString } from "@/utils/strings";
@@ -59,7 +59,7 @@ interface OrderDetailsPanelProps {
 export default function OrderDetailSheetPayments({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
   const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
   const { mutate: updatePaymentMethod, isPending: isUpdatingPaymentMethod } = useUpdateOrderPaymentMethod()
-  const { data: order, isLoading } = useGetOrderDetail(default_order?.id, isSheetOpen);
+  const { data: order, isLoading } = useGeTOrderDetail(default_order?.id, isSheetOpen);
   const {
     state: isEditDeliveryDetailsModalOpen,
     setTrue: openEditDeliveryDetailsModal,
@@ -523,10 +523,8 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                                                   .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
                                                 item.properties.reduce((acc, property) => {
                                                   const value =
-                                                    Number(property.bouquet_selling_at_order || 0) +
                                                     Number(property.glass_vase_selling_at_order || 0) +
                                                     Number(property.toppings_selling_at_order || 0) +
-                                                    Number(property.layers_selling_at_order || 0) +
                                                     Number(property.whipped_cream_selling_at_order || 0);
                                                   return acc + value;
                                                 }, 0)
@@ -614,6 +612,15 @@ export default function OrderDetailSheetPayments({ order: default_order, isSheet
                       <span className="text-[#000] ">Order Approved by: {order?.approved_by.name}</span>
                       <span className="text-[#E01E1F] font-manrope text-sm">
                         {format(new Date(order?.update_date || 0), "do MMMM, yyyy | h:mmaaa")}
+                      </span>
+                    </p>
+                  }
+                  {
+                    order?.payment_verified_by &&
+                    <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">
+                      <span className="text-[#000] ">Payment Verified by: {order?.payment_verified_by.name}</span>
+                      <span className="text-[#E01E1F] font-manrope text-sm">
+                        {format(new Date(order?.payment_verified_at || 0), "do MMMM, yyyy | h:mmaaa")}
                       </span>
                     </p>
                   }

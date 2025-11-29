@@ -19,7 +19,7 @@ import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 import { SelectBranchCombo } from '@/components/ui';
 
 import { useGetFinancialOverviewStats } from "../../api";
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';import BarChartSkeleton from "./BarChartSkeleton";
+import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api'; import BarChartSkeleton from "./BarChartSkeleton";
 
 const chartConfig = {
   total_revenue: {
@@ -32,7 +32,7 @@ const chartConfig = {
   },
 };
 
-export function FinancialOverviewSection() {
+export function FinancialOverviewSection({ showDetailed = true }: { showDetailed?: boolean }) {
   const { data: allBranches, isLoading: isFetchingBranch } = useGetAllBranches();
   const { control, watch, setValue } = useForm<{
     branch?: string;
@@ -68,42 +68,46 @@ export function FinancialOverviewSection() {
           Financial Overview
           {isFetching && <Spinner />}
         </CardTitle>
-        <div className="flex items-center gap-4 flex-wrap max-w-max">
-          <Controller
-            name='period_type'
-            control={control}
-            render={({ field }) => (
-              <SelectSingleSimple
-                {...field}
-                onChange={(new_value) => setValue('period_type', new_value as "weekly" | "monthly")}
-                value={watch('period_type')}
-                options={[
-                  { label: 'Weekly', value: 'weekly' },
-                  { label: 'Monthly', value: 'monthly' }
-                ]}
-                labelKey="label"
-                valueKey="value"
-                placeholder='Filter Period'
-                variant="light"
-                size="thin"
-              />
-            )}
-          />
-          <Controller
-            name='branch'
-            control={control}
-            render={({ field }) => (
-              <SelectBranchCombo
-                value={watch('branch')}
-                onChange={(new_value) => setValue('branch', new_value)}
-                placeholder='Filter Branch'
-                variant="light"
-                size="thin"
-                isLoadingOptions={isFetchingBranch}
-              />
-            )}
-          />
-        </div>
+
+        {
+          showDetailed &&
+          <div className="flex items-center gap-4 flex-wrap max-w-max">
+            <Controller
+              name='period_type'
+              control={control}
+              render={({ field }) => (
+                <SelectSingleSimple
+                  {...field}
+                  onChange={(new_value) => setValue('period_type', new_value as "weekly" | "monthly")}
+                  value={watch('period_type')}
+                  options={[
+                    { label: 'Weekly', value: 'weekly' },
+                    { label: 'Monthly', value: 'monthly' }
+                  ]}
+                  labelKey="label"
+                  valueKey="value"
+                  placeholder='Filter Period'
+                  variant="light"
+                  size="thin"
+                />
+              )}
+            />
+            <Controller
+              name='branch'
+              control={control}
+              render={({ field }) => (
+                <SelectBranchCombo
+                  value={watch('branch')}
+                  onChange={(new_value) => setValue('branch', new_value)}
+                  placeholder='Filter Branch'
+                  variant="light"
+                  size="thin"
+                  isLoadingOptions={isFetchingBranch}
+                />
+              )}
+            />
+          </div>
+        }
       </CardHeader>
       <CardContent>
         <ChartContainer

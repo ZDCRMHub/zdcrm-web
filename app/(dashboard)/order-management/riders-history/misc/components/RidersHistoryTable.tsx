@@ -9,14 +9,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { formatCurrency } from "@/utils/currency";
-import { FilterSearch, Tag } from "iconsax-react";
+import { FilterSearch } from "iconsax-react";
 import { Button, LinkButton, Spinner } from "@/components/ui";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 import {  maskString } from "@/utils/strings";
 import Link from "next/link";
-import { TCustomerHistory } from "../../../misc/api/getClientHistory";
+import { TRiderHistory } from "../../../misc/api/getRiderHistory";
 
 type StatusColor =
   | "bg-green-100 hover:bg-green-100 text-green-800"
@@ -38,35 +37,35 @@ export const ORDER_STATUS_COLORS: Record<string, StatusColor> = {
 
 
 interface OrderRowProps {
-  customer: TCustomerHistory;
+  rider: TRiderHistory;
 }
 
-const OrderRow: React.FC<OrderRowProps> = ({ customer }) => {
+const OrderRow: React.FC<OrderRowProps> = ({ rider }) => {
   return (
     <TableRow>
       <TableCell className="min-w-[150px]">
-        <div>{customer.name}</div>
+        <div>{rider.name}</div>
       </TableCell>
       <TableCell className="py-6">
-        <div>{maskString(customer.phone, 3, true)}</div>
-      </TableCell>
-
-      <TableCell className="py-6">
-        <div>{customer.orders_count}</div>
+        <div>{maskString(rider.phone_number, 3, true)}</div>
       </TableCell>
 
       <TableCell className="py-6">
-        <div>{customer.name}</div>
+        <div>{rider.orders_delivered}</div>
+      </TableCell>
+
+      <TableCell className="py-6">
+        <div>{rider.delivery_platform}</div>
       </TableCell>
 
       <TableCell className="py-6">
         <div>
-          {formatCurrency(parseInt(customer.total_amount_spent), "NGN")}
+          {formatCurrency(parseInt(rider.total_delivery_fee), "NGN")}
         </div>
       </TableCell>
 
       <TableCell className="py-6">
-        <Link href={`/order-management/client-history/${customer.phone}`}>
+        <Link href={`/order-management/riders-history/${rider.id}`}>
           {">>"}
         </Link>
       </TableCell>
@@ -75,7 +74,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ customer }) => {
 };
 
 interface ClientHistoryTableProps {
-  data?: TCustomerHistory[];
+  data?: TRiderHistory[];
   isLoading: boolean;
   isFetching: boolean;
   error: unknown;
@@ -212,8 +211,8 @@ const ClientHistoryTable = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((customer, index) => (
-                  <OrderRow key={index} customer={customer} />
+                {data.map((rider, index) => (
+                  <OrderRow key={index} rider={rider} />
                 ))}
               </TableBody>
             </Table>
@@ -227,14 +226,14 @@ const ClientHistoryTable = ({
           <div className="text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance">
             No Orders Found
           </div>
-          <LinkButton href="./customers/new-customer"></LinkButton>
+          <LinkButton href="./riders/new-rider"></LinkButton>
         </div>
       )}
       {data.length === 0 && !isFiltered && (
         <div className="flex flex-col items-center justify-center w-full h-full min-h-[50vh] py-[10vh]">
           <FilterSearch size={60} />
           <div className="text-[#494949] text-center text-lg font-medium font-manrope max-w-sm text-balance">
-            No customers match your filters. Clear filters and try again
+            No riders match your filters. Clear filters and try again
           </div>
         </div>
       )}

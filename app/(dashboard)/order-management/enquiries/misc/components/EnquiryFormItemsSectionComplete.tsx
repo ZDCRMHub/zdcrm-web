@@ -146,7 +146,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             stock_inventory_id: product.id,
             product_image: product.image_one,
             name: product.name,
-            variation: variation.size || variation.color || variation.flavour,
+            variation: variation.size ||  variation.flavour,
             category: product.category.name,
         }))
     ) || [];
@@ -172,7 +172,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
                     const selected = itemInventories.flatMap(inv =>
                         inv.variations.find(varr => variation.stock_variation_id == varr.id)
                     );
-                    return { id: variation.stock_variation_id, quantity: variation.quantity, cost_price: selected?.[0]?.cost_price || 0 };
+                    return { id: variation.stock_variation_id, quantity: variation.quantity, cost_price: selected?.[0]?.selling_price || 0 };
                 }))).flat(2);
 
                 console.log("selectedVariations", selectedVariations);

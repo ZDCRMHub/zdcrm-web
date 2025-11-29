@@ -53,7 +53,7 @@ import { useLoading } from "@/contexts";
 import { NewEnquiryFormValues, NewEnquirySchema } from "../misc/utils/schema";
 import { useCreateEnquiry } from "../misc/api";
 import { TEnquiry } from "../misc/types";
-import { useGetOrderDeliveryLocations } from "../../misc/api";
+import { useGeTOrderDeliveryLocations } from "../../misc/api";
 import EnquiryFormItemsSection from "../misc/components/EnquiryFormItemsSection";
 import Link from "next/link";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
@@ -65,7 +65,7 @@ const NewEnquiryPage = () => {
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
-  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGetOrderDeliveryLocations();
+  const { data: dispatchLocations, isLoading: dispatchLocationsLoading } = useGeTOrderDeliveryLocations();
 
   const form = useForm<NewEnquiryFormValues>({
     resolver: zodResolver(NewEnquirySchema),

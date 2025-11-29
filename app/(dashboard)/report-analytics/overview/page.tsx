@@ -34,6 +34,14 @@ import {
   Cell,
 } from "recharts";
 import { EnquiryChannelsChart } from "../misc/components/conversion-statistics";
+import { OrderStatsDeliveryZoneSection } from "../misc/components/order-stats";
+import { FinancialOverviewSection } from "../misc/components/financial-report";
+import { useForm } from "react-hook-form";
+import { DateRange } from "react-day-picker";
+import { monthsAgo, tomorrow } from "@/utils/functions";
+import FinancialSummaryCards from "../misc/components/financial-report/FinancialSummaryCards";
+import { useGetFinancialReportStats } from "@/mutations/order.mutation";
+import { useGetInventoryChartStats } from "@/mutations/inventory.mutation";
 
 const OverviewPage: React.FC = () => {
   const {
@@ -46,6 +54,38 @@ const OverviewPage: React.FC = () => {
     customers,
     inventory,
   } = data;
+
+  const { control, register, watch, setValue } = useForm<{
+    branch?: string;
+    date: DateRange;
+    period: "today" | "week" | "month" | "year" | "custom";
+  }>({
+    defaultValues: {
+      branch: undefined,
+      date: {
+        from: monthsAgo,
+        to: tomorrow,
+      },
+      period: "today",
+    },
+  });
+
+  const {
+    data: financial_stats,
+    isLoading: isLoadingStats,
+  } = useGetFinancialReportStats({
+    branch: watch("branch") == "all" ? undefined : watch("branch"),
+    date_from: watch("date").from?.toISOString().split("T")[0],
+    date_to: watch("date").to?.toISOString().split("T")[0],
+    period: watch("period"),
+  });
+
+  const { data: inventory_data, isLoading: isLoadingInventory } = useGetInventoryChartStats({
+    branch: watch("branch") == "all" ? undefined : watch("branch"),
+  })
+
+  console.log("inventory_data", inventory_data)
+
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
@@ -81,101 +121,13 @@ const OverviewPage: React.FC = () => {
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {summary.map((s) => (
-          <Card key={s.title} className="min-h-[88px]">
-            <CardHeader>
-              <CardTitle className="text-sm">{s.title}</CardTitle>
-              <hr className="width-[80%]" />
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline justify-between">
-                <div
-                  className={`text-lg font-bold ${
-                    s.title === summary[2].title
-                      ? "text-red-500"
-                      : s.title === summary[3].title
-                      ? "text-green-600"
-                      : ""
-                  }`}
-                >
-                  {s.value}
-                </div>
-                <div
-                  className={`text-xs ${
-                    s.delta.startsWith("-") ? "text-red-500" : "text-green-600"
-                  }`}
-                >
-                  {s.delta}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        <FinancialSummaryCards stats={financial_stats} isLoading={isLoadingStats} />
       </div>
 
       {/* Two large charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Order Statistics</CardTitle>
-            <div>
-              <Select defaultValue="today">
-                <SelectTrigger className="">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="week">Week</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="w-full h-56 sm:h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={orderStats} barCategoryGap="30%" barGap={6}>
-                  <XAxis dataKey="region" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="enquiries" fill="#3b82f6" maxBarSize={18} />
-                  <Bar dataKey="orders" fill="#10b981" maxBarSize={18} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Financial Overview</CardTitle>
-            <div className="ml-auto">
-              <Select defaultValue="today">
-                <SelectTrigger className="w-[100px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="week">Week</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="w-full h-56 sm:h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={financialOverview}>
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="revenue" fill="#3b82f6" maxBarSize={18} />
-                  <Bar dataKey="profit" fill="#10b981" maxBarSize={18} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+        <OrderStatsDeliveryZoneSection showDetailed={false} />
+        <FinancialOverviewSection showDetailed={false} />
       </div>
 
       {/* Middle row: conversion map (placeholder) and traffic source */}
@@ -198,9 +150,8 @@ const OverviewPage: React.FC = () => {
                   {conversion.regions.map((r, idx) => (
                     <div
                       key={r.name}
-                      className={`flex items-center justify-between ${
-                        idx % 2 !== 1 ? "bg-[#F9FAFB]" : ""
-                      } rounded-md px-2 py-1`}
+                      className={`flex items-center justify-between ${idx % 2 !== 1 ? "bg-[#F9FAFB]" : ""
+                        } rounded-md px-2 py-1`}
                     >
                       <div className="flex items-center gap-2">
                         <span

@@ -27,21 +27,24 @@ export const useGetCustomerHistory = (options: FetchOptions = {}) => {
   });
 }
 
-export interface TCustomerHistory {
-  id: number;
-  name: string;
-  phone: string;
-  email: string;
-  orders_count: number;
-  total_amount_spent: string;
-  create_date: string;
-  update_date: string;
-}
 interface APIResponse {
-  data: TCustomerHistory[];
+  data: TCustomerHistory[];  
   next_page: string | null;
   previous_page: string | null;
   number_of_pages: number;
   count: number;
+}
+
+export interface TCustomerHistory {
+  id: number;
+  name: string;
+  phone: string;
+  email: null | string;
+  orders_count: number;
+  total_amount_spent: string;
+  last_order_date: string;
+  client_behaviour: string;
+  create_date: string;
+  update_date: string;
 }
 

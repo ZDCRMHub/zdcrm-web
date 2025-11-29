@@ -34,7 +34,7 @@ const FinancialStatsCard: React.FC<FinancialStatsCardProps> = ({
             iconBg: '#131253',
             is_money: true
         },
-        total_inventory_cost: {
+        total_production_cost: {
             title: "Total Inventory Cost",
             icon: <Box />,
             iconBg: '#FFC600',
@@ -64,7 +64,7 @@ const FinancialStatsCard: React.FC<FinancialStatsCardProps> = ({
             iconBg: '#33860C',
             is_money: true
         },
-        order_count: {
+        total_orders: {
             title: "Order Count",
             icon: <BoxRemove className="text-white" />,
             iconBg: '#131253'

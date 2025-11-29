@@ -46,7 +46,7 @@ import { extractErrorMessage } from "@/utils/errors";
 
 import { NewOrderFormValues, NewOrderSchema } from "../../misc/utils/schema";
 import OrderFormItemsSection from "../../misc/components/OrderFormItemsSection";
-import { useCreateOrder, useGetOrderDeliveryLocations } from "../../misc/api";
+import { useCreateOrder, useGeTOrderDeliveryLocations } from "../../misc/api";
 import { TOrder } from "../../misc/types";
 import { useLoading } from "@/contexts";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
@@ -57,7 +57,7 @@ const NewOrderPage = () => {
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
   const { data: products, isLoading: productsLoading } = useGetProducts();
   const { data: dispatchLocations, isLoading: dispatchLocationsLoading } =
-    useGetOrderDeliveryLocations();
+    useGeTOrderDeliveryLocations();
 
   const form = useForm<NewOrderFormValues>({
     resolver: zodResolver(NewOrderSchema),

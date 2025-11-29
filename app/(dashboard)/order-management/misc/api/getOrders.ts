@@ -45,7 +45,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
   return res.data;
 }
 
-export const useGetOrders = (options: FetchOptions = {}) => {
+export const useGeTOrders = (options: FetchOptions = {}) => {
   return useQuery({
     queryKey: ['active-orders-list', options],
     placeholderData: keepPreviousData,

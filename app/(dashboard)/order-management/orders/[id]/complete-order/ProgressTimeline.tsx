@@ -10,7 +10,7 @@ import { TOrder } from '../../../misc/types';
 interface Props {
     orderId: number;
     orderNumber: string;
-    currentStatus: "PENDING" | "DISPATCHED" | "DISPATCHED_CL" | "DELIVERED" | "DELIVERED_CL" | "CANCELLED";
+    currentStatus: string;
     onDelivered?: () => void;
     order: TOrder;
 }

@@ -20,7 +20,7 @@ import { useGetCategories } from '@/app/(dashboard)/inventory/misc/api';
 import { useDebounce } from '@/hooks';
 import { ORDER_STATUS_OPTIONS } from '@/constants';
 
-import { useGetOrders } from '../api';
+import { useGeTOrders } from '../api';
 import OrdersTable from './OrdersTable';
 import UniversalFilters from '@/components/UniversalFilters';
 
@@ -54,8 +54,8 @@ export default function OrdersDashboard() {
   });
 
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
-  const [ordersToDisplay, setOrdersToDisplay] = useState("All Orders")
-  const { data, refetch, isLoading, isFetching, error } = useGetOrders({
+  const [ordersToDisplay, seTOrdersToDisplay] = useState("All Orders")
+  const { data, refetch, isLoading, isFetching, error } = useGeTOrders({
     page: currentPage,
     size: pageSize,
     search: searchText,
@@ -280,7 +280,7 @@ export default function OrdersDashboard() {
           tabs={[
             { name: 'All Orders', count: data?.count || 0 },
           ]}
-          onTabClick={(tab) => { setOrdersToDisplay(tab) }}
+          onTabClick={(tab) => { seTOrdersToDisplay(tab) }}
           activeTab={ordersToDisplay}
         />
         <OrdersTable
