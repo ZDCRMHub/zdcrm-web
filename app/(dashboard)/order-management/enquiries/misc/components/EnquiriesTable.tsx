@@ -271,7 +271,7 @@ export default function EnquiriesTable({
                     <TableRow key={enquiry.id}>
                       <TableCell>
                         <div className="font-medium !min-w-max">
-                          {enquiry.id}
+                          {enquiry.enquiry_number ?? "--"}
                         </div>
                         <div className="text-sm text-gray-500">
                           {enquiry.created_by?.name}

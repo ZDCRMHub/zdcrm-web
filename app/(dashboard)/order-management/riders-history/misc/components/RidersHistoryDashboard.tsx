@@ -36,7 +36,6 @@ import { Button } from "@/components/ui";
 import TabBar from "@/components/TabBar";
 import { useDebounce } from "@/hooks";
 
-import { useGetCustomerHistory } from "../../../misc/api";
 import RiderHistoryTable from "./RidersHistoryTable";
 import { ArrowDown2 } from "iconsax-react";
 import { Controller, useForm } from "react-hook-form";
@@ -113,23 +112,21 @@ export default function RiderHistoryDashboard() {
       "Phone Number",
       "Email Address",
       "Number of Orders Delivered",
-      "Total Amount Spent",
-      "Created Date",
-      "Last Updated",
+      "Total Delivery Fee",
+      "Delivery Platform",
     ];
 
     // Convert data to CSV format
     const csvContent = [
       headers.join(","),
-      ...riders.data.map((customer) =>
+      ...riders.data.map((rider) =>
         [
-          `"${customer.name}"`,
-          `"${customer.phone}"`,
-          `"${customer.email}"`,
-          customer.orders_count,
-          `"${customer.total_amount_spent}"`,
-          `"${new Date(customer.create_date).toLocaleDateString()}"`,
-          `"${new Date(customer.update_date).toLocaleDateString()}"`,
+          `"${rider.name}"`,
+          `"${rider.phone_number}"`,
+          `"${rider.email}"`,
+          rider.orders_delivered,
+          `"${rider.total_delivery_fee}"`,
+          `"${rider.delivery_platform}"`,
         ].join(",")
       ),
     ].join("\n");

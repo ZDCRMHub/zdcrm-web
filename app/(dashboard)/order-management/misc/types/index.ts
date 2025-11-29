@@ -21,14 +21,14 @@ export interface TOrder {
   payment_verified: boolean;
   payment_verified_by: Createdby | null;
   payment_verified_at: string | null;
-  amount_paid_in_usd: null | string;
+  amount_paid_in_usd: null | number;
   payment_receipt_name: null | string;
   total_production_cost: string;
   total_selling_price: string;
   total_amount: string;
   delivery: Delivery;
   items: OrderItem[];
-  discussions: Discussion[];
+  discussions: TOrderDiscussion[];
   part_payments: Partpayment[];
   create_date: string;
   update_date: string;
@@ -60,9 +60,12 @@ interface Partpayment {
   create_date: string;
 }
 
-interface Discussion {
+export interface TOrderDiscussion {
   id: number;
   user: Createdby;
+  message: string;
+  create_date: string;
+  update_date: string;
 }
 
 interface Productvariation3 {

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/chart";
 import { RangeAndCustomDatePicker, Select, SelectItem, SelectValue, Spinner } from "@/components/ui";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend } from "recharts";
-import { useGeTOrderDeliveryStats } from "../../api/geTOrderStatisticsDeliveryZone";
+import { useGeTOrderDeliveryStats } from "../../api/getOrderStatisticsDeliveryZone";
 import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api'; import { DateRange } from "react-day-picker";
 import { Controller, useForm } from "react-hook-form";
 import { subMonths } from "date-fns";

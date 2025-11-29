@@ -1,7 +1,7 @@
-export { useGeTOrderStats } from './geTOrderStatistics'
-export { useGeTOrderDeliveryStats } from './geTOrderStatisticsDeliveryZone'
-export { useGetTopProducts } from './geTOrderStatisticsTopProducts'
-export { useGetTopCategories } from './geTOrderStatisticsTopCategories'
+export { useGeTOrderStats } from './getOrderStatistics'
+export { useGeTOrderDeliveryStats } from './getOrderStatisticsDeliveryZone'
+export { useGetTopProducts } from './getOrderStatisticsTopProducts'
+export { useGetTopCategories } from './getOrderStatisticsTopCategories'
 
 export { useGetFinancialReportStats } from './getFinancialReportStatistic'
 export { useGetFinancialOverviewStats } from './getFinancialOverviewStatistic'

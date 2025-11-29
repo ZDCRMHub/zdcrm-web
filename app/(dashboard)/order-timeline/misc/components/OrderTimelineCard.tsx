@@ -14,7 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useUpdateOrderStatus } from '@/app/(dashboard)/order-management/misc/api';
 
 import AddNewNoteModal from './AddNewNoteModal';
-import { TOrderTimeItem } from '../api/geTOrderTimeline';
+import { TOrderTimeItem } from '../api/getOrderTimeline';
 
 
 const OrderTimelineCard = ({ order, isExpanded = false, hideOtherDetails = false }: { order: TOrderTimeItem; isExpanded?: boolean; hideOtherDetails?: boolean }) => {

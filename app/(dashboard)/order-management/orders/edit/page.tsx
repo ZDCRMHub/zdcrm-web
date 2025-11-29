@@ -109,58 +109,69 @@ const NewOrderPage = () => {
 
   React.useEffect(() => {
     if (!isLoadingOrderData && !!orderData) {
-      reset({
-        customer: {
-          name: orderData.customer.name,
-          phone: orderData.customer.phone,
-          email: orderData.customer.email
-        },
-        enquiry_channel: orderData.enquiry_channel,
-        enquiry_occasion: orderData.enquiry_occasion,
-        // social_media_details: orderData.social_media_details,
-        branch: orderData.branch.id,
-        delivery: {
-          zone: orderData.delivery?.zone as "LM" | "LC" | "LI" | "ND",
-          method: orderData.delivery?.method as "Dispatch" | "Pickup",
-          dispatch: orderData.delivery?.dispatch?.id.toString(),
-          address: orderData.delivery?.address,
-          recipient_name: orderData.delivery?.recipient_name,
-          recipient_phone: orderData.delivery?.recipient_phone,
-          delivery_date: orderData.delivery?.delivery_date,
-          delivery_time: orderData.delivery?.delivery_time,
-          note: orderData.delivery?.note,
-          fee: parseInt(orderData.delivery?.fee || '0'),
-          is_custom_delivery: orderData.delivery?.is_custom_delivery,
-        },
-        message: orderData.message,
-        items: orderData.items?.map(item => ({
-          category: item.product?.category.id,
-          product_id: item.product.id,
-          quantity: item.quantity,
-          properties: item.properties.reduce((acc, prop) => ({
-            ...acc,
-            layers: prop.layers?.id.toString(),
-            toppings: prop.toppings?.id.toString(),
-            bouquet: prop.bouquet?.id.toString(),
-            glass_vase: prop.glass_vase?.id.toString(),
-            // whipped_cream_upgrade: prop.whipped_cream_upgrade,
-          }), {}),
-          inventories: item.inventories.map(inventory => ({
-            stock_inventory_id: inventory.stock_inventory?.id,
-            product_inventory_id: inventory.product_inventory?.id,
-            variations: inventory.variations?.map(variation => ({
-              stock_variation_id: variation.id,
-              quantity: variation.quantity,
-            }))
-          }))
-        })),
-        payment_options: orderData.payment_options,
-        payment_currency: orderData.payment_currency as "NGN" | "USD",
-        payment_proof: orderData.payment_proof,
-        payment_receipt_name: orderData.payment_receipt_name || '',
-        amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
-        initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
-
+  reset({
+    customer: {
+      name: orderData.customer.name,
+      phone: orderData.customer.phone,
+      email: orderData.customer.email ?? undefined
+    },
+    enquiry_channel: orderData.enquiry_channel,
+    enquiry_occasion: orderData.enquiry_occasion,
+    // social_media_details: orderData.social_media_details,
+    branch: orderData.branch.id,
+    delivery: {
+      zone: (orderData.delivery?.zone as "LM" | "LC" | "LI" | "OT" | "ND") ?? "LM",
+      method: orderData.delivery?.method as "Dispatch" | "Pickup",
+      dispatch: orderData.delivery?.dispatch?.id?.toString() ?? "",
+      address: orderData.delivery?.address ?? "",
+      recipient_name: orderData.delivery?.recipient_name ?? "",
+      recipient_phone: orderData.delivery?.recipient_phone ?? "",
+      recipient_alternative_phone: orderData.delivery?.recipient_alternative_phone ?? "",
+      residence_type: orderData.delivery?.residence_type ?? "",
+      delivery_date: orderData.delivery?.delivery_date ?? format(new Date(), 'yyyy-MM-dd'),
+      delivery_time: orderData.delivery?.delivery_time ?? "15:00",
+      note: orderData.delivery?.note ?? "",
+      fee: orderData.delivery?.fee ? parseInt(orderData.delivery?.fee) : undefined,
+      is_custom_delivery: orderData.delivery?.is_custom_delivery ?? false,
+    },
+    message: orderData.message ?? "",
+    items: orderData.items?.map(item => ({
+      category: item.product?.category.id,
+      product_id: item.product.id,
+      quantity: item.quantity,
+      properties: item.properties.reduce((acc, prop) => ({
+        ...acc,
+        ...(prop.toppings && { toppings: prop.toppings?.id?.toString() }),
+        ...(prop.glass_vase && { glass_vase: prop.glass_vase?.id?.toString() }),
+        // Add other properties here only if they exist on 'Property'
+      }), {}),
+      inventories: item.inventories.map(inventory => ({
+        stock_inventory_id: inventory.stock_inventory?.id,
+        product_inventory_id: inventory.product_inventory?.id,
+        variations: inventory.variations?.map(variation => ({
+          stock_variation_id: variation.id,
+          quantity: variation.quantity,
+        }))
+      }))
+    })) ?? [],
+    payment_options: orderData.payment_options as
+      | "not_paid_go_ahead"
+      | "paid_website_card"
+      | "paid_naira_transfer"
+      | "paid_pos"
+      | "paid_usd_transfer"
+      | "paid_paypal"
+      | "cash_paid"
+      | "part_payment_cash"
+      | "part_payment_transfer"
+      | "paid_bitcoin"
+      | "not_received_paid"
+      | undefined,
+    payment_currency: orderData.payment_currency as "NGN" | "USD",
+    payment_proof: orderData.payment_proof,
+    payment_receipt_name: orderData.payment_receipt_name || '',
+    amount_paid_in_usd: orderData.amount_paid_in_usd?.toString() || undefined,
+    initial_amount_paid: orderData.initial_amount_paid?.toString() || undefined,
   });
     }
   }, [orderData, isLoadingOrderData, reset]);

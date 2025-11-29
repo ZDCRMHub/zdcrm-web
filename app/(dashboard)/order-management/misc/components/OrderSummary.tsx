@@ -288,10 +288,8 @@ export default function OrderSummary() {
                                           .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
                                         item.properties.reduce((acc, property) => {
                                           const value =
-                                            Number(property.bouquet_selling_at_order || 0) +
                                             Number(property.glass_vase_selling_at_order || 0) +
                                             Number(property.toppings_selling_at_order || 0) +
-                                            Number(property.layers_selling_at_order || 0) +
                                             Number(property.whipped_cream_selling_at_order || 0);
                                           return acc + value;
                                         }, 0)
