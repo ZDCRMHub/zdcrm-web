@@ -50,6 +50,7 @@ import { useGetAllBranches } from "@/mutations/business.mutation"
 interface ProductFormValues {
   branch: string
   name: string
+  business_id: number
   category_id: number
   category_name: string
   external_id: string
@@ -113,7 +114,6 @@ const useAddVariation = () => {
 const Page = () => {
   const { data: branches, isLoading: branchesLoading } = useGetAllBranches()
 
-  console.log("branches", branches)
   // Boolean states
   const isSheetOpen = useBooleanStateControl(false)
   const isVariationSheetOpen = useBooleanStateControl(false)
@@ -159,6 +159,7 @@ const Page = () => {
     defaultValues: {
       branch: "all",
       name: "",
+      business_id: 0,
       category_id: 0,
       category_name: "",
       external_id: "",
@@ -199,6 +200,12 @@ const Page = () => {
   // Watch for category changes to update category_name
   const selectedCategoryId = form.watch("category_id")
   const selectedBranch = form.watch("branch")
+
+  const branchValueSafe = React.useMemo(() => {
+    if (!selectedBranch) return "";
+    if (!branches || branches.length === 0) return "";
+    return branches.some(b => String(b.id) === String(selectedBranch)) ? String(selectedBranch) : "";
+  }, [selectedBranch, branches]);
 
   // Update category_name when category_id changes
   useEffect(() => {
@@ -361,6 +368,8 @@ const Page = () => {
   const addVariationMutation = useAddVariation()
 
   const onSubmit = async (data: ProductFormValues) => {
+    // console.log("selected branch", selectedBranch)
+
     try {
       let imageUrl = data.image.url
 
@@ -376,7 +385,7 @@ const Page = () => {
         external_id: data.external_id,
         is_active: data.is_active,
         image: imageUrl,
-        branch_id: Number.parseInt(data.branch),
+        business_id: Number.parseInt(data.branch),
       }
 
       if (editingProductId) {
@@ -607,7 +616,7 @@ const Page = () => {
                       options={
                         branches?.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []
                       }
-                      value={selectedBranch || ""}
+                      value={branchValueSafe}
                       onChange={(value) => form.setValue("branch", value)}
                       valueKey="value"
                       labelKey="label"

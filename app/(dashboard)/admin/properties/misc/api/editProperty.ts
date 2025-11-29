@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 interface UpdatePropertyItem {
     name?: string
     type?: string
+    category?: string
     cost_price?: number
     selling_price?: number
     is_active?: boolean

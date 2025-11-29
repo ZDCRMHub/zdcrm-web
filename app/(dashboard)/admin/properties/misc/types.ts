@@ -5,6 +5,7 @@ export interface TPropertyItem {
   type_display: string;
   cost_price: string;
   selling_price: string;
+  category: string;
   is_active: boolean;
   create_date: string;
   update_date: string;

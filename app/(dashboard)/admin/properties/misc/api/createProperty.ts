@@ -5,6 +5,7 @@ import { TPropertyItem } from "../types"
 interface createPropertyProps {
     name: string
     type: string
+    category: string
     cost_price: number
     selling_price: number
 }

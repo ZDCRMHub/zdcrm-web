@@ -30,7 +30,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { IoChevronUp } from "react-icons/io5";
-import { Spinner, SuccessModal } from "@/components/ui";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage, Spinner, SuccessModal } from "@/components/ui";
 import {
   Sheet,
   SheetClose,
@@ -52,6 +52,7 @@ import ErrorModal from "@/components/ui/modal-error";
 import { extractErrorMessage } from "@/utils/errors";
 import { useDebounce } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { useGetCategories } from "../../inventory/misc/api";
 
 const Page = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -63,14 +64,17 @@ const Page = () => {
   const [newProperty, setNewProperty] = useState<{
     name: string;
     type: string;
+    category: string;
     cost_price: string;
     selling_price: string;
   }>({
     name: "",
     type: "",
-    cost_price: '0',
-    selling_price: '0',
+    category: "",        // <-- added
+    cost_price: "0",
+    selling_price: "0",
   });
+
   const [editingProperty, setEditingProperty] = useState<TPropertyItem | null>(
     null
   );
@@ -93,6 +97,9 @@ const Page = () => {
     search: debouncedSearchText || undefined,
     type: filterType || undefined,
   });
+
+  const { data: categories } = useGetCategories()
+
 
   useEffect(() => {
     if (propertiesData || propertiesError) {
@@ -136,6 +143,7 @@ const Page = () => {
       {
         name: newProperty.name,
         type: newProperty.type,
+        category: newProperty.category.toUpperCase(),
         cost_price: parseFloat(newProperty.cost_price),
         selling_price: parseFloat(newProperty.selling_price),
       },
@@ -146,6 +154,7 @@ const Page = () => {
           setNewProperty({
             name: "",
             type: "",
+            category: "",
             cost_price: "",
             selling_price: "",
           });
@@ -170,6 +179,7 @@ const Page = () => {
         data: {
           name: editingProperty.name,
           type: editingProperty.type,
+          category: editingProperty.category.toUpperCase() ?? "",
           cost_price: parseFloat(editingProperty.cost_price),
           selling_price: parseFloat(editingProperty.selling_price),
           is_active: editingProperty.is_active,
@@ -309,13 +319,13 @@ const Page = () => {
                       onChange={(e) =>
                         editingProperty
                           ? setEditingProperty({
-                              ...editingProperty,
-                              name: e.target.value,
-                            })
+                            ...editingProperty,
+                            name: e.target.value,
+                          })
                           : setNewProperty({
-                              ...newProperty,
-                              name: e.target.value,
-                            })
+                            ...newProperty,
+                            name: e.target.value,
+                          })
                       }
                       className="h-14"
                     />
@@ -332,13 +342,13 @@ const Page = () => {
                       onValueChange={(value) =>
                         editingProperty
                           ? setEditingProperty({
-                              ...editingProperty,
-                              type: value,
-                            })
+                            ...editingProperty,
+                            type: value,
+                          })
                           : setNewProperty({
-                              ...newProperty,
-                              type: value,
-                            })
+                            ...newProperty,
+                            type: value,
+                          })
                       }
                     >
                       <SelectTrigger>
@@ -357,6 +367,31 @@ const Page = () => {
                       </SelectContent>
                     </Select>
 
+                    <Label htmlFor="category" className="text-[#111827]">
+                      Category <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={editingProperty ? (editingProperty.category ?? newProperty.category) : newProperty.category}
+                      onValueChange={(value) =>
+                        editingProperty
+                          ? setEditingProperty({ ...editingProperty, category: value })
+                          : setNewProperty({ ...newProperty, category: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {categories?.map((cat: any) => (
+                            <SelectItem key={cat.id ?? cat.name} value={cat.name}>
+                              {cat.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+
                     <Label htmlFor="cost-price" className="text-[#111827]">
                       Cost Price <span className="text-red-500">*</span>
                     </Label>
@@ -371,13 +406,13 @@ const Page = () => {
                       onChange={(e) =>
                         editingProperty
                           ? setEditingProperty({
-                              ...editingProperty,
-                              cost_price: e.target.value,
-                            })
+                            ...editingProperty,
+                            cost_price: e.target.value,
+                          })
                           : setNewProperty({
-                              ...newProperty,
-                              cost_price: e.target.value,
-                            })
+                            ...newProperty,
+                            cost_price: e.target.value,
+                          })
                       }
                       className="h-14"
                     />
@@ -396,13 +431,13 @@ const Page = () => {
                       onChange={(e) =>
                         editingProperty
                           ? setEditingProperty({
-                              ...editingProperty,
-                              selling_price: e.target.value,
-                            })
+                            ...editingProperty,
+                            selling_price: e.target.value,
+                          })
                           : setNewProperty({
-                              ...newProperty,
-                              selling_price: e.target.value,
-                            })
+                            ...newProperty,
+                            selling_price: e.target.value,
+                          })
                       }
                       className="h-14"
                     />
@@ -418,6 +453,7 @@ const Page = () => {
                         setNewProperty({
                           name: "",
                           type: "",
+                          category: "",
                           cost_price: "",
                           selling_price: "",
                         });
@@ -436,7 +472,7 @@ const Page = () => {
                     }
                   >
                     {createPropertyMutation.isPending ||
-                    updatePropertyMutation.isPending ? (
+                      updatePropertyMutation.isPending ? (
                       <Spinner className="ml-2" />
                     ) : editingProperty ? (
                       "Update"
@@ -455,13 +491,13 @@ const Page = () => {
               <div
                 className={cn(
                   "bg-[#F8F9FB] h-1 w-full overflow-hidden",
-                  isFetching  && "bg-blue-200"
+                  isFetching && "bg-blue-200"
                 )}
               >
                 <div
                   className={cn(
                     "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
-                    isFetching  && "opacity-100"
+                    isFetching && "opacity-100"
                   )}
                 ></div>
               </div>
@@ -472,6 +508,7 @@ const Page = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[22.9%]">Name</TableHead>
+              <TableHead className="w-[22.9%]">Category</TableHead>
               <TableHead className="w-[22.9%]">Type</TableHead>
               <TableHead className="w-[12.8%]">Cost Price</TableHead>
               <TableHead className="w-[12.8%]">Selling Price</TableHead>
@@ -482,6 +519,7 @@ const Page = () => {
             {propertiesData?.data?.map((property: TPropertyItem) => (
               <TableRow key={property.id}>
                 <TableCell className="font-medium">{property.name}</TableCell>
+                <TableCell>{property.category}</TableCell>
                 <TableCell>{property.type}</TableCell>
                 <TableCell>{property.cost_price}</TableCell>
                 <TableCell>{property.selling_price}</TableCell>
