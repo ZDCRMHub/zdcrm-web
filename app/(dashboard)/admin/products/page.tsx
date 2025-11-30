@@ -1053,7 +1053,7 @@ const Page = () => {
             {productsData?.data?.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="font-medium">{product.branch?.name}</TableCell>
+                <TableCell className="font-medium">{product.business}</TableCell>
                 <TableCell>{product.category.name}</TableCell>
                 <TableCell>
                   <div className="space-y-2">

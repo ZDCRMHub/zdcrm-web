@@ -7,6 +7,7 @@ export interface TProductItem {
   id: number;
   name: string;
   category: Category;
+  business: string;
   external_id: string;
   is_active: boolean;
   image: string;

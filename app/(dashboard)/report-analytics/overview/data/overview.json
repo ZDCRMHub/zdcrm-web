@@ -1,7 +1,11 @@
 {
   "summary": [
     { "title": "Total Orders", "value": "430", "delta": "+2.3% (↑10)" },
-    { "title": "Total Revenue", "value": "₦2,000,000.00", "delta": "+3.2% (↑60k)" },
+    {
+      "title": "Total Revenue",
+      "value": "₦2,000,000.00",
+      "delta": "+3.2% (↑60k)"
+    },
     { "title": "Expenses", "value": "₦400,400.00", "delta": "-1.5% (↓6k)" },
     { "title": "Net Profit", "value": "₦1,600,600.00", "delta": "+4.1% (↑80k)" }
   ],
@@ -37,10 +41,30 @@
   ],
   "clientBehavior": {
     "data": [
-      { "name": "Returning", "value": 40.5, "percentage": 40.5, "color": "#0CAF60" },
-      { "name": "Frequent", "value": 27.7, "percentage": 27.7, "color": "#F914E0" },
-      { "name": "Quiet", "value": 15.9, "percentage": 15.9, "color": "#194A7A" },
-      { "name": "First Time", "value": 15.9, "percentage": 15.9, "color": "#0062FF" }
+      {
+        "name": "Returning",
+        "value": 40.5,
+        "percentage": 40.5,
+        "color": "#0CAF60"
+      },
+      {
+        "name": "Frequent",
+        "value": 27.7,
+        "percentage": 27.7,
+        "color": "#F914E0"
+      },
+      {
+        "name": "Quiet",
+        "value": 15.9,
+        "percentage": 15.9,
+        "color": "#194A7A"
+      },
+      {
+        "name": "First Time",
+        "value": 15.9,
+        "percentage": 15.9,
+        "color": "#0062FF"
+      }
     ]
   },
   "customers": {

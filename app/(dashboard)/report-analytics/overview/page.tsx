@@ -36,12 +36,16 @@ import {
 import { EnquiryChannelsChart } from "../misc/components/conversion-statistics";
 import { OrderStatsDeliveryZoneSection } from "../misc/components/order-stats";
 import { FinancialOverviewSection } from "../misc/components/financial-report";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { DateRange } from "react-day-picker";
 import { monthsAgo, tomorrow } from "@/utils/functions";
 import FinancialSummaryCards from "../misc/components/financial-report/FinancialSummaryCards";
 import { useGetFinancialReportStats } from "@/mutations/order.mutation";
 import { useGetInventoryChartStats } from "@/mutations/inventory.mutation";
+import { RangeAndCustomDatePicker, SelectBranchCombo } from "@/components/ui";
+import { useGetAllBranches } from "@/mutations/business.mutation";
+import Link from "next/link";
+import InventoryChart from "../misc/components/charts/InventoryChart";
 
 const OverviewPage: React.FC = () => {
   const {
@@ -70,6 +74,8 @@ const OverviewPage: React.FC = () => {
     },
   });
 
+  const { data: branches, isLoading: isFetchingBranch } = useGetAllBranches();
+
   const {
     data: financial_stats,
     isLoading: isLoadingStats,
@@ -84,15 +90,12 @@ const OverviewPage: React.FC = () => {
     branch: watch("branch") == "all" ? undefined : watch("branch"),
   })
 
-  console.log("inventory_data", inventory_data)
-
-
   return (
     <div className="p-4 sm:p-6 space-y-6">
       {/* Top Controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">All Reports</h2>
-        <div className="mt-2 sm:mt-0 flex flex-wrap items-center gap-3">
+        {/* <div className="mt-2 sm:mt-0 flex flex-wrap items-center gap-3">
           <Select defaultValue="all">
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Select Branch" />
@@ -116,6 +119,49 @@ const OverviewPage: React.FC = () => {
           </Select>
 
           <Button>Compare</Button>
+        </div> */}
+        <div className="flex items-center gap-4 flex-wrap max-w-max">
+          <Controller
+            name="branch"
+            control={control}
+            render={({ field }) => (
+              <SelectBranchCombo
+                noLabel
+                value={watch("branch")}
+                onChange={(new_value) => setValue("branch", new_value)}
+                placeholder="Filter Branch"
+                variant="light"
+                size="thin"
+                isLoadingOptions={isFetchingBranch}
+              />
+            )}
+          />
+          <RangeAndCustomDatePicker
+            className="max-w-max"
+            variant="light"
+            size="thin"
+            onChange={(value) => {
+              if (value.dateType === "custom" && value.from && value.to) {
+                setValue("date", { from: value.from, to: value.to });
+                setValue("period", "custom");
+              } else {
+                setValue(
+                  "period",
+                  value.dateType as
+                  | "today"
+                  | "week"
+                  | "month"
+                  | "year"
+                  | "custom"
+                );
+              }
+            }}
+            value={{
+              dateType: watch("period"),
+              from: watch("date").from,
+              to: watch("date").to,
+            }}
+          />
         </div>
       </div>
 
@@ -186,7 +232,7 @@ const OverviewPage: React.FC = () => {
       </div>
 
       {/* Bottom row: client behavior, customers line, inventory */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,_minmax(100%,_1fr))] md:grid-cols-[repeat(auto-fit,_minmax(20rem,_1fr))] gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
@@ -252,67 +298,11 @@ const OverviewPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Customers</CardTitle>
-            <Button variant="ghost" size="sm">
-              See All
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold mb-2">{customers.total}</div>
-            <div className="w-full h-40 sm:h-44">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={customers.series}>
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="local"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="international"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex items-center justify-between">
-            <CardTitle>Inventory Alert</CardTitle>
-            <Button variant="ghost" size="sm">
-              See All
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {inventory.map((it) => (
-                <div
-                  key={it.name}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{ background: it.color }}
-                    />
-                    <div className="text-sm">{it.name}</div>
-                  </div>
-                  <div className="text-sm">{it.qty.toLocaleString()}</div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <InventoryChart
+          items={inventory_data}
+          title="Inventory Alert"
+          isLoading={isLoadingInventory}
+        />
       </div>
     </div>
   );

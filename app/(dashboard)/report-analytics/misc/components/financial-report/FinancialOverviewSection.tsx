@@ -1,25 +1,28 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Legend, Tooltip, ResponsiveContainer } from "recharts";
-import { format, parseISO } from 'date-fns';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { format, parseISO } from "date-fns";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartContainer,
-} from "@/components/ui/chart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer } from "@/components/ui/chart";
 import { Spinner } from "@/components/ui";
 import SelectSingleSimple from "@/components/ui/selectSingleSimple";
-import { SelectBranchCombo } from '@/components/ui';
+import { SelectBranchCombo } from "@/components/ui";
 
 import { useGetFinancialOverviewStats } from "../../api";
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api'; import BarChartSkeleton from "./BarChartSkeleton";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
+import BarChartSkeleton from "./BarChartSkeleton";
 
 const chartConfig = {
   total_revenue: {
@@ -32,34 +35,66 @@ const chartConfig = {
   },
 };
 
+type FormValues = {
+  branch?: string;
+  period_type: "weekly" | "monthly";
+};
+
 export function FinancialOverviewSection({ showDetailed = true }: { showDetailed?: boolean }) {
   const { data: allBranches, isLoading: isFetchingBranch } = useGetAllBranches();
-  const { control, watch, setValue } = useForm<{
-    branch?: string;
-    period_type: "weekly" | "monthly";
-  }>({
+
+  const { control, watch, setValue } = useForm<FormValues>({
     defaultValues: {
-      branch: 'all',
-      period_type: 'weekly',
+      branch: "all",
+      period_type: "weekly",
     },
   });
 
+  const branchWatch = watch("branch");
+  const periodType = watch("period_type");
+
   const { data, isLoading, isFetching } = useGetFinancialOverviewStats({
-    branch: watch('branch') == "all" ? undefined : watch('branch'),
-    period_type: watch('period_type'),
+    branch: branchWatch === "all" ? undefined : branchWatch,
+    period_type: periodType,
   });
 
   const chartData = useMemo(() => {
-    if (!data?.data.data) return [];
-    return data.data.data.map(item => ({
-      ...item,
-      total_revenue: parseFloat(item.total_revenue),
-      net_profit: parseFloat(item.net_profit),
-      formattedDate: watch('period_type') === 'weekly'
-        ? `${item.day} (${format(parseISO(item.date!), 'MMM d')})`
-        : item.month,
-    }));
-  }, [data, watch('period_type')]);
+    // defensive checks for API shape: data?.data?.data
+    const raw = Array.isArray(data?.data?.data) ? data!.data.data : [];
+    if (!raw || raw.length === 0) return [];
+
+    return raw.map((item: any) => {
+      const total_revenue = Number(item.total_revenue) || 0;
+      const net_profit = Number(item.net_profit) || 0;
+
+      const shortDay = (() => {
+        if (item.day && typeof item.day === "string") {
+          return item.day.length > 3 ? item.day.slice(0, 3) : item.day;
+        }
+        if (item.date) {
+          try {
+            const parsed = parseISO(item.date);
+            return format(parsed, "EEE"); // Mon, Tue, Wed
+          } catch {
+            return "";
+          }
+        }
+        return "";
+      })();
+
+      const formattedDate = periodType === "weekly" ? shortDay : item.month ?? "";
+
+      return {
+        ...item,
+        total_revenue,
+        net_profit,
+        formattedDate,
+      };
+    });
+  }, [data, periodType]);
+
+  // dynamic interval to cap visible ticks (roughly max ~8 ticks)
+  const tickInterval = chartData.length > 8 ? Math.ceil(chartData.length / 8) : 0;
 
   return (
     <Card className="">
@@ -69,37 +104,38 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
           {isFetching && <Spinner />}
         </CardTitle>
 
-        {
-          showDetailed &&
+        {showDetailed && (
           <div className="flex items-center gap-4 flex-wrap max-w-max">
             <Controller
-              name='period_type'
+              name="period_type"
               control={control}
               render={({ field }) => (
                 <SelectSingleSimple
                   {...field}
-                  onChange={(new_value) => setValue('period_type', new_value as "weekly" | "monthly")}
-                  value={watch('period_type')}
+                  onChange={(new_value) =>
+                    setValue("period_type", new_value as "weekly" | "monthly")
+                  }
+                  value={periodType}
                   options={[
-                    { label: 'Weekly', value: 'weekly' },
-                    { label: 'Monthly', value: 'monthly' }
+                    { label: "Weekly", value: "weekly" },
+                    { label: "Monthly", value: "monthly" },
                   ]}
                   labelKey="label"
                   valueKey="value"
-                  placeholder='Filter Period'
+                  placeholder="Filter Period"
                   variant="light"
                   size="thin"
                 />
               )}
             />
             <Controller
-              name='branch'
+              name="branch"
               control={control}
               render={({ field }) => (
                 <SelectBranchCombo
-                  value={watch('branch')}
-                  onChange={(new_value) => setValue('branch', new_value)}
-                  placeholder='Filter Branch'
+                  value={branchWatch}
+                  onChange={(new_value) => setValue("branch", new_value)}
+                  placeholder="Filter Branch"
                   variant="light"
                   size="thin"
                   isLoadingOptions={isFetchingBranch}
@@ -107,23 +143,18 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
               )}
             />
           </div>
-        }
+        )}
       </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="max-h-[400px] w-full h-[90%]"
+
+      <div>      
+        <ChartContainer config={chartConfig} className="w-full overflow-visible max-w-full h-fit"
         >
           {isLoading ? (
             <BarChartSkeleton />
           ) : (
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart data={chartData} barSize={20} className="mb-8">
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  strokeOpacity={0.5}
-                  stroke="#ccc"
-                />
+            <ResponsiveContainer className="!w-full" height="100%">
+              <BarChart data={chartData} barSize={20} className="mb-8" margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />
                 <YAxis
                   tickLine={false}
                   axisLine={false}
@@ -133,12 +164,11 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
                   dataKey="formattedDate"
                   tickLine={false}
                   axisLine={false}
-                  tick={{ fontFamily: "Poppins, sans-serif", fontSize: 11 }}
-                  interval={0}
-                  tickFormatter={(value) => value}
+                  tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
+                  interval={tickInterval}
                   height={60}
                   xAxisId={0}
-                  tickSize={20}
+                  tickSize={12}
                   scale="point"
                   padding={{ left: 20, right: 20 }}
                 />
@@ -151,7 +181,7 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
                           <p className="font-bold">{label}</p>
                           {payload.map((entry, index) => (
                             <p key={index} style={{ color: entry.color }}>
-                              {entry.name}: N{entry.value?.toLocaleString()}
+                              {entry.name}: N{Number(entry.value).toLocaleString()}
                             </p>
                           ))}
                         </div>
@@ -177,23 +207,20 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
                   align="center"
                   layout="horizontal"
                   wrapperStyle={{
-                    position: "relative",
                     display: "flex",
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
-                    bottom: "10px",
-                    // paddingLeft: "20px",
+                    paddingLeft: "20px",
                   }}
                 />
               </BarChart>
             </ResponsiveContainer>
           )}
         </ChartContainer>
-      </CardContent>
+      </div>
     </Card>
   );
 }
 
 export default FinancialOverviewSection;
-
