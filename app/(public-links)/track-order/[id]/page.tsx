@@ -9,12 +9,12 @@ import { formatTimeString } from '@/utils/strings';
 
 import OrderPageSkeleton from './TrackOrderPageSkeleton';
 import ProgressTimeline from './ProgressTimeline';
-import { useGetOrderDetail } from './misc/api';
+import { useGeTOrderDetail } from './misc/api';
 
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
-    const { data: order, isLoading } = useGetOrderDetail(order_id);
+    const { data: order, isLoading } = useGeTOrderDetail(order_id);
 
     const onDelivered = () => {
         console.log("Order successfully delivered!");
@@ -63,12 +63,12 @@ const CompleteOrderPage = () => {
                                 <Truck variant="Bold" size="24" className="mr-2" /> Driver
                             </div>
                             <div className="name text-[#194A7A] font-semibold text-2xl">
-                                {order?.delivery.driver_name}                                
+                                {order?.delivery.driver?.name || 'N/A'}                                
                             </div>
                             <div className="platform text-sm text-[#194A7A]">
-                                Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.delivery_platform}</a>
+                                Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.driver?.delivery_platform}</a>
                             </div>
-                            <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver_phone}`}>
+                            <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver?.phone_number}`}>
                                 <Call size="20" className="mr-2" /> Call
                             </LinkButton>
                         </section>

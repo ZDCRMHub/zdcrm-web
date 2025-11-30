@@ -41,12 +41,13 @@ import { useRouter } from "next/navigation";
 import { CaretDown } from "@phosphor-icons/react";
 
 export const ORDER_STATUS_COLORS: Record<string, string> = {
+  PND: "bg-purple-100 hover:bg-purple-100 text-purple-800",
   SOA: "bg-green-100 hover:bg-green-100 text-green-800",
   SOR: "bg-yellow-100 hover:bg-yellow-100 text-yellow-800",
-  PND: "bg-purple-100 hover:bg-purple-100 text-purple-800",
-  COM: "bg-green-200 hover:bg-green-200 text-green-800",
-  CAN: "bg-red-100 hover:bg-red-100 text-red-800",
+  RFD: "bg-gray-100 hover:bg-gray-100 text-gray-800",
   STD: "bg-blue-100 hover:bg-blue-100 text-blue-800",
+  CAN: "bg-red-100 hover:bg-red-100 text-red-800",
+  COM: "bg-green-200 hover:bg-green-200 text-green-800",
   DEL: "bg-[#bf0f021c] text-[#bf3102]",  
 };
 
@@ -204,8 +205,8 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
       </TableCell>
 
       <TableCell className="min-w-[180px] max-w-[500px]">
-        {order.message.substring(0, 50)}
-        {order.message.length > 50 && "..."}
+        {order.message?.substring(0, 50)}
+        {(order.message?.length ?? 0) > 50 && "..."}
       </TableCell>
 
       <TableCell className="min-w-max">

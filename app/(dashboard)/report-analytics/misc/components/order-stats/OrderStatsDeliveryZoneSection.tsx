@@ -22,7 +22,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useGetOrderDeliveryStats } from "../../api/getOrderStatisticsDeliveryZone";
+import { useGeTOrderDeliveryStats } from "../../api/getOrderStatisticsDeliveryZone";
 import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 import { DateRange } from "react-day-picker";
 import { Controller, useForm } from "react-hook-form";
@@ -63,7 +63,7 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
     },
   });
 
-  const { data, isLoading, isFetching } = useGetOrderDeliveryStats({
+  const { data, isLoading, isFetching } = useGeTOrderDeliveryStats({
     branch: watch('branch') == "all" ? undefined : watch('branch'),
     date_from: watch('date').from?.toISOString().split('T')[0],
     date_to: watch('date').to?.toISOString().split('T')[0],

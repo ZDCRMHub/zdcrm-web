@@ -38,7 +38,7 @@ import { EditPenIcon } from "@/icons/core";
 import EditDeliveryDetailsModal from "./EditDeliveryDetailsModal";
 import { useBooleanStateControl } from "@/hooks";
 import { ENQUIRY_PAYMENT_OPTIONS, ORDER_STATUS_ENUMS, ORDER_STATUS_OPTIONS, } from "@/constants";
-import { useGetOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
+import { useGeTOrderDetail, useUpdateOrderPaymentMethod, useUpdateOrderStatus } from "../api";
 import { TOrder } from "../types";
 import { extractErrorMessage, formatAxiosErrorMessage } from "@/utils/errors";
 import { convertKebabAndSnakeToTitleCase, formatTimeString } from "@/utils/strings";
@@ -59,7 +59,7 @@ interface OrderDetailsPanelProps {
 }
 
 export default function OrderDetailSheetHistory({ order: default_order, isSheetOpen, closeSheet }: OrderDetailsPanelProps) {
-  const { data: order, isLoading, refetch } = useGetOrderDetail(default_order?.id, isSheetOpen);
+  const { data: order, isLoading, refetch } = useGeTOrderDetail(default_order?.id, isSheetOpen);
 
 
   const { mutate, isPending: isUpdatingStatus } = useUpdateOrderStatus()
@@ -417,9 +417,9 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                       [isDispatchOrder ? "Delivery Date" : "Pickup Date", order?.delivery.delivery_date],
                       ...(isDispatchOrder
                         ? [
-                          ["Driver Name", order?.delivery.driver_name],
-                          ["Driver Phone", order?.delivery.driver_phone],
-                          ["Dispatch Platform", order?.delivery.delivery_platform],
+                          ["Driver Name", order?.delivery.driver?.name],
+                          ["Driver Phone", order?.delivery.driver?.phone_number],
+                          ["Dispatch Platform", order?.delivery.driver?.delivery_platform],
                         ]
                         : []
                       )
@@ -553,10 +553,8 @@ export default function OrderDetailSheetHistory({ order: default_order, isSheetO
                                                   .reduce((acc: number, curr: number) => Number(acc) + Number(curr), 0) +
                                                 item.properties.reduce((acc, property) => {
                                                   const value =
-                                                    Number(property.bouquet_selling_at_order || 0) +
                                                     Number(property.glass_vase_selling_at_order || 0) +
                                                     Number(property.toppings_selling_at_order || 0) +
-                                                    Number(property.layers_selling_at_order || 0) +
                                                     Number(property.whipped_cream_selling_at_order || 0);
                                                   return acc + value;
                                                 }, 0)

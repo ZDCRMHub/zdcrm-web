@@ -32,22 +32,21 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "@/components/ui";
-import { LinkButton, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
 import TabBar from "@/components/TabBar";
 import { useDebounce } from "@/hooks";
 
-import { useGetCustomerHistory } from "../../../misc/api";
 import RiderHistoryTable from "./RidersHistoryTable";
-import { watch } from "fs";
-import { ArrowDown2, Bag, Category2 } from "iconsax-react";
+import { ArrowDown2 } from "iconsax-react";
 import { Controller, useForm } from "react-hook-form";
 import { DateRange } from "react-day-picker";
+import { useGetRiderHistory } from "../../../misc/api/getRiderHistory";
 
 export const today = new Date();
 export const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 export const monthsAgo = subMonths(new Date(), 20);
 
-export default function ClientHistoryDashboard() {
+export default function RiderHistoryDashboard() {
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,12 +62,12 @@ export default function ClientHistoryDashboard() {
     },
   });
   const {
-    data: customers,
+    data: riders,
     isLoading,
     isFetching,
     refetch,
     error,
-  } = useGetCustomerHistory({
+  } = useGetRiderHistory({
     page: currentPage,
     size: pageSize,
     search: searchText,
@@ -102,7 +101,7 @@ export default function ClientHistoryDashboard() {
 
   // CSV Download function
   const downloadCSV = () => {
-    if (!customers?.data || customers.data.length === 0) {
+    if (!riders?.data || riders.data.length === 0) {
       alert("No data available to download");
       return;
     }
@@ -113,23 +112,21 @@ export default function ClientHistoryDashboard() {
       "Phone Number",
       "Email Address",
       "Number of Orders Delivered",
-      "Total Amount Spent",
-      "Created Date",
-      "Last Updated",
+      "Total Delivery Fee",
+      "Delivery Platform",
     ];
 
     // Convert data to CSV format
     const csvContent = [
       headers.join(","),
-      ...customers.data.map((customer) =>
+      ...riders.data.map((rider) =>
         [
-          `"${customer.name}"`,
-          `"${customer.phone}"`,
-          `"${customer.email}"`,
-          customer.orders_count,
-          `"${customer.total_amount_spent}"`,
-          `"${new Date(customer.create_date).toLocaleDateString()}"`,
-          `"${new Date(customer.update_date).toLocaleDateString()}"`,
+          `"${rider.name}"`,
+          `"${rider.phone_number}"`,
+          `"${rider.email}"`,
+          rider.orders_delivered,
+          `"${rider.total_delivery_fee}"`,
+          `"${rider.delivery_platform}"`,
         ].join(",")
       ),
     ].join("\n");
@@ -264,14 +261,14 @@ export default function ClientHistoryDashboard() {
               variant="outline"
               className="bg-[#007ACC] text-[#005299] bg-opacity-25"
               onClick={downloadCSV}
-              disabled={!customers?.data || customers.data.length === 0}
+              disabled={!riders?.data || riders.data.length === 0}
             >
               <Download className="mr-2 h-4 w-4" /> Export CSV
             </Button>
           </div>
         </div>
         <div className="text-sm text-gray-600 p-2">
-          Showing customers{" "}
+          Showing riders{" "}
           <p className="inline-block font-medium text-black"></p>
         </div>
       </header>
@@ -279,12 +276,12 @@ export default function ClientHistoryDashboard() {
       <section className="flex-grow overflow-auto w-full pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar
-          tabs={[{ name: "All Riders", count: customers?.count || 0 }]}
+          tabs={[{ name: "All Riders", count: riders?.count || 0 }]}
           onTabClick={() => {}}
           activeTab={"All Riders"}
         />
         <RiderHistoryTable
-          data={customers?.data}
+          data={riders?.data}
           isLoading={isLoading}
           isFetching={isFetching}
           error={error}
@@ -308,7 +305,7 @@ export default function ClientHistoryDashboard() {
                   }
                 />
               </PaginationItem>
-              {[...Array(customers?.number_of_pages || 0)].map((_, index) => (
+              {[...Array(riders?.number_of_pages || 0)].map((_, index) => (
                 <PaginationItem key={index}>
                   <PaginationLink
                     onClick={() => setCurrentPage(index + 1)}
@@ -321,13 +318,13 @@ export default function ClientHistoryDashboard() {
               <PaginationItem>
                 <PaginationNext
                   className={
-                    currentPage === customers?.number_of_pages
+                    currentPage === riders?.number_of_pages
                       ? "cursor-not-allowed opacity-70"
                       : "cursor-pointer"
                   }
                   onClick={() =>
                     setCurrentPage((prev) =>
-                      Math.min(prev + 1, customers?.number_of_pages || 1)
+                      Math.min(prev + 1, riders?.number_of_pages || 1)
                     )
                   }
                   // disabled={currentPage === data?.number_of_pages}
@@ -340,8 +337,8 @@ export default function ClientHistoryDashboard() {
 
             <div className="text-sm text-gray-500 w-max shrink-0">
               Showing {(currentPage - 1) * pageSize + 1} to{" "}
-              {Math.min(currentPage * pageSize, customers?.count || 0)} of{" "}
-              {customers?.count || 0} entries
+              {Math.min(currentPage * pageSize, riders?.count || 0)} of{" "}
+              {riders?.count || 0} entries
             </div>
           </section>
         </div>

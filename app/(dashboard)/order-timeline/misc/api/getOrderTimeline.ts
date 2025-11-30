@@ -24,7 +24,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<OrderTimel
   return res.data;
 }
 
-export const useGetOrderTimeline = (options: FetchOptions = {}) => {
+export const useGeTOrderTimeline = (options: FetchOptions = {}) => {
   return useQuery({
     queryKey: ['order-timeline-list', options],
     placeholderData: keepPreviousData,

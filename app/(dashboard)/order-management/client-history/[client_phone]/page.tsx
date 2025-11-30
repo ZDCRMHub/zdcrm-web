@@ -43,8 +43,6 @@ import {
 import { APIAxios } from "@/utils/axios";
 
 // Import the existing components
-import ClientOrdersTable from "../misc/components/ClientOrdersTable";
-import { useGetOrders } from "../../misc/api";
 import {
   ArrowDown2,
   Bag,
@@ -56,6 +54,8 @@ import UniversalFilters from "@/components/UniversalFilters";
 import { ORDER_STATUS_OPTIONS } from "@/constants";
 import React from "react";
 import { useGetCategories } from "@/app/(dashboard)/inventory/misc/api";
+import ClientOrdersTable from "../misc/components/ClientOrdersTable";
+import { useGeTOrders } from "../../misc/api";
 
 const today = new Date();
 const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
@@ -142,7 +142,7 @@ export default function ClientDetailsPage() {
     isLoading: isLoadingOrders,
     isFetching: isFetchingOrders,
     error: ordersError,
-  } = useGetOrders({
+  } = useGeTOrders({
     page: currentPage,
     size: pageSize,
     search: client_phone,

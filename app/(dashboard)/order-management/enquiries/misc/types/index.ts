@@ -2,6 +2,7 @@ import { TProductCategory } from "@/app/(dashboard)/inventory/misc/types";
 
 export interface TEnquiry {
   id: number;
+  enquiry_number: string | null;
   customer: Customer;
   created_by: Createdby;
   finalized_by: Createdby | null;

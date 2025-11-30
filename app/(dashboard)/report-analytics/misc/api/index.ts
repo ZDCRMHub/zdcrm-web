@@ -1,5 +1,5 @@
-export { useGetOrderStats } from './getOrderStatistics'
-export { useGetOrderDeliveryStats } from './getOrderStatisticsDeliveryZone'
+export { useGeTOrderStats } from './getOrderStatistics'
+export { useGeTOrderDeliveryStats } from './getOrderStatisticsDeliveryZone'
 export { useGetTopProducts } from './getOrderStatisticsTopProducts'
 export { useGetTopCategories } from './getOrderStatisticsTopCategories'
 

@@ -9,7 +9,7 @@ const fetchDetail = async (order_id?: string): Promise<TOrder> => {
   return res.data?.data;
 }
 
-export const useGetOrderDetail = (order_id?: string, enabled: boolean = true) => {
+export const useGeTOrderDetail = (order_id?: string, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['track-order', order_id],
     placeholderData: keepPreviousData,
