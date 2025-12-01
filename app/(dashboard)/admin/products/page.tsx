@@ -612,7 +612,7 @@ const Page = () => {
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-2">
                     <SelectSingleCombo
                       name="branch_id"
-                      label="Branch"
+                      label="Business"
                       options={
                         branches?.map((branch) => ({ value: branch.id.toString(), label: branch.name })) || []
                       }
@@ -621,7 +621,7 @@ const Page = () => {
                       valueKey="value"
                       labelKey="label"
                       isLoadingOptions={branchesLoading}
-                      placeholder="Select branch"
+                      placeholder="Select Business"
                       className="w-full !h-14 text-[#8B909A] text-xs"
                       placeHolderClass="text-[#8B909A] text-xs"
                       triggerColor="#8B909A"
@@ -1043,7 +1043,7 @@ const Page = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[20%]">Name</TableHead>
-              <TableHead className="w-[20%]">Branch</TableHead>
+              <TableHead className="w-[20%]">Business</TableHead>
               <TableHead className="w-[15%]">Category</TableHead>
               <TableHead className="w-[40%]">Variations</TableHead>
               <TableHead className="w-[25%] text-right">Action</TableHead>
@@ -1053,7 +1053,7 @@ const Page = () => {
             {productsData?.data?.map((product) => (
               <TableRow key={product.id}>
                 <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="font-medium">{product.business}</TableCell>
+                <TableCell className="font-medium">{product.business?.name}</TableCell>
                 <TableCell>{product.category.name}</TableCell>
                 <TableCell>
                   <div className="space-y-2">

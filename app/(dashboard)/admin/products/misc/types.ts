@@ -1,13 +1,21 @@
 import { TCategory } from "@/app/(dashboard)/inventory/misc/types";
 
-
-
+interface Business {
+  address: string;
+  country: string;
+  country_display: string;
+  create_date: string;
+  id: number;
+  name?: string | undefined | null;
+  phone_number: string;
+  update_date: string;
+}
 
 export interface TProductItem {
   id: number;
   name: string;
   category: Category;
-  business: string;
+  business: Business;
   external_id: string;
   is_active: boolean;
   image: string;
@@ -18,8 +26,6 @@ export interface TProductItem {
   branch: TBranch | null;
 }
 
-
-
 interface Variation {
   id: number;
   size: string;
@@ -29,7 +35,7 @@ interface Variation {
   selling_price: string;
   quantity: number;
   recently_updated_by: Recentlyupdatedby;
-  is_active: boolean
+  is_active: boolean;
 }
 
 interface Recentlyupdatedby {
@@ -47,7 +53,6 @@ interface Category {
   create_date: string;
   update_date: string;
 }
-
 
 export interface PaginatedResponse<T> {
   data: TProductItem[];
@@ -67,10 +72,8 @@ export interface ProductsQueryParams {
   branch?: string | number;
 }
 
-
-
-import { z } from "zod"
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
+import { z } from "zod";
+import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
 import { TBranch } from "../../businesses/misc/api/getAllBranches";
 const imageSchema = z
   .object({
@@ -80,7 +83,7 @@ const imageSchema = z
   .refine((data) => data.file || data.url, {
     message: "Either an image file or URL must be provided",
     path: ["file"],
-  })
+  });
 
 const baseVariationSchema = z.object({
   id: z.number().optional(),
@@ -89,7 +92,7 @@ const baseVariationSchema = z.object({
   max_flowers: z.number().optional(),
   cost_price: z.string().min(1, "Cost price is required"),
   selling_price: z.string().min(1, "Selling price is required"),
-})
+});
 
 // Define the product schema with custom refinement for field-specific errors
 export const productSchema = z
@@ -101,7 +104,9 @@ export const productSchema = z
     external_id: z.string().optional(),
     is_active: z.boolean().default(true),
     image: imageSchema,
-    variations: z.array(baseVariationSchema).min(1, "At least one variation is required"),
+    variations: z
+      .array(baseVariationSchema)
+      .min(1, "At least one variation is required"),
   })
   .superRefine((data, ctx) => {
     // Check each variation individually and add specific path errors
@@ -113,25 +118,27 @@ export const productSchema = z
             code: z.ZodIssueCode.custom,
             message: "Layer is required for Cake products",
             path: [`variations.${index}.layer`],
-          })
+          });
         }
       }
 
       // For flower category, validate max_flowers
       if (data.category_name?.toLowerCase().includes("flower")) {
-        if (variation.max_flowers === undefined || variation.max_flowers === null) {
+        if (
+          variation.max_flowers === undefined ||
+          variation.max_flowers === null
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Max flowers is required for Flower products",
             path: [`variations.${index}.max_flowers`],
-          })
+          });
         }
       }
-    })
-  })
+    });
+  });
 
-export type ProductFormType = z.infer<typeof productSchema>
-
+export type ProductFormType = z.infer<typeof productSchema>;
 
 export const productListItemSchema = z.object({
   id: z.number(),
@@ -145,6 +152,6 @@ export const productListItemSchema = z.object({
     id: z.number(),
     name: z.string(),
   }),
-})
+});
 
-export type ProductListItem = z.infer<typeof productListItemSchema>
+export type ProductListItem = z.infer<typeof productListItemSchema>;
