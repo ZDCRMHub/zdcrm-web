@@ -46,28 +46,28 @@ interface BranchSelectorProps {
   errorMessage?: string;
   optional?: boolean;
   variant?:
-    | "inputButton"
-    | "link"
-    | "default"
-    | "light"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "black"
-    | "unstyled"
-    | "yellow"
-    | null; 
+  | "inputButton"
+  | "link"
+  | "default"
+  | "light"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "ghost"
+  | "black"
+  | "unstyled"
+  | "yellow"
+  | null;
   size?:
-    | "default"
-    | "unstyled"
-    | "inputButton"
-    | "thin"
-    | "sm"
-    | "md"
-    | "lg"
-    | "icon"
-    | null;
+  | "default"
+  | "unstyled"
+  | "inputButton"
+  | "thin"
+  | "sm"
+  | "md"
+  | "lg"
+  | "icon"
+  | null;
 }
 
 type Business = {
@@ -83,7 +83,7 @@ type Branch = {
 const SelectBranchCombo = ({
   value,
   onChange,
-  name='',
+  name = '',
   noLabel = false,
   dropdownItem,
   placeholder = "Select branch",
@@ -277,7 +277,7 @@ const SelectBranchCombo = ({
     <div className={cn("inputdiv", withIcon && "withicon", containerClass)}>
       <Popover open={isOpen} onOpenChange={setOpen}>
         <div className="flex flex-col gap-2">
-          <Label
+          {/* <Label
             className={cn(
               "text-sm text-[#0F172B] font-poppins font-medium",
               noLabel && "sr-only"
@@ -286,7 +286,7 @@ const SelectBranchCombo = ({
           >
             Branch
             {!optional && <span className="text-red-400 font-medium"> *</span>}
-          </Label>
+          </Label> */}
           <PopoverTrigger asChild>
             <Button
               variant={variant}
@@ -319,8 +319,8 @@ const SelectBranchCombo = ({
                     value && branchesList && branchesList.length && dropdownItem
                       ? ""
                       : dropdownItem
-                      ? ""
-                      : "!text-[#A4A4A4]"
+                        ? ""
+                        : "!text-[#A4A4A4]"
                   )}
                 >
                   {isLoadingOptions ? "Loading options..." : displayLabel}
@@ -384,8 +384,8 @@ const SelectBranchCombo = ({
 
               {view === "businesses" &&
                 (!isLoadingBusinesses &&
-                businessesList &&
-                businessesList.length > 0 ? (
+                  businessesList &&
+                  businessesList.length > 0 ? (
                   (filteredBusinesses || businessesList).map((b) => (
                     <button
                       key={b.id}
@@ -438,8 +438,8 @@ const SelectBranchCombo = ({
                   </div>
 
                   {!isLoadingBranches &&
-                  branchesList &&
-                  branchesList.length > 0 ? (
+                    branchesList &&
+                    branchesList.length > 0 ? (
                     (filteredBranches || branchesList).map((br) => (
                       <button
                         key={br.id}

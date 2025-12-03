@@ -46,6 +46,7 @@ import { RangeAndCustomDatePicker, SelectBranchCombo } from "@/components/ui";
 import { useGetAllBranches } from "@/mutations/business.mutation";
 import Link from "next/link";
 import InventoryChart from "../misc/components/charts/InventoryChart";
+import ClientBehaviorChart from "../misc/components/charts/ClientBehaviorChart";
 
 const OverviewPage: React.FC = () => {
   const {
@@ -233,70 +234,7 @@ const OverviewPage: React.FC = () => {
 
       {/* Bottom row: client behavior, customers line, inventory */}
       <div className="grid grid-cols-[repeat(auto-fit,_minmax(100%,_1fr))] md:grid-cols-[repeat(auto-fit,_minmax(20rem,_1fr))] gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>
-              <span>
-                Client Behavior
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="16" x2="12" y2="12" />
-                  <line x1="12" y1="8" x2="12.01" y2="8" />
-                </svg>
-              </span>
-            </CardTitle>
-            <Button variant="ghost" size="sm">
-              See All
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="flex w-full h-40 sm:h-44 flex-row justify-between">
-              <ResponsiveContainer width="50%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={clientBehavior.data}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={30}
-                    outerRadius={60}
-                    paddingAngle={4}
-                    label={true}
-                  >
-                    {clientBehavior.data.map((entry, idx) => (
-                      <Cell key={idx} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="mt-2 space-y-1 w-[50%]">
-                {clientBehavior.data.map((d) => (
-                  <div
-                    key={d.name}
-                    className="flex items-center justify-evenly text-sm"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-3 h-3 rounded-full"
-                        style={{ background: d.color }}
-                      />
-                      <div>{d.name}</div>
-                    </div>
-                    <div>{d.percentage}%</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <ClientBehaviorChart clientBehavior={clientBehavior} show_see_all={true} />
 
         <InventoryChart
           items={inventory_data}

@@ -19,16 +19,16 @@ import { EmployeePerformanceChart } from "../misc/components/conversion-statisti
 
 const OrderStatsPage = () => {
   return (
-    <div className="w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8 xl:px-10">
+    <div className="p-4 sm:p-6">
       <OrderStatsHeaderSection />
 
-      <div className="flex justify-end mt-14 mb-6">
-        {/* <ComparisonModal /> */}
-      </div>
+      {/* <div className="flex justify-end mt-14 mb-6">
+        <ComparisonModal />
+      </div> */}
 
-      <div className="flex gap-12 flex-col">
+      <div className="flex gap-10 flex-col mt-10">
         <OrderStatsDeliveryZoneSection />
-        <div className="grid 2xl:grid-cols-2 gap-10">
+        <div className="grid 2xl:grid-cols-2 gap-6">
           <OrderStatsTopProducts />
           {/* <OrderStatsTopCategories /> */}
           <EmployeePerformanceChart />

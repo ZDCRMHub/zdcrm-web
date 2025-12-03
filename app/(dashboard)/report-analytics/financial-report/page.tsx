@@ -21,14 +21,14 @@ import {
 
 const FinancialReportPage = () => {
   return (
-    <div className="w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8">
+    <div className="p-4 sm:p-6">
       <FinancialStatsHeaderSection />
 
-      <div className="flex justify-end mt-14 mb-8">
-        {/* <ComparisonModal /> */}
-      </div>
+      {/* <div className="flex justify-end mt-14 mb-8">
+        <ComparisonModal />
+      </div> */}
 
-      <div className="grid 2xl:grid-cols-2 gap-10 mb-10">
+      <div className="grid 2xl:grid-cols-2 gap-6 my-10">
         <FinancialOverviewSection />
         <OrderStatisticsFIinancialsChart />
       </div>

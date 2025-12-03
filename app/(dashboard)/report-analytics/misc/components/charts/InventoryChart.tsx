@@ -63,7 +63,7 @@ export default function InventoryChart({
     return (
         <Card className="p-6 rounded-xl min-h-[200px] max-h-[400px]">
             <div className="flex items-center justify-between">
-                <CardTitle className="text-base md:text-[20px] font-semibold">{title}</CardTitle>
+                <CardTitle className="text-base md:text-xl font-semibold">{title}</CardTitle>
                 <Link href="/inventory/alert" className="font-medium text-[#0CAF60] px-3 py-1 rounded shadow-sm hover:underline">
                     See All
                 </Link>

@@ -10,13 +10,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import ComparisonModal from '@/app/(dashboard)/report-analytics/misc/components/ComparisonModal';
-import { EnquiryChannelsChart, ClientTrackingChart, TrendsSeasonalitySalesChart, EmployeePerformanceChart, ClientBehaviorChart } from '../misc/components/conversion-statistics';
+import { EnquiryChannelsChart, ClientTrackingChart, TrendsSeasonalitySalesChart, EmployeePerformanceChart } from '../misc/components/conversion-statistics';
+import ClientBehaviorChart from '../misc/components/charts/ClientBehaviorChart';
+import data from "../overview/data/overview.json";
+
 
 const page = () => {
 
+  const { clientBehavior } = data;
+
 
   return (
-    <div className='w-full md:w-[92.5%] max-w-[1792px] mx-auto pt-12 px-8'>
+    <div className='p-4 sm:p-6'>
       {/* <Header
         title='Conversion Statistics'
         branchOptions={branchOptions}
@@ -29,16 +34,16 @@ const page = () => {
         {/* <ComparisonModal /> */}
       </div>
 
-      <div className='grid 2xl:grid-cols-2 gap-10 mb-10'>
+      <div className='grid 2xl:grid-cols-2 gap-x-6 gap-y-10 mb-10'>
         <EnquiryChannelsChart />
 
-        <ClientBehaviorChart />
-        
+        {/* <ClientBehaviorChart /> */}
+        <ClientBehaviorChart clientBehavior={clientBehavior} />
         <ClientTrackingChart />
 
         <TrendsSeasonalitySalesChart />
-
         {/* <EmployeePerformanceChart /> */}
+
       </div>
 
       <div className='flex justify-end mb-24 gap-6'>

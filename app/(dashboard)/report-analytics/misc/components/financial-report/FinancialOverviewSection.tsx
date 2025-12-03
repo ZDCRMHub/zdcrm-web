@@ -99,7 +99,7 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
   return (
     <Card className="">
       <CardHeader className="flex md:!flex-row items-center justify-between">
-        <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
+        <CardTitle className="text-xl md:text-2xl font-medium text-[#17181C] flex items-center gap-2">
           Financial Overview
           {isFetching && <Spinner />}
         </CardTitle>
@@ -147,13 +147,13 @@ export function FinancialOverviewSection({ showDetailed = true }: { showDetailed
       </CardHeader>
 
       <div>      
-        <ChartContainer config={chartConfig} className="w-full overflow-visible max-w-full h-fit"
+        <ChartContainer config={chartConfig} className="w-full overflow-visible max-w-full max-h-[400px]"
         >
           {isLoading ? (
             <BarChartSkeleton />
           ) : (
             <ResponsiveContainer className="!w-full" height="100%">
-              <BarChart data={chartData} barSize={20} className="mb-8" margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
+              <BarChart data={chartData} barSize={20} margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />
                 <YAxis
                   tickLine={false}

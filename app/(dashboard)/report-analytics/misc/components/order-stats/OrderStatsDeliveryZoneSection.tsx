@@ -76,7 +76,7 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
   const tickInterval = chartDataRaw.length > 8 ? Math.ceil(chartDataRaw.length / 8) : 0;
 
   return (
-    <Card className="">
+    <Card className="max-h-[600px]">
       <CardHeader className="flex md:!flex-row items-center justify-between">
         <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
           Order Delivery Zones
@@ -92,7 +92,7 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
                 <SelectBranchCombo
                   value={watch('branch')}
                   onChange={(new_value) => setValue('branch', new_value)}
-                  placeholder='Filter Branch'
+                  // placeholder='Filter Branch'
                   variant="light"
                   size="thin"
                   isLoadingOptions={isFetchingBranch}
@@ -124,13 +124,13 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
       <div>    
         <ChartContainer
           config={chartConfig}
-          className="w-full overflow-visible max-w-full h-fit"
+          className="w-full overflow-visible max-w-full max-h-[400px]"
         >
           {isLoading ? (
             <OrderStatsDeliveryZoneChartSkeleton />
           ) : (    
             <ResponsiveContainer className="!w-full" height="100%">
-              <BarChart data={chartDataRaw} barSize={20} className="mb-8" margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
+              <BarChart data={chartDataRaw} barSize={20} margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />
                 <YAxis
                   tickLine={false}

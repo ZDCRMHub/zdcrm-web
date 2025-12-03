@@ -14,7 +14,7 @@ export default function Spinner({
     className,
     pathClassName,
     color = 'currentColor',
-    size = 24
+    size = 20
 }: SpinnerProps) {
     return (
         <span className={cn('inline-flex', className)} role="status">

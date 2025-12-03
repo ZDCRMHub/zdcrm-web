@@ -45,14 +45,14 @@ const OrderStatsTopProducts: React.FC = () => {
   return (
     <Card className='overflow-hidden w-full'>
       <CardHeader className="flex md:!flex-row items-center justify-between p-4 md:p-6">
-        <CardTitle className='text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2'>
+        <CardTitle className='text-lg md:text-xl font-medium text-[#17181C] flex items-center gap-1'>
           Top Products
           {
-            isFetching && <Spinner />
+            isFetching && <Spinner size={14} />
           }
         </CardTitle>
 
-        <CardContent className="flex items-center gap-4 flex-wrap max-w-max">
+        <div className="flex items-center justify-end gap-2 flex-wrap max-w-max">
           <Controller
             name='branch'
             control={control}
@@ -85,7 +85,7 @@ const OrderStatsTopProducts: React.FC = () => {
               to: watch('date').to
             }}
           />
-        </CardContent>
+        </div>
       </CardHeader>
       <div className="overflow-x-auto">
         <table className='w-full text-left'>

@@ -71,11 +71,11 @@ function EmployeePerformanceChart() {
   return (
     <Card>
       <CardHeader className="flex md:!flex-row items-center justify-between">
-        <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
+        <CardTitle className="text-lg md:text-xl font-medium text-[#17181C] flex items-center gap-2">
           Employee Performance
-          {isFetching && <Spinner />}
+          {isFetching && <Spinner size={14} />}
         </CardTitle>
-        <div className="flex items-center gap-4 flex-wrap max-w-max">
+        <div className="flex items-center justify-end gap-2 flex-wrap max-w-max">
           <Controller
             name='user_id'
             control={control}
@@ -119,12 +119,12 @@ function EmployeePerformanceChart() {
           />
         </div>
       </CardHeader>
-      <CardContent>
+      <div>
         <ChartContainer
           config={chartConfig}
           className="max-h-[400px] w-full h-[90%]"
         >
-          <BarChart width={500} height={300} data={chartData}>
+          <BarChart width={500} height={300} data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
@@ -165,7 +165,7 @@ function EmployeePerformanceChart() {
           </BarChart>
         </ChartContainer>
         <CardFooter className="py-4"></CardFooter>
-      </CardContent>
+      </div>
     </Card>
   );
 }

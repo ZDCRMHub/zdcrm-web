@@ -51,28 +51,40 @@ export default function OrderStatisticsChart({ title = "Order FInancials", data,
           Today
         </div>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="max-h-[360px] w-full h-[90%]">
+      <div>
+        <ChartContainer config={chartConfig} className="w-full max-h-[400px]">
           {isLoading ? (
             <div className="w-full h-[320px] flex items-center justify-center"> <Spinner /> </div>
           ) : (
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={chartData} barCategoryGap="30%" barGap={6}>
+            <ResponsiveContainer className="!w-full" height="100%">
+              <BarChart data={chartData} barSize={20} margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />
                 <YAxis tickLine={false} axisLine={false} tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }} />
                 <XAxis dataKey="name" tickLine={false} tickMargin={20} axisLine={false} tickFormatter={(value) => value} tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }} />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
                 <Bar dataKey="enquiries" fill={chartConfig.enquiries.color} radius={4} name="Enquiries" />
                 <Bar dataKey="orders" fill={chartConfig.orders.color} radius={4} name="Orders" />
-                <Legend verticalAlign="bottom" align="center" layout="horizontal" wrapperStyle={{ position: "relative", display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", bottom: "0px", paddingLeft: "20px" }} />
+                <Legend
+                  verticalAlign="bottom"
+                  align="center"
+                  layout="horizontal"
+                  wrapperStyle={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingTop: "10px",
+                    paddingLeft: "20px",
+                  }}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
         </ChartContainer>
-      </CardContent>
-      <CardFooter>
+      </div>
+      {/* <CardFooter>
         <div className="w-full text-center text-muted-foreground text-sm">Total enquiries vs orders per delivery zone</div>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }
