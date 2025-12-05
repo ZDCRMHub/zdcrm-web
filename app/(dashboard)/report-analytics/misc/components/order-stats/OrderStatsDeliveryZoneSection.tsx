@@ -59,16 +59,27 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
         from: monthsAgo,
         to: tomorrow,
       },
-      period: 'today',
+      period: 'month',
     },
   });
 
+  const branch = watch("branch");
+  const period = watch("period");
+  const date = watch("date");
+
   const { data, isLoading, isFetching } = useGeTOrderDeliveryStats({
-    branch: watch('branch') == "all" ? undefined : watch('branch'),
-    date_from: watch('date').from?.toISOString().split('T')[0],
-    date_to: watch('date').to?.toISOString().split('T')[0],
-    period: watch('period'),
+    branch: branch === "all" ? undefined : branch,
+    date_from:
+      period === "custom" && date.from
+        ? date.from.toISOString().split("T")[0]
+        : undefined,
+    date_to:
+      period === "custom" && date.to
+        ? date.to.toISOString().split("T")[0]
+        : undefined,
+    period,
   });
+
 
   // defensive parse & ensure array
   const chartDataRaw = Array.isArray(data?.data?.delivery_stats) ? data!.data.delivery_stats : [];
@@ -121,14 +132,14 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
         )}
       </CardHeader>
 
-      <div>    
+      <div>
         <ChartContainer
           config={chartConfig}
           className="w-full overflow-visible max-w-full max-h-[400px]"
         >
           {isLoading ? (
             <OrderStatsDeliveryZoneChartSkeleton />
-          ) : (    
+          ) : (
             <ResponsiveContainer className="!w-full" height="100%">
               <BarChart data={chartDataRaw} barSize={20} margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.5} stroke="#ccc" />

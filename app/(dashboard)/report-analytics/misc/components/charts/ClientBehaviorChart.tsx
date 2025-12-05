@@ -23,7 +23,7 @@ type ClientBehaviorProps = {
 
 const ClientBehaviorChart: React.FC<ClientBehaviorProps> = ({
     clientBehavior,
-    show_see_all = false,
+    show_see_all = false    ,
 }) => {
     const data = clientBehavior.data;
 
@@ -74,9 +74,9 @@ const ClientBehaviorChart: React.FC<ClientBehaviorProps> = ({
                 {/* Legend + numbers */}
                 <div className="w-[55%] space-y-3">
                     {/* Column headers */}
-                    <div className="flex items-center justify-end text-sm font-dm-sans font-medium text-[#979797]">
-                        <span className="w- text-center mr-4">No. client</span>
-                        <span className="w- text-center">Percentage</span>
+                    <div className="flex items-center justify-end text-sm font-medium text-[#979797]">
+                        <span className="w- text-center mr-4 font-dm-sans">No. client</span>
+                        <span className="w- text-center font-dm-sans">Percentage</span>
                     </div>
 
                     {data.map((d) => (
@@ -84,19 +84,19 @@ const ClientBehaviorChart: React.FC<ClientBehaviorProps> = ({
                             key={d.name}
                             className="flex items-center justify-between text-xs sm:text-sm py-0.5"
                         >
-                            <div className="flex items-center gap-2 font-dm-sans">
+                            <div className="flex items-center gap-2">
                                 <span
                                     className="size-3 rounded-full"
                                     style={{ background: d.color }}
                                 />
-                                <span className="text-[#718096] text-base font-medium">{d.name}</span>
+                                <span className="text-[#718096] text-base font-medium font-dm-sans">{d.name}</span>
                             </div>
 
-                            <div className="flex items-center gap-8 font-dm-sans font-extrabold">
-                                <span className="w-12 text-center text-slate-900">
+                            <div className="flex items-center gap-8 font-extrabold">
+                                <span className="w-12 text-center text-slate-900 font-dm-sans">
                                     {d.value}
                                 </span>
-                                <span className="w-12 text-center text-slate-900">
+                                <span className="w-12 text-center text-slate-900 font-dm-sans">
                                     {d.percentage}%
                                 </span>
                             </div>

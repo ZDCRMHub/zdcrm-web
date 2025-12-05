@@ -21,7 +21,7 @@ const {
 
 
     return (
-        <div className="bg-[#194A7A] text-white w-full max-w-[800px] pb-6 rounded-xl space-y-6">
+        <div className="bg-[#194A7A] text-white w-full max-w-[1000px] pb-6 rounded-xl space-y-6">
             <div className="relative w-full h-2 bg-[#FFC6004D] rounded-full overflow-hidden">
                 <div
                     className="absolute left-0 h-full bg-[#FFC600] rounded-full transition-all duration-300 ease-in-out"
