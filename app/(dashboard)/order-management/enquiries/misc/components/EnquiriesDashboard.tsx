@@ -56,9 +56,9 @@ export default function EnquiriesDashboard() {
     category: selectedCategory,
     start_date: watch('date').from?.toISOString().split('T')[0],
     end_date: watch('date').to ? new Date((watch('date').to as Date).getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined,
+    sort_by_create_date: true,
     // end_date: watch('date').to?.toISOString().split('T')[0],
     business: selectedBusiness
-
   })
 
   const handleRefresh = () => {

@@ -97,6 +97,7 @@ export default function EnquiriesTable({
     setFalse: closeConfirmPermanentDeleteModal,
   } = useBooleanStateControl();
 
+
   const { mutate, isPending } = useUpdateEnquiryStatus();
   const queryClient = useQueryClient();
   const confirmUpdateEnquiryStatus = (status: "DEL" | "STD") => {
