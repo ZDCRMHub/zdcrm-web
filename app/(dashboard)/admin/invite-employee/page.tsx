@@ -22,10 +22,19 @@ import { cn } from "@/lib/utils";
 const inviteEmployeeSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  role: z.string({
-    message: "Select role",
-  }).min(1, "Role is required"),
-  branch_ids: z.array(z.string({message: "At least one branch must be selected"})).min(1, "At least one branch must be selected"),
+  role: z
+    .string({
+      message: "Select role",
+    })
+    .min(1, "Role is required"),
+  branch_ids: z
+    .array(
+      z.coerce.number({
+        required_error: "At least one branch must be selected",
+        invalid_type_error: "Branch ID must be a number",
+      })
+    )
+    .min(1, "At least one branch must be selected"),
 });
 
 type InviteEmployeeFormData = z.infer<typeof inviteEmployeeSchema>;
@@ -180,12 +189,21 @@ const InviteEmployeePage = () => {
             control={control}
             render={({ field }) => (
               <SelectBranchMultiCombo
-                value={field.value}
-                onChange={(vals) => field.onChange(vals)}
+                value={field.value.map((v) => String(v))}
+                onChange={(vals) =>
+                  field.onChange(vals.map((v: string | number) => Number(v)))
+                }
                 name="branch_ids"
                 placeholder="Select branch(es)"
                 hasError={!!errors.branch_ids}
-                errorMessage={errors?.branch_ids ? String((errors.branch_ids as any)?.message ?? (errors.branch_ids as any)) : undefined}
+                errorMessage={
+                  errors?.branch_ids
+                    ? String(
+                      (errors.branch_ids as any)?.message ??
+                      (errors.branch_ids as any)
+                    )
+                    : undefined
+                }
               />
             )}
           />

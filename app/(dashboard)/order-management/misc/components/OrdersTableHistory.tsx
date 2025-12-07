@@ -17,7 +17,7 @@ import { TOrder } from "../types";
 import { Button, LinkButton, Spinner } from "@/components/ui";
 import { ChevronLeft, ChevronRight, Inbox } from "lucide-react";
 import { useBooleanStateControl } from "@/hooks";
-import { convertKebabAndSnakeToTitleCase } from "@/utils/strings";
+import { convertKebabAndSnakeToTitleCase, formatUniversalDate } from "@/utils/strings";
 import { ORDER_STATUS_COLORS } from "./OrdersTable";
 import {
   CATEGORIES_ENUMS,
@@ -80,7 +80,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         <div className="text-sm text-gray-500">{order.customer.phone}</div>
       </TableCell>
       <TableCell className=" uppercase">
-        {format(order.delivery.delivery_date, "dd/MMM/yyyy")}
+        {formatUniversalDate(order?.delivery.delivery_date)}
       </TableCell>
       <TableCell>
         <div>
@@ -120,12 +120,26 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         <Badge
           className={cn(
             ORDER_STATUS_COLORS[order.status] ||
-              "bg-gray-100 text-gray-800 w-full text-center min-w-max",
+            "bg-gray-100 text-gray-800 w-full text-center min-w-max",
             "rounded-md w-max"
           )}
         >
           {ORDER_STATUS_ENUMS[order.status]}
         </Badge>
+      </TableCell>
+      <TableCell className="">
+        {format(
+          new Date(order.create_date),
+          "EEE, do MMMM yyyy"
+        )}
+      </TableCell>
+      <TableCell className="">
+        <div>
+          {format(
+            new Date(order.update_date),
+            "EEE, do MMMM yyyy"
+          )}
+        </div>
       </TableCell>
 
       <TableCell>
@@ -267,7 +281,7 @@ const OrdersTableHistory = ({
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
             <Table>
-              <TableHeader>
+              <TableHeader className="sticky top-0">
                 <TableRow>
                   <TableHead className="min-w-[150px]">Order ID</TableHead>
                   <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
@@ -287,6 +301,8 @@ const OrdersTableHistory = ({
                     {" "}
                     Status
                   </TableHead>
+                  <TableHead className="min-w-[150px]">Created On</TableHead>
+                  <TableHead className="w-[170px]">Last Update</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>

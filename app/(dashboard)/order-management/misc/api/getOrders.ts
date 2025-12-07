@@ -13,6 +13,7 @@ interface FetchOptions {
   delivery_status?: string;
   start_date?: string;
   end_date?: string;
+  sort_by_create_date?: boolean;
   business?: string;
 }
 
@@ -39,6 +40,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
   if (options.order_number) params.append('order_number', options.order_number);
   if (options.start_date) params.append('start_date', options.start_date);
   if (options.end_date) params.append('end_date', options.end_date);
+  if (options.sort_by_create_date) params.append('sort_by_create_date', options.sort_by_create_date.toString());
   if (options.business) params.append('business', options.business);
 
   const res = await APIAxios.get('/order/list/', { params });
