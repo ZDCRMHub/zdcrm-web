@@ -90,7 +90,6 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
   }
 
 
-
   return (
     <>
       <AddDeliveryNoteModal
@@ -468,14 +467,21 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                     </p>
                   </section>
 
-                  <section className="flex justify-end my-12">
-                    <LinkButton
-                      href={(!order?.delivery.driver?.phone_number && !order?.delivery.driver?.name) ? `/order-management/orders/${order?.id}/confirm-delivery` : `/order-management/orders/${order?.id}/complete-order`}
-                      className="h-12 px-8"
-                    >
-                      Proceed to Dispatch
-                    </LinkButton>
-                  </section>
+                  {order?.delivery?.status === "PENDING" && (
+                    <section className="flex justify-end my-12">
+                      <LinkButton
+                        href={
+                          (!order?.delivery.driver?.phone_number && !order?.delivery.driver?.name)
+                            ? `/order-management/orders/${order?.id}/confirm-delivery`
+                            : `/order-management/orders/${order?.id}/complete-order`
+                        }
+                        className="h-12 px-8"
+                      >
+                        Proceed to Dispatch
+                      </LinkButton>
+                    </section>
+                  )}
+
 
                   <section className="flex flex-col gap-1.5">
                     <p className="flex items-center gap-x-4 font-medium font-poppins text-[0.925rem] ">

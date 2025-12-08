@@ -95,7 +95,7 @@ export default function EnquiriesDashboard() {
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 min-h-full max-h-full'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6'>
       <div className='flex justify-between items-center mb-6 gap-4 pt-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
@@ -201,7 +201,7 @@ export default function EnquiriesDashboard() {
         </div>
       </div>
 
-      <section>
+      <section className=''>
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Enquiries', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Enquiries'} />
         <EnquiriesTable
@@ -213,7 +213,7 @@ export default function EnquiriesDashboard() {
       </section>
 
 
-      <footer className="sticky bottom-0">
+      {/* <footer className="sticky bottom-0">
         <div className="flex items-center justify-between mt-auto py-1.5">
           <Pagination className="justify-start ">
             <PaginationContent>
@@ -252,7 +252,7 @@ export default function EnquiriesDashboard() {
             </div>
           </section>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }

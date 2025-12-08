@@ -280,7 +280,7 @@ const OrdersTableHistory = ({
       <div ref={tableRef} className="overflow-auto max-h-full">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <Table>
+            <Table >
               <TableHeader className="sticky top-0">
                 <TableRow>
                   <TableHead className="min-w-[150px]">Order ID</TableHead>
