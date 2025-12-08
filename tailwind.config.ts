@@ -66,6 +66,8 @@ const config = {
         'sky-blue': '#72ADE6',
         'deep-black': '#091913',
         'text-grey': '#676C71',
+        'grey-1': '#FAFAFA',
+
         brand: {
           100: '#E0F2FE',
           200: '#BAE6FD',

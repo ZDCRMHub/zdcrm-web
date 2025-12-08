@@ -27,7 +27,7 @@ export default function EnquiriesDashboard() {
   const [searchText, setSearchText] = useState("")
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(15);
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>('STD,FND');
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
@@ -213,7 +213,7 @@ export default function EnquiriesDashboard() {
       </section>
 
 
-      {/* <footer className="sticky bottom-0">
+      <footer className="">
         <div className="flex items-center justify-between mt-auto py-1.5">
           <Pagination className="justify-start ">
             <PaginationContent>
@@ -252,7 +252,7 @@ export default function EnquiriesDashboard() {
             </div>
           </section>
         </div>
-      </footer> */}
+      </footer>
     </div>
   );
 }

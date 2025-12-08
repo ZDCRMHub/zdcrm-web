@@ -198,7 +198,7 @@ export default function EnquiriesTable({
   if (!data) return null;
 
   return (
-    <div className="relative min-h-[80vh]">
+    <div className="relative">
       <div className="flex items-center gap-4 h-3">
         <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
           <div
@@ -237,33 +237,33 @@ export default function EnquiriesTable({
         </section>
       </div>
 
-      <div ref={tableRef}  className="overflow-auto ">
-        <div className="min-w-full">
+      <div ref={tableRef}  className="overflow-auto max-h-[600px] noscrollbar">
+        {/* <div className="min-w-full"> */}
           <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <Table>
+            <Table className="">
               <TableHeader>
                 <TableRow className="">
-                  <TableHead className="min-w-[150px] sticky top-0 z-30">Enquiry ID</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30">Delivery Zone</TableHead>
-                  <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30">
+                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Enquiry ID</TableHead>
+                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Delivery Zone</TableHead>
+                  <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
                     Delivery Date
                   </TableHead>
-                  <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30">
+                  <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
                     Client Details
                   </TableHead>
-                  <TableHead className="min-w-[230px] sticky top-0 z-30">Enquiry Items</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30">Category</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30">Status</TableHead>
-                  <TableHead className="min-w-[200px] sticky top-0 z-30">
+                  <TableHead className="min-w-[230px] sticky top-0 z-30 bg-grey-1">Enquiry Items</TableHead>
+                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Category</TableHead>
+                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Status</TableHead>
+                  <TableHead className="min-w-[200px] sticky top-0 z-30 bg-grey-1">
                     Recipient Details
                   </TableHead>
-                  <TableHead className="w-[170px] sticky top-0 z-30">Order Notes</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30">Created On</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30">
+                  <TableHead className="w-[170px] sticky top-0 z-30 bg-grey-1">Order Notes</TableHead>
+                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Created On</TableHead>
+                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">
                     {type == "active" ? "Last Update" : "Deleted On"}
                   </TableHead>
 
-                  <TableHead className="sticky top-0 z-30"></TableHead>
+                  <TableHead className="sticky top-0 z-30 bg-grey-1"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -488,7 +488,7 @@ export default function EnquiriesTable({
               </TableBody>
             </Table>
           </div>
-        </div>
+        {/* </div> */}
       </div>
 
       {data.length === 0 && !isFiltered && (
