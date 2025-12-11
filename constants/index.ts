@@ -116,6 +116,7 @@ export const ORDER_STATUS_OPTIONS = [
   { value: "STD", label: "Quality Check Passed" },
   { value: "CAN", label: "Cancelled" },
 ]
+
 export const ORDER_DELIVERY_STATUS_OPTIONS = [
 
   { value: "PENDING", label: "Quality Check Passed" },

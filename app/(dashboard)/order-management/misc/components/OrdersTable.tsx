@@ -48,7 +48,7 @@ export const ORDER_STATUS_COLORS: Record<string, string> = {
   STD: "bg-blue-100 hover:bg-blue-100 text-blue-800",
   CAN: "bg-red-100 hover:bg-red-100 text-red-800",
   COM: "bg-green-200 hover:bg-green-200 text-green-800",
-  DEL: "bg-[#bf0f021c] text-[#bf3102]",  
+  DEL: "bg-[#bf0f021c] text-[#bf3102]",
 };
 
 interface CategoryBadgeProps {
@@ -109,9 +109,9 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
         onError: (error) => {
           const errorMessage = extractErrorMessage(error as unknown as any);
           toast.error(errorMessage),
-            {
-              duration: 5000,
-            };
+          {
+            duration: 5000,
+          };
         },
       }
     );
@@ -169,7 +169,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             <Badge
               className={cn(
                 ORDER_STATUS_COLORS[order.status] ||
-                  "bg-gray-100 text-gray-800 w-full text-center min-w-max",
+                "bg-gray-100 text-gray-800 w-full text-center min-w-max",
                 "rounded-md w-max "
               )}
             >
@@ -184,16 +184,28 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
             {isUpdatingStatus && <Spinner size={18} />}
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
-            {ORDER_STATUS_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                value={option.value}
-                onClick={() => handleStatusUpdate(option.value)}
-                className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
-              >
-                {option.label}
-              </button>
-            ))}
+            {ORDER_STATUS_OPTIONS.map((option) => {
+              const isQualityCheck = option.value === "STD";
+              const isDisabled = isQualityCheck && order.status !== "SOR";
+
+              return (
+                <button
+                  key={option.value}
+                  value={option.value}
+                  onClick={() => !isDisabled && handleStatusUpdate(option.value)}
+                  disabled={isDisabled}
+                  className={cn(
+                    "py-1.5 px-3 rounded-lg border text-xs cursor-pointer",
+                    isDisabled
+                      ? "opacity-40 cursor-not-allowed bg-gray-100 text-gray-400"
+                      : "hover:!bg-primary hover:!text-white hover:border-transparent"
+                  )}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+
           </PopoverContent>
         </Popover>
       </TableCell>
@@ -319,7 +331,7 @@ const OrdersTable = ({
   if (!data) return null;
 
   return (
-    <div className="relative h-[93%]">
+    <div className="relative">
       <div className="flex items-center gap-4 h-3">
         <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
           <div
@@ -358,40 +370,39 @@ const OrdersTable = ({
         </section>
       </div>
 
-      <div ref={tableRef} className="overflow-auto max-h-full">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="min-w-[150px]">Order ID</TableHead>
-                  <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
-                  <TableHead className="min-w-[175px] max-w-[500px]">
-                    Delivery Date
-                  </TableHead>
-                  <TableHead className="min-w-[200px] max-w-[500px]">
-                    Customers Details
-                  </TableHead>
-                  <TableHead className="min-w-[230px]">Order Items</TableHead>
-                  <TableHead className="min-w-[150px]">Category</TableHead>
-                  <TableHead className="min-w-[150px]">Status</TableHead>
-                  <TableHead className="min-w-[200px]">
-                    Recipient Details
-                  </TableHead>
-                  <TableHead className="w-[170px]">Order Notes</TableHead>
-                  <TableHead className="min-w-[180px]">Payment</TableHead>
-                  <TableHead>Payment(USD)</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((order, index) => (
-                  <OrderRow key={index} order={order} />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+      <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+        <div className="md:rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Order ID</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Delivery Zone</TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                  Delivery Date
+                </TableHead>
+                <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                  Customers Details
+                </TableHead>
+                <TableHead className="min-w-[230px] sticky top-0 z-30 bg-grey-1">Order Items</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Category</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Status</TableHead>
+                <TableHead className="min-w-[200px] sticky top-0 z-30 bg-grey-1">
+                  Recipient Details
+                </TableHead>
+                <TableHead className="w-[170px] sticky top-0 z-30 bg-grey-1">Order Notes</TableHead>
+                <TableHead className="min-w-[180px] sticky top-0 z-30 bg-grey-1">Payment</TableHead>
+                <TableHead className="sticky top-0 z-30 bg-grey-1">Payment(USD)</TableHead>
+                <TableHead className="sticky top-0 z-30 bg-grey-1"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((order, index) => (
+                <OrderRow key={index} order={order} />
+              ))}
+            </TableBody>
+          </Table>
         </div>
+
       </div>
 
       {data.length === 0 && isFiltered && (

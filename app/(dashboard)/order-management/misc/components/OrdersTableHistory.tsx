@@ -238,7 +238,7 @@ const OrdersTableHistory = ({
   if (!data) return null;
 
   return (
-    <div className="relative h-[93%]">
+    <div className="relative">
       <div className="flex items-center gap-4 h-3">
         <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
           <div
@@ -277,43 +277,43 @@ const OrdersTableHistory = ({
         </section>
       </div>
 
-      <div ref={tableRef} className="overflow-auto max-h-full">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <Table >
-              <TableHeader className="sticky top-0">
-                <TableRow>
-                  <TableHead className="min-w-[150px]">Order ID</TableHead>
-                  <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
-                  <TableHead className="min-w-[200px] max-w-[500px]">
-                    Customers Details
-                  </TableHead>
-                  <TableHead className="min-w-[175px] max-w-[500px]">
-                    Delivery Date
-                  </TableHead>
-                  <TableHead>Rider Details</TableHead>
-                  <TableHead className="w-[170px]">Category</TableHead>
-                  <TableHead className="min-w-[180px]">
-                    Message on Order
-                  </TableHead>
-                  <TableHead className="min-w-[150px]">Total Amount</TableHead>
-                  <TableHead className="min-w-[175px] max-w-[500px]">
-                    {" "}
-                    Status
-                  </TableHead>
-                  <TableHead className="min-w-[150px]">Created On</TableHead>
-                  <TableHead className="w-[170px]">Last Update</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((order, index) => (
-                  <OrderRow key={index} order={order} />
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+      <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+        {/* <div className="inline-block min-w-full align-middle"> */}
+        <div className="md:rounded-lg">
+          <Table >
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Order ID</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Delivery Zone</TableHead>
+                <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 bg-grey-1">
+                  Customers Details
+                </TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 bg-grey-1">
+                  Delivery Date
+                </TableHead>
+                <TableHead className="sticky top-0 bg-grey-1">Rider Details</TableHead>
+                <TableHead className="w-[170px] sticky top-0 bg-grey-1">Category</TableHead>
+                <TableHead className="min-w-[180px] sticky top-0 bg-grey-1">
+                  Message on Order
+                </TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Total Amount</TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 bg-grey-1">
+                  {" "}
+                  Status
+                </TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Created On</TableHead>
+                <TableHead className="w-[170px] sticky top-0 bg-grey-1">Last Update</TableHead>
+                <TableHead className="sticky top-0 bg-grey-1"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((order, index) => (
+                <OrderRow key={index} order={order} />
+              ))}
+            </TableBody>
+          </Table>
         </div>
+        {/* </div> */}
       </div>
 
       {data.length === 0 && isFiltered && (

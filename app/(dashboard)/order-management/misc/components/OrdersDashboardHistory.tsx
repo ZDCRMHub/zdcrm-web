@@ -33,7 +33,7 @@ export default function OrdersDashboardHistory() {
   const [searchText, setSearchText] = useState("")
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(15);
   const defaultStatuses = 'COM,CAN'
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>(defaultStatuses);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
@@ -96,10 +96,10 @@ export default function OrdersDashboardHistory() {
 
 
   return (
-    <div className='relative grid grid-rows-[max-content,1fr,max-content] w-full md:w-[95%] max-w-[1792px] mx-auto pb-3 max-h-full'>
+    <div className='relative flex flex-col w-full md:w-[95%] max-w-[1792px] mx-auto pt-6 pb-6'>
 
-      <header className='sticky top-0  pt-6 z-[2] bg-[#FAFAFA]'>
-        <section className=' flex justify-between items-center gap-4'>
+      <header className='z-[2] bg-[#FAFAFA]'>
+        <section className='flex justify-between items-center gap-4'>
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
               type='text'
@@ -233,7 +233,7 @@ export default function OrdersDashboardHistory() {
             </Button>
           </div>
         </section>
-        <div className="text-sm text-gray-600 my-2">
+        <div className="text-sm text-gray-600 mt-2 mb-4">
           Showing orders {" "}
           <p className='inline-block font-medium text-black'>
             {selectedStatuses && selectedStatuses !== defaultStatuses && ` with statuses: ${selectedStatuses.split(',').map(s => ORDER_STATUS_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
@@ -244,7 +244,7 @@ export default function OrdersDashboardHistory() {
       </header>
 
 
-      <section className="flex-grow overflow-auto w-full pt-6 pb-3">
+      <section className="pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Orders', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Orders'} />
         <OrdersTableHistory
@@ -257,7 +257,7 @@ export default function OrdersDashboardHistory() {
       </section>
 
 
-      <footer className="sticky bottom-0">
+      <footer className="">
         <div className="flex items-center justify-between mt-auto py-1.5">
           <Pagination className="justify-start ">
             <PaginationContent>

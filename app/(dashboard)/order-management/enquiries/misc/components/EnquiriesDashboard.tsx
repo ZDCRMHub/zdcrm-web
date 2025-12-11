@@ -5,7 +5,7 @@ import { Search, Plus, RefreshCcw, Check, } from 'lucide-react';
 import { format, subMonths } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { Controller, useForm } from 'react-hook-form';
-import { ArrowDown2, Calendar, Category2, NotificationStatus, TickCircle } from 'iconsax-react';
+import { ArrowDown2, Calendar, Category2, NotificationStatus } from 'iconsax-react';
 
 import { Button } from '@/components/ui/button';
 import { LinkButton } from '@/components/ui';
@@ -95,8 +95,8 @@ export default function EnquiriesDashboard() {
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6'>
-      <div className='flex justify-between items-center mb-6 gap-4 pt-4'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto py-6'>
+      <header className='flex justify-between items-center gap-4'>
         <div className='flex items-center gap-2 w-80 grow'>
           <Input
             type='text'
@@ -175,7 +175,7 @@ export default function EnquiriesDashboard() {
 
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 mb-4'>
           {
             (debouncedSearchText || (selectedStatuses && selectedStatuses !== 'STD,FND')) && (
               <Button
@@ -199,9 +199,9 @@ export default function EnquiriesDashboard() {
             <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
           </Button>
         </div>
-      </div>
+      </header>
 
-      <section className=''>
+      <section className="pt-6 pb-3"  >
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Enquiries', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Enquiries'} />
         <EnquiriesTable

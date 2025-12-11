@@ -258,7 +258,7 @@ const OrdersTableDelivery = ({ data, isLoading, isFetching, error, isFiltered }:
 
 
     return (
-        <div className="relative h-[93%]">
+        <div className="relative">
             <div className="flex items-center gap-4 h-3">
                 <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
                     <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && "bg-blue-200")}>
@@ -294,41 +294,37 @@ const OrdersTableDelivery = ({ data, isLoading, isFetching, error, isFiltered }:
             </div>
 
 
-            <div ref={tableRef} className="overflow-auto max-h-full">
-                <div className="inline-block min-w-full align-middle">
-                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className='min-w-[150px]'>Order ID</TableHead>
-                                    <TableHead className='min-w-[150px]'>Delivery Zone</TableHead>
-                                    <TableHead>Delivery Date</TableHead>
-                                    <TableHead className='min-w-[150px] max-w-max'>Status</TableHead>
-                                    <TableHead>Recipient Details</TableHead>
-                                    <TableHead className='min-w-[150px]'>Delivery Address</TableHead>
-                                    <TableHead className='min-w-[150px]'>Delivery Notes</TableHead>
-                                    <TableHead>Rider Details</TableHead>
-                                    <TableHead className='min-w-[200px]'>Customer Details</TableHead>
-                                    <TableHead className='min-w-[150px]'>Delivery Expenses</TableHead>
-                                    <TableHead></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    data.map((order, index) => (
-                                        <OrderRow
-                                            key={index}
-                                            order={order}
-                                        />
-                                    ))
-                                }
-                            </TableBody>
-                        </Table>
-                    </div>
+            <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+                <div className="md:rounded-lg">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Order ID</TableHead>
+                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Zone</TableHead>
+                                <TableHead className='sticky top-0 z-30 bg-grey-1'>Delivery Date</TableHead>
+                                <TableHead className='min-w-[150px] max-w-max sticky top-0 z-30 bg-grey-1'>Status</TableHead>
+                                <TableHead className='sticky top-0 z-30 bg-grey-1'>Recipient Details</TableHead>
+                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Address</TableHead>
+                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Notes</TableHead>
+                                <TableHead className='sticky top-0 z-30 bg-grey-1'>Rider Details</TableHead>
+                                <TableHead className='min-w-[200px] sticky top-0 z-30 bg-grey-1'>Customer Details</TableHead>
+                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Expenses</TableHead>
+                                <TableHead className='sticky top-0 z-30 bg-grey-1'></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {
+                                data.map((order, index) => (
+                                    <OrderRow
+                                        key={index}
+                                        order={order}
+                                    />
+                                ))
+                            }
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
-
-
 
             {
                 data.length === 0 && isFiltered && (

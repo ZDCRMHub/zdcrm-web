@@ -39,7 +39,7 @@ export default function OrdersDashboard() {
   const [selectedBusiness, setSelectedBusiness] = useState<string | null>(null);
   const [selectedRep, setSelectedRep] = useState<number | null>(null);
   const [selectedDeliveryZone, setSelectedDeliveryZone] = useState<string | null>(null);
-  
+
   const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
   const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
   const { control, register, setValue, watch } = useForm<{
@@ -83,7 +83,7 @@ export default function OrdersDashboard() {
     setCurrentPage(1);
   }
 
-  const isFiltered =  selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR') || selectedBusiness || selectedRep || selectedDeliveryZone;
+  const isFiltered = selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== 'PND,SOA,SOR') || selectedBusiness || selectedRep || selectedDeliveryZone;
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSelectedStatuses('PND,SOA,SOR');
@@ -102,8 +102,8 @@ export default function OrdersDashboard() {
 
 
   return (
-    <div className='relative grid grid-rows-[max-content,1fr,max-content] w-full md:w-[95%] max-w-[1792px] mx-auto pb-3 max-h-full'>
-      <header className='sticky top-0  pt-6 z-[2] bg-[#FAFAFA]'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 pt-6'>
+      <header className='z-[2] bg-[#FAFAFA]'>
         <div className="flex justify-between items-center gap-4">
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
@@ -274,7 +274,7 @@ export default function OrdersDashboard() {
 
       </header>
 
-      <section className="flex-grow overflow-auto w-full pt-6 pb-3">
+      <section className="pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar
           tabs={[

@@ -33,7 +33,7 @@ export default function OrdersDashboardDelivery() {
   const [searchText, setSearchText] = useState("")
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(15);
   const [selectedCategory, setSelectedCategory] = useState<number | undefined>();
   const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
   const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
@@ -125,8 +125,8 @@ export default function OrdersDashboardDelivery() {
 
 
   return (
-    <div className='relative grid grid-rows-[max-content,1fr,max-content] gap-4 w-full md:w-[95%] xl:w-[92.5%] max-w-[1792px] mx-auto pb-4 h-full overflow-hidden'>
-      <header className='sticky top-0  pt-6 z-[2] bg-[#FAFAFA]'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 pt-6'>
+      <header className='z-[2] bg-[#FAFAFA]'>
         <div className="flex justify-between items-center gap-4">
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
@@ -302,12 +302,11 @@ export default function OrdersDashboardDelivery() {
           </div>
         </div>
 
-        <div className="text-sm text-gray-600 mb-4">
+        <div className="text-sm text-gray-600 mb-4 mt-2">
           Showing
           {
             !selectedCategory && !debouncedSearchText && (!selectedDeliveryStatuses || selectedDeliveryStatuses === defaultDeliveryStatuses) && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
-          }
-          orders {" "}
+          } orders {" "}
           <p className='inline-block font-medium text-black'>
             {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
             {selectedDeliveryStatuses && selectedDeliveryStatuses !== defaultDeliveryStatuses && ` with delivery statuses: ${selectedDeliveryStatuses.split(',').map((status) => {
@@ -322,7 +321,7 @@ export default function OrdersDashboardDelivery() {
       </header>
 
 
-      <section className="w-full overflow-hidden">
+      <section className="pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Orders', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Orders'} />
         <OrdersTableDelivery
@@ -335,7 +334,7 @@ export default function OrdersDashboardDelivery() {
       </section>
 
 
-      <footer className="sticky bottom-0">
+      <footer className="">
         <div className="flex items-center justify-between mt-auto py-1.5">
           <Pagination className="justify-start ">
             <PaginationContent>

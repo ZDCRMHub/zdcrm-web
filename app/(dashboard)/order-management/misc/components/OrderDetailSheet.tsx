@@ -192,27 +192,40 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
                       <span className="text-sm">Order ID: {order?.order_number}</span>
                     </div>
 
-                    <Select value={order?.status} defaultValue={order?.status} onValueChange={(new_value) => handleStatusUpdate(new_value)}>
+                    <Select
+                      value={order?.status}
+                      defaultValue={order?.status}
+                      onValueChange={(new_value) => handleStatusUpdate(new_value)}
+                    >
                       <SelectTrigger className="w-[150px] bg-transparent">
                         <SelectValue placeholder={order?.status} />
-                        {
-                          isUpdatingStatus && <Spinner size={18} />
-                        }
+                        {isUpdatingStatus && <Spinner size={18} />}
                       </SelectTrigger>
+
                       <SelectContent>
-                        {
-                          ORDER_STATUS_OPTIONS.map((option) => (
+                        {ORDER_STATUS_OPTIONS.map((option) => {
+                          const isQualityCheck = option.value === "STD";
+                          const isDisabled = isQualityCheck && order?.status !== "SOR";
+
+                          return (
                             <SelectItem
                               key={option.value}
                               value={option.value}
-                              className="py-2 my-1 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent"
+                              disabled={isDisabled}
+                              className={cn(
+                                "py-2 my-1 rounded-lg border cursor-pointer",
+                                isDisabled
+                                  ? "opacity-40 cursor-not-allowed bg-gray-100 text-gray-400"
+                                  : "hover:!bg-primary hover:!text-white hover:border-transparent"
+                              )}
                             >
                               {option.label}
                             </SelectItem>
-                          ))
-                        }
+                          );
+                        })}
                       </SelectContent>
                     </Select>
+
                   </div>
 
                   <div className="flex items-center space-x-2">

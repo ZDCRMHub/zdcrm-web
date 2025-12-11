@@ -237,258 +237,256 @@ export default function EnquiriesTable({
         </section>
       </div>
 
-      <div ref={tableRef}  className="overflow-auto max-h-[600px] noscrollbar">
-        {/* <div className="min-w-full"> */}
-          <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <Table className="">
-              <TableHeader>
-                <TableRow className="">
-                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Enquiry ID</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Delivery Zone</TableHead>
-                  <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
-                    Delivery Date
-                  </TableHead>
-                  <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
-                    Client Details
-                  </TableHead>
-                  <TableHead className="min-w-[230px] sticky top-0 z-30 bg-grey-1">Enquiry Items</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Category</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Status</TableHead>
-                  <TableHead className="min-w-[200px] sticky top-0 z-30 bg-grey-1">
-                    Recipient Details
-                  </TableHead>
-                  <TableHead className="w-[170px] sticky top-0 z-30 bg-grey-1">Order Notes</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Created On</TableHead>
-                  <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">
-                    {type == "active" ? "Last Update" : "Deleted On"}
-                  </TableHead>
+      <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+        <div className="md:rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Enquiry ID</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Delivery Zone</TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                  Delivery Date
+                </TableHead>
+                <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                  Client Details
+                </TableHead>
+                <TableHead className="min-w-[230px] sticky top-0 z-30 bg-grey-1">Enquiry Items</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Category</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Status</TableHead>
+                <TableHead className="min-w-[200px] sticky top-0 z-30 bg-grey-1">
+                  Recipient Details
+                </TableHead>
+                <TableHead className="w-[170px] sticky top-0 z-30 bg-grey-1">Order Notes</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Created On</TableHead>
+                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">
+                  {type == "active" ? "Last Update" : "Deleted On"}
+                </TableHead>
 
-                  <TableHead className="sticky top-0 z-30 bg-grey-1"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((enquiry, index) => {
-                  return (
-                    <TableRow key={enquiry.id}>
-                      <TableCell className="">
-                        <div className="font-medium !min-w-max">
-                          {enquiry.enquiry_number ?? "--"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {enquiry.created_by?.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className="">
-                        <div>
-                          {enquiry?.delivery.zone
-                            ? DELIVERY_ZONES_ENUMS[enquiry?.delivery.zone]
-                            : "-"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {enquiry.branch?.name ?? ""}
-                        </div>
-                      </TableCell>
-                      <TableCell className=" uppercase">
-                        {formatUniversalDate(enquiry?.delivery.delivery_date)}
-                      </TableCell>
+                <TableHead className="sticky top-0 z-30 bg-grey-1"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((enquiry, index) => {
+                return (
+                  <TableRow key={enquiry.id}>
+                    <TableCell className="">
+                      <div className="font-medium !min-w-max">
+                        {enquiry.enquiry_number ?? "--"}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {enquiry.created_by?.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="">
+                      <div>
+                        {enquiry?.delivery.zone
+                          ? DELIVERY_ZONES_ENUMS[enquiry?.delivery.zone]
+                          : "-"}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {enquiry.branch?.name ?? ""}
+                      </div>
+                    </TableCell>
+                    <TableCell className=" uppercase">
+                      {formatUniversalDate(enquiry?.delivery.delivery_date)}
+                    </TableCell>
 
-                      <TableCell>
-                        <div className="font-medium !min-w-max">
-                          {enquiry.customer.name}
+                    <TableCell>
+                      <div className="font-medium !min-w-max">
+                        {enquiry.customer.name}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {enquiry.customer.phone}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {enquiry.items.map((item, idx) => (
+                        <div key={idx} className="!min-w-max">
+                          {item.product.name}
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {enquiry.customer.phone}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {enquiry.items.map((item, idx) => (
-                          <div key={idx} className="!min-w-max">
-                            {item.product.name}
-                          </div>
+                      ))}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 min-w-max">
+                        {enquiry.items?.map((item) => (
+                          <Badge
+                            key={item.id}
+                            variant="outline"
+                            className={cn(
+                              "flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                            )}
+                          >
+                            {CATEGORIES_ENUMS[item?.product?.category?.name]}
+                          </Badge>
                         ))}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2 min-w-max">
-                          {enquiry.items?.map((item) => (
+                      </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="min-w-full max-w-max grid grid-cols-[1fr,0.5fr] items-center ">
+                        <Popover>
+                          <PopoverTrigger className="flex items-center gap-1">
                             <Badge
-                              key={item.id}
-                              variant="outline"
                               className={cn(
-                                "flex items-center justify-center bg-transparent text-[#A7A7A7] font-normal rounded-sm h-5 w-5"
+                                ORDER_STATUS_COLORS[enquiry.status] ||
+                                "bg-[#E7F7EF] text-[#0CAF60]",
+                                "rounded-md w-max"
                               )}
                             >
-                              {CATEGORIES_ENUMS[item?.product?.category?.name]}
+                              {ENQUIRY_STATUS_ENUMS[enquiry.status]}
+                              <CaretDown className="h-4 w-4" />
                             </Badge>
-                          ))}
-                        </div>
-                      </TableCell>
-
-                      <TableCell>
-                        <div className="min-w-full max-w-max grid grid-cols-[1fr,0.5fr] items-center ">
-                          <Popover>
-                            <PopoverTrigger className="flex items-center gap-1">
-                              <Badge
-                                className={cn(
-                                  ORDER_STATUS_COLORS[enquiry.status] ||
-                                    "bg-[#E7F7EF] text-[#0CAF60]",
-                                  "rounded-md w-max"
-                                )}
+                            {isPending &&
+                              selectedEnquiry?.id == enquiry?.id && (
+                                <Spinner size={18} />
+                              )}
+                          </PopoverTrigger>
+                          <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
+                            {[
+                              { label: "Started Discussion", value: "STD" },
+                              { label: "Finalized Discussion", value: "FND" },
+                            ].map((option) => (
+                              <button
+                                key={option.value}
+                                value={option.value}
+                                onClick={() => {
+                                  setSelectedEnquiry(enquiry);
+                                  updateEnquiryStatus(
+                                    option.value as
+                                    | "STD"
+                                    | "FND"
+                                    | "CON"
+                                    | "DEL"
+                                  );
+                                }}
+                                className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
                               >
-                                {ENQUIRY_STATUS_ENUMS[enquiry.status]}
-                                <CaretDown className="h-4 w-4" />
-                              </Badge>
-                              {isPending &&
-                                selectedEnquiry?.id == enquiry?.id && (
-                                  <Spinner size={18} />
-                                )}
-                            </PopoverTrigger>
-                            <PopoverContent className="flex flex-col gap-0.5 max-w-max p-2">
-                              {[
-                                { label: "Started Discussion", value: "STD" },
-                                { label: "Finalized Discussion", value: "FND" },
-                              ].map((option) => (
-                                <button
-                                  key={option.value}
-                                  value={option.value}
-                                  onClick={() => {
-                                    setSelectedEnquiry(enquiry);
-                                    updateEnquiryStatus(
-                                      option.value as
-                                        | "STD"
-                                        | "FND"
-                                        | "CON"
-                                        | "DEL"
-                                    );
-                                  }}
-                                  className="py-1.5 px-3 hover:!bg-primary hover:!text-white cursor-pointer rounded-lg border hover:border-transparent text-xs"
-                                >
-                                  {option.label}
-                                </button>
-                              ))}
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                      </TableCell>
+                                {option.label}
+                              </button>
+                            ))}
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TableCell>
 
-                      <TableCell>
-                        <div>{enquiry?.delivery?.recipient_name}</div>
-                        <div className="text-sm text-gray-500">
-                          {enquiry?.delivery?.recipient_phone}
-                        </div>
-                      </TableCell>
+                    <TableCell>
+                      <div>{enquiry?.delivery?.recipient_name}</div>
+                      <div className="text-sm text-gray-500">
+                        {enquiry?.delivery?.recipient_phone}
+                      </div>
+                    </TableCell>
 
-                      <TableCell className="w-max max-w-[350px] min-w-[180px]">
-                        {enquiry.message.substring(0, 50)}
-                        {enquiry.message.length > 50 && "..."}
-                      </TableCell>
+                    <TableCell className="w-max max-w-[350px] min-w-[180px]">
+                      {enquiry.message.substring(0, 50)}
+                      {enquiry.message.length > 50 && "..."}
+                    </TableCell>
 
-                      <TableCell className="">
+                    <TableCell className="">
+                      {format(
+                        new Date(enquiry.create_date),
+                        "EEE, do MMMM yyyy"
+                      )}
+                    </TableCell>
+                    <TableCell className="">
+                      <div>
                         {format(
-                          new Date(enquiry.create_date),
+                          new Date(enquiry.update_date),
                           "EEE, do MMMM yyyy"
                         )}
-                      </TableCell>
-                      <TableCell className="">
-                        <div>
-                          {format(
-                            new Date(enquiry.update_date),
-                            "EEE, do MMMM yyyy"
-                          )}
+                      </div>
+                      {type !== "active" && (
+                        <div className="text-sm text-gray-500">
+                          {enquiry.deleted_by?.name}
                         </div>
-                        {type !== "active" && (
-                          <div className="text-sm text-gray-500">
-                            {enquiry.deleted_by?.name}
-                          </div>
-                        )}
-                      </TableCell>
+                      )}
+                    </TableCell>
 
-                      <TableCell className="">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <ElipsisHorizontal className="h-6 w-6" />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="py-0 px-0 w-[235px]"
-                          >
-                            {type === "active" ? (
-                              <>
-                                <DropdownMenuItem>
-                                  <Link
-                                    href={`./enquiries/edit?enquiry_id=${enquiry.id}`}
-                                    className="w-full"
-                                  >
-                                    <span className="flex items-center gap-2 pl-6 py-3">
-                                      <Edit size={20} />
-                                      Edit Enquiry
-                                    </span>
-                                  </Link>
-                                </DropdownMenuItem>
+                    <TableCell className="">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <ElipsisHorizontal className="h-6 w-6" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="py-0 px-0 w-[235px]"
+                        >
+                          {type === "active" ? (
+                            <>
+                              <DropdownMenuItem>
+                                <Link
+                                  href={`./enquiries/edit?enquiry_id=${enquiry.id}`}
+                                  className="w-full"
+                                >
+                                  <span className="flex items-center gap-2 pl-6 py-3">
+                                    <Edit size={20} />
+                                    Edit Enquiry
+                                  </span>
+                                </Link>
+                              </DropdownMenuItem>
 
-                                <DropdownMenuItem>
-                                  <Link
-                                    href={`./enquiries/${enquiry.id}`}
-                                    className="w-full"
-                                  >
-                                    <span className="flex items-center gap-2 pl-6 py-3">
-                                      <I3DRotate size={24} />
-                                      Enquiry Details
-                                    </span>
-                                  </Link>
-                                </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Link
+                                  href={`./enquiries/${enquiry.id}`}
+                                  className="w-full"
+                                >
+                                  <span className="flex items-center gap-2 pl-6 py-3">
+                                    <I3DRotate size={24} />
+                                    Enquiry Details
+                                  </span>
+                                </Link>
+                              </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                  onSelect={() => {
-                                    setSelectedEnquiry(enquiry);
-                                    openConfirmDeleteModal();
-                                  }}
-                                  className="cursor-pointer"
-                                >
-                                  <span className="flex items-center gap-2 pl-6  py-3">
-                                    <Trash size={24} />
-                                    Delete Enquiry
-                                  </span>
-                                </DropdownMenuItem>
-                              </>
-                            ) : (
-                              <>
-                                <DropdownMenuItem
-                                  onSelect={() => {
-                                    setSelectedEnquiry(enquiry);
-                                    openConfirmRestoreModal();
-                                  }}
-                                  className="cursor-pointer"
-                                >
-                                  <span className="flex items-center gap-2 pl-6  py-3">
-                                    Restore Enquiry
-                                  </span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onSelect={() => {
-                                    setSelectedEnquiry(enquiry);
-                                    openConfirmPermanentDeleteModal();
-                                  }}
-                                  className="cursor-pointer"
-                                >
-                                  <span className="flex items-center gap-2 pl-6  py-3">
-                                    Delete Permanently
-                                  </span>
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        {/* </div> */}
+                              <DropdownMenuItem
+                                onSelect={() => {
+                                  setSelectedEnquiry(enquiry);
+                                  openConfirmDeleteModal();
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <span className="flex items-center gap-2 pl-6  py-3">
+                                  <Trash size={24} />
+                                  Delete Enquiry
+                                </span>
+                              </DropdownMenuItem>
+                            </>
+                          ) : (
+                            <>
+                              <DropdownMenuItem
+                                onSelect={() => {
+                                  setSelectedEnquiry(enquiry);
+                                  openConfirmRestoreModal();
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <span className="flex items-center gap-2 pl-6  py-3">
+                                  Restore Enquiry
+                                </span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onSelect={() => {
+                                  setSelectedEnquiry(enquiry);
+                                  openConfirmPermanentDeleteModal();
+                                }}
+                                className="cursor-pointer"
+                              >
+                                <span className="flex items-center gap-2 pl-6  py-3">
+                                  Delete Permanently
+                                </span>
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {data.length === 0 && !isFiltered && (
@@ -524,7 +522,7 @@ export default function EnquiriesTable({
       <ConfirmDeleteModal
         isModalOpen={isConfirmPermanentDeleteModalOpen}
         closeModal={closeConfirmPermanentDeleteModal}
-        deleteFn={() => {}}
+        deleteFn={() => { }}
         isDeleting={isPending}
         customTitleText="Confirm Permanent Delete"
         heading="Delete Permanently"
