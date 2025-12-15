@@ -240,29 +240,28 @@ export default function EnquiriesTable({
       <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
         <div className="md:rounded-lg">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-30 bg-grey-1">
               <TableRow>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Enquiry ID</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Delivery Zone</TableHead>
-                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="min-w-[150px]">Enquiry ID</TableHead>
+                <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px]">
                   Delivery Date
                 </TableHead>
-                <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="min-w-[200px] max-w-[500px]">
                   Client Details
                 </TableHead>
-                <TableHead className="min-w-[230px] sticky top-0 z-30 bg-grey-1">Enquiry Items</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Category</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Status</TableHead>
-                <TableHead className="min-w-[200px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="min-w-[230px]">Enquiry Items</TableHead>
+                <TableHead className="min-w-[150px]">Category</TableHead>
+                <TableHead className="min-w-[150px]">Status</TableHead>
+                <TableHead className="min-w-[200px]">
                   Recipient Details
                 </TableHead>
-                <TableHead className="w-[170px] sticky top-0 z-30 bg-grey-1">Order Notes</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Created On</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="w-[170px]">Order Notes</TableHead>
+                <TableHead className="min-w-[150px]">Created On</TableHead>
+                <TableHead className="min-w-[150px]">
                   {type == "active" ? "Last Update" : "Deleted On"}
                 </TableHead>
-
-                <TableHead className="sticky top-0 z-30 bg-grey-1"></TableHead>
+                <TableHead className=""></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -401,12 +400,12 @@ export default function EnquiriesTable({
                       )}
                     </TableCell>
 
-                    <TableCell className="">
+                    <TableCell className="max-h-fit">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button variant="ghost" className="p-0">
                             <ElipsisHorizontal className="h-6 w-6" />
-                            <span className="sr-only">Open menu</span>
+                            {/* <span className="sr-only">Open menu</span> */}
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent

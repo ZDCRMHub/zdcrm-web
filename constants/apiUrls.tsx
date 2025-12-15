@@ -11,5 +11,5 @@ export const inventoryUrl = {
 
 export const businessUrl = {
     getAllBranches: () =>
-        `/business/branches/list`,
+        `/business/list`,
 }

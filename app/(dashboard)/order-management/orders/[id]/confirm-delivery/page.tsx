@@ -23,7 +23,7 @@ const deliveryFormSchema = z.object({
   driver_name: z.string().min(1, 'Driver Name is required'),
   driver_phone: z.string().min(1, 'Phone Number is required'),
   delivery_platform: z.string().min(1, 'Delivery Platform is required'),
-  delivery_expense: z.number().optional() ,
+  delivery_expense: z.number().optional(),
   tracking_link: z.string().optional().refine((val) => {
     if (!val) return true; // If tracking link is not provided, it's valid
     const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w- .\/?%&=]*)?$/;
@@ -86,7 +86,7 @@ const OrdeManagementDelivery = () => {
           variant='ghost'
           size='icon'
           className='mr-2'
-          onClick={() => goBack()}>
+          onClick={() => router.push('/order-management/delivery')}>
           <ArrowLeft2 className='h-6 w-6 text-[#A0AEC0]' />
         </Button>
         <Button >

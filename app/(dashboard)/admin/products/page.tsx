@@ -248,6 +248,7 @@ const Page = () => {
   const { uploadToCloudinary } = useCloudinary()
 
   const handleEditClick = (product: TProductItem) => {
+    console.log(product)
     // Transform the product data to match our form structure
     const formVariations = product.variations.map((variation) => {
       return {
@@ -274,7 +275,7 @@ const Page = () => {
 
     // Set up the form with existing product data
     form.reset({
-      branch: product.branch?.id.toString() || "all",
+      branch: product.business?.id.toString() || "all",
       name: product.name,
       category_id: product.category.id,
       category_name: product.category.name,
@@ -1039,283 +1040,287 @@ const Page = () => {
             </div>
           </div>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[20%]">Name</TableHead>
-              <TableHead className="w-[20%]">Business</TableHead>
-              <TableHead className="w-[15%]">Category</TableHead>
-              <TableHead className="w-[40%]">Variations</TableHead>
-              <TableHead className="w-[25%] text-right">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {productsData?.data?.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="font-medium">{product.business?.name}</TableCell>
-                <TableCell>{product.category.name}</TableCell>
-                <TableCell>
-                  <div className="space-y-2">
-                    {product.variations.length > 0 ? (
-                      product.variations.map((variation) => (
-                        <div key={variation.id} className="flex items-center justify-between border rounded p-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                {variation.size}
-                                {product.category.name == "Cake" && " inches"}
-                              </span>
-                              <span className="text-sm text-muted-foreground">
-                                {variation.layer && `Layer: ${variation.layer}`}
-                                {variation.max_flowers !== null &&
-                                  variation.max_flowers !== undefined &&
-                                  `Max Flowers: ${variation.max_flowers}`}
-                              </span>
-                            </div>
-                            <div className="flex flex-col text-xs gap-1 text-muted-foreground">
-                              <span>Cost: {formatCurrency(Number(variation.cost_price), "NGN")}</span>
-                              <span>Selling: {formatCurrency(Number(variation.selling_price), "NGN")}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Sheet>
-                              <SheetTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                  <MdOutlineModeEdit className="h-4 w-4" />
-                                </Button>
-                              </SheetTrigger>
-                              <SheetContent>
-                                <SheetHeader>
-                                  <SheetTitle>Edit Variation</SheetTitle>
-                                </SheetHeader>
-                                <div className="py-4">
-                                  <Form {...form}>
-                                    <form
-                                      onSubmit={(e) => {
-                                        e.preventDefault()
-                                        let formData: any
-                                        formData = {
-                                          size: e.currentTarget.size.value,
-                                          cost_price: e.currentTarget.cost_price.value,
-                                          selling_price: e.currentTarget.selling_price.value,
-                                        }
 
-                                        if (e.currentTarget.layer) {
-                                          if (e.currentTarget.layer) {
-                                            formData.layer = e.currentTarget.layer.value
-                                          }
-                                        }
-
-                                        if (e.currentTarget.max_flowers) {
-                                          formData.max_flowers = Number.parseInt(e.currentTarget.max_flowers.value)
-                                        }
-
-                                        editVariationMutation.mutate(
-                                          {
-                                            productId: product.id,
-                                            variationId: variation.id,
-                                            data: formData,
-                                          },
-                                          {
-                                            onSuccess: () => {
-                                              setSuccessMessage("Variation updated successfully")
-                                              isSuccessModal.setTrue()
-                                            },
-                                            onError: (error) => {
-                                              const errMessage = extractErrorMessage((error as any)?.response?.data)
-                                              setErrorMessage(errMessage || "Failed to update variation")
-                                              isErrorModal.setTrue()
-                                            },
-                                          },
-                                        )
-                                      }}
-                                      className="space-y-4"
-                                    >
-                                      <FormItem>
-                                        <FormLabel>Size</FormLabel>
-                                        <Input name="size" defaultValue={variation.size} />
-                                      </FormItem>
-
-                                      {variation.layer !== null && (
-                                        <FormItem>
-                                          <FormLabel>Layer</FormLabel>
-                                          <Input name="layer" defaultValue={variation.layer || ""} />
-                                        </FormItem>
-                                      )}
-
-                                      {variation.max_flowers !== null && (
-                                        <FormItem>
-                                          <FormLabel>Max Flowers</FormLabel>
-                                          <Input
-                                            name="max_flowers"
-                                            type="number"
-                                            defaultValue={variation.max_flowers || 0}
-                                          />
-                                        </FormItem>
-                                      )}
-
-                                      <FormItem>
-                                        <FormLabel>Cost Price</FormLabel>
-                                        <Input name="cost_price" defaultValue={variation.cost_price} />
-                                      </FormItem>
-
-                                      <FormItem>
-                                        <FormLabel>Selling Price</FormLabel>
-                                        <Input name="selling_price" defaultValue={variation.selling_price} />
-                                      </FormItem>
-
-                                      <SheetFooter>
-                                        <SheetClose asChild>
-                                          <Button type="button" variant="outline">
-                                            Cancel
-                                          </Button>
-                                        </SheetClose>
-                                        <Button type="submit">
-                                          Save Changes
-                                          {updateProductMutation.isPending && <SmallSpinner className="ml-2" />}
-                                        </Button>
-                                      </SheetFooter>
-                                    </form>
-                                  </Form>
-                                </div>
-                              </SheetContent>
-                            </Sheet>
-
-                            {/* Duplicate Variation Button */}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0"
-                              onClick={() => handleDuplicateVariation(product, variation)}
-                              title="Duplicate variation"
-                            >
-                              <Copy className="h-4 w-4" />
-                            </Button>
-
-                            <Select
-                              value={variation.is_active ? "active" : "deactive"}
-                              onValueChange={(value) => handleVariationStatusChange(variation.id, value === "active")}
-                            >
-                              <SelectTrigger>
-                                <SelectValue
-                                  placeholder="Select Action"
-                                  className={cn(
-                                    "h-10",
-                                    variation.is_active
-                                      ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
-                                      : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none",
-                                  )}
-                                />
-                                {isUpdatingVariationStatus && <SmallSpinner />}
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectItem className="h-9 text-xs" value="active">
-                                    Active
-                                  </SelectItem>
-                                  <SelectItem className="h-9 text-xs" value="deactive">
-                                    Inactive
-                                  </SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-destructive"
-                              onClick={() => {
-                                if (confirm("Are you sure you want to delete this variation?")) {
-                                  deleteVariationMutation.mutate(
-                                    {
-                                      productId: product.id,
-                                      variationId: variation.id,
-                                    },
-                                    {
-                                      onSuccess: () => {
-                                        setSuccessMessage("Variation deleted successfully")
-                                        isSuccessModal.setTrue()
-                                      },
-                                      onError: (error) => {
-                                        const errMessage = extractErrorMessage((error as any)?.response?.data)
-                                        setErrorMessage(errMessage || "Failed to delete variation")
-                                        isErrorModal.setTrue()
-                                      },
-                                    },
-                                  )
-                                }
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground">No variations</p>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        isSheetOpen.setTrue()
-                        setEditingProductId(product.id)
-
-                        // Pre-fill the form with the existing product data
-                        form.reset({
-                          branch: product.branch?.id.toString() || "all",
-                          name: product.name,
-                          category_id: product.category.id,
-                          category_name: product.category.name,
-                          external_id: product.external_id || "",
-                          image: {
-                            file: null,
-                            url: product.image || "",
-                          },
-                          variations: [
-                            {
-                              size: "",
-                              cost_price: "",
-                              selling_price: "",
-                              layer: undefined,
-                              max_flowers: undefined,
-                              id: 0,
-                            },
-                          ],
-                        })
-                      }}
-                    >
-                      <PlusCircle className="h-4 w-4 mr-2" />
-                      Add Variation
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-[10px]">
-                    {/* Duplicate Product Button */}
-                    <div
-                      className="p-2 rounded-lg bg-[#10B981] flex items-center cursor-pointer"
-                      onClick={() => handleDuplicateProduct(product)}
-                      title="Duplicate product"
-                    >
-                      <Copy color="#fff" size={20} />
-                    </div>
-
-                    <div
-                      className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
-                      onClick={() => handleEditClick(product)}
-                    >
-                      <MdOutlineModeEdit color="#fff" size={20} />
-                    </div>
-                  </div>
-                </TableCell>
+        <section className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[180px]">Name</TableHead>
+                <TableHead className="">Business</TableHead>
+                <TableHead className="">Category</TableHead>
+                <TableHead className="w-[300px]">Variations</TableHead>
+                <TableHead className=" text-right">Action</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <div className="w-full flex justify-between items-center mt-6">
+            </TableHeader>
+            <TableBody>
+              {productsData?.data?.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="font-medium">{product.business?.name}</TableCell>
+                  <TableCell>{product.category.name}</TableCell>
+                  <TableCell>
+                    <div className="space-y-2">
+                      {product.variations.length > 0 ? (
+                        product.variations.map((variation) => (
+                          <div key={variation.id} className="flex items-center justify-between border rounded p-2">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">
+                                  {variation.size}
+                                  {product.category.name == "Cake" && " inches"}
+                                </span>
+                                <span className="text-sm text-muted-foreground">
+                                  {variation.layer && `Layer: ${variation.layer}`}
+                                  {variation.max_flowers !== null &&
+                                    variation.max_flowers !== undefined &&
+                                    `Max Flowers: ${variation.max_flowers}`}
+                                </span>
+                              </div>
+                              <div className="flex flex-col text-xs gap-1 text-muted-foreground">
+                                <span>Cost: {formatCurrency(Number(variation.cost_price), "NGN")}</span>
+                                <span>Selling: {formatCurrency(Number(variation.selling_price), "NGN")}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Sheet>
+                                <SheetTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                    <MdOutlineModeEdit className="h-4 w-4" />
+                                  </Button>
+                                </SheetTrigger>
+                                <SheetContent>
+                                  <SheetHeader>
+                                    <SheetTitle>Edit Variation</SheetTitle>
+                                  </SheetHeader>
+                                  <div className="py-4">
+                                    <Form {...form}>
+                                      <form
+                                        onSubmit={(e) => {
+                                          e.preventDefault()
+                                          let formData: any
+                                          formData = {
+                                            size: e.currentTarget.size.value,
+                                            cost_price: e.currentTarget.cost_price.value,
+                                            selling_price: e.currentTarget.selling_price.value,
+                                          }
+
+                                          if (e.currentTarget.layer) {
+                                            if (e.currentTarget.layer) {
+                                              formData.layer = e.currentTarget.layer.value
+                                            }
+                                          }
+
+                                          if (e.currentTarget.max_flowers) {
+                                            formData.max_flowers = Number.parseInt(e.currentTarget.max_flowers.value)
+                                          }
+
+                                          editVariationMutation.mutate(
+                                            {
+                                              productId: product.id,
+                                              variationId: variation.id,
+                                              data: formData,
+                                            },
+                                            {
+                                              onSuccess: () => {
+                                                setSuccessMessage("Variation updated successfully")
+                                                isSuccessModal.setTrue()
+                                              },
+                                              onError: (error) => {
+                                                const errMessage = extractErrorMessage((error as any)?.response?.data)
+                                                setErrorMessage(errMessage || "Failed to update variation")
+                                                isErrorModal.setTrue()
+                                              },
+                                            },
+                                          )
+                                        }}
+                                        className="space-y-4"
+                                      >
+                                        <FormItem>
+                                          <FormLabel>Size</FormLabel>
+                                          <Input name="size" defaultValue={variation.size} />
+                                        </FormItem>
+
+                                        {variation.layer !== null && (
+                                          <FormItem>
+                                            <FormLabel>Layer</FormLabel>
+                                            <Input name="layer" defaultValue={variation.layer || ""} />
+                                          </FormItem>
+                                        )}
+
+                                        {variation.max_flowers !== null && (
+                                          <FormItem>
+                                            <FormLabel>Max Flowers</FormLabel>
+                                            <Input
+                                              name="max_flowers"
+                                              type="number"
+                                              defaultValue={variation.max_flowers || 0}
+                                            />
+                                          </FormItem>
+                                        )}
+
+                                        <FormItem>
+                                          <FormLabel>Cost Price</FormLabel>
+                                          <Input name="cost_price" defaultValue={variation.cost_price} />
+                                        </FormItem>
+
+                                        <FormItem>
+                                          <FormLabel>Selling Price</FormLabel>
+                                          <Input name="selling_price" defaultValue={variation.selling_price} />
+                                        </FormItem>
+
+                                        <SheetFooter>
+                                          <SheetClose asChild>
+                                            <Button type="button" variant="outline">
+                                              Cancel
+                                            </Button>
+                                          </SheetClose>
+                                          <Button type="submit">
+                                            Save Changes
+                                            {updateProductMutation.isPending && <SmallSpinner className="ml-2" />}
+                                          </Button>
+                                        </SheetFooter>
+                                      </form>
+                                    </Form>
+                                  </div>
+                                </SheetContent>
+                              </Sheet>
+
+                              {/* Duplicate Variation Button */}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0"
+                                onClick={() => handleDuplicateVariation(product, variation)}
+                                title="Duplicate variation"
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+
+                              <Select
+                                value={variation.is_active ? "active" : "deactive"}
+                                onValueChange={(value) => handleVariationStatusChange(variation.id, value === "active")}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue
+                                    placeholder="Select Action"
+                                    className={cn(
+                                      "h-10",
+                                      variation.is_active
+                                        ? "bg-[#E7F7EF] text-[#0CAF60] border-none"
+                                        : "bg-[rgba(224,49,55,0.31)] text-[#E03137] border-none",
+                                    )}
+                                  />
+                                  {isUpdatingVariationStatus && <SmallSpinner />}
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectItem className="h-9 text-xs" value="active">
+                                      Active
+                                    </SelectItem>
+                                    <SelectItem className="h-9 text-xs" value="deactive">
+                                      Inactive
+                                    </SelectItem>
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-destructive"
+                                onClick={() => {
+                                  if (confirm("Are you sure you want to delete this variation?")) {
+                                    deleteVariationMutation.mutate(
+                                      {
+                                        productId: product.id,
+                                        variationId: variation.id,
+                                      },
+                                      {
+                                        onSuccess: () => {
+                                          setSuccessMessage("Variation deleted successfully")
+                                          isSuccessModal.setTrue()
+                                        },
+                                        onError: (error) => {
+                                          const errMessage = extractErrorMessage((error as any)?.response?.data)
+                                          setErrorMessage(errMessage || "Failed to delete variation")
+                                          isErrorModal.setTrue()
+                                        },
+                                      },
+                                    )
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No variations</p>
+                      )}
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          isSheetOpen.setTrue()
+                          setEditingProductId(product.id)
+
+                          // Pre-fill the form with the existing product data
+                          form.reset({
+                            branch: product.branch?.id.toString() || "all",
+                            name: product.name,
+                            category_id: product.category.id,
+                            category_name: product.category.name,
+                            external_id: product.external_id || "",
+                            image: {
+                              file: null,
+                              url: product.image || "",
+                            },
+                            variations: [
+                              {
+                                size: "",
+                                cost_price: "",
+                                selling_price: "",
+                                layer: undefined,
+                                max_flowers: undefined,
+                                id: 0,
+                              },
+                            ],
+                          })
+                        }}
+                      >
+                        <PlusCircle className="h-4 w-4 mr-2" />
+                        Add Variation
+                      </Button>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-[10px]">
+                      {/* Duplicate Product Button */}
+                      <div
+                        className="p-2 rounded-lg bg-[#10B981] flex items-center cursor-pointer"
+                        onClick={() => handleDuplicateProduct(product)}
+                        title="Duplicate product"
+                      >
+                        <Copy color="#fff" size={20} />
+                      </div>
+
+                      <div
+                        className="p-2 rounded-lg bg-[#2F78EE] flex items-center cursor-pointer"
+                        onClick={() => handleEditClick(product)}
+                      >
+                        <MdOutlineModeEdit color="#fff" size={20} />
+                      </div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </section>
+
+        <section className="w-full flex justify-between items-center mt-6">
           <div>
             <Pagination className="flex justify-start">
               <PaginationContent>
@@ -1379,7 +1384,7 @@ const Page = () => {
               </SelectContent>
             </Select>
           </div>
-        </div>
+        </section>
       </section>
 
       <SuccessModal

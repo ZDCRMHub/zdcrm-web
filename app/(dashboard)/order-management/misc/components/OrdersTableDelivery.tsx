@@ -297,19 +297,19 @@ const OrdersTableDelivery = ({ data, isLoading, isFetching, error, isFiltered }:
             <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
                 <div className="md:rounded-lg">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className='sticky top-0 z-30 bg-grey-1'>
                             <TableRow>
-                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Order ID</TableHead>
-                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Zone</TableHead>
-                                <TableHead className='sticky top-0 z-30 bg-grey-1'>Delivery Date</TableHead>
-                                <TableHead className='min-w-[150px] max-w-max sticky top-0 z-30 bg-grey-1'>Status</TableHead>
-                                <TableHead className='sticky top-0 z-30 bg-grey-1'>Recipient Details</TableHead>
-                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Address</TableHead>
-                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Notes</TableHead>
-                                <TableHead className='sticky top-0 z-30 bg-grey-1'>Rider Details</TableHead>
-                                <TableHead className='min-w-[200px] sticky top-0 z-30 bg-grey-1'>Customer Details</TableHead>
-                                <TableHead className='min-w-[150px] sticky top-0 z-30 bg-grey-1'>Delivery Expenses</TableHead>
-                                <TableHead className='sticky top-0 z-30 bg-grey-1'></TableHead>
+                                <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                <TableHead className='min-w-[150px]'>Delivery Zone</TableHead>
+                                <TableHead className=''>Delivery Date</TableHead>
+                                <TableHead className='min-w-[150px] max-w-max'>Status</TableHead>
+                                <TableHead className=''>Recipient Details</TableHead>
+                                <TableHead className='min-w-[150px]'>Delivery Address</TableHead>
+                                <TableHead className='min-w-[150px]'>Delivery Notes</TableHead>
+                                <TableHead className=''>Rider Details</TableHead>
+                                <TableHead className='min-w-[200px]'>Customer Details</TableHead>
+                                <TableHead className='min-w-[150px]'>Delivery Expenses</TableHead>
+                                <TableHead className=''></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

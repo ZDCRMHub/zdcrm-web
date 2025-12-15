@@ -23,7 +23,7 @@ const OrderStatsCard: React.FC<OrderStatsCardProps> = ({
 
         },
         soa_orders: {
-            title: "SOA",
+            title: "Start Order Arrangement",
             icon: <Box />,
             iconBg: '#FFC600'
         },
@@ -38,7 +38,7 @@ const OrderStatsCard: React.FC<OrderStatsCardProps> = ({
             iconBg: '#17181C'          
         },
         dis_cl_deliveries: {
-            title: "Dispatched to Clients",
+            title: "Dispatched",
             icon: <BoxTick className="" />,
             iconBg: '#FFC600'
         },
@@ -48,7 +48,7 @@ const OrderStatsCard: React.FC<OrderStatsCardProps> = ({
             iconBg: '#33860C'
         },
         delivered_cl_deliveries: {
-            title: "Delivered Client Notified",
+            title: "Client Notified",
             icon: <OrderTimeLine className="text-white" />,
             iconBg: '#33860C'
         },

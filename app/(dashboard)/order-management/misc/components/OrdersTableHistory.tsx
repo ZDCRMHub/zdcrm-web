@@ -281,29 +281,29 @@ const OrdersTableHistory = ({
         {/* <div className="inline-block min-w-full align-middle"> */}
         <div className="md:rounded-lg">
           <Table >
-            <TableHeader>
+            <TableHeader className="sticky top-0 bg-grey-1">
               <TableRow>
-                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Order ID</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Delivery Zone</TableHead>
-                <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 bg-grey-1">
+                <TableHead className="min-w-[150px]">Order ID</TableHead>
+                <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
+                <TableHead className="min-w-[200px] max-w-[500px]">
                   Customers Details
                 </TableHead>
-                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 bg-grey-1">
+                <TableHead className="min-w-[175px] max-w-[500px]">
                   Delivery Date
                 </TableHead>
-                <TableHead className="sticky top-0 bg-grey-1">Rider Details</TableHead>
-                <TableHead className="w-[170px] sticky top-0 bg-grey-1">Category</TableHead>
-                <TableHead className="min-w-[180px] sticky top-0 bg-grey-1">
+                <TableHead >Rider Details</TableHead>
+                <TableHead className="w-[170px]">Category</TableHead>
+                <TableHead className="min-w-[180px]">
                   Message on Order
                 </TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Total Amount</TableHead>
-                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 bg-grey-1">
+                <TableHead className="min-w-[150px]">Total Amount</TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px]">
                   {" "}
                   Status
                 </TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 bg-grey-1">Created On</TableHead>
-                <TableHead className="w-[170px] sticky top-0 bg-grey-1">Last Update</TableHead>
-                <TableHead className="sticky top-0 bg-grey-1"></TableHead>
+                <TableHead className="min-w-[150px]">Created On</TableHead>
+                <TableHead className="w-[170px]">Last Update</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

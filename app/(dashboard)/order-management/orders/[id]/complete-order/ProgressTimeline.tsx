@@ -52,7 +52,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
     const isCancelled = currentStatus === "CANCELLED";
 
     return (
-        <div className="bg-[#194A7A] text-white w-full max-w-[800px] pb-6 rounded-xl space-y-6">
+        <div className="bg-[#194A7A] text-white w-full max-w-[1000px] pb-6 rounded-xl space-y-6">
             <div className="relative w-full h-2 bg-[#FFC6004D] rounded-full overflow-hidden">
                 <div
                     className={cn(
@@ -101,7 +101,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
                                 : "border-white border bg-transparent text-white"
                         )}
                         onClick={() => {
-                            if(step.status == "DELIVERED" || step.status == "DELIVERED_CL") {
+                            if (step.status == "DELIVERED" || step.status == "DELIVERED_CL") {
                                 openAddDeliveryNoteModal();
                                 handleOrderStatusUpdate("COM")
 
@@ -114,7 +114,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
                     </Button>
                 ))}
                 {
-                   ( order?.delivery.status === "DELIVERED" ||  order?.delivery.status === "DELIVERED_CL") &&
+                    (order?.delivery.status === "DELIVERED" || order?.delivery.status === "DELIVERED_CL") &&
                     <Button
                         className={cn("px-4 py-1.5 text-sm rounded transition-all duration-[2s]")}
                         onClick={openAddDeliveryNoteModal}
@@ -128,6 +128,7 @@ const ProgressTimeline = ({ orderId, orderNumber, currentStatus, onDelivered, or
 
             <AddDeliveryNoteModal
                 isModalOpen={isAddDeliveryNoteModalOpen}
+                orderNumber={orderNumber}
                 closeModal={closeAddDeliveryNoteModal}
                 orderId={order.id}
             />

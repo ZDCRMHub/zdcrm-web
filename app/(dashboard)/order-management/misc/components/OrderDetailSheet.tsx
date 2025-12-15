@@ -81,6 +81,9 @@ export default function OrderDetailSheet({ order: default_order, isSheetOpen, cl
       queryKey: ['active-orders-list']
     });
   }
+
+  console.log(order)
+  
   const handleStatusUpdate = (new_status: string) => {
     mutate({ id: default_order?.id, status: new_status as "PND" | "SOA" | "SOR" | "STD" | "COM" | "CAN" },
 

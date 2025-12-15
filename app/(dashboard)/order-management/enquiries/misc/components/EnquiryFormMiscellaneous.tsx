@@ -1,7 +1,7 @@
 import React from 'react';
 import { useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AmountInput, Input } from "@/components/ui/input";
 import { Plus, Minus } from "lucide-react";
 
 
@@ -42,21 +42,19 @@ function EnquiryFormMiscellaneous({
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.description}
                 errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.description?.message}
               />
-              <Input
-                {...register(`items.${index}.miscellaneous.${k}.cost`, { valueAsNumber: true })}
+              <AmountInput
+                {...register(`items.${index}.miscellaneous.${k}.cost`)}
                 placeholder="Cost Price"
                 className="!h-12"
-                pattern="^[0-9]*$"
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
                 errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.cost?.message}
               />
-              <Input
-                {...register(`items.${index}.miscellaneous.${k}.cost`, { valueAsNumber: true })}
+              <AmountInput
+                {...register(`items.${index}.miscellaneous.${k}.selling_price`)}
                 placeholder="Selling Price"
                 className="!h-12"
-                pattern="^[0-9]*$"
-                hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
-                errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.cost?.message}
+                hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.selling_price}
+                errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.selling_price?.message}
               />
               <Button type="button" onClick={() => remove(k)} size="icon" variant="outline">
                 <Minus className="h-4 w-4" />
@@ -66,7 +64,7 @@ function EnquiryFormMiscellaneous({
         })}
       <Button
         type="button"
-        onClick={() => append({ description: "", cost: 0 })}
+        onClick={() => append({ description: "", cost: 0, selling_price: 0 })}
         size="sm"
         variant="ghost"
         className="bg-white text-xs"

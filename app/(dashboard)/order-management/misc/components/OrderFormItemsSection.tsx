@@ -156,7 +156,7 @@ const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
     }, [selectedCategory, index, setValue, watch, isInitialLoad])
 
 
-    
+
     return (
 
         <>

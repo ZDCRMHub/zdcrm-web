@@ -7,12 +7,15 @@ import ProgressTimeline from './ProgressTimeline';
 import { useGeTOrderDetail, useUpdateDeliveryStatus } from '../../../misc/api';
 import { formatTimeString } from '@/utils/strings';
 import OrderPageSkeleton from './CompleteOrderPageSkeleton';
-import { formatDate } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 import toast from 'react-hot-toast';
+import { formatCurrency } from '@/utils/currency';
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
     const { data: order, isLoading } = useGeTOrderDetail(order_id);
+
+    console.log(order)
 
     const router = useRouter();
     const goBack = () => {
@@ -37,12 +40,17 @@ const CompleteOrderPage = () => {
         }
     };
 
+    const orderItems = order?.items
+        ?.map(item => item.product?.name)
+        .join(", ");
+
+
     if (isLoading) {
         return <OrderPageSkeleton />;
     }
 
     return (
-        <div className="flex flex-col grow h-full px-8">
+        <div className="flex flex-col grow min-h-full px-8 pb-8">
             <header className="flex items-center border-b border-b-[#00000021] w-full pt-4">
                 <Button
                     variant='ghost'
@@ -59,7 +67,7 @@ const CompleteOrderPage = () => {
             </header>
             {
                 !!order &&
-                <section className="size-full my-auto flex flex-col items-center justify-center">
+                <section className="size-full my-auto pt-12 flex flex-col items-center justify-center">
                     <ProgressTimeline
                         orderId={order?.id}
                         orderNumber={order?.order_number}
@@ -68,52 +76,157 @@ const CompleteOrderPage = () => {
                         order={order!}
                     />
 
-                    <article className="grid grid-cols-[0.85fr,1fr] gap-5 justify-around p-4 px-6 border border-[#0F172B1A] rounded-3xl w-full max-w-[800px] mx-auto mt-9">
-                        <section className="flex flex-col items-center justify-center gap-1 p-4 py-6 border border-black rounded-3xl">
-                            <div className="flex items-center text-sm">
-                                <Truck variant="Bold" size="24" className="mr-2" /> Driver
-                            </div>
-                            {
-                                !isLoading && !!order && order?.delivery?.driver?.name ?
+                    <article className="w-full max-w-[1000px] mx-auto mt-9 border border-[#D9D9D9] rounded-3xl px-6 py-5">
+                        <div className="grid grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] gap-5">
+                            {/* ─── Order Card (from “new UI”) ─────────────────────────────── */}
+                            <section className="flex flex-col gap-4 justify-between border border-black rounded-3xl px-5 py-6">
+                                <div>
+                                    <div className="flex items-center text-sm mb-3 text-[#4A5568]">
+                                        <Notepad2 size="20" className="mr-2" color="#292D32" />
+                                        <span className="font-medium text-black">Order</span>
+                                    </div>
+
+                                    <div className="space-y-1 text-base text-[#0F172B] font-semibold pl-2">
+                                        {orderItems}
+                                        {order?.items?.flatMap((item, index) =>
+                                            item.miscellaneous?.map((misc, miscIndex) => (
+                                                <p key={`misc-${index}-${miscIndex}`}>
+                                                    {misc.description}
+                                                </p>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 flex items-center justify-between text-sm">
+                                    <span className="font-semibold tracking-wide">TOTAL</span>
+                                    <span className="text-[#E11D28] font-bold text-base">
+                                        {formatCurrency(Number(order?.total_amount) || 0, 'NGN')}
+                                    </span>
+                                </div>
+                            </section>
+
+                            {/* ─── Driver Card (old UI behaviour) ──── */}
+                            <section className="flex flex-col items-center justify-center gap-1 border border-black rounded-3xl px-5 py-6 text-center">
+                                <div className="flex items-center text-sm mb-1 font-medium text-black">
+                                    <Truck variant="Bold" size="24" className="mr-2" color="#000000" />{" "}
+                                    Driver
+                                </div>
+
+                                {!isLoading && !!order && order?.delivery?.driver?.name ? (
                                     <>
-                                        <div className="name text-[#194A7A] font-semibold text-2xl">{order?.delivery.driver?.name}</div>
-                                        <div className="platform text-sm text-[#194A7A]">
-                                            Rider Platform: <a href="#" className="text-blue-400 underline">{order?.delivery.driver?.delivery_platform}</a>
+                                        <div className="font-medium text-lg md:text-xl opacity-70 text-black">
+                                            ID : {order?.delivery.driver?.id || '--'}
                                         </div>
-                                        <LinkButton className="mt-2 h-9 w-full text-sm max-w-[120px]" variant="black" size="md" href={`tel:${order?.delivery.driver?.phone_number}`}>
-                                            <Call size="20" className="mr-2" /> Call
-                                        </LinkButton>
+                                        <p className="name text-[#194A7A] font-semibold text-xl md:text-2xl">
+                                            {order?.delivery.driver?.name}
+                                        </p>
+                                        <div className="platform text-xs font-medium md:text-sm text-[#194A7A] mt-1">
+                                            Rider Platform:{" "}
+                                            <a
+                                                href="#"
+                                                className="text-[#194A7A] underline"
+                                            >
+                                                {order?.delivery.driver?.delivery_platform}
+                                            </a>
+                                        </div>
+                                        <div className="font-medium text-sm md:text-lg mt-1 opacity-70 text-black">
+                                            Phone No :{" "}
+                                            <a
+                                                href={`tel:${order?.delivery.driver?.phone_number}`}
+                                                className="text-black no-underline"
+                                            >
+                                                {order?.delivery.driver?.phone_number}
+                                            </a>
+                                        </div>
                                     </>
-                                    :
-                                    <LinkButton className="mt-2 h-9 w-full text-sm max-w-[190px]" variant="black" size="md" href={`confirm-delivery`}>
+                                ) : (
+                                    <LinkButton
+                                        className="mt-2 h-9 w-full text-sm max-w-[190px]"
+                                        variant="black"
+                                        size="md"
+                                        href={`confirm-delivery`}
+                                    >
                                         <Edit2 size="20" className="mr-2" /> Edit Driver Details
                                     </LinkButton>
+                                )}
+                            </section>
 
-                            }
-                        </section>
+                            {/* ─── Recipient / Address Card) ── */}
+                            <section className="flex flex-col justify-between border border-black rounded-3xl px-5 py-6">
+                                <div className="space-y-3 text-sm text-[#2D3748]">
+                                    <div className="flex items-start gap-2">
+                                        <UserOctagon size="20" className="mt-[2px]" color="#292D32" />
+                                        <div>
+                                            <p className="font-semibold text-xs uppercase tracking-wide text-[#292D32]">
+                                                Recipient Name
+                                            </p>
+                                            <p className="font-medium text-sm text-[#1A202C]">
+                                                {order?.delivery?.recipient_name ?? "—"}
+                                            </p>
+                                        </div>
+                                    </div>
 
-                        <section className="flex flex-col items-center justify-around gap-4 p-4 border border-black rounded-3xl">
-                            <div className="flex flex-col items-center font-poppins">
-                                <p className="flex font-semibold text-[#292D32]">
-                                    <Location size="24" className="mr-2" />
-                                    Address
-                                </p>
-                                <p className="address text-sm">{order?.delivery?.address}</p>
-                            </div>
-                            <div className="flex flex-col items-center font-poppins">
-                                <p className="flex font-semibold text-[#292D32]">
-                                    <Calendar size="24" className="mr-2" />
-                                    Date/Expected Time
-                                </p>
-                                <p className="text-sm">
-                                    {formatDate(order?.delivery.delivery_date || '0', "dd/MMMM/yyyy")} at {formatTimeString(order?.delivery.delivery_time || '0')}
-                                </p>
-                            </div>
-                        </section>
+                                    <div className="flex items-start gap-2">
+                                        <Call size="20" className="mt-[2px]" color="#292D32" />
+                                        <div>
+                                            <p className="font-semibold text-xs uppercase tracking-wide text-[#292D32]">
+                                                Recipient Phone
+                                            </p>
+                                            <p className="font-medium text-sm text-[#1A202C]">
+                                                {order?.delivery?.recipient_phone ?? "—"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-2">
+                                        <Location size="20" className="mt-[2px]" color="#292D32" />
+                                        <div>
+                                            <p className="font-semibold text-xs uppercase tracking-wide text-[#292D32]">
+                                                Address
+                                            </p>
+                                            <p className="text-sm font-medium text-[#1A202C]">
+                                                {order?.delivery?.address ?? "—"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-2">
+                                        <Truck size="20" className="mt-[2px]" color="#292D32" />
+                                        <div>
+                                            <p className="font-semibold text-xs uppercase tracking-wide text-[#292D32]">
+                                                Delivery Zone
+                                            </p>
+                                            <p className="text-sm font-medium text-[#1A202C]">
+                                                {order?.delivery?.zone ?? "—"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-2">
+                                        <Calendar size="20" className="mt-[2px]" color="#292D32" />
+                                        <div>
+                                            <p className="font-semibold text-xs uppercase tracking-wide text-[#292D32]">
+                                                Expected Date
+                                            </p>
+                                            <p className="text-sm font-medium text-[#1A202C]">
+                                                {order?.delivery?.delivery_date
+                                                    ? format(
+                                                        new Date(order.delivery.delivery_date),
+                                                        "dd, MMM yyyy"
+                                                    )
+                                                    : "—"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
                     </article>
 
+
                     {/* Share Delivery Link Section */}
-                    <div className="flex items-center gap-4 p-4 text-center">
+                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Button className="px-8 h-14" onClick={copyDeliveryLink}>
                             <Link size="24" className="mr-2" /> Share Delivery Link
                         </Button>

@@ -125,8 +125,8 @@ export default function OrdersDashboardDelivery() {
 
 
   return (
-    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 pt-6'>
-      <header className='z-[2] bg-[#FAFAFA]'>
+    <div className='relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto py-6'>
+      <header className='bg-[#FAFAFA]'>
         <div className="flex justify-between items-center gap-4">
           <div className='flex items-center gap-2 w-80 grow'>
             <Input

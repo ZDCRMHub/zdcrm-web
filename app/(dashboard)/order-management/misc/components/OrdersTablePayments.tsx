@@ -136,7 +136,7 @@ const OrderRow: React.FC<OrderRowProps> = ({ order }) => {
                             </div>
                         }
                     </div>
-                   
+
                     {
                         isPending &&
                         <Spinner size={16} />
@@ -242,7 +242,7 @@ const OrdersTablePayments = ({ data, isLoading, isFetching, error, isFiltered }:
 
 
     return (
-        <div className="relative h-[93%]">
+        <div className="relative">
             <div className="flex items-center gap-4 h-3">
                 <div className={cn('overflow-hidden rounded-full mb-1 grow')}>
                     <div className={cn("bg-[#F8F9FB] h-1 w-full overflow-hidden", isFetching && !isLoading && 'bg-blue-200')}>
@@ -272,34 +272,32 @@ const OrdersTablePayments = ({ data, isLoading, isFetching, error, isFiltered }:
                 </section>
             </div>
 
-            <div ref={tableRef} className="overflow-auto max-h-full">
-                <div className="inline-block min-w-full align-middle">
-                    <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <Table>
-                            <TableHeader className="sticky top-0 bg-white z-10">
-                                <TableRow>
-                                    <TableHead className='min-w-[150px]'>Order ID</TableHead>
-                                    <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
-                                    <TableHead className='min-w-[230px]'>Order Items</TableHead>
-                                    <TableHead className='min-w-[180px]'>Payment Mode</TableHead>
-                                    <TableHead className='min-w-[150px]'>Amount</TableHead>
-                                    <TableHead>Amount(USD)</TableHead>
-                                    <TableHead className='min-w-[175px] max-w-[500px]'>Payment Confirmed</TableHead>
-                                    <TableHead></TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    data.map((order, index) => (
-                                        <OrderRow
-                                            key={index}
-                                            order={order}
-                                        />
-                                    ))
-                                }
-                            </TableBody>
-                        </Table>
-                    </div>
+            <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+                <div className="md:rounded-lg">
+                    <Table>
+                        <TableHeader className="sticky top-0 bg-grey-1 z-10">
+                            <TableRow>
+                                <TableHead className='min-w-[150px]'>Order ID</TableHead>
+                                <TableHead className='min-w-[200px] max-w-[500px]'>Customers Details</TableHead>
+                                <TableHead className='min-w-[230px]'>Order Items</TableHead>
+                                <TableHead className='min-w-[180px]'>Payment Mode</TableHead>
+                                <TableHead className='min-w-[150px]'>Amount</TableHead>
+                                <TableHead>Amount(USD)</TableHead>
+                                <TableHead className='min-w-[175px] max-w-[500px]'>Payment Confirmed</TableHead>
+                                <TableHead></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {
+                                data.map((order, index) => (
+                                    <OrderRow
+                                        key={index}
+                                        order={order}
+                                    />
+                                ))
+                            }
+                        </TableBody>
+                    </Table>
                 </div>
             </div>
 

@@ -373,26 +373,26 @@ const OrdersTable = ({
       <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
         <div className="md:rounded-lg">
           <Table>
-            <TableHeader>
+            <TableHeader className="sticky top-0 z-30 bg-grey-1">
               <TableRow>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Order ID</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Delivery Zone</TableHead>
-                <TableHead className="min-w-[175px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="min-w-[150px]">Order ID</TableHead>
+                <TableHead className="min-w-[150px]">Delivery Zone</TableHead>
+                <TableHead className="min-w-[175px] max-w-[500px]">
                   Delivery Date
                 </TableHead>
-                <TableHead className="min-w-[200px] max-w-[500px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="min-w-[200px] max-w-[500px]">
                   Customers Details
                 </TableHead>
-                <TableHead className="min-w-[230px] sticky top-0 z-30 bg-grey-1">Order Items</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Category</TableHead>
-                <TableHead className="min-w-[150px] sticky top-0 z-30 bg-grey-1">Status</TableHead>
-                <TableHead className="min-w-[200px] sticky top-0 z-30 bg-grey-1">
+                <TableHead className="min-w-[230px]">Order Items</TableHead>
+                <TableHead className="min-w-[150px]">Category</TableHead>
+                <TableHead className="min-w-[150px]">Status</TableHead>
+                <TableHead className="min-w-[200px]">
                   Recipient Details
                 </TableHead>
-                <TableHead className="w-[170px] sticky top-0 z-30 bg-grey-1">Order Notes</TableHead>
-                <TableHead className="min-w-[180px] sticky top-0 z-30 bg-grey-1">Payment</TableHead>
-                <TableHead className="sticky top-0 z-30 bg-grey-1">Payment(USD)</TableHead>
-                <TableHead className="sticky top-0 z-30 bg-grey-1"></TableHead>
+                <TableHead className="w-[170px]">Order Notes</TableHead>
+                <TableHead className="min-w-[180px]">Payment</TableHead>
+                <TableHead className="">Payment(USD)</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

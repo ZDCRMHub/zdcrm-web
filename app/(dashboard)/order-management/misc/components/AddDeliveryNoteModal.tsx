@@ -8,10 +8,10 @@ import { SmallSpinner } from '@/icons/core'
 interface ModalProps {
     isModalOpen: boolean
     closeModal: () => void
-    orderId: number
-
+    orderId: number,
+    orderNumber?: string
 }
-const AddDeliveryNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, orderId }) => {
+const AddDeliveryNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, orderId, orderNumber }) => {
     const [feedback, setFeedback] = React.useState<string>('')
     const {
         state: isSuccessModalOpen,
@@ -65,7 +65,7 @@ const AddDeliveryNoteModal: React.FC<ModalProps> = ({ isModalOpen, closeModal, o
                 </DialogContent>
             </Dialog>
 
-            <SuccessModal isModalOpen={isSuccessModalOpen} closeModal={closeSuccessModal} headingClass="text-xl" heading="Feedback Submitted" subheading="Your feedback has been submitted successfully" />
+            <SuccessModal isModalOpen={isSuccessModalOpen} closeModal={closeSuccessModal} headingClass="text-xl" heading={`The Order ${orderNumber} has been successfully completed`} />
         </>
     )
 }

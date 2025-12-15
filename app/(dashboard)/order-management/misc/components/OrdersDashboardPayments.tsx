@@ -97,9 +97,8 @@ export default function OrdersDashboardPayments() {
 
 
   return (
-    <div className='relative grid grid-rows-[max-content,1fr,max-content] w-full md:w-[95%] max-w-[1792px] mx-auto pb-3 max-h-full'>
-      <header className='sticky top-0  pt-6 z-[2] bg-[#FAFAFA]'>
-        <section className=' flex justify-between items-center gap-4'>
+    <div className='flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto py-6'>
+        <header className=' flex justify-between items-center gap-4'>
           <div className='flex items-center gap-2 w-80 grow'>
             <Input
               type='text'
@@ -220,12 +219,12 @@ export default function OrdersDashboardPayments() {
               <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
             </Button>
           </div>
-        </section>
+        </header>
         <div className="text-sm text-gray-600 my-2">
           Showing
           {
-            !selectedCategory && !debouncedSearchText && (!selectedStatuses || selectedStatuses === defaultStatuses) 
-            && (!selectedPaymentStatuses || selectedPaymentStatuses === defaultPaymentStatuses) 
+            !selectedCategory && !debouncedSearchText && (!selectedStatuses || selectedStatuses === defaultStatuses)
+            && (!selectedPaymentStatuses || selectedPaymentStatuses === defaultPaymentStatuses)
             && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
           }
           orders {" "}
@@ -237,9 +236,9 @@ export default function OrdersDashboardPayments() {
             {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
           </p>
         </div>
-      </header>
+      
 
-      <section className='flex-grow overflow-auto w-full pt-6 pb-3'>
+      <section className='pt-6 pb-3'>
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Orders', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Orders'} />
         <OrdersTablePayments
@@ -251,7 +250,7 @@ export default function OrdersDashboardPayments() {
         />
       </section>
 
-      <footer className="sticky bottom-0">
+      <footer>
         <div className="flex items-center justify-between mt-auto py-1.5">
           <Pagination className="justify-start ">
             <PaginationContent>

@@ -785,7 +785,7 @@ const NewOrderPage = () => {
                   label="Message on Order"
                   hasError={!!errors.message}
                   errorMessage={errors.message?.message as string}
-                  placeholder="Enter message on order"
+                  placeholder="Enter Optional Card Message"
                   {...register("message")}
                   optional
                 />
