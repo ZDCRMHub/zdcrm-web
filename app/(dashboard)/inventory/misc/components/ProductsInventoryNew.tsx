@@ -124,7 +124,16 @@ export default function NewProductInventorySheet() {
     defaultValues: {
       image_one: null,
       category: 1,
-      variations: [{ size: "4", quantity: 1 }],
+      branch: undefined,
+      variations: [
+        {
+          size: "4",
+          quantity: 1,
+          max_quantity_required: 0,
+          minimum_quantity_required: 0,
+          location: "",
+        },
+      ],
     },
   });
 
@@ -336,34 +345,76 @@ export default function NewProductInventorySheet() {
                   )}
                 />
 
-                <Controller
-                  name={`variations.${index}.location`}
-                  control={control}
-                  render={({ field }) => (
-                    <SelectSingleCombo
-                      {...field}
-                      name={`variations.${index}.location`}
-                      value={field.value?.toString() || ""}
-                      options={[
-                        { label: "Reception Shelf", value: "Reception Shelf" },
-                        { label: "Main Store", value: "Main Store" },
-                        { label: "Mini Store", value: "Mini Store" },
-                        { label: "Processing Room", value: "Processing Room" },
-                        { label: "Kitchen", value: "Kitchen" },
-                        { label: "Cold Room", value: "Cold Room" },
-                      ]}
-                      valueKey="value"
-                      labelKey="label"
-                      placeholder="Storage Location"
-                      onChange={(value) => field.onChange(value)}
-                      isLoadingOptions={categoriesLoading}
-                      hasError={!!errors.variations?.[index]?.location}
-                      errorMessage={
-                        errors.variations?.[index]?.location?.message
-                      }
+                    <Controller
+                      name={`variations.${index}.max_quantity_required`}
+                      control={control}
+                      render={({ field }) => (
+                        <AmountInput
+                          {...field}
+                          {...register(`variations.${index}.max_quantity_required`, {
+                            valueAsNumber: true,
+                          })}
+                          type="number"
+                          label="Max Quantity Required"
+                          placeholder="Max Quantity"
+                          pattern="^[0-9]*$"
+                          hasError={!!errors.variations?.[index]?.max_quantity_required}
+                          errorMessage={
+                            errors.variations?.[index]?.max_quantity_required?.message
+                          }
+                        />
+                      )}
                     />
-                  )}
-                />
+
+                    <Controller
+                      name={`variations.${index}.minimum_quantity_required`}
+                      control={control}
+                      render={({ field }) => (
+                        <AmountInput
+                          {...field}
+                          {...register(`variations.${index}.minimum_quantity_required`, {
+                            valueAsNumber: true,
+                          })}
+                          type="number"
+                          label="Min Quantity Required"
+                          placeholder="Min Quantity"
+                          pattern="^[0-9]*$"
+                          hasError={!!errors.variations?.[index]?.minimum_quantity_required}
+                          errorMessage={
+                            errors.variations?.[index]?.minimum_quantity_required?.message
+                          }
+                        />
+                      )}
+                    />
+
+                    <Controller
+                      name={`variations.${index}.location`}
+                      control={control}
+                      render={({ field }) => (
+                        <SelectSingleCombo
+                          {...field}
+                          name={`variations.${index}.location`}
+                          value={field.value?.toString() || ""}
+                          options={[
+                            { label: "Reception Shelf", value: "Reception Shelf" },
+                            { label: "Main Store", value: "Main Store" },
+                            { label: "Mini Store", value: "Mini Store" },
+                            { label: "Processing Room", value: "Processing Room" },
+                            { label: "Kitchen", value: "Kitchen" },
+                            { label: "Cold Room", value: "Cold Room" },
+                          ]}
+                          valueKey="value"
+                          labelKey="label"
+                          placeholder="Storage Location"
+                          onChange={(value) => field.onChange(value)}
+                          isLoadingOptions={categoriesLoading}
+                          hasError={!!errors.variations?.[index]?.location}
+                          errorMessage={
+                            errors.variations?.[index]?.location?.message
+                          }
+                        />
+                      )}
+                    />
 
                 {index > 0 && (
                   <Button
