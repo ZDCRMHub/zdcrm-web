@@ -1,0 +1,1 @@
+export { useGeTOrderDetail } from "./getOrderDetails";

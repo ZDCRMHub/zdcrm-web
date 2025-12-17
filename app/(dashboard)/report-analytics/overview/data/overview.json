@@ -1,0 +1,89 @@
+{
+  "summary": [
+    { "title": "Total Orders", "value": "430", "delta": "+2.3% (↑10)" },
+    {
+      "title": "Total Revenue",
+      "value": "₦2,000,000.00",
+      "delta": "+3.2% (↑60k)"
+    },
+    { "title": "Expenses", "value": "₦400,400.00", "delta": "-1.5% (↓6k)" },
+    { "title": "Net Profit", "value": "₦1,600,600.00", "delta": "+4.1% (↑80k)" }
+  ],
+  "orderStats": [
+    { "region": "Lagos Island", "enquiries": 12, "orders": 8 },
+    { "region": "Lagos Central", "enquiries": 8, "orders": 10 },
+    { "region": "Lagos Mainland", "enquiries": 6, "orders": 22 },
+    { "region": "Other Places", "enquiries": 3, "orders": 15 }
+  ],
+  "financialOverview": [
+    { "day": "Monday", "revenue": 12000, "profit": 8000 },
+    { "day": "Tuesday", "revenue": 15000, "profit": 9000 },
+    { "day": "Wednesday", "revenue": 18000, "profit": 12000 },
+    { "day": "Thursday", "revenue": 16000, "profit": 10000 },
+    { "day": "Friday", "revenue": 14000, "profit": 9000 },
+    { "day": "Saturday", "revenue": 17000, "profit": 11000 },
+    { "day": "Sunday", "revenue": 20000, "profit": 15000 }
+  ],
+  "conversion": {
+    "total": "₦1,200,000",
+    "regions": [
+      { "name": "Lagos Island", "value": 34275, "color": "#3b82f6" },
+      { "name": "Lagos Mainland", "value": 20390, "color": "#10b981" },
+      { "name": "Yaba", "value": 15732, "color": "#f59e0b" },
+      { "name": "Others", "value": 14589, "color": "#64748b" }
+    ]
+  },
+  "trafficSource": [
+    { "name": "Google", "value": 21043 },
+    { "name": "Instagram", "value": 14058 },
+    { "name": "WhatsApp", "value": 13847 },
+    { "name": "Others", "value": 8954 }
+  ],
+  "clientBehavior": {
+    "data": [
+      {
+        "name": "Returning",
+        "value": 40.5,
+        "percentage": 40.5,
+        "color": "#0CAF60"
+      },
+      {
+        "name": "Frequent",
+        "value": 27.7,
+        "percentage": 27.7,
+        "color": "#F914E0"
+      },
+      {
+        "name": "Quiet",
+        "value": 15.9,
+        "percentage": 15.9,
+        "color": "#090909"
+      },
+      {
+        "name": "First Time",
+        "value": 15.9,
+        "percentage": 15.9,
+        "color": "#0062FF"
+      }
+    ]
+  },
+  "customers": {
+    "total": 1256,
+    "series": [
+      { "day": "M", "local": 120, "international": 60 },
+      { "day": "T", "local": 140, "international": 70 },
+      { "day": "W", "local": 130, "international": 80 },
+      { "day": "T", "local": 150, "international": 90 },
+      { "day": "F", "local": 160, "international": 100 },
+      { "day": "S", "local": 170, "international": 110 },
+      { "day": "S", "local": 180, "international": 120 }
+    ]
+  },
+  "inventory": [
+    { "name": "Flour", "qty": 382, "color": "#f97316" },
+    { "name": "Baking Soda", "qty": 2432, "color": "#f43f5e" },
+    { "name": "Icing Sugar 500g", "qty": 1390, "color": "#10b981" },
+    { "name": "Cocoa Powder", "qty": 35732, "color": "#3b82f6" },
+    { "name": "Foil Plate : Small", "qty": 4589, "color": "#64748b" }
+  ]
+}
