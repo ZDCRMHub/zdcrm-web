@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import React from 'react'
+import AuthLine from "@/public/img/auth-line.png"
 
 const layout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -12,13 +13,18 @@ const layout = ({ children }: { children: React.ReactNode }) => {
             >
                 <Image
                     src="/img/ZDCRMHubLogoLarge.png"
-                    className='w-[80%] max-w-[500px] mx-auto'
+                    className='w-[60%] max-w-[380px] mx-auto'
                     alt="Auth Background"
                     layout="fill"
                     objectFit="contain"
-                    // width={"50%"}
-                    // height={"auto"}
                 />
+                <div className='absolute left-0 bottom-0 w-[40%]'>
+                    <Image
+                        src={AuthLine}
+                        className='  object-cover'
+                        alt="Auth Line"
+                    />
+                </div>
             </section>
 
             <section>

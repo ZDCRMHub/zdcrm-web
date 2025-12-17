@@ -2,22 +2,10 @@
 
 import React from "react";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { ChevronDown } from "lucide-react";
-
-import { Spinner } from "@/components/ui";
-import {
   Card,
-  CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -25,43 +13,46 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  RangeAndCustomDatePicker,
+  SelectBranchCombo,
+  Spinner,
+} from "@/components/ui";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { Controller, useForm } from "react-hook-form";
+import { DateRange } from "react-day-picker";
+
+import { useGetPaymentStatusStats } from "@/mutations/order.mutation";
+import { monthsAgo, tomorrow } from "@/utils/functions";
+import { PaymentStatusStats } from "@/types/finacialStatistics.types";
+import { OrderStatsDeliveryZoneChartSkeleton } from "../order-stats/OrderStatsDeliveryZoneSkeleton";
+
+// ---- Types ------------------------------------------------
 
 export type PaymentStatusDatum = {
-  status: string; // label for x-axis
-  orders: number; // No. of Orders
-  amount: number; // Amount (in base currency units)
+  status: string;   // x-axis label
+  orders: number;   // number of orders
+  amount: number;   // numeric amount
 };
 
 export type PaymentStatusConversionChartProps = {
   title?: string;
-  data?: PaymentStatusDatum[];
-  isLoading?: boolean;
   className?: string;
-  // Optional currency formatter; default uses Intl.NumberFormat with NGN style
   formatCurrency?: (value: number) => string;
-  /** Minimum width allocated per category before horizontal scrolling kicks in (px). */
   minCategoryWidth?: number;
-  /** Fixed width of each bar (px). Helps keep bars from thinning out. */
-  barSize?: number;
-  /** Gap between bars of the same category. */
   barGap?: number;
-  /** Gap between categories (groups). */
   barCategoryGap?: number | string;
 };
 
-const dummyData: PaymentStatusDatum[] = [
-  { status: "Not Paid", orders: 14500, amount: 13500 },
-  { status: "Paid (Website Card)", orders: 17500, amount: 12500 },
-  { status: "Paid (Naira Transfer)", orders: 6500, amount: 22000 },
-  { status: "Paid (USD Transfer)", orders: 16000, amount: 6500 },
-  { status: "Paid (PayPal)", orders: 12500, amount: 11500 },
-  { status: "Cash (Paid)", orders: 17000, amount: 14000 },
-  { status: "Paid (POS)", orders: 21000, amount: 12000 },
-  { status: "Part Payment (Cash)", orders: 13000, amount: 7000 },
-  { status: "Paid (Bitcoin)", orders: 20500, amount: 11000 },
-  { status: "Part Payment (Transfer)", orders: 12000, amount: 11500 },
-  { status: "Not Received (Paid)", orders: 21000, amount: 11000 },
-];
+// ---- Config / helpers -------------------------------------
 
 const chartConfig: ChartConfig = {
   orders: { label: "No. of Orders", color: "hsl(var(--chart-1))" },
@@ -74,72 +65,183 @@ const defaultCurrency = new Intl.NumberFormat("en-NG", {
   maximumFractionDigits: 0,
 });
 
+const shortNumber = (v: number) => {
+  const abs = Math.abs(v);
+  if (abs >= 1_000_000) {
+    const val = +(v / 1_000_000).toFixed(1);
+    return `${val}M`;
+  }
+  if (abs >= 1_000) {
+    const val = Math.round(v / 1_000);
+    return `${val}k`;
+  }
+  return String(v);
+};
+
+// ---- Component --------------------------------------------
+
 export default function PaymentStatusConversionChart({
   title = "Payment Status Conversion",
-  data,
-  isLoading,
   className,
   formatCurrency = (v) => defaultCurrency.format(v),
-  minCategoryWidth = 80,
-  // remove fixed barSize so bars can auto-size and spread across the width
-  barSize,
   barGap = 8,
   barCategoryGap = 32,
 }: PaymentStatusConversionChartProps) {
-  const chartData = data && data.length ? data : dummyData;
-  const minWidthPx = Math.max(chartData.length * minCategoryWidth, 640); // ensure a sensible base
+  const { control, watch, setValue } = useForm<{
+    branch?: string;
+    date: DateRange;
+    period: "today" | "week" | "month" | "year" | "custom";
+  }>({
+    defaultValues: {
+      branch: "all",
+      date: {
+        from: monthsAgo,
+        to: tomorrow,
+      },
+      period: "custom",
+    },
+  });
+
+  const branch = watch("branch");
+  const period = watch("period");
+  const date = watch("date");
+
+  const {
+    data: paymentStatusData,
+    isLoading,
+    isFetching,
+  } = useGetPaymentStatusStats({
+    branch,
+    date_from:
+      period === "custom" && date.from
+        ? date.from.toISOString().split("T")[0]
+        : undefined,
+    date_to:
+      period === "custom" && date.to
+        ? date.to.toISOString().split("T")[0]
+        : undefined,
+    period,
+  });
+
+  // Map API data -> chart data
+  const chartData: PaymentStatusDatum[] =
+    (Array.isArray(paymentStatusData) ? paymentStatusData : [])?.map(
+      (item: PaymentStatusStats) => ({
+        status: item.payment_option_label,
+        orders: item.order_count ?? 0,
+        amount: item.total_amount ? Number(item.total_amount) || 0 : 0,
+      })
+    ) ?? [];
+
+  const maxOrders =
+    chartData.length > 0
+      ? Math.max(...chartData.map((d) => d.orders ?? 0))
+      : 0;
+
+  const maxAmount =
+    chartData.length > 0
+      ? Math.max(...chartData.map((d) => d.amount ?? 0))
+      : 0;
 
   return (
-    <Card className={className}>
-      <CardHeader className="flex-row items-center justify-between">
+    <Card className={`max-h-[600px] ${className ?? ""}`}>
+      <CardHeader className="flex md:!flex-row items-center justify-between">
         <CardTitle className="text-xl md:text-[1.5rem] font-medium text-[#17181C] flex items-center gap-2">
           {title}
-          {isLoading && <Spinner />}
+          {isFetching && <Spinner />}
         </CardTitle>
-        {/* Simple timeframe selector placeholder like mock */}
-        <div className="inline-flex items-center gap-2 rounded-lg border bg-background px-3 py-1.5 text-sm text-muted-foreground">
-          Today <ChevronDown className="h-4 w-4" />
+
+        <div className="flex items-center gap-4 flex-wrap max-w-max">
+          <Controller
+            name="branch"
+            control={control}
+            render={() => (
+              <SelectBranchCombo
+                value={watch("branch")}
+                onChange={(new_value) => setValue("branch", new_value)}
+                variant="light"
+                size="thin"
+              />
+            )}
+          />
+
+          <RangeAndCustomDatePicker
+            className="max-w-max"
+            variant="light"
+            size="thin"
+            onChange={(value) => {
+              if (value.dateType === 'custom' && value.from && value.to) {
+                setValue('date', { from: value.from, to: value.to });
+                setValue('period', 'custom');
+              } else {
+                setValue('period', value.dateType as "today" | "week" | "month" | "year" | "custom");
+              }
+            }}
+            value={{
+              dateType: watch('period'),
+              from: watch('date').from,
+              to: watch('date').to
+            }}
+          />
         </div>
       </CardHeader>
-      <CardContent>
-        {/* Override ChartContainer's default aspect ratio (aspect-video) so the card doesn't grow too tall */}
+
+      <div>
         <ChartContainer
           config={chartConfig}
-          className="w-full aspect-auto h-[380px]"
+          className="w-full overflow-visible max-w-full max-h-[400px]"
         >
-          {/* Outer wrapper allows horizontal scrolling when there are many categories */}
-          <div className="w-full overflow-x-auto">
-            {/* Inner wrapper enforces a minimum width based on categories so bars can spread */}
-            <div style={{ minWidth: `${minWidthPx}px` }} className="w-full">
-              {/* Cap the chart height so it never exceeds 380px */}
-              <ResponsiveContainer height={380} className="w-full max-h-[380px]">
-                <BarChart
+          {isLoading ? (
+            <OrderStatsDeliveryZoneChartSkeleton />
+          ) : (
+            <ResponsiveContainer className="!w-full" height="100%">
+              <BarChart
                 data={chartData}
-                margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
+                barSize={20}
+                margin={{ top: 10, right: 20, left: 10, bottom: 0 }}
                 barCategoryGap={barCategoryGap}
                 barGap={barGap}
               >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="status"
-                  tickLine={false}
-                  axisLine={false}
-                  interval={0}
-                  height={64}
-                  tickMargin={10}
+                <CartesianGrid strokeDasharray="0"
+                  vertical={false}
+                  horizontal={true}
+                  stroke="#EFF1F3"
+                  strokeWidth={1}
                 />
+
+                {/* Visible axis for AMOUNT (formatted 17k / 300k / 1.2M) */}
                 <YAxis
+                  yAxisId="amount"
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(v) =>
-                    v >= 1000 ? `${Math.round(v / 1000)}k` : `${v}`
-                  }
+                  domain={[0, maxAmount * 1.1 || 1]}
+                  tickFormatter={(v) => shortNumber(Number(v))}
                 />
+
+                {/* Hidden axis for ORDERS so bars are not tiny */}
+                <YAxis
+                  yAxisId="orders"
+                  hide
+                  domain={[0, maxOrders * 1.1 || 1]}
+                />
+
+                <XAxis
+                  dataKey="status"
+                  tickLine={false}
+                  tickMargin={20}
+                  axisLine={false}
+                  tick={{ fontFamily: "Poppins, sans-serif", fontSize: 12 }}
+                  interval={0}
+                  height={56}
+                  padding={{ left: 10, right: 10 }}
+                />
+
                 <ChartTooltip
-                  cursor={{ fill: "rgba(0,0,0,0.04)" }}
+                  cursor={false}
                   content={
                     <ChartTooltipContent
+                      indicator="dashed"
                       labelFormatter={(label) => String(label)}
                       formatter={(value: unknown, name?: string | number) => {
                         if (name === "amount")
@@ -152,31 +254,40 @@ export default function PaymentStatusConversionChart({
                         return [String(value), String(name)];
                       }}
                     />
-                  }
+                  }            
+                  wrapperStyle={{
+                    overflow: "visible",
+                    zIndex: 9999,
+                    pointerEvents: "auto",                    
+                    blur: "10px",
+                  } as any}
+                  contentStyle={{ overflow: "visible" } as any}            
                 />
 
                 <Bar
+                  yAxisId="orders"
                   dataKey="orders"
-                  // omit barSize so Recharts will size bars to fill available width
-                  radius={[4, 4, 0, 0]}
                   fill="var(--color-orders)"
+                  radius={4}
+                  name="Orders"
                 />
                 <Bar
+                  yAxisId="amount"
                   dataKey="amount"
-                  // omit barSize so Recharts will size bars to fill available width
-                  radius={[4, 4, 0, 0]}
                   fill="var(--color-amount)"
+                  radius={4}
+                  name="Amount"
                 />
               </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+            </ResponsiveContainer>
+          )}
         </ChartContainer>
-      </CardContent>
+      </div>
+
       <CardFooter>
-        <div className="w-full text-center text-muted-foreground text-sm">
+        <p className="w-full text-center text-muted-foreground text-xs font-dm-sans">
           Total no of order/Amount made from payment status
-        </div>
+        </p>
       </CardFooter>
     </Card>
   );
