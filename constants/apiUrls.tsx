@@ -1,7 +1,11 @@
 
 export const orderUrl = {
     getFinancialStats: (queryString = "") =>
-        `/order/financial-stats/${queryString}`,    
+        `/order/financial-stats/${queryString}`,
+    getPaymentStatusStats: (queryString = "") =>
+        `/order/payment-status-stats/${queryString}`,
+    getPartPaymentStats: (queryString = "") =>
+        `/order/part-payment-stats/${queryString}`,
 };
 
 export const inventoryUrl = {

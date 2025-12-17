@@ -2,7 +2,6 @@
 
 import {
   Card,
-  CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,12 +22,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useGeTOrderDeliveryStats } from "../../api/getOrderStatisticsDeliveryZone";
-import { useGetAllBranches } from '@/app/(dashboard)/admin/businesses/misc/api';
 import { DateRange } from "react-day-picker";
 import { Controller, useForm } from "react-hook-form";
 import { subMonths } from "date-fns";
 import { OrderStatsDeliveryZoneChartSkeleton } from "./OrderStatsDeliveryZoneSkeleton";
-import SelectSingleSimple from "@/components/ui/selectSingleSimple";
 import { SelectBranchCombo } from '@/components/ui';
 
 const chartConfig = {
@@ -47,7 +44,6 @@ const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
 const monthsAgo = subMonths(new Date(), 1);
 
 export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDetailed?: boolean }) {
-  const { data: allBranches, isLoading: isFetchingBranch } = useGetAllBranches();
   const { control, watch, setValue } = useForm<{
     branch?: string;
     date: DateRange;
@@ -81,9 +77,7 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
   });
 
 
-  // defensive parse & ensure array
   const chartDataRaw = Array.isArray(data?.data?.delivery_stats) ? data!.data.delivery_stats : [];
-  // compute dynamic tick interval like Financial chart
   const tickInterval = chartDataRaw.length > 8 ? Math.ceil(chartDataRaw.length / 8) : 0;
 
   return (
@@ -106,7 +100,6 @@ export function OrderStatsDeliveryZoneSection({ showDetailed = true }: { showDet
                   // placeholder='Filter Branch'
                   variant="light"
                   size="thin"
-                  isLoadingOptions={isFetchingBranch}
                 />
               )}
             />

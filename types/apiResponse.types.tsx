@@ -5,3 +5,12 @@ export interface ApiResponse<T> {
     data: T;
     // meta: Meta;
 }
+
+export interface FetchOptions {
+    page?: number;
+    size?: number;
+    branch?: string;
+    period?: "today" | "week" | "month" | "year" | "custom";
+    date_from?: string;
+    date_to?: string;
+}
