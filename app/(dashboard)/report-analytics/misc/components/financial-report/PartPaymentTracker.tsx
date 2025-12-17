@@ -36,11 +36,11 @@ const Track = ({
   const pct = Math.max(0, Math.min(100, (value / (max || 1)) * 100));
   return (
     <div
-      className="w-full rounded-full"
+      className="w-full rounded-full transition-all duration-500"
       style={{ height, backgroundColor: trailColor ?? "var(--muted)" }}
     >
       <div
-        className="rounded-full"
+        className="rounded-full transition-all duration-500"
         style={{
           width: `${pct}%`,
           height,

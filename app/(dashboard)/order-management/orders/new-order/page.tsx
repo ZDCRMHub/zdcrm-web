@@ -63,7 +63,12 @@ const NewOrderPage = () => {
     resolver: zodResolver(NewOrderSchema),
     defaultValues: {
       branch: branches?.data?.[0].id,
-      customer: { name: "", phone: "", email: "" },
+      customer: {
+        name: "", 
+        phone: "",
+        alternative_phone: "",
+        email: ""
+      },
       delivery: {
         zone: "LM",
         method: "Dispatch",
@@ -204,9 +209,10 @@ const NewOrderPage = () => {
     setValue("delivery.is_custom_delivery", !isCustomDelivery);
   };
   const watchedClientPhoneNumber = watch("customer.phone");
+  const watchedClientAlternativePhoneNumber = watch("customer.alternative_phone");
   const isDispatchOrder = watch("delivery.method") === "Dispatch";
 
-  console.log(getValues("items"));
+  // console.log(getValues("items"));
 
   return (
     <div className="px-8 md:pt-12 w-full md:w-[92.5%] max-w-[1792px] mx-auto">
@@ -268,19 +274,19 @@ const NewOrderPage = () => {
                   />
                   <FormField
                     control={control}
-                    name="customer.phone"
+                    name="customer.alternative_phone"
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
                           <Input
                             label="Client's Alt Phone Number"
-                            hasError={!!errors.customer?.phone}
-                            errorMessage={errors.customer?.phone?.message}
+                            hasError={!!errors.customer?.alternative_phone}
+                            errorMessage={errors.customer?.alternative_phone?.message}
                             placeholder="Enter client alternative phone number"
                             {...field}
                           />
                         </FormControl>
-                        {watchedClientPhoneNumber?.length == 11 && (
+                        {watchedClientAlternativePhoneNumber?.length == 11 && (
                           <Link href="/order-management/client-history">
                             View history
                           </Link>
@@ -653,7 +659,7 @@ const NewOrderPage = () => {
                     hasError={!!errors.delivery?.delivery_time}
                     errorMessage={errors.delivery?.delivery_time?.message}
 
-                    // placeholder="Select delivery date"
+                  // placeholder="Select delivery date"
                   />
 
                   <FormField
@@ -831,68 +837,68 @@ const NewOrderPage = () => {
                   {(selectedPaymentOption === "paid_usd_transfer" ||
                     selectedPaymentOption === "paid_paypal" ||
                     selectedPaymentOption === "paid_bitcoin") && (
-                    <Controller
-                      name="amount_paid_in_usd"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          label="Amount Paid (USD)"
-                          id="amount_paid_in_usd"
-                          placeholder="Enter amount paid in USD"
-                          className="col-span-3"
-                          {...field}
-                          hasError={!!errors.amount_paid_in_usd}
-                          errorMessage={errors.amount_paid_in_usd?.message}
-                        />
-                      )}
-                    />
-                  )}
+                      <Controller
+                        name="amount_paid_in_usd"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            label="Amount Paid (USD)"
+                            id="amount_paid_in_usd"
+                            placeholder="Enter amount paid in USD"
+                            className="col-span-3"
+                            {...field}
+                            hasError={!!errors.amount_paid_in_usd}
+                            errorMessage={errors.amount_paid_in_usd?.message}
+                          />
+                        )}
+                      />
+                    )}
 
                   {(selectedPaymentOption === "part_payment_cash" ||
                     selectedPaymentOption === "part_payment_transfer") && (
-                    <Controller
-                      name="initial_amount_paid"
-                      control={control}
-                      render={({ field }) => (
-                        <Input
-                          label="Initial Amount Paid"
-                          placeholder="Enter initial amount paid"
-                          id="initial_amount_paid"
-                          className=""
-                          pattern="^[0-9]*$"
-                          {...field}
-                          hasError={!!errors.initial_amount_paid}
-                          errorMessage={errors.initial_amount_paid?.message}
-                        />
-                      )}
-                    />
-                  )}
+                      <Controller
+                        name="initial_amount_paid"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            label="Initial Amount Paid"
+                            placeholder="Enter initial amount paid"
+                            id="initial_amount_paid"
+                            className=""
+                            pattern="^[0-9]*$"
+                            {...field}
+                            hasError={!!errors.initial_amount_paid}
+                            errorMessage={errors.initial_amount_paid?.message}
+                          />
+                        )}
+                      />
+                    )}
 
                   {!(
                     selectedPaymentOption === "paid_usd_transfer" ||
                     selectedPaymentOption === "paid_paypal" ||
                     selectedPaymentOption === "paid_bitcoin"
                   ) && (
-                    <Controller
-                      name="payment_currency"
-                      control={control}
-                      render={({ field }) => (
-                        <SelectSingleCombo
-                          {...field}
-                          label="Currency"
-                          valueKey="value"
-                          labelKey="label"
-                          options={[
-                            { value: "NGN", label: "NGN" },
-                            { value: "USD", label: "USD" },
-                          ]}
-                          placeholder="Select Currency"
-                          hasError={!!errors.payment_currency}
-                          errorMessage={errors.payment_currency?.message}
-                        />
-                      )}
-                    />
-                  )}
+                      <Controller
+                        name="payment_currency"
+                        control={control}
+                        render={({ field }) => (
+                          <SelectSingleCombo
+                            {...field}
+                            label="Currency"
+                            valueKey="value"
+                            labelKey="label"
+                            options={[
+                              { value: "NGN", label: "NGN" },
+                              { value: "USD", label: "USD" },
+                            ]}
+                            placeholder="Select Currency"
+                            hasError={!!errors.payment_currency}
+                            errorMessage={errors.payment_currency?.message}
+                          />
+                        )}
+                      />
+                    )}
 
                   {watch("payment_options") !== "not_paid_go_ahead" && (
                     <>
