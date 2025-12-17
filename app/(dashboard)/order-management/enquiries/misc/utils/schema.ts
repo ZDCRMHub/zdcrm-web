@@ -200,6 +200,7 @@ export const NewEnquirySchema = z.object({
   customer: z.object({
     name: z.string().min(1, { message: "Client's name is required" }),
     phone: z.string().min(1, { message: "Client's phone number is required" }),
+    alternative_phone: z.string().optional(),
     email: z.string().optional(),
   }),
   delivery: z.object({

@@ -8,6 +8,8 @@ import {
   EmojiHappy,
   ProfileCircle,
   UserEdit,
+  ArrowRight2,
+  ArrowRight,
 } from "iconsax-react";
 import { Separator } from "@radix-ui/react-select";
 import { Phone } from "@phosphor-icons/react";
@@ -126,7 +128,7 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
 
               :
               <>
-                <div className="flex justify-between pt-8">
+                <div className="flex justify-between items-center pt-8">
                   <div className="flex items-center gap-5">
                     <div className="flex items-center space-x-2 mt-1 border border-gray-400 rounded-[10px] px-3 py-2 min-w-max shrink-0">
                       <span className="text-sm">Order ID: {order?.order_number}</span>
@@ -154,6 +156,16 @@ export default function OrderDetailSheetDelivery({ order: default_order, isSheet
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {
+                    order?.delivery.status !== "PENDING" &&
+                    <Link
+                      href={`/order-management/orders/${order?.id}/complete-order`}
+                      className="flex items-center text-sm p-2 gap-1 bg-[#FFC600] hover:opacity-85 rounded-sm font-medium">
+                      Track Order
+                      <ArrowRight />
+                    </Link>
+                  }
                 </div>
 
                 <div className="py-4 space-y-10">

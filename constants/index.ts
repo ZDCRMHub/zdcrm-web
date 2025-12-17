@@ -252,8 +252,16 @@ export const ZONES_OPTIONS = [
     label: "Lagos Island",
   },
   {
-    value: "OT",
-    label: "Others",
+    value: "OP",
+    label: "Other Places",
+  },
+  {
+    value: "PU",
+    label: "Pickup",
+  },
+  {
+    value: "IS",
+    label: "Interstate",
   },
   {
     value: "ND",

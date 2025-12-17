@@ -39,6 +39,7 @@ import {
   ENQUIRY_CHANNEL_OPTIONS,
   ENQUIRY_OCCASION_OPTIONS,
   ENQUIRY_PAYMENT_OPTIONS,
+  ZONES_OPTIONS,
 } from "@/constants";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,7 +72,11 @@ const NewEnquiryPage = () => {
     resolver: zodResolver(NewEnquirySchema),
     defaultValues: {
       branch: branches?.data?.[0].id,
-      customer: { name: "", phone: "", email: "" },
+      customer: {
+        name: "", phone: "",
+        alternative_phone: "",
+        email: ""
+      },
       delivery: {
         zone: "LM",
         method: "Dispatch",
@@ -113,7 +118,6 @@ const NewEnquiryPage = () => {
     name: "items"
   });
 
-  console.log(errors)
 
   const addNewItem = () => {
     append({
@@ -182,6 +186,7 @@ const NewEnquiryPage = () => {
     setValue('delivery.is_custom_delivery', !isCustomDelivery);
   }
   const watchedClientPhoneNumber = watch('customer.phone')
+  const watchedClientAlternativePhoneNumber = watch('customer.alternative_phone')
 
   const isDispatchOrder = watch('delivery.method') === "Dispatch"
   // console.log(getValues('items'))
@@ -228,6 +233,28 @@ const NewEnquiryPage = () => {
                         {
                           watchedClientPhoneNumber?.length == 11 && <Link href={`/order-management/client-history/${watchedClientPhoneNumber}`}>View history</Link>
                         }
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name="customer.alternative_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            label="Client's Alt Phone Number"
+                            hasError={!!errors.customer?.alternative_phone}
+                            errorMessage={errors.customer?.alternative_phone?.message}
+                            placeholder="Enter client alternative phone number"
+                            {...field}
+                          />
+                        </FormControl>
+                        {watchedClientAlternativePhoneNumber?.length == 11 && (
+                          <Link href="/order-management/client-history">
+                            View history
+                          </Link>
+                        )}
                       </FormItem>
                     )}
                   />
@@ -459,20 +486,7 @@ const NewEnquiryPage = () => {
                           <FormItem>
                             <SelectSingleCombo
                               label="Delivery Zone"
-                              options={[
-                                {
-                                  value: "LM",
-                                  label: "Lagos Mainland (LM)",
-                                },
-                                {
-                                  value: "LC",
-                                  label: "Lagos Central (LC)",
-                                },
-                                {
-                                  value: "LI",
-                                  label: "Lagos Island (LI)",
-                                },
-                              ]}
+                              options={ZONES_OPTIONS}
                               {...field}
                               valueKey={"value"}
                               labelKey={"label"}

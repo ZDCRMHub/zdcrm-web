@@ -6,6 +6,7 @@ import { cn } from "../../lib/utils"
 import FormError from "./formError"
 import { Label } from "./label"
 import { HideIcon, ViewIcon } from "@/icons/core"
+import { Eye, EyeSlash } from "iconsax-react"
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   hasError?: boolean
@@ -77,7 +78,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               className="absolute right-[3%] top-[25%] cursor-pointer"
               onClick={() => setShow((prev) => !prev)}
             >
-              {show ? <HideIcon fill="#395CF5" /> : <ViewIcon fill="#395CF5" width={22} height={22} />}
+              {show ? <EyeSlash size={20} color="#4F4F4F" variant="Bold" /> : <Eye size={20} color="#4F4F4F" variant="Bold" />}
             </button>
           )}
         </div>

@@ -197,7 +197,7 @@ export default function PaymentStatusConversionChart({
             <ResponsiveContainer className="!w-full" height="100%">
               <BarChart
                 data={chartData}
-                barSize={20}
+                barSize={12}
                 margin={{ top: 10, right: 20, left: 10, bottom: 0 }}
                 barCategoryGap={barCategoryGap}
                 barGap={barGap}

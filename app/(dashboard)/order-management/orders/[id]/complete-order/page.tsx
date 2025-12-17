@@ -1,5 +1,5 @@
 "use client";
-import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link, TruckRemove, Edit2 } from 'iconsax-react';
+import { Notepad2, ArrowLeft2, UserOctagon, Call, Calendar, Truck, Location, Link as LinkIcon, TruckRemove, Edit2, ArrowRight2 } from 'iconsax-react';
 import React from 'react';
 import { Button, LinkButton } from '@/components/ui';
 import { useParams, useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import OrderPageSkeleton from './CompleteOrderPageSkeleton';
 import { format, formatDate } from 'date-fns';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '@/utils/currency';
+import Link from 'next/link';
 
 const CompleteOrderPage = () => {
     const order_id = useParams()?.id as string;
@@ -51,19 +52,27 @@ const CompleteOrderPage = () => {
 
     return (
         <div className="flex flex-col grow min-h-full px-8 pb-8">
-            <header className="flex items-center border-b border-b-[#00000021] w-full pt-4">
-                <Button
-                    variant='ghost'
-                    size='icon'
-                    className='mr-2'
-                    onClick={() => goBack()}>
-                    <ArrowLeft2 className='h-6 w-6 text-[#A0AEC0]' />
-                </Button>
-                <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
-                    <Notepad2 size={19} />
-                    Complete order
-                    <span className="absolute h-[2px] w-full bottom-[-6px] left-0 bg-black" />
-                </p>
+            <header className="flex justify-between border-b border-b-[#00000021] w-full pt-4">
+                <div className='flex items-center'>
+                    <Button
+                        variant='ghost'
+                        size='icon'
+                        className='mr-2'
+                        onClick={() => goBack()}>
+                        <ArrowLeft2 className='h-6 w-6 text-[#A0AEC0]' />
+                    </Button>
+                    <p className='relative flex items-center gap-2 text-base text-[#111827] w-max p-1'>
+                        <Notepad2 size={19} />
+                        Complete order
+                        <span className="absolute h-[2px] w-full bottom-[-6px] left-0 bg-black" />
+                    </p>
+                </div>
+                <Link
+                    className='flex items-center gap-1 font-medium'
+                    href='/order-management/delivery'>
+                    Back to Delivery
+                    <ArrowRight2 className='h-6 w-6 text-[#A0AEC0]' />
+                </Link>
             </header>
             {
                 !!order &&
@@ -228,7 +237,7 @@ const CompleteOrderPage = () => {
                     {/* Share Delivery Link Section */}
                     <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Button className="px-8 h-14" onClick={copyDeliveryLink}>
-                            <Link size="24" className="mr-2" /> Share Delivery Link
+                            <LinkIcon size="24" className="mr-2" /> Share Delivery Link
                         </Button>
                         <Button variant="destructive" className="px-8 h-14" onClick={() => handleStatusUpdate("CANCELLED")}>
                             <TruckRemove size="24" className="mr-2" /> Cancel Order
