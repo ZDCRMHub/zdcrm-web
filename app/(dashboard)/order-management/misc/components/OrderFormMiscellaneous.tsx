@@ -45,14 +45,14 @@ function OrderFormMiscellaneous({
 
               <AmountInput
                 {...register(`items.${index}.miscellaneous.${k}.cost`)}
-                placeholder="Cost Price"
+                placeholder="Selling Price"
                 className="!h-12"
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.cost}
                 errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.cost?.message}
               />
               <AmountInput
                 {...register(`items.${index}.miscellaneous.${k}.selling_price`)}
-                placeholder="Selling Price"
+                placeholder="Cost Price"
                 className="!h-12"
                 hasError={!!errors.items?.[index]?.miscellaneous?.[k]?.selling_price}
                 errorMessage={errors.items?.[index]?.miscellaneous?.[k]?.selling_price?.message}
