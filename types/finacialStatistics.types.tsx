@@ -1,11 +1,3 @@
-export interface FinancialFetchOptions {
-    page?: number;
-    size?: number;
-    branch?: string;
-    period?: "today" | "week" | "month" | "year" | "custom";
-    date_from?: string;
-    date_to?: string;
-}
 
 export interface FinancialSummary {
     total_revenue?: string;
@@ -18,4 +10,18 @@ export interface FinancialSummary {
     total_orders?: number;
     order_count?: number;
     items_sold?: number;
+}
+
+export interface PaymentStatusStats {
+    payment_option: string,
+    payment_option_label: string,
+    order_count: number,
+    total_amount: string
+}
+
+export interface PartPaymentStats {
+    balance_due: string
+    order_count: number
+    total_amount: string
+    total_paid: string
 }
