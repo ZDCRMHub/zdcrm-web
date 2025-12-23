@@ -1,33 +1,38 @@
-import { APIAxios } from "@/utils/axios"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { APIAxios } from "@/utils/axios";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 interface FetchOptions {
   page?: number;
   size?: number;
   search?: string;
+  delivery_platform?: string;
 }
 
-const getCustomers = async (options: FetchOptions = {}): Promise<APIResponse> => {
+const getCustomers = async (
+  options: FetchOptions = {}
+): Promise<APIResponse> => {
   const params = new URLSearchParams();
- 
-  if (options.page) params.append('page', options.page.toString());
-  if (options.size) params.append('size', options.size.toString());
-  if (options.search) params.append('search', options.search);
 
-  const res = await APIAxios.get('/order/riders-history/', { params });
+  if (options.page) params.append("page", options.page.toString());
+  if (options.size) params.append("size", options.size.toString());
+  if (options.search) params.append("search", options.search);
+  if (options.delivery_platform)
+    params.append("delivery_platform", options.delivery_platform);
+
+  const res = await APIAxios.get("/order/riders-history/", { params });
   return res.data;
-}
+};
 
 export const useGetRiderHistory = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['riders-list', options],
+    queryKey: ["riders-list", options],
     placeholderData: keepPreviousData,
     queryFn: () => getCustomers(options),
   });
-}
+};
 
 interface APIResponse {
-  data: TRiderHistory[];  
+  data: TRiderHistory[];
   next_page: string | null;
   previous_page: string | null;
   number_of_pages: number;

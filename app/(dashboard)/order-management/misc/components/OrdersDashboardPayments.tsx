@@ -35,7 +35,7 @@ export default function OrdersDashboardPayments() {
   const [pageSize, setPageSize] = useState(10);
   const defaultStatuses = 'PND,SOA,SOR,STD,COM'
   const [selectedStatuses, setSelectedStatuses] = useState<string | undefined>(defaultStatuses);
-  const defaultPaymentStatuses = "not_paid_go_ahead,paid_website_card,paid_naira_transfer,paid_pos,paid_usd_transfer,paid_paypal,cash_paid,part_payment_cash,part_payment_transfer,paid_bitcoin,not_received_paid";
+  const defaultPaymentStatuses = "";
   const [selectedPaymentStatuses, setSelectedPaymentStatuses] = useState<string | undefined>(defaultPaymentStatuses);
   const [filteredOrderNumber, setFilteredOrderNumber] = useState<string | undefined>('');
   const debouncedOrderNumber = useDebounce(filteredOrderNumber, 500);
@@ -81,6 +81,12 @@ export default function OrdersDashboardPayments() {
     setCurrentPage(1);
   }
 
+  const handlePaymentStatusChange = (value: string) => {
+    setSelectedPaymentStatuses(value);
+    setCurrentPage(1);
+  };
+
+
   const clearFilters = () => {
     setSelectedCategory(undefined);
     setSelectedStatuses(defaultStatuses);
@@ -98,145 +104,145 @@ export default function OrdersDashboardPayments() {
 
   return (
     <div className='flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto py-6'>
-        <header className=' flex justify-between items-center gap-4'>
-          <div className='flex items-center gap-2 w-80 grow'>
-            <Input
-              type='text'
-              placeholder='Search (order number, items name, customer name and phone number)'
-              className='w-full focus:border min-w-[350px] text-xs !h-10'
-              value={searchText}
-              onChange={handleSearch}
-              rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
-            />
-            <Menubar className='!p-0'>
-              <MenubarMenu >
-                <MenubarTrigger className="relative flex items-center gap-4 text-xs cursor-pointer text-[#8B909A] !h-10">
-                  Filter orders by <ArrowDown2 size={16} />
-                  {
-                    (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== defaultStatuses)) &&
-                    <Circle size={10} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                  }
-                </MenubarTrigger>
-                <MenubarContent>
+      <header className=' flex justify-between items-center gap-4'>
+        <div className='flex items-center gap-2 w-80 grow'>
+          <Input
+            type='text'
+            placeholder='Search (order number, items name, customer name and phone number)'
+            className='w-full focus:border min-w-[350px] text-xs !h-10'
+            value={searchText}
+            onChange={handleSearch}
+            rightIcon={<Search className='h-5 w-5 text-[#8B909A]' />}
+          />
+          <Menubar className='!p-0'>
+            <MenubarMenu >
+              <MenubarTrigger className="relative flex items-center gap-4 text-xs cursor-pointer text-[#8B909A] !h-10">
+                Filter orders by <ArrowDown2 size={16} />
+                {
+                  (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== defaultStatuses)) &&
+                  <Circle size={10} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                }
+              </MenubarTrigger>
+              <MenubarContent>
 
-                  <MenubarSub>
-                    <MenubarSubTrigger className="py-3 flex items-center gap-2">
-                      <Calendar size={18} />Date Range
-                      {
-                        watch('date.from') && watch('date.to') && (watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) &&
-                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                      }
-                    </MenubarSubTrigger>
-                    <MenubarSubContent>
-                      <Controller
-                        control={control}
-                        name="date"
-                        render={({ field: { onChange, value } }) => (
-                          <RangeDatePicker
-                            className="max-w-[17.1875rem] border border-[#d6d6d6]/50 bg-white px-4 py-3 text-sm"
-                            id="dateFilter"
-                            placeholder="Select a date range"
-                            placeholderClassName="text-[#556575]"
-                            value={value}
-                            onChange={onChange}
-                          />
-                        )}
-                      />
-                    </MenubarSubContent>
-                  </MenubarSub>
+                <MenubarSub>
+                  <MenubarSubTrigger className="py-3 flex items-center gap-2">
+                    <Calendar size={18} />Date Range
+                    {
+                      watch('date.from') && watch('date.to') && (watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) &&
+                      <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                    }
+                  </MenubarSubTrigger>
+                  <MenubarSubContent>
+                    <Controller
+                      control={control}
+                      name="date"
+                      render={({ field: { onChange, value } }) => (
+                        <RangeDatePicker
+                          className="max-w-[17.1875rem] border border-[#d6d6d6]/50 bg-white px-4 py-3 text-sm"
+                          id="dateFilter"
+                          placeholder="Select a date range"
+                          placeholderClassName="text-[#556575]"
+                          value={value}
+                          onChange={onChange}
+                        />
+                      )}
+                    />
+                  </MenubarSubContent>
+                </MenubarSub>
 
-                  <MenubarSub>
-                    <MenubarSubTrigger className="relative py-3 flex items-center gap-2"><Category2 size={18} />
-                      Category
-                      {
-                        selectedCategory && <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                      }
-                    </MenubarSubTrigger>
-                    <MenubarSubContent>
-                      {
-                        categories?.map((category) => (
-                          <MenubarItem key={category.id} onClick={() => handleCategoryChange(category.id)}>
-                            {
-                              selectedCategory === category.id && <Check className='mr-2 h-4 w-4' />
-                            }
-                            {category.name}
-                          </MenubarItem>
-                        ))
-                      }
-                    </MenubarSubContent>
-                  </MenubarSub>
+                <MenubarSub>
+                  <MenubarSubTrigger className="relative py-3 flex items-center gap-2"><Category2 size={18} />
+                    Category
+                    {
+                      selectedCategory && <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                    }
+                  </MenubarSubTrigger>
+                  <MenubarSubContent>
+                    {
+                      categories?.map((category) => (
+                        <MenubarItem key={category.id} onClick={() => handleCategoryChange(category.id)}>
+                          {
+                            selectedCategory === category.id && <Check className='mr-2 h-4 w-4' />
+                          }
+                          {category.name}
+                        </MenubarItem>
+                      ))
+                    }
+                  </MenubarSubContent>
+                </MenubarSub>
 
-                  <MenubarSub>
-                    <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
-                      <Money size={18} />Payment Status
-                      {
-                        ((selectedPaymentStatuses && selectedPaymentStatuses !== defaultPaymentStatuses)) &&
-                        <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
-                      }
-                    </MenubarSubTrigger>
-                    <MenubarSubContent>
-                      {
-                        ENQUIRY_PAYMENT_OPTIONS.map((status, index) => {
-                          return (
-                            <React.Fragment key={index}>
-                              <MenubarItem
-                                onClick={() => handleStatusChange(status.value)}
-                              >
-                                {
-                                  selectedPaymentStatuses === status.value && <Check className='mr-2 h-4 w-4' />
-                                }
-                                {status.label}
-                              </MenubarItem>
+                <MenubarSub>
+                  <MenubarSubTrigger className="relative py-3 flex items-center gap-2">
+                    <Money size={18} />Payment Status
+                    {
+                      ((selectedPaymentStatuses && selectedPaymentStatuses !== defaultPaymentStatuses)) &&
+                      <Circle size={6} className='absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full' />
+                    }
+                  </MenubarSubTrigger>
+                  <MenubarSubContent>
+                    {
+                      ENQUIRY_PAYMENT_OPTIONS.map((status, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <MenubarItem
+                              onClick={() => handlePaymentStatusChange(status.value)}
+                            >
+                              {
+                                selectedPaymentStatuses === status.value && <Check className='mr-2 h-4 w-4' />
+                              }
+                              {status.label}
+                            </MenubarItem>
 
-                            </React.Fragment>
-                          )
-                        })
-                      }
-                    </MenubarSubContent>
-                  </MenubarSub>
-                </MenubarContent>
-              </MenubarMenu>
-            </Menubar>
-          </div>
-          <div className='flex items-center gap-2'>
-            {
-              (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== defaultStatuses)) && (
-                <Button
-                  variant='outline'
-                  className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
-                  onClick={clearFilters}
-                >
-                  Clear Filters
-                </Button>
-              )
-            }
-
-            <Button
-              variant='outline'
-              className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
-              onClick={handleRefresh}
-            >
-              <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
-            </Button>
-          </div>
-        </header>
-        <div className="text-sm text-gray-600 my-2">
-          Showing
-          {
-            !selectedCategory && !debouncedSearchText && (!selectedStatuses || selectedStatuses === defaultStatuses)
-            && (!selectedPaymentStatuses || selectedPaymentStatuses === defaultPaymentStatuses)
-            && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
-          }
-          orders {" "}
-          <p className='inline-block font-medium text-black'>
-            {selectedStatuses && selectedStatuses !== defaultStatuses && ` with statuses: ${selectedStatuses.split(',').map(s => ORDER_STATUS_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
-            {selectedPaymentStatuses && selectedPaymentStatuses !== defaultPaymentStatuses && ` with payment statuses: ${selectedPaymentStatuses.split(',').map(s => ENQUIRY_PAYMENT_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
-            {debouncedSearchText && ` with search text: ${debouncedSearchText},`}
-            {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
-            {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
-          </p>
+                          </React.Fragment>
+                        )
+                      })
+                    }
+                  </MenubarSubContent>
+                </MenubarSub>
+              </MenubarContent>
+            </MenubarMenu>
+          </Menubar>
         </div>
-      
+        <div className='flex items-center gap-2'>
+          {
+            (selectedCategory || debouncedSearchText || (selectedStatuses && selectedStatuses !== defaultStatuses)) && (
+              <Button
+                variant='outline'
+                className='bg-[#FF4D4F] text-[#FF4D4F] bg-opacity-25'
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </Button>
+            )
+          }
+
+          <Button
+            variant='outline'
+            className='bg-[#28C76F] text-[#1EA566] bg-opacity-25'
+            onClick={handleRefresh}
+          >
+            <RefreshCcw className='mr-2 h-4 w-4' /> Refresh
+          </Button>
+        </div>
+      </header>
+      <div className="text-sm text-gray-600 my-2">
+        Showing
+        {
+          !selectedCategory && !debouncedSearchText && (!selectedStatuses || selectedStatuses === defaultStatuses)
+          && (!selectedPaymentStatuses || selectedPaymentStatuses === defaultPaymentStatuses)
+          && watch('date.from')?.getTime() === monthsAgo.getTime() && watch('date.to')?.getTime() === tomorrow.getTime() && ' all '
+        }
+        orders {" "}
+        <p className='inline-block font-medium text-black'>
+          {selectedStatuses && selectedStatuses !== defaultStatuses && ` with statuses: ${selectedStatuses.split(',').map(s => ORDER_STATUS_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
+          {selectedPaymentStatuses && selectedPaymentStatuses !== defaultPaymentStatuses && ` with payment statuses: ${selectedPaymentStatuses.split(',').map(s => ENQUIRY_PAYMENT_OPTIONS.find(o => o.value === s)?.label).join(', ')},`}
+          {debouncedSearchText && ` with search text: ${debouncedSearchText},`}
+          {selectedCategory && ` from category: ${categories?.find(c => c.id === selectedCategory)?.name},`}
+          {(watch('date.from')?.getTime() !== monthsAgo.getTime() || watch('date.to')?.getTime() !== tomorrow.getTime()) && ` placed between ${watch('date').from?.toLocaleDateString()} and ${watch('date').to?.toLocaleDateString()}`}
+        </p>
+      </div>
+
 
       <section className='pt-6 pb-3'>
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
