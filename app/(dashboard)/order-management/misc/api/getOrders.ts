@@ -29,8 +29,10 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
   })
   const splittedPaymentStatuses = options.payment_status?.split(',')
   splittedPaymentStatuses && splittedPaymentStatuses.forEach(status => {
-    params.append('payment_options', status)
+    params.append('payment_option', status)
   })
+
+  
   
   
   if (options.page) params.append('page', options.page.toString());
@@ -42,6 +44,7 @@ const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesA
   if (options.end_date) params.append('end_date', options.end_date);
   if (options.sort_by_create_date) params.append('sort_by_create_date', options.sort_by_create_date.toString());
   if (options.business) params.append('business', options.business);
+
 
   const res = await APIAxios.get('/order/list/', { params });
   return res.data;

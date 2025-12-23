@@ -13,7 +13,7 @@ import { Button, LinkButton, Spinner } from "@/components/ui";
 import { TStockInventoryItem, TStockVariation } from "../types/stock";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Edit } from "lucide-react";
+import { ChevronLeft, ChevronRight, Edit } from "lucide-react";
 import { useBooleanStateControl } from "@/hooks";
 import { StockInventoryUpdateModal } from ".";
 import Image from "next/image";
@@ -132,6 +132,59 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({
   error,
   refetch,
 }) => {
+  const tableRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
+  const [canScrollRight, setCanScrollRight] = React.useState(false);
+
+  const checkForScrolling = React.useCallback(() => {
+    requestAnimationFrame(() => {
+      if (tableRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = tableRef.current;
+        setCanScrollLeft(scrollLeft > 0);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    const tableElement = tableRef.current;
+    if (tableElement) {
+      tableElement.addEventListener("scroll", checkForScrolling);
+      window.addEventListener("resize", checkForScrolling);
+      checkForScrolling();
+    }
+
+    return () => {
+      if (tableElement) {
+        tableElement.removeEventListener("scroll", checkForScrolling);
+      }
+      window.removeEventListener("resize", checkForScrolling);
+    };
+  }, [checkForScrolling]);
+
+  React.useEffect(() => {
+    checkForScrolling();
+  }, [data, checkForScrolling]);
+
+  const scrollTable = (direction: "left" | "right") => {
+    if (tableRef.current) {
+      const scrollAmount = 300;
+      const currentScroll = tableRef.current.scrollLeft;
+      const newScroll =
+        direction === "left"
+          ? currentScroll - scrollAmount
+          : currentScroll + scrollAmount;
+
+      tableRef.current.scrollTo({
+        left: newScroll,
+        behavior: "smooth",
+      });
+
+      setTimeout(checkForScrolling, 300);
+    }
+  };
+
+
   if (isLoading)
     return (
       <div className="flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]">
@@ -142,42 +195,69 @@ const StockInventoryTable: React.FC<StockInventoryTableProps> = ({
   if (!data) return null;
 
   return (
-    <div className="w-full md:w-[95%] max-w-[1792px] px-8">
-      <div className={cn("overflow-hidden rounded-full mb-1")}>
-        <div
-          className={cn(
-            "bg-[#F8F9FB] h-1 w-full overflow-hidden",
-            isFetching && !isLoading && "bg-blue-200"
-          )}
-        >
+    <div className="relative">
+      <div className="flex items-center gap-4 h-3">
+        <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
           <div
             className={cn(
-              "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
-              isFetching && !isLoading && "opacity-100"
+              "bg-[#F8F9FB] h-1 w-full overflow-hidden",
+              isFetching && !isLoading && "bg-blue-200"
             )}
-          ></div>
+          >
+            <div
+              className={cn(
+                "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
+                isFetching && !isLoading && "opacity-100"
+              )}
+            ></div>
+          </div>
+        </div>
+        <section className="flex items-center gap-2 shrink-0 px-5 -translate-y-full">
+          <Button
+            className="z-10 h-7 w-7"
+            onClick={() => scrollTable("left")}
+            variant="light"
+            size="icon"
+            disabled={!canScrollLeft}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            className="z-10 h-7 w-7"
+            onClick={() => scrollTable("right")}
+            variant="light"
+            size="icon"
+            disabled={!canScrollRight}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </section>
+      </div>
+
+      <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+        <div className="md:rounded-lg">
+          <Table>
+            <TableHeader className="sticky top-0 z-30 bg-grey-1">
+              <TableRow>
+                <TableHead>Stock Item ID</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Stock Item</TableHead>
+                <TableHead>Variation</TableHead>
+                <TableHead>Quantity In Stock</TableHead>
+                <TableHead>Storage Location</TableHead>
+                <TableHead>Reorder Required</TableHead>
+                <TableHead>Last Updated</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((item) => (
+                <StockRow key={item.id} item={item} refetch={refetch} />
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Stock Item ID</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Stock Item</TableHead>
-            <TableHead>Variation</TableHead>
-            <TableHead>Quantity In Stock</TableHead>
-            <TableHead>Storage Location</TableHead>
-            <TableHead>Reorder Required</TableHead>
-            <TableHead>Last Updated</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((item) => (
-            <StockRow key={item.id} item={item} refetch={refetch} />
-          ))}
-        </TableBody>
-      </Table>
     </div>
   );
 };
