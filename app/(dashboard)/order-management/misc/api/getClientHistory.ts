@@ -1,34 +1,39 @@
-import { APIAxios } from "@/utils/axios"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { APIAxios } from "@/utils/axios";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { TOrder } from "../types";
 
 interface FetchOptions {
   page?: number;
   size?: number;
   search?: string;
+  client_behaviour?: string;
 }
 
-const getCustomers = async (options: FetchOptions = {}): Promise<APIResponse> => {
+const getCustomers = async (
+  options: FetchOptions = {}
+): Promise<APIResponse> => {
   const params = new URLSearchParams();
- 
-  if (options.page) params.append('page', options.page.toString());
-  if (options.size) params.append('size', options.size.toString());
-  if (options.search) params.append('search', options.search);
 
-  const res = await APIAxios.get('/customer/list-stats/', { params });
+  if (options.page) params.append("page", options.page.toString());
+  if (options.size) params.append("size", options.size.toString());
+  if (options.search) params.append("search", options.search);
+  if (options.client_behaviour)
+    params.append("client_behaviour", options.client_behaviour);
+
+  const res = await APIAxios.get("/customer/list-stats/", { params });
   return res.data;
-}
+};
 
 export const useGetCustomerHistory = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['customers-list', options],
+    queryKey: ["customers-list", options],
     placeholderData: keepPreviousData,
     queryFn: () => getCustomers(options),
   });
-}
+};
 
 interface APIResponse {
-  data: TCustomerHistory[];  
+  data: TCustomerHistory[];
   next_page: string | null;
   previous_page: string | null;
   number_of_pages: number;
@@ -47,4 +52,3 @@ export interface TCustomerHistory {
   create_date: string;
   update_date: string;
 }
-

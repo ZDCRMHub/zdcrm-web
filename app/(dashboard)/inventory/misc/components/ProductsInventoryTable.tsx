@@ -194,8 +194,8 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({
   if (!data) return null;
 
   return (
-    <div className="relative h-[93%]">
-      <div className="flex products-center gap-4 h-3">
+    <div className="relative">
+      <div className="flex items-center gap-4 h-3">
         <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
           <div
             className={cn(
@@ -211,7 +211,7 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({
             ></div>
           </div>
         </div>
-        <section className="flex products-center gap-2 shrink-0 px-5 -translate-y-full">
+        <section className="flex items-center gap-2 shrink-0 px-5 -translate-y-full">
           <Button
             className="z-10 h-7 w-7"
             onClick={() => scrollTable("left")}
@@ -233,42 +233,41 @@ const ProductsInventory: React.FC<ProductsInventoryTableProps> = ({
         </section>
       </div>
 
-      <div ref={tableRef} className="overflow-auto max-h-full">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg"></div>
-          <Table>
-            <TableHeader>
+      <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+        <div className="md:rounded-lg"></div>
+        <Table>
+          <TableHeader className="sticky top-0 z-50 bg-grey-1">
+            <TableRow>
+              <TableHead>Gift ID</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Gift Name</TableHead>
+              <TableHead>Variation</TableHead>
+              <TableHead>Quantity In Stock</TableHead>
+              <TableHead>Re-order Required</TableHead>
+              <TableHead>Cost Price/Unit</TableHead>
+              <TableHead>Storage Location</TableHead>
+              <TableHead>Last Updated</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data?.map((product) => (
+              <OrderRow
+                key={product.id}
+                product={product}
+                refetch={refetch}
+              />
+            ))}
+            {!isLoading && data?.length === 0 && (
               <TableRow>
-                <TableHead>Gift ID</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Gift Name</TableHead>
-                <TableHead>Variation</TableHead>
-                <TableHead>Quantity In Stock</TableHead>
-                <TableHead>Re-order Required</TableHead>
-                <TableHead>Cost Price/Unit</TableHead>
-                <TableHead>Storage Location</TableHead>
-                <TableHead>Last Updated</TableHead>
-                <TableHead></TableHead>
+                <TableCell colSpan={7} className="text-center">
+                  No products found
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data?.map((product) => (
-                <OrderRow
-                  key={product.id}
-                  product={product}
-                  refetch={refetch}
-                />
-              ))}
-              {!isLoading && data?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center">
-                    No products found
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+            )}
+          </TableBody>
+        </Table>
+
       </div>
     </div>
   );

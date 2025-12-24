@@ -138,7 +138,7 @@ const OrderFormStockInventorySelector: React.FC<OrderFormStockInventorySelectorP
 
     // Update quantity for selected variation inside inventories state
     const updateQuantityForVariation = (variationId: number, quantity: number) => {
-        if (quantity < 1) quantity = 1 
+        if (quantity < 1) quantity = 1
         const updatedInventories = Array.isArray(inventories) ? [...inventories] : []
 
         for (let i = 0; i < updatedInventories?.length; i++) {
@@ -263,7 +263,7 @@ const OrderFormStockInventorySelector: React.FC<OrderFormStockInventorySelectorP
                                                         ) : null}
                                                     </div>
                                                     <span className="text-xs">
-                                                        {option.name} - {variation.size || variation.color  || variation.flavour}
+                                                        {option.name} - {variation.size || variation.color || variation.flavour}
                                                     </span>
                                                 </button>
                                             ))}
@@ -290,7 +290,7 @@ const OrderFormStockInventorySelector: React.FC<OrderFormStockInventorySelectorP
                                                 className="flex items-center justify-between p-2 bg-gray-50 rounded"
                                             >
                                                 <span className="text-sm">
-                                                    {product?.name} - {v?.size}
+                                                    {product?.name} - {v?.color || v?.size || v?.flavour}
                                                 </span>
                                                 <div className="flex items-center gap-2">
                                                     <Label htmlFor={`quantity-${variation.stock_variation_id}`} className="text-xs">

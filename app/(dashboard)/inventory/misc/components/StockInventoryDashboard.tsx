@@ -32,7 +32,7 @@ export default function StockInventoryDashboard() {
   const [activeTab, setActiveTab] = useState("All Stock Inventory");
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(15);
   const [selectedVariation, setSelectedVariation] = useState<string | undefined>();
 
   const debouncedSearchText = useDebounce(searchText, 300);
@@ -96,8 +96,8 @@ export default function StockInventoryDashboard() {
 
 
   return (
-    <div className="relative flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto pb-6 max-h-full">
-      <div className="sticky top-0 flex justify-between items-center mb-10 gap-4 pt-6 z-[2]">
+    <div className='flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto py-6'>
+      <header className='flex justify-between items-center gap-4'>
         <div className="flex items-center gap-2 w-80 grow">
           <Input
             type="text"
@@ -169,9 +169,9 @@ export default function StockInventoryDashboard() {
             <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
           </Button>
         </div>
-      </div>
+      </header>
 
-      <section>
+      <section className="pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar
           tabs={tabs}
@@ -181,9 +181,9 @@ export default function StockInventoryDashboard() {
         <StockInventoryTable data={data?.data} isLoading={isLoading} isFetching={isFetching} error={error} refetch={refetch} />
       </section>
 
-      <footer className="sticky bottom-0">
-        <div className="flex items-center justify-between mt-auto bg-background py-1.5">
-          <Pagination className="justify-start bg-background">
+      <footer >
+        <div className="flex items-center justify-between mt-auto py-1.5">
+          <Pagination className="justify-start">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious

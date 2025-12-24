@@ -252,8 +252,8 @@ export const ZONES_OPTIONS = [
     label: "Lagos Island",
   },
   {
-    value: "OP",
-    label: "Other Places",
+    value: "OT",
+    label: "Others",
   },
   {
     value: "PU",

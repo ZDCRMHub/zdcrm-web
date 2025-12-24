@@ -51,6 +51,9 @@ export default function RiderHistoryDashboard() {
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [selectedDeliveryPlatform, setSelectedDeliveryPlatform] = useState<
+    string | null
+  >(null);
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
   }>({
@@ -71,6 +74,7 @@ export default function RiderHistoryDashboard() {
     page: currentPage,
     size: pageSize,
     search: searchText,
+    delivery_platform: selectedDeliveryPlatform || undefined,
   });
 
   const handleRefresh = () => {
@@ -87,16 +91,15 @@ export default function RiderHistoryDashboard() {
     setSelectedDeliveryPlatform(null);
   };
 
-  const [selectedDeliveryPlatform, setSelectedDeliveryPlatform] = useState<
-    string | null
-  >(null);
 
   const deliveryPlatforms = [
-    { id: 1, name: "Glovo" },
-    { id: 2, name: "Uber Eats" },
-    { id: 3, name: "Bolt Food" },
-    { id: 4, name: "Jumia Food" },
-    { id: 5, name: "In-House Delivery" },
+    { id: 1, name: "GIG" },
+    { id: 2, name: "UBER" },
+    { id: 3, name: "BOLT" },
+    { id: 4, name: "FLASH" },
+    { id: 5, name: "INDRIVE" },
+    { id: 6, name: "RIDEBOOKER" },
+    { id: 7, name: "OFFLINE" },
   ];
 
   // CSV Download function
@@ -194,8 +197,8 @@ export default function RiderHistoryDashboard() {
                         >
                           {selectedDeliveryPlatform ===
                             deliveryPlatform.name && (
-                            <Check className="mr-2 h-4 w-4" />
-                          )}
+                              <Check className="mr-2 h-4 w-4" />
+                            )}
                           {deliveryPlatform.name}
                         </MenubarItem>
                       ))}
@@ -210,7 +213,7 @@ export default function RiderHistoryDashboard() {
                         (watch("date.from")?.getTime() !==
                           monthsAgo.getTime() ||
                           watch("date.to")?.getTime() !==
-                            tomorrow.getTime()) && (
+                          tomorrow.getTime()) && (
                           <Circle
                             size={6}
                             className="absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full"
@@ -277,7 +280,7 @@ export default function RiderHistoryDashboard() {
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar
           tabs={[{ name: "All Riders", count: riders?.count || 0 }]}
-          onTabClick={() => {}}
+          onTabClick={() => { }}
           activeTab={"All Riders"}
         />
         <RiderHistoryTable
@@ -327,7 +330,7 @@ export default function RiderHistoryDashboard() {
                       Math.min(prev + 1, riders?.number_of_pages || 1)
                     )
                   }
-                  // disabled={currentPage === data?.number_of_pages}
+                // disabled={currentPage === data?.number_of_pages}
                 />
               </PaginationItem>
             </PaginationContent>
