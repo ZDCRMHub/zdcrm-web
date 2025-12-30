@@ -204,7 +204,7 @@ const Page = () => {
   const branchValueSafe = React.useMemo(() => {
     if (!selectedBranch) return "";
     if (!branches || branches.length === 0) return "";
-    return branches.some(b => String(b.id) === String(selectedBranch)) ? String(selectedBranch) : "";
+    return branches?.some(b => String(b.id) === String(selectedBranch)) ? String(selectedBranch) : "";
   }, [selectedBranch, branches]);
 
   // Update category_name when category_id changes

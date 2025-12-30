@@ -32,6 +32,8 @@ const EnquiryDetailsPage = () => {
     const enquiry_id = useParams().id
     const { data, isLoading, refetch } = useGetEnquiryDetail(enquiry_id as string)
 
+    console.log(data)
+
 
     const {
         state: isConfirmModalOpen,
@@ -231,7 +233,7 @@ const EnquiryDetailsPage = () => {
                                                 </div>
 
                                                 <p className="text-custom-blue font-medium text-sm max-w-[150px] text-balance">
-                                                    {item.inventories[0]?.stock_inventory?.name || item.inventories[0]?.product_inventory?.name}
+                                                    {item.product?.name || item.inventories[0]?.stock_inventory?.name}
                                                 </p>
                                             </div>
                                             <div className="space-y-3 text-sm">
@@ -240,14 +242,23 @@ const EnquiryDetailsPage = () => {
                                                         <span className="text-[#687588]">Quantity:</span> {item.quantity} pcs
                                                     </p>
                                                     <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                                        {/* <span className="text-[#687588]">Category:</span> {item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name} */}
+                                                        <span className="text-[#687588]">Category:</span> {item.inventories[0]?.stock_inventory?.category.name || item.inventories[0]?.product_inventory?.category.name}
 
                                                     </p>
-
-                                                    {/* <p className="flex items-center gap-1 text-[#111827] font-medium">
-                                                        <span className="text-[#687588]">Size:</span> 6 inches
-                                                    </p> */}
+                                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                        <span className="text-[#687588]">Size:</span> {item.inventories[0]?.variations[0]?.variation_details?.size}
+                                                    </p>
+                                                    <p className="flex items-center gap-1 text-[#111827] font-medium">
+                                                        <span className="text-[#687588]">Layers:</span> {item.product_variation?.layer}
+                                                    </p>
                                                 </div>
+                                                {
+                                                    item.inventories[0]?.variations[0]?.variation_details?.flavour &&
+                                                    <p className="text-[#111827] font-medium">
+                                                        <span className="text-[#687588]">Flavour:</span>{" "}
+                                                        {item.inventories[0]?.variations[0]?.variation_details?.flavour}
+                                                    </p>
+                                                }
                                                 <div className="grid gap-1">
                                                     {item.properties.map((property, index) => (
                                                         <div key={index}>
@@ -266,10 +277,17 @@ const EnquiryDetailsPage = () => {
                                                     ))}
                                                 </div>
 
+
                                                 <p className="text-[#111827] font-medium">
                                                     <span className="text-[#687588]">Message {item.product.category.name == "Cake" && "on cake"}:</span>{" "}
                                                     {data?.message}
                                                 </p>
+
+                                                <p className="text-[#111827] font-medium">
+                                                    <span className="text-[#687588]">Branch:</span>{" "}
+                                                    {data?.branch?.name}
+                                                </p>
+
                                             </div>
                                         </div>
 
