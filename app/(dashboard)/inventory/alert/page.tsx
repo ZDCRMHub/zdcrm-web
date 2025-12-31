@@ -26,6 +26,7 @@ import TabBar from "@/components/TabBar";
 import { useDebounce } from "@/hooks";
 import { useGetStockInventory } from "../misc/api";
 import { useGetAllBranches } from "@/app/(dashboard)/admin/businesses/misc/api";
+import Image from "next/image";
 
 export default function InventoryAlertPage() {
   const [searchText, setSearchText] = useState("");
@@ -57,8 +58,8 @@ export default function InventoryAlertPage() {
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto pt-6">
-      <div className="flex items-center justify-between gap-4 mb-6">
+    <div className='flex flex-col gap-4 w-full md:w-[92.5%] max-w-[1792px] mx-auto py-6'>
+      <header className='flex justify-between items-center gap-4 mb-4'>
         <div className="flex items-center gap-4 w-full">
           <Input
             placeholder="Search (item name, inventory number)"
@@ -70,7 +71,7 @@ export default function InventoryAlertPage() {
 
           <div>
             <SelectBranchCombo
-            noLabel 
+              noLabel
               value={selectedBranch ? String(selectedBranch) : undefined}
               onChange={(v) => handleBranchSelect(Number(v))}
               name="branch-filter"
@@ -85,11 +86,10 @@ export default function InventoryAlertPage() {
             <RefreshCcw className="mr-2 h-4 w-4" /> Refresh
           </Button>
         </div>
-      </div>
+      </header>
 
-      <TabBar tabs={tabs} activeTab={tabs[0].name} onTabClick={() => {}} />
 
-      <div className="mt-6 bg-white rounded-lg border border-solid border-[#F3F4F6] p-4">
+      <div className="bg-grey-1 rounded-lg border border-solid border-[#F3F4F6] p-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-40">
             <Spinner />
@@ -97,45 +97,52 @@ export default function InventoryAlertPage() {
         ) : error ? (
           <div>Error loading inventory</div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Product Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Stock Quantity</TableHead>
-                <TableHead>Last Updated</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data?.data?.map((item: any) => {
-                const totalQuantity = (item.variations || []).reduce((s: number, v: any) => s + (v.quantity || 0), 0);
-                return (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <img src={item.image_one || "/img/product.png"} alt={item.name} className="h-8 w-8 rounded object-cover" />
-                        <span className="uppercase">{item.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="uppercase">{item.category?.name}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <span>{totalQuantity} In Stock</span>
-                        {totalQuantity <= 5 && (
-                          <span className="text-red-500">
-                            <AlertTriangle className="h-5 w-5" />
-                          </span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{item.update_date ? format(item.update_date, "dd, MMM yyyy") : "-"}</TableCell>
-                    <TableCell>{/* placeholder for actions */}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+          <section>
+            <TabBar tabs={tabs} activeTab={tabs[0].name} onTabClick={() => { }} />
+            <div className="overflow-auto max-h-[600px] noscrollbar">
+              <div className="md:rounded-lg">
+                <Table>
+                  <TableHeader className="sticky top-0 z-30 bg-grey-1">
+                    <TableRow>
+                      <TableHead>Product Name</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Stock Quantity</TableHead>
+                      <TableHead>Last Updated</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data?.data?.map((item: any) => {
+                      const totalQuantity = (item.variations || []).reduce((s: number, v: any) => s + (v.quantity || 0), 0);
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Image src={item.image_one || "/img/product.png"} width={32} height={32} alt={item.name} className="h-8 w-8 rounded object-cover" />
+                              <span className="uppercase">{item.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="uppercase">{item.category?.name}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <span>{totalQuantity} In Stock</span>
+                              {totalQuantity <= 5 && (
+                                <span className="text-red-500">
+                                  <AlertTriangle className="h-5 w-5" />
+                                </span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>{item.update_date ? format(item.update_date, "dd, MMM yyyy") : "-"}</TableCell>
+                          <TableCell>{/* placeholder for actions */}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </section>
         )}
       </div>
     </div>

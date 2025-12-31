@@ -1,5 +1,5 @@
-import { APIAxios } from "@/utils/axios"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { APIAxios } from "@/utils/axios";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { TOrder } from "../types";
 
 interface FetchOptions {
@@ -17,43 +17,53 @@ interface FetchOptions {
   business?: string;
 }
 
-const fetchActiveOrders = async (options: FetchOptions = {}): Promise<EnquiriesAPIResponse> => {
+const fetchActiveOrders = async (
+  options: FetchOptions = {}
+): Promise<EnquiriesAPIResponse> => {
   const params = new URLSearchParams();
-  const splittedStatuses = options.status?.split(',')
-  splittedStatuses && splittedStatuses.forEach(status => {
-    params.append('status', status)
-  })
-  const splittedDeliveryStatuses = options.delivery_status?.split(',')
-  splittedDeliveryStatuses && splittedDeliveryStatuses.forEach(status => {
-    params.append('delivery_status', status)
-  })
-  const splittedPaymentStatuses = options.payment_status?.split(',')
-  splittedPaymentStatuses && splittedPaymentStatuses.forEach(status => {
-    params.append('payment_options', status)
-  })
-  
-  
-  if (options.page) params.append('page', options.page.toString());
-  if (options.size) params.append('size', options.size.toString());
-  if (options.search) params.append('search', options.search);
-  if (options.category) params.append('category_id', options.category.toString());
-  if (options.order_number) params.append('order_number', options.order_number);
-  if (options.start_date) params.append('start_date', options.start_date);
-  if (options.end_date) params.append('end_date', options.end_date);
-  if (options.sort_by_create_date) params.append('sort_by_create_date', options.sort_by_create_date.toString());
-  if (options.business) params.append('business', options.business);
+  const splittedStatuses = options.status?.split(",");
+  splittedStatuses &&
+    splittedStatuses.forEach((status) => {
+      params.append("status", status);
+    });
 
-  const res = await APIAxios.get('/order/list/', { params });
+  const splittedDeliveryStatuses = options.delivery_status?.split(",");
+  splittedDeliveryStatuses &&
+    splittedDeliveryStatuses.forEach((status) => {
+      params.append("delivery_status", status);
+    });
+
+  if (options.payment_status) {
+    const statuses = options.payment_status.split(",").filter(Boolean); // removes empty items
+    statuses.forEach((status) => params.append("payment_status", status));
+  }
+
+  if (options.page) params.append("page", options.page.toString());
+  if (options.size) params.append("size", options.size.toString());
+  if (options.search) params.append("search", options.search);
+  if (options.category)
+    params.append("category_id", options.category.toString());
+  if (options.order_number) params.append("order_number", options.order_number);
+  if (options.start_date) params.append("start_date", options.start_date);
+  if (options.end_date) params.append("end_date", options.end_date);
+  if (options.sort_by_create_date)
+    params.append(
+      "sort_by_create_date",
+      options.sort_by_create_date.toString()
+    );
+  if (options.business) params.append("business", options.business);
+
+  const res = await APIAxios.get("/order/list/", { params });
   return res.data;
-}
+};
 
 export const useGeTOrders = (options: FetchOptions = {}) => {
   return useQuery({
-    queryKey: ['active-orders-list', options],
+    queryKey: ["active-orders-list", options],
     placeholderData: keepPreviousData,
     queryFn: () => fetchActiveOrders(options),
   });
-}
+};
 
 interface EnquiriesAPIResponse {
   data: TOrder[];
@@ -62,4 +72,3 @@ interface EnquiriesAPIResponse {
   number_of_pages: number;
   count: number;
 }
-

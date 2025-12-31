@@ -201,7 +201,7 @@ export default function EnquiriesDashboard() {
         </div>
       </header>
 
-      <section className="pt-6 pb-3"  >
+      <section className="pt-6 pb-3">
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar tabs={[{ name: 'All Enquiries', count: data?.count || 0 }]} onTabClick={() => { }} activeTab={'All Enquiries'} />
         <EnquiriesTable

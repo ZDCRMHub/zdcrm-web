@@ -77,7 +77,7 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-white flex justify-center items-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-[480px]">
         <h1 className="text-5xl font-semibold font-dm-sans text-center mb-2">
           Welcome Back <span className="inline-block">
             <Image src={Wave} alt="Loading…"

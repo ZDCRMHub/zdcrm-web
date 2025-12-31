@@ -36,12 +36,20 @@ const schema = z.object({
     .string()
     .min(10, { message: "Item description must be at least 10 characters long" })
     .max(500, { message: "Item description must be at most 500 characters long" }),
-  storage_location: z.string().min(1, { message: "Storage location is required" }),
+  location: z.string().min(1, { message: "Storage location is required" }),
   branch: z.number(),
   quantity: z
     .number()
     .int()
     .positive({ message: "Quantity must be a positive integer" }),
+  max_quantity_required: z
+    .number()
+    .int()
+    .positive({ message: "Max quantity must be a positive integer" }),
+  minimum_quantity_required: z
+    .number()
+    .int()
+    .positive({ message: "Min quantity must be a positive integer" }),
   cost_price: z
     .number()
     .int()
@@ -195,12 +203,12 @@ export default function NewStoreInventorySheet() {
           />
 
           <Controller
-            name="storage_location"
+            name="location"
             control={control}
             render={({ field }) => (
               <SelectSingleCombo
                 {...field}
-                name="storage_location"
+                name="location"
                 value={field.value?.toString() || ""}
                 options={[
                   { label: "Main Store", value: "1" },
@@ -214,8 +222,8 @@ export default function NewStoreInventorySheet() {
                 placeholder="Storage Location"
                 onChange={(value) => field.onChange(value)}
                 isLoadingOptions={categoriesLoading}
-                hasError={!!errors.storage_location}
-                errorMessage={errors.storage_location?.message}
+                hasError={!!errors.location}
+                errorMessage={errors.location?.message}
               />
             )}
           />
@@ -237,7 +245,7 @@ export default function NewStoreInventorySheet() {
 
           <Input
             type="number"
-            placeholder="Min Quantity"
+            placeholder="Quantity"
             hasError={!!errors.quantity}
             errorMessage={errors.quantity?.message}
             pattern="[0-9]*"
@@ -246,11 +254,20 @@ export default function NewStoreInventorySheet() {
 
           <Input
             type="number"
-            placeholder="Max Quantity"
-            hasError={!!errors.quantity}
-            errorMessage={errors.quantity?.message}
+            placeholder="Min Quantity"
+            hasError={!!errors.minimum_quantity_required}
+            errorMessage={errors.minimum_quantity_required?.message}
             pattern="[0-9]*"
-            // {...register('quantity', { valueAsNumber: true })}
+            {...register("minimum_quantity_required", { valueAsNumber: true })}
+          />
+
+          <Input
+            type="number"
+            placeholder="Max Quantity"
+            hasError={!!errors.max_quantity_required}
+            errorMessage={errors.max_quantity_required?.message}
+            pattern="[0-9]*"
+            {...register('max_quantity_required', { valueAsNumber: true })}
           />
 
           <Input

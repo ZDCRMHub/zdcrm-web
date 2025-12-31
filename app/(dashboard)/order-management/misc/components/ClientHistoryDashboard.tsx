@@ -55,6 +55,9 @@ export default function ClientHistoryDashboard() {
   const debouncedSearchText = useDebounce(searchText, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [selectedClientBehaviour, setSelectedClientBehaviour] = useState<
+    string | undefined
+  >();
   const { control, register, setValue, watch } = useForm<{
     date: DateRange;
   }>({
@@ -76,15 +79,16 @@ export default function ClientHistoryDashboard() {
     page: currentPage,
     size: pageSize,
     search: searchText,
+    client_behaviour: selectedClientBehaviour,
   });
 
-  const [selectedClientBehaviour, setSelectedClientBehaviour] = useState<
-    string | undefined
-  >();
   const clientBehaviours = [
-    { id: 1, name: "Returning" },
-    { id: 2, name: "New" },
+    { id: 1, name: "First Time" },
+    { id: 2, name: "Returning" },
+    { id: 3, name: "Frequent" },
+    { id: 4, name: "Quiet" },
   ];
+  
   const handleRefresh = () => {
     refetch();
   };
@@ -188,7 +192,7 @@ export default function ClientHistoryDashboard() {
                         (watch("date.from")?.getTime() !==
                           monthsAgo.getTime() ||
                           watch("date.to")?.getTime() !==
-                            tomorrow.getTime()) && (
+                          tomorrow.getTime()) && (
                           <Circle
                             size={6}
                             className="absolute top-0 right-0 text-[#FF4D4F] bg-[#FF4D4F] rounded-full"
@@ -280,7 +284,7 @@ export default function ClientHistoryDashboard() {
         {debouncedSearchText && <h3 className="mb-4">Search Results</h3>}
         <TabBar
           tabs={[{ name: "All Clients", count: customers?.count || 0 }]}
-          onTabClick={() => {}}
+          onTabClick={() => { }}
           activeTab={"All Orders"}
         />
         <ClientHistoryTable
@@ -330,7 +334,7 @@ export default function ClientHistoryDashboard() {
                       Math.min(prev + 1, customers?.number_of_pages || 1)
                     )
                   }
-                  // disabled={currentPage === data?.number_of_pages}
+                // disabled={currentPage === data?.number_of_pages}
                 />
               </PaginationItem>
             </PaginationContent>

@@ -8,10 +8,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { LinkButton, Spinner } from "@/components/ui";
+import { Button, LinkButton, Spinner } from "@/components/ui";
 import { TStoreInventoryItem } from "../types/store";
 import { format } from "date-fns";
 import { formatCurrency } from "@/utils/currency";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 
 interface StoreRowProps {
   product: TStoreInventoryItem;
@@ -22,9 +24,11 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
     <TableRow>
       <TableCell>
         <div className="flex items-center space-x-2">
-          <img
+          <Image
             src={product.image_one || "/img/product.png"}
             alt={"product image"}
+            width={40}
+            height={40}
             className="h-10 w-10 rounded object-cover text-[0.65rem] leading-tight bg-gray-300 lowercase"
           />
           <span>{product.name}</span>
@@ -74,6 +78,58 @@ const StoreInventory: React.FC<ProductsInventoryTableProps> = ({
   isFetching,
   error,
 }) => {
+  const tableRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
+  const [canScrollRight, setCanScrollRight] = React.useState(false);
+
+  const checkForScrolling = React.useCallback(() => {
+    requestAnimationFrame(() => {
+      if (tableRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = tableRef.current;
+        setCanScrollLeft(scrollLeft > 0);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    const tableElement = tableRef.current;
+    if (tableElement) {
+      tableElement.addEventListener("scroll", checkForScrolling);
+      window.addEventListener("resize", checkForScrolling);
+      checkForScrolling();
+    }
+
+    return () => {
+      if (tableElement) {
+        tableElement.removeEventListener("scroll", checkForScrolling);
+      }
+      window.removeEventListener("resize", checkForScrolling);
+    };
+  }, [checkForScrolling]);
+
+  React.useEffect(() => {
+    checkForScrolling();
+  }, [data, checkForScrolling]);
+
+  const scrollTable = (direction: "left" | "right") => {
+    if (tableRef.current) {
+      const scrollAmount = 300;
+      const currentScroll = tableRef.current.scrollLeft;
+      const newScroll =
+        direction === "left"
+          ? currentScroll - scrollAmount
+          : currentScroll + scrollAmount;
+
+      tableRef.current.scrollTo({
+        left: newScroll,
+        behavior: "smooth",
+      });
+
+      setTimeout(checkForScrolling, 300);
+    }
+  };
+
   if (isLoading)
     return (
       <div className="flex items-center justify-center w-full h-full min-h-[50vh] py-[10vh]">
@@ -84,47 +140,75 @@ const StoreInventory: React.FC<ProductsInventoryTableProps> = ({
   if (!data) return null;
 
   return (
-    <div className="w-full md:w-[95%] max-w-[1792px] px-8">
-      <div className={cn("overflow-hidden rounded-full mt-3 mb-1")}>
-        <div
-          className={cn(
-            "bg-[#F8F9FB] h-1 w-full overflow-hidden",
-            isFetching && !isLoading && "bg-primary/20"
-          )}
-        >
+    <div className="relative">
+      <div className="flex items-center gap-4 h-3">
+        <div className={cn("overflow-hidden rounded-full mb-1 grow")}>
           <div
             className={cn(
-              "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
-              isFetching && !isLoading && "opacity-100"
+              "bg-[#F8F9FB] h-1 w-full overflow-hidden",
+              isFetching && !isLoading && "bg-blue-200"
             )}
-          ></div>
+          >
+            <div
+              className={cn(
+                "h-full w-full origin-[0_50%] animate-indeterminate-progress rounded-full bg-primary opacity-0 transition-opacity",
+                isFetching && !isLoading && "opacity-100"
+              )}
+            ></div>
+          </div>
+        </div>
+        <section className="flex items-center gap-2 shrink-0 px-5 -translate-y-full">
+          <Button
+            className="z-10 h-7 w-7"
+            onClick={() => scrollTable("left")}
+            variant="light"
+            size="icon"
+            disabled={!canScrollLeft}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            className="z-10 h-7 w-7"
+            onClick={() => scrollTable("right")}
+            variant="light"
+            size="icon"
+            disabled={!canScrollRight}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </section>
+      </div>
+
+      <div ref={tableRef} className="overflow-auto max-h-[600px] noscrollbar">
+        <div className="md:rounded-lg">
+          <Table>
+            <TableHeader className="sticky top-0 z-50 bg-grey-1">
+              <TableRow>
+                <TableHead>Product Name</TableHead>
+                <TableHead>Quantity In Stock</TableHead>
+                <TableHead>Cost/Unit</TableHead>
+                <TableHead>Storage Location</TableHead>
+                <TableHead>Last Updated</TableHead>
+                <TableHead>Updated By</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.map((product) => (
+                <StoreRow key={product.id} product={product} />
+              ))}
+              {!isLoading && data?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center">
+                    No products found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Product Name</TableHead>
-            <TableHead>Quantity In Stock</TableHead>
-            <TableHead>Cost/Unit</TableHead>
-            <TableHead>Storage Location</TableHead>
-            <TableHead>Last Updated</TableHead>
-            <TableHead>Updated By</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data?.map((product) => (
-            <StoreRow key={product.id} product={product} />
-          ))}
-          {!isLoading && data?.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={7} className="text-center">
-                No products found
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+
     </div>
   );
 };

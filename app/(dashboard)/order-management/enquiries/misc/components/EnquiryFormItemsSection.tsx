@@ -69,8 +69,6 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
         name: `items`
     });
 
-
-
     const { fields, append, remove } = useFieldArray({
         control,
         name: `items.${index}.inventories`
@@ -127,7 +125,7 @@ const EnquiryFormItemsSection: React.FC<EnquiryFormItemsSectionProps> = ({
             return ((0 + propertiesCost) * item.quantity) + miscCost;
         }
         else {
-            const initialCostPrice = Number(selectedProduct?.variations?.find(variation => variation.id.toString() === item.product_variation_id)?.cost_price) || 0;
+            const initialCostPrice = Number(selectedProduct?.variations?.find(variation => variation.id.toString() === item.product_variation_id)?.selling_price) || 0;
             return ((initialCostPrice + propertiesCost) * item.quantity) + miscCost;
         }
     }, [propertyOptions?.data, products]);
