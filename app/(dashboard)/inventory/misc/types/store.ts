@@ -8,6 +8,7 @@ export interface TStoreInventoryItem {
     image_one: string;
     cost_price: string;
     quantity: number;
+    location: string;
     created_by: Createdby;
     create_date: string;
     update_date: string;
