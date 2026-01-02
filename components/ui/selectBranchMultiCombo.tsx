@@ -27,6 +27,7 @@ interface BranchSelectorMultiProps {
   hasError?: boolean
   errorMessage?: string
   optional?: boolean
+  initialSelectedOptions?: Branch[]
 }
 
 type Business = {
@@ -49,6 +50,7 @@ const SelectBranchMultiCombo = ({
   itemClass,
   withIcon,
   isLoadingOptions,
+  initialSelectedOptions,
   triggerColor,
   hasError,
   errorMessage,
@@ -142,9 +144,21 @@ const SelectBranchMultiCombo = ({
 
   // Render selected chips below trigger
   const selectedChips = React.useMemo(() => {
-    const selectedIds = value ?? []
-    return selectedIds.map(id => ({ id, name: branchesMap[id] ?? id }))
-  }, [value, branchesMap])
+    const selectedIds = value ?? [];
+
+    // If preload provided, merge into branchesMap
+    if (initialSelectedOptions && initialSelectedOptions.length > 0) {
+      initialSelectedOptions.forEach(opt => {
+        branchesMap[opt.id] = opt.name;
+      });
+    }
+
+    return selectedIds.map(id => ({
+      id,
+      name: branchesMap[id] ?? id
+    }));
+  }, [value, branchesMap, initialSelectedOptions]);
+
 
   // Fetch missing branch names for any pre-selected ids that are not in the branchesMap
   React.useEffect(() => {
@@ -159,7 +173,12 @@ const SelectBranchMultiCombo = ({
           try {
             const res = await axios.get(`/admin/branches/${id}`)
             const data = res?.data?.data ?? res?.data ?? {}
-            const name = data?.name ?? data?.branch?.name ?? String(id)
+            const name =
+              data?.name ??
+              data?.branch_name ??
+              data?.branch?.name ??
+              data?.title ??
+              String(id)
             if (!cancelled) {
               setBranchesMap(prev => ({ ...prev, [id]: name }))
             }

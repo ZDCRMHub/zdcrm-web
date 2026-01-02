@@ -97,7 +97,7 @@ const EditEmployeeSheet: React.FC<EditEmployeeSheetProps> = ({
         email: selectedUser.email,
         phone: selectedUser.phone || "",
         role: selectedUser.role_name,
-        branch_ids: selectedUser.branches?.map(branch => branch.id.toString()) || [],
+        branch_ids: selectedUser.branches?.map((id) => id.toString()) || [],
         is_active: selectedUser.is_active,
       });
     }
@@ -116,9 +116,15 @@ const EditEmployeeSheet: React.FC<EditEmployeeSheetProps> = ({
     reset();
   };
 
+  const initialBranches = selectedUser?.branches?.map((id, index) => ({
+    id: String(id),
+    name: selectedUser.branch_names[index]
+  })) || [];
+
+
   return (
     <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent className="w-[500px] sm:max-w-[500px]">
+      <SheetContent className="w-[500px] sm:max-w-[500px] overflow-y-auto ">
         <SheetHeader>
           <SheetTitle className="text-2xl font-bold pb-4">
             Edit Employee Details
@@ -127,7 +133,7 @@ const EditEmployeeSheet: React.FC<EditEmployeeSheetProps> = ({
             Update employee information and permissions.
           </SheetDescription>
         </SheetHeader>
-        
+
         <form onSubmit={handleSubmit(onSubmitEdit)} className="flex flex-col gap-6 mt-6">
           <div className="flex flex-col gap-3">
             <Label htmlFor="edit-name" className="text-[#111827]">
@@ -229,6 +235,7 @@ const EditEmployeeSheet: React.FC<EditEmployeeSheetProps> = ({
                   onChange={(vals) => field.onChange(vals)}
                   name="branch_ids"
                   placeholder="Select branch(es)"
+                  initialSelectedOptions={initialBranches}
                   hasError={!!errors.branch_ids}
                   errorMessage={errors?.branch_ids ? String((errors.branch_ids as any)?.message ?? (errors.branch_ids as any)) : undefined}
                 />
