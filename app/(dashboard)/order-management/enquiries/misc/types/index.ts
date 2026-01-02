@@ -31,6 +31,18 @@ export interface TEnquiry {
   update_date: string;
 }
 
+// interface Product {
+//   id: 276;
+//   name: string;
+//   category: {
+//     id: 8;
+//     name: "Cake";
+//     type: "STOCK";
+//     create_date: "2025-01-28T13:56:54.471031+01:00";
+//     update_date: "2025-12-29T12:05:21.745309+01:00";
+//   };
+//   image: "https://res.cloudinary.com/dk4cqoxcp/image/upload/v1749912729/ei6lkgemb54v95mxwnzr.jpg";
+// }
 
 interface Item {
   id: number;
@@ -70,7 +82,6 @@ export interface TEnquiryDiscussion {
   create_date: string;
   update_date: string;
 }
-
 
 interface PropertyItem {
   id: number;
@@ -144,7 +155,6 @@ interface Product {
   category: TProductCategory;
   image: string;
 }
-
 
 interface Delivery {
   id: number;
