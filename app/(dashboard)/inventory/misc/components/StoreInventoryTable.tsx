@@ -49,7 +49,7 @@ const StoreRow: React.FC<StoreRowProps> = ({ product }) => {
       <TableCell>
         {formatCurrency(parseInt(product.cost_price ?? "0"))}
       </TableCell>
-      <TableCell>{"-"}</TableCell>
+      <TableCell>{product.location}</TableCell>
       <TableCell>{format(product.update_date, "dd-MMM-yyyy")}</TableCell>
       <TableCell>{product.created_by.name}</TableCell>
       <TableCell>

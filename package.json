@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
+    "@netlify/plugin-nextjs": "^5.15.3",
     "@tanstack/eslint-plugin-query": "^5.53.0",
     "@types/node": "^20",
     "@types/react": "^18",

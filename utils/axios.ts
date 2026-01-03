@@ -10,6 +10,7 @@ export const APIAxios = Axios.create({
   },
 });
 
+
 export const setAxiosDefaultToken = (token: string) => {
   APIAxios.defaults.headers.common.Authorization = `Bearer ${token}`;
 };
